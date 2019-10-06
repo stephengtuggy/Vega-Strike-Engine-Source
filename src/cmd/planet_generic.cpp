@@ -400,7 +400,7 @@ void Planet::InitPlanet( QVector x,
     Init();
     //static int neutralfaction=FactionUtil::GetFaction("neutral");
     //this->faction = neutralfaction;
-    killed = false;
+    // killed = false;
     bool notJumppoint = dest.empty();
     for (unsigned int i = 0; i < dest.size(); ++i)
         AddDestination( dest[i] );

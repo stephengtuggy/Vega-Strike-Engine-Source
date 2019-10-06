@@ -94,8 +94,9 @@ void Unit::UpdateCollideQueue( StarSystem *ss, CollideMap::iterator hint[NUM_COL
 void Unit::CollideAll()
 {
     static bool noUnitCollisions = XMLSupport::parse_bool( vs_config->getVariable( "physics", "no_unit_collisions", "false" ) );
-    if (isSubUnit() || killed || noUnitCollisions)
+    if (isSubUnit() /*  || killed */ || noUnitCollisions) {
         return;
+    }
     for (unsigned int locind = 0; locind < NUM_COLLIDE_MAPS; ++locind)
         if ( is_null( this->location[locind] ) )
             this->location[locind] = this->getStarSystem()->collidemap[locind]->insert( Collidable( this ) );

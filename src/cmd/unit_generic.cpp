@@ -832,10 +832,13 @@ Unit::~Unit()
     }
 
     free( pImage->cockpit_damage );
-    if ( (!killed) )
-        VSFileSystem::vs_fprintf( stderr, "Assumed exit on unit %s(if not quitting, report error)\n", name.get().c_str() );
-    if (ucref)
-        VSFileSystem::vs_fprintf( stderr, "DISASTER AREA!!!!" );
+    // if ((!killed)) {
+    //     VSFileSystem::vs_fprintf(stderr, "Assumed exit on unit %s(if not quitting, report error)\n",
+    //                              name.get().c_str());
+    // }
+    if (ucref) {
+        VSFileSystem::vs_fprintf(stderr, "DISASTER AREA!!!!");
+    }
 #ifdef DESTRUCTDEBUG
     VSFileSystem::vs_fprintf( stderr, "stage %d %x %d\n", 0, this, ucref );
     fflush( stderr );
@@ -952,7 +955,7 @@ void Unit::ZeroAll()
     cloaking              = 0;
     cloakmin              = 0;
     radial_size           = 0;
-    killed                = false;
+    // killed                = false;
     invisible             = 0;
     corner_min.i          = 0;
     corner_min.j          = 0;
@@ -1113,7 +1116,7 @@ void Unit::Init()
 
     pImage->pExplosion  = NULL;
     pImage->timeexplode = 0;
-    killed  = false;
+    // killed  = false;
     ucref   = 0;
     aistate = NULL;
     Identity( cumulative_transformation_matrix );
@@ -2634,53 +2637,64 @@ float CalculateNearestWarpUnit( const Unit *thus, float minmultiplier, Unit **ne
         testthis = locatespec.retval.unit;
     }
     for (un_fiter iter = _Universe->activeStarSystem()->gravitationalUnits().fastIterator();
-         (planet = *iter) || testthis;
-         ++iter) {
-        if ( !planet || !planet->Killed() ) {
-            if (planet == NULL) {
-                planet   = testthis;
-                testthis = NULL;
-            }
-            if (planet == thus)
+         (planet = *iter) || testthis; ++iter) {
+        if (planet == NULL) {
+            planet = testthis;
+            testthis = NULL;
+        }
+        if (planet /* || !planet->Killed() */) {
+            if (planet == thus) {
                 continue;
+            }
             float shiphack = 1;
             if (planet->isUnit() != PLANETPTR) {
                 shiphack = def_inv_interdiction;
-                if ( planet->specInterdiction != 0 && planet->graphicOptions.specInterdictionOnline != 0
-                    && (planet->specInterdiction > 0 || count_negative_warp_units) ) {
-                    shiphack = 1/fabs( planet->specInterdiction );
-                    if (thus->specInterdiction != 0 && thus->graphicOptions.specInterdictionOnline != 0)
-                        //only counters artificial interdiction ... or maybe it cheap ones shouldn't counter expensive ones!? or
+                if (planet->specInterdiction != 0 &&
+                    planet->graphicOptions.specInterdictionOnline != 0 &&
+                    (planet->specInterdiction > 0 || count_negative_warp_units)) {
+                    shiphack = 1 / fabs(planet->specInterdiction);
+                    if (thus->specInterdiction != 0 &&
+                        thus->graphicOptions.specInterdictionOnline != 0)
+                        // only counters artificial interdiction ... or maybe it cheap ones
+                        // shouldn't counter expensive ones!? or
                         // expensive ones should counter planets...this is safe now, for gameplay
-                        shiphack *= fabs( thus->specInterdiction );
+                        shiphack *= fabs(thus->specInterdiction);
                 }
             }
-            float   multipliertemp = 1;
-            float   minsizeeffect  = (planet->rSize() > smallwarphack) ? planet->rSize() : smallwarphack;
-            float   effectiverad   = minsizeeffect*( 1.0f+UniverseUtil::getPlanetRadiusPercent() )+thus->rSize();
+            float multipliertemp = 1;
+            float minsizeeffect =
+                (planet->rSize() > smallwarphack) ? planet->rSize() : smallwarphack;
+            float effectiverad =
+                minsizeeffect * (1.0f + UniverseUtil::getPlanetRadiusPercent()) + thus->rSize();
             if (effectiverad > bigwarphack)
                 effectiverad = bigwarphack;
-            QVector dir     = thus->Position()-planet->Position();
-            double  udist   = dir.Magnitude();
-            float   sigdist = UnitUtil::getSignificantDistance( thus, planet );
-            if ( planet->isPlanet() && udist < (1<<28) ) //If distance is viable as a float approximation and it's an actual celestial body
+            QVector dir = thus->Position() - planet->Position();
+            double udist = dir.Magnitude();
+            float sigdist = UnitUtil::getSignificantDistance(thus, planet);
+            if (planet->isPlanet() &&
+                udist < (1 << 28)) // If distance is viable as a float approximation and it's an
+                                   // actual celestial body
                 udist = sigdist;
             do {
                 double dist = udist;
-                if (dist < 0) dist = 0;
+                if (dist < 0)
+                    dist = 0;
                 dist *= shiphack;
-                if ( dist > (effectiverad+warpregion0) )
-                    multipliertemp = pow( (dist-effectiverad-warpregion0), curvedegree )*upcurvek;
+                if (dist > (effectiverad + warpregion0))
+                    multipliertemp =
+                        pow((dist - effectiverad - warpregion0), curvedegree) * upcurvek;
                 else
                     multipliertemp = 1;
                 if (multipliertemp < minmultiplier) {
                     minmultiplier = multipliertemp;
                     *nearest_unit = planet;
-                    //eventually use new multiplier to compute
-                } else {break; }
+                    // eventually use new multiplier to compute
+                } else {
+                    break;
+                }
             } while (0);
             if (!testthis)
-                break; //don't want the ++
+                break; // don't want the ++
         }
     }
     return minmultiplier;
@@ -4577,71 +4591,81 @@ void Unit::DamageRandSys( float dam, const Vector &vec, float randnum, float deg
 
 void Unit::Kill( bool erasefromsave, bool quitting )
 {
-    if (this->colTrees)
-        this->colTrees->Dec();           //might delete
+    if (this->colTrees) {
+        this->colTrees->Dec();                      // might delete
+    }
     this->colTrees = NULL;
     if (this->sound->engine != -1) {
-        AUDStopPlaying( this->sound->engine );
-        AUDDeleteSound( this->sound->engine );
+        AUDStopPlaying(this->sound->engine);
+        AUDDeleteSound(this->sound->engine);
     }
     if (this->sound->explode != -1) {
-        AUDStopPlaying( this->sound->explode );
-        AUDDeleteSound( this->sound->explode );
+        AUDStopPlaying(this->sound->explode);
+        AUDDeleteSound(this->sound->explode);
     }
     if (this->sound->shield != -1) {
-        AUDStopPlaying( this->sound->shield );
-        AUDDeleteSound( this->sound->shield );
+        AUDStopPlaying(this->sound->shield);
+        AUDDeleteSound(this->sound->shield);
     }
     if (this->sound->armor != -1) {
-        AUDStopPlaying( this->sound->armor );
-        AUDDeleteSound( this->sound->armor );
+        AUDStopPlaying(this->sound->armor);
+        AUDDeleteSound(this->sound->armor);
     }
     if (this->sound->hull != -1) {
-        AUDStopPlaying( this->sound->hull );
-        AUDDeleteSound( this->sound->hull );
+        AUDStopPlaying(this->sound->hull);
+        AUDDeleteSound(this->sound->hull);
     }
     if (this->sound->cloak != -1) {
-        AUDStopPlaying( this->sound->cloak );
-        AUDDeleteSound( this->sound->cloak );
+        AUDStopPlaying(this->sound->cloak);
+        AUDDeleteSound(this->sound->cloak);
     }
     ClearMounts();
     if (SERVER && this->serial) {
-        VSServer->sendKill( this->serial, this->getStarSystem()->GetZone() );
+        VSServer->sendKill(this->serial, this->getStarSystem()->GetZone());
         this->serial = 0;
     }
-    if ( docked&(DOCKING_UNITS) ) {
-        static float   survival =
-            XMLSupport::parse_float( vs_config->getVariable( "physics", "survival_chance_on_base_death", "0.1" ) );
-        static float   player_survival   =
-            XMLSupport::parse_float( vs_config->getVariable( "physics", "player_survival_chance_on_base_death", "1.0" ) );
-        static int     i_survival = float_to_int( (RAND_MAX*survival) );
-        static int     i_player_survival = float_to_int( (RAND_MAX*player_survival) );
+    if (docked & (DOCKING_UNITS)) {
+        static float survival = XMLSupport::parse_float(
+            vs_config->getVariable("physics", "survival_chance_on_base_death", "0.1"));
+        static float player_survival = XMLSupport::parse_float(
+            vs_config->getVariable("physics", "player_survival_chance_on_base_death", "1.0"));
+        static int i_survival = float_to_int((RAND_MAX * survival));
+        static int i_player_survival = float_to_int((RAND_MAX * player_survival));
 
-        vector< Unit* >dockedun;
-        unsigned int   i;
+        vector<Unit *> dockedun;
+        unsigned int i;
         for (i = 0; i < pImage->dockedunits.size(); ++i) {
             Unit *un;
-            if ( NULL != ( un = pImage->dockedunits[i]->uc.GetUnit() ) )
-                dockedun.push_back( un );
+            if (NULL != (un = pImage->dockedunits[i]->uc.GetUnit())) {
+                dockedun.push_back(un);
+            }
         }
-        while ( !dockedun.empty() ) {
-            if (Network) _Universe->netLock( true );
-            dockedun.back()->UnDock( this );
-            if (Network) _Universe->netLock( false );
-            if ( rand() <= (UnitUtil::isPlayerStarship( dockedun.back() ) ? i_player_survival : i_survival) )
+        while (!dockedun.empty()) {
+            if (Network) {
+                _Universe->netLock(true);
+            }
+            dockedun.back()->UnDock(this);
+            if (Network) {
+                _Universe->netLock(false);
+            }
+            if (rand() <=
+                (UnitUtil::isPlayerStarship(dockedun.back()) ? i_player_survival : i_survival)) {
                 dockedun.back()->Kill();
+            }
             dockedun.pop_back();
         }
     }
-    //eraticate everything. naturally (see previous line) we won't erraticate beams erraticated above
-    if ( !isSubUnit() )
-        RemoveFromSystem();
-    killed = true;
-    computer.target.SetUnit( NULL );
 
-    //God I can't believe this next line cost me 1 GIG of memory until I added it
-    computer.threat.SetUnit( NULL );
-    computer.velocity_ref.SetUnit( NULL );
+    // eradicate everything. naturally (see previous line) we won't eradicate beams eradicated above
+    if (!isSubUnit()) {
+        RemoveFromSystem();
+    }
+    // killed = true;
+    computer.target.SetUnit(NULL);
+
+    // God I can't believe this next line cost me 1 GIG of memory until I added it
+    computer.threat.SetUnit(NULL);
+    computer.velocity_ref.SetUnit(NULL);
     computer.force_velocity_ref = true;
     if (aistate) {
         aistate->ClearMessages();
@@ -4649,8 +4673,9 @@ void Unit::Kill( bool erasefromsave, bool quitting )
     }
     aistate = NULL;
     Unit *un;
-    for (un_iter iter = getSubUnits(); (un = *iter); ++iter)
+    for (un_iter iter = getSubUnits(); (un = *iter); ++iter) {
         un->Kill();
+    }
 
     if (isUnit() != MISSILEPTR) {
         VSFileSystem::vs_dbg(1) << boost::format("UNIT HAS DIED: %1% %2% (file %3%)") % name.get() %
@@ -4659,10 +4684,12 @@ void Unit::Kill( bool erasefromsave, bool quitting )
     }
 
     if (ucref == 0) {
-        Unitdeletequeue.push_back( this );
-        if (flightgroup)
-            if (flightgroup->leader.GetUnit() == this)
-                flightgroup->leader.SetUnit( NULL );
+        Unitdeletequeue.push_back(this);
+        if (flightgroup) {
+            if (flightgroup->leader.GetUnit() == this) {
+                flightgroup->leader.SetUnit(NULL);
+            }
+        }
 
 #ifdef DESTRUCTDEBUG
         VSFileSystem::vs_dbg(3) << boost::format("%s 0x%x - %d") % name.c_str() % this %
@@ -4707,7 +4734,7 @@ void Unit::UnRef()
     CheckUnit( this );
 #endif
     ucref--;
-    if (killed && ucref == 0) {
+    if (/* killed &&  */ ucref == 0) {
 #ifdef CONTAINER_DEBUG
         deletedUn.Put( (long) this, this );
 #endif
@@ -5643,18 +5670,21 @@ float Unit::ExplodingProgress() const
 
 void Unit::Destroy()
 {
-    if (!killed) {
-        if (hull >= 0)
+    /* if (!killed) */ {
+        if (hull >= 0) {
             hull = -1;
-        for (int beamcount = 0; beamcount < GetNumMounts(); ++beamcount)
-            DestroyMount( &mounts[beamcount] );
+        }
+        for (int beamcount = 0; beamcount < GetNumMounts(); ++beamcount) {
+            DestroyMount(&mounts[beamcount]);
+        }
         //The server send a kill notification to all concerned clients but not if it is an upgrade
         if (SERVER && this->serial) {
             VSServer->sendKill( this->serial, this->getStarSystem()->GetZone() );
             this->serial = 0;
         }
-        if ( !Explode( false, SIMULATION_ATOM ) )
+        if (!Explode(false, SIMULATION_ATOM)) {
             Kill();
+        }
     }
 }
 

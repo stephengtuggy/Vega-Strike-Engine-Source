@@ -861,8 +861,8 @@ public:
 //How big is this unit
     float radial_size;
 protected:
-//Is dead already?
-    bool  killed;
+    // // Is dead already?
+    // bool  killed;
 //Should not be drawn
     enum INVIS {DEFAULTVIS=0x0, INVISGLOW=0x1, INVISUNIT=0x2, INVISCAMERA=0x4};
     unsigned char invisible;             //1 means turn off glow, 2 means turn off ship
@@ -884,11 +884,11 @@ public:
     virtual void Cloak( bool cloak );
 //deletes
     void Kill( bool eraseFromSave = true, bool quitting = false );
-//Is dead yet?
-    inline bool Killed() const
-    {
-        return killed;
-    }
+    // //Is dead yet?
+    //     inline bool Killed() const
+    //     {
+    //         return killed;
+    //     }
     bool IsExploding() const { return pImage->timeexplode > 0; }
     // 0 = not stated, 1 = done
     float ExplodingProgress() const;
@@ -1607,10 +1607,10 @@ inline Unit* UnitContainer::GetUnit()
 #ifdef CONTAINER_DEBUG
         CheckUnit( unit );
 #endif
-        if ( unit->Killed() ) {
-            unit->UnRef();
-            unit = NULL;
-        }
+        // if (unit->Killed()) {
+        //     unit->UnRef();
+        //     unit = NULL;
+        // }
     }
     return unit;
 }

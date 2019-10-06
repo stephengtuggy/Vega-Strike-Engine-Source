@@ -44,8 +44,8 @@ public:
         if (doesmissilebounce)
             GameUnit< Missile >::reactToCollision( smaller, biglocation, bignormal, smalllocation, smallnormal, dist );
         Discharge();
-        if (!killed)
-            DealDamageToHull( smalllocation.Cast(), hull+1 );      //should kill, applying addmissile effect
+        // if (!killed)
+        DealDamageToHull(smalllocation.Cast(), hull + 1); // should kill, applying addmissile effect
     }
     virtual void UpdatePhysics2( const Transformation &trans,
                                  const Transformation &old_physical_state,

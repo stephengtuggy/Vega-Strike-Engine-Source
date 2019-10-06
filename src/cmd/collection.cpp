@@ -43,14 +43,15 @@ UnitCollection::UnitIterator::UnitIterator( UnitCollection *orig )
 {
     col = orig;
     it = col->u.begin();
-    while(it != col->u.end()){
-        if((*it) == NULL)
+    while (it != col->u.end()) {
+        if ((*it) == NULL) {
             ++it;
-        else {
-            if((*it)->Killed())
-                col->erase(it);
-            else 
+        } else {
+            // if ((*it)->Killed()) {
+            //     col->erase(it);
+            // } else {
                 break;
+            // }
         }
     }
     col->reg(this);
@@ -95,14 +96,15 @@ void UnitCollection::UnitIterator::advance()
 {
     if ( !col || it == col->u.end() ) return;
     ++it;
-    while ( it != col->u.end() ) {
-        if ( (*it) == NULL)
+    while (it != col->u.end()) {
+        if ((*it) == NULL) {
             ++it;
-        else {
-            if((*it)->Killed())
-                col->erase(it);
-            else
+        } else {
+            // if ((*it)->Killed()) {
+            //     col->erase(it);
+            // } else {
                 break;
+            // }
         }
     }
 }
@@ -133,9 +135,11 @@ UnitCollection::ConstIterator::ConstIterator( const ConstIterator &orig )
 UnitCollection::ConstIterator::ConstIterator( const UnitCollection *orig )
 {
     col = orig;
-    for (it = orig->u.begin(); it != col->u.end(); ++it)
-        if ((*it) && !(*it)->Killed())
+    for (it = orig->u.begin(); it != col->u.end(); ++it) {
+        if ((*it) /*  && !(*it)->Killed() */) {
             break;
+        }
+    }
 }
 
 UnitCollection::ConstIterator::~ConstIterator()
@@ -153,14 +157,15 @@ inline void UnitCollection::ConstIterator::advance()
 {
     if ( !col || it == col->u.end() ) return;
     ++it;
-    while ( it != col->u.end() ) {
-        if ( (*it) == NULL )
+    while (it != col->u.end()) {
+        if ((*it) == NULL) {
             ++it;
-        else {
-            if ((*it)->Killed())
-                ++it;
-            else
+        } else {
+            // if ((*it)->Killed()) {
+            //     ++it;
+            // } else {
                 break;
+            // }
         }
     }
 }
@@ -283,11 +288,14 @@ void UnitCollection::destr()
 
 bool UnitCollection::contains( const Unit *unit ) const
 {
-    if (u.empty() || !unit)
+    if (u.empty() || !unit) {
         return false;
-    for (list< Unit* >::const_iterator it = u.begin(); it != u.end(); ++it)
-        if ( (*it) == unit && !(*it)->Killed() )
+    }
+    for (list<Unit *>::const_iterator it = u.begin(); it != u.end(); ++it) {
+        if ((*it) == unit /*  && !(*it)->Killed() */) {
             return true;
+        }
+    }
     return false;
 }
 

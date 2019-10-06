@@ -92,23 +92,23 @@ void Missile::Kill( bool erase )
     Discharge();
     Unit::Kill( erase );
 }
-void Missile::reactToCollision( Unit *smaller,
-                                const QVector &biglocation,
-                                const Vector &bignormal,
-                                const QVector &smalllocation,
-                                const Vector &smallnormal,
-                                float dist )
-{
-    static bool doesmissilebounce = XMLSupport::parse_bool( vs_config->getVariable( "physics", "missile_bounce", "false" ) );
-    if (doesmissilebounce)
-        Unit::reactToCollision( smaller, biglocation, bignormal, smalllocation, smallnormal, dist );
+
+void Missile::reactToCollision(Unit *smaller, const QVector &biglocation, const Vector &bignormal,
+                               const QVector &smalllocation, const Vector &smallnormal,
+                               float dist) {
+    static bool doesmissilebounce =
+        XMLSupport::parse_bool(vs_config->getVariable("physics", "missile_bounce", "false"));
+    if (doesmissilebounce) {
+        Unit::reactToCollision(smaller, biglocation, bignormal, smalllocation, smallnormal, dist);
+    }
     if (smaller->isUnit() != MISSILEPTR) {
-        //2 missiles in a row can't hit each other
+        // 2 missiles in a row can't hit each other
         this->Velocity = smaller->Velocity;
         Velocity = smaller->Velocity;
         Discharge();
-        if (!killed)
-            DealDamageToHull( smalllocation.Cast(), hull+1 );              //should kill, applying addmissile effect
+        // if (!killed)
+            DealDamageToHull(smalllocation.Cast(),
+                             hull + 1); // should kill, applying addmissile effect
     }
 }
 
