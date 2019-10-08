@@ -86,12 +86,12 @@ def CollapseStruct(s):
         for i in range(0,len(s),2):
             if i!=0:
                 l+=";"
-            l+=s[i];
+            l+=s[i]
         return l
 		
 def removeBraces(s):
         r=""
-        s=s.split("{");
+        s=s.split("{")
         for k in s:
             r+=k
         r=r.split("}")
@@ -101,7 +101,7 @@ def removeBraces(s):
         return s
 	
 def removeParen(s):
-        o=s.find("(");
+        o=s.find("(")
         c=s.find(")")
         if (o!=-1 and c!=-1):
             return s[0:o]
@@ -149,7 +149,7 @@ def CollapseList(lis):
                     s+=";"
                 s+=i[j]
             s+='}'
-        return s;
+        return s
 
 def ProcessUnit(f):
         l=[]
@@ -180,7 +180,7 @@ def reorderList(keys,keylist):
             if i in h:
                 ret.append(h[i])
             else:
-                ret.append("");
+                ret.append("")
         return ret
 
 if __name__ == "__main__":
