@@ -8,7 +8,7 @@ def findQuot(s,chr='"', offset=0):
 		return quot+offset
 	return -1
 def elimiQuote(s, delim='"""'):
-	ret="";
+	ret=""
 	where=findQuot(s,delim)
 	even = 1
 	if (where==-1 and delim!='"'):
@@ -36,7 +36,7 @@ def writeList(lis,delim=','):
 	for i in range(len(lis)):
 		l=lis[i]
 		if (l.find('"')!=-1):
-			s+='"""'+l+'"""';
+			s+='"""'+l+'"""'
 		elif (l.find(delim)!=-1):
 			s+='"'+l+'"'
 		else:
@@ -60,7 +60,7 @@ def semiColonSeparatedList(s, delim=','):
 		quot=quot1
 	else:
 		quot=quot3		
-	sem = s.find(delim);	
+	sem = s.find(delim)
 	l=[]
 	while sem!=-1:
 		equot=0
@@ -76,17 +76,17 @@ def semiColonSeparatedList(s, delim=','):
 			if (quot3==-1 or (quot1!=-1 and quot1<quot3)):
 				quot=quot1			
 				trip=0
-		sem = s[equot:].find(delim);
+		sem = s[equot:].find(delim)
 		if (sem!=-1):
-			sem=sem+equot;
+			sem=sem+equot
 		else:
-			break;
+			break
 		l.append(elimiQuote(s[0:sem]))
 		s=s[sem+len(delim):]
-		sem = s.find(delim);
+		sem = s.find(delim)
 		quot3=findQuot(s,'"""')
 		quot1 = findQuot(s,'"')
-		quot=quot3;
+		quot=quot3
 		trip=1
 		if (quot3==-1 or (quot1!=-1 and quot1<quot3)):
 			quot=quot1			
@@ -98,7 +98,7 @@ def semiColonSeparatedList(s, delim=','):
 
 
 def makeTable(llist, keynum=0):
-	keylist = llist[0];
+	keylist = llist[0]
 	ret={}
 	print("lust" +str(keylist))
 	for l in llist[1:]:
