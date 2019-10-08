@@ -10,35 +10,26 @@
 namespace Radar
 {
 
-Track::Track(Unit *player, const Unit *target)
-    : player(player),
-      target(target),
-      distance(0.0)
+Track::Track(Unit *player, const Unit *target) : player(player), target(target), distance(0.0)
 {
     position = player->LocalCoordinates(target);
     distance = UnitUtil::getDistance(player, target);
-    type = IdentifyType();
+    type     = IdentifyType();
 }
 
-Track::Track(Unit *player, const Unit *target, const Vector& position)
-    : player(player),
-      target(target),
-      position(position)
+Track::Track(Unit *player, const Unit *target, const Vector &position) : player(player), target(target), position(position)
 {
     distance = UnitUtil::getDistance(player, target);
-    type = IdentifyType();
+    type     = IdentifyType();
 }
 
-Track::Track(Unit *player, const Unit *target, const Vector& position, float distance)
-    : player(player),
-      target(target),
-      position(position),
-      distance(distance)
+Track::Track(Unit *player, const Unit *target, const Vector &position, float distance)
+    : player(player), target(target), position(position), distance(distance)
 {
     type = IdentifyType();
 }
 
-const Vector& Track::GetPosition() const
+const Vector &Track::GetPosition() const
 {
     return position;
 }
@@ -115,26 +106,23 @@ Track::Type::Value Track::IdentifyType() const
 {
     assert(target);
 
-    switch (target->isUnit())
-    {
+    switch (target->isUnit()) {
     case NEBULAPTR:
         return Type::Nebula;
 
-    case PLANETPTR:
-        {
-            const Planet *planet = static_cast<const Planet *>(target);
-            if (planet->isJumppoint())
-                return Type::JumpPoint;
+    case PLANETPTR: {
+        const Planet *planet = static_cast<const Planet *>(target);
+        if (planet->isJumppoint())
+            return Type::JumpPoint;
 
-            if (planet->hasLights())
-                return Type::Star;
+        if (planet->hasLights())
+            return Type::Star;
 
-            if (planet->isAtmospheric())
-                return Type::Planet;
+        if (planet->isAtmospheric())
+            return Type::Planet;
 
-            return Type::DeadPlanet;
-        }
-        break;
+        return Type::DeadPlanet;
+    } break;
 
     case ASTEROIDPTR:
         return Type::Asteroid;
@@ -143,16 +131,15 @@ Track::Type::Value Track::IdentifyType() const
         // FIXME: Can this ever happen?
         return Type::Unknown;
 
-    case UNITPTR:
-        {
-            if (target->IsBase())
-                return Type::Base;
+    case UNITPTR: {
+        if (target->IsBase())
+            return Type::Base;
 
-            if (UnitUtil::isCapitalShip(target))
-                return Type::CapitalShip;
+        if (UnitUtil::isCapitalShip(target))
+            return Type::CapitalShip;
 
-            return Type::Ship;
-        }
+        return Type::Ship;
+    }
 
     case ENHANCEMENTPTR:
         return Type::Cargo;

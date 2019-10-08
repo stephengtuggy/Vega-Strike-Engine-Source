@@ -33,7 +33,7 @@
 #include <ctype.h>
 #include <assert.h>
 #ifndef WIN32
-//this file isn't available on my system (all win32 machines?) i dun even know what it has or if we need it as I can compile without it
+// this file isn't available on my system (all win32 machines?) i dun even know what it has or if we need it as I can compile without it
 #include <unistd.h>
 #include <pwd.h>
 #endif
@@ -67,11 +67,11 @@
 #include "gfx/cockpit_generic.h"
 
 /* *********************************************************** */
-//ADD_FROM_PYTHON_FUNCTION(pythonMission)
+// ADD_FROM_PYTHON_FUNCTION(pythonMission)
 void Mission::DirectorLoop()
 {
     double oldgametime = gametime;
-    gametime += SIMULATION_ATOM;     //elapsed;
+    gametime += SIMULATION_ATOM; // elapsed;
     if (getTimeCompression() >= .1)
         if (gametime <= oldgametime)
             gametime = SIMULATION_ATOM;
@@ -79,58 +79,56 @@ void Mission::DirectorLoop()
         BriefingLoop();
         if (runtime.pymissions)
             runtime.pymissions->Execute();
-    }
-    catch (...) {
-        if ( PyErr_Occurred() ) {
+    } catch (...) {
+        if (PyErr_Occurred()) {
             PyErr_Print();
             PyErr_Clear();
-            fflush( stderr );
-            fflush( stdout );
-        } throw;
+            fflush(stderr);
+            fflush(stdout);
+        }
+        throw;
     }
 }
 void Mission::DirectorEnd()
 {
     if (director == NULL)
         return;
-    RunDirectorScript( "endgame" );
+    RunDirectorScript("endgame");
 }
 
-void Mission::DirectorShipDestroyed( Unit *unit )
+void Mission::DirectorShipDestroyed(Unit *unit)
 {
     Flightgroup *fg = unit->getFlightgroup();
     if (fg == NULL) {
-        printf( "ship destroyed-no flightgroup\n" );
+        printf("ship destroyed-no flightgroup\n");
         return;
     }
     if (fg->nr_ships_left <= 0 && fg->nr_waves_left > 0) {
-        printf( "WARNING: nr_ships_left<=0\n" );
+        printf("WARNING: nr_ships_left<=0\n");
         return;
     }
     fg->nr_ships_left -= 1;
 
     char buf[512];
 
-    if ( (fg->faction.length()+fg->type.length()+fg->name.length()+12+30) < sizeof (buf) )
-        sprintf( buf, "Ship destroyed: %s:%s:%s-%d", fg->faction.c_str(), fg->type.c_str(),
-                fg->name.c_str(), unit->getFgSubnumber() );
+    if ((fg->faction.length() + fg->type.length() + fg->name.length() + 12 + 30) < sizeof(buf))
+        sprintf(buf, "Ship destroyed: %s:%s:%s-%d", fg->faction.c_str(), fg->type.c_str(), fg->name.c_str(), unit->getFgSubnumber());
     else
-        sprintf( buf, "Ship destroyed: (ERROR)-%d", unit->getFgSubnumber() );
+        sprintf(buf, "Ship destroyed: (ERROR)-%d", unit->getFgSubnumber());
 
-    msgcenter->add( "game", "all", buf );
+    msgcenter->add("game", "all", buf);
 
     if (fg->nr_ships_left == 0) {
         VSFileSystem::vs_dbg(2) << boost::format("no ships left in fg %1%") % fg->name << std::endl;
         if (fg->nr_waves_left > 0) {
-            VSFileSystem::vs_dbg(1)
-                << boost::format("Relaunching %1% wave") % fg->name << std::endl;
+            VSFileSystem::vs_dbg(1) << boost::format("Relaunching %1% wave") % fg->name << std::endl;
 
-            //launch new wave
+            // launch new wave
             fg->nr_waves_left -= 1;
-            fg->nr_ships_left  = fg->nr_ships;
+            fg->nr_ships_left = fg->nr_ships;
 
-            Order *order = NULL;
-            order = unit->getAIState() ? unit->getAIState()->findOrderList() : NULL;
+            Order *order  = NULL;
+            order         = unit->getAIState() ? unit->getAIState()->findOrderList() : NULL;
             fg->orderlist = NULL;
             if (order) {
                 fg->orderlist = order->getOrderList();
@@ -142,9 +140,9 @@ void Mission::DirectorShipDestroyed( Unit *unit )
             cf.waves    = fg->nr_waves_left;
             cf.nr_ships = fg->nr_ships;
 
-            call_unit_launch( &cf, UNITPTR, string( "" ) );
+            call_unit_launch(&cf, UNITPTR, string(""));
         } else {
-            mission->msgcenter->add( "game", "all", "Flightgroup "+fg->name+" destroyed" );
+            mission->msgcenter->add("game", "all", "Flightgroup " + fg->name + " destroyed");
         }
     }
 }
@@ -159,7 +157,7 @@ void Mission::BriefingStart()
         BriefingEnd();
     briefing = new Briefing();
     if (runtime.pymissions)
-        runtime.pymissions->callFunction( "initbriefing" );
+        runtime.pymissions->callFunction("initbriefing");
 }
 void Mission::BriefingUpdate()
 {
@@ -171,20 +169,20 @@ void Mission::BriefingLoop()
 {
     if (briefing)
         if (runtime.pymissions)
-            runtime.pymissions->callFunction( "loopbriefing" );
+            runtime.pymissions->callFunction("loopbriefing");
 }
-class TextPlane* Mission::BriefingRender()
+class TextPlane *Mission::BriefingRender()
 {
     if (briefing) {
-        vector< std::string >who;
-        who.push_back( "briefing" );
-        string str1;
+        vector<std::string> who;
+        who.push_back("briefing");
+        string      str1;
         gameMessage g1, g2;
-        if ( msgcenter->last( 0, g1, who ) )
+        if (msgcenter->last(0, g1, who))
             str1 = g1.message;
-        if ( msgcenter->last( 1, g2, who ) )
-            str1 = str1+string( "\n" )+g2.message;
-        briefing->tp.SetText( str1 );
+        if (msgcenter->last(1, g2, who))
+            str1 = str1 + string("\n") + g2.message;
+        briefing->tp.SetText(str1);
         briefing->Render();
         return &briefing->tp;
     }
@@ -195,7 +193,7 @@ void Mission::BriefingEnd()
 {
     if (briefing) {
         if (runtime.pymissions)
-            runtime.pymissions->callFunction( "endbriefing" );
+            runtime.pymissions->callFunction("endbriefing");
         delete briefing;
         briefing = NULL;
     }
@@ -205,8 +203,7 @@ void Mission::DirectorBenchmark()
 {
     total_nr_frames++;
     if (benchmark > 0.0 && benchmark < gametime) {
-        std::cout<<"Game was running for "<<gametime<<" secs,   av. framerate "<<( (double) total_nr_frames )/gametime
-                 <<std::endl;
-        winsys_exit( 0 );
+        std::cout << "Game was running for " << gametime << " secs,   av. framerate " << ((double)total_nr_frames) / gametime << std::endl;
+        winsys_exit(0);
     }
 }

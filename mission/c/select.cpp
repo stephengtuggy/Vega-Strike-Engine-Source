@@ -15,7 +15,7 @@
  *                                                                         *
  **************************************************************************/
 
-#if defined(_WIN32) && _MSC_VER > 1300 
+#if defined(_WIN32) && _MSC_VER > 1300
 #define __restrict
 #endif
 #include "../include/central.h"
@@ -28,16 +28,17 @@
 #include <unistd.h>
 #endif
 
-int main(int argc, char *argv[]) {
-  int i;
-	for (i=strlen(argv[0]);argv[0][i]!='\\'&&argv[0][i]!='/';i--) {
-	}
-	argv[0][i+1]='\0';
-	_chdir(argv[0]);
-#if 0//def _WIN32
+int main(int argc, char *argv[])
+{
+    int i;
+    for (i = strlen(argv[0]); argv[0][i] != '\\' && argv[0][i] != '/'; i--) {
+    }
+    argv[0][i + 1] = '\0';
+    _chdir(argv[0]);
+#if 0 // def _WIN32
 	FreeConsole();
 #endif
-	gtk_init(&argc, &argv);
-	Start(1);
-	return 0;
+    gtk_init(&argc, &argv);
+    Start(1);
+    return 0;
 }

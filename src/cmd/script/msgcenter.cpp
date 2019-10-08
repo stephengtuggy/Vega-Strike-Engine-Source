@@ -30,7 +30,7 @@
 #include <ctype.h>
 #include <assert.h>
 #ifndef WIN32
-//this file isn't available on my system (all win32 machines?) i dun even know what it has or if we need it as I can compile without it
+// this file isn't available on my system (all win32 machines?) i dun even know what it has or if we need it as I can compile without it
 #include <unistd.h>
 #endif
 
@@ -46,7 +46,7 @@
 #include "msgcenter.h"
 #include <algorithm>
 
-void MessageCenter::add( string from, string to, string message, double delay )
+void MessageCenter::add(string from, string to, string message, double delay)
 {
     gameMessage msg;
 
@@ -54,30 +54,26 @@ void MessageCenter::add( string from, string to, string message, double delay )
     msg.to      = to;
     msg.message = message;
 
-    msg.time    = mission->getGametime()+delay;
+    msg.time = mission->getGametime() + delay;
     if (SERVER)
-        VSServer->sendMessage( from, to, message, (float) delay );
-    messages.push_back( msg );
+        VSServer->sendMessage(from, to, message, (float)delay);
+    messages.push_back(msg);
 }
-void MessageCenter::clear( const std::vector< std::string > &who, const std::vector< std::string > &whoNOT )
+void MessageCenter::clear(const std::vector<std::string> &who, const std::vector<std::string> &whoNOT)
 {
-    if ( who.empty() && whoNOT.empty() )
+    if (who.empty() && whoNOT.empty())
         messages.clear();
-    for (int i = messages.size()-1; i >= 0; i--)
-        if ( std::find( whoNOT.begin(), whoNOT.end(),
-                       messages[i].to.get() ) == whoNOT.end()
-            && ( who.empty() || std::find( who.begin(), who.end(), messages[i].to.get() ) != who.end() ) )
-            messages.erase( messages.begin()+i );
+    for (int i = messages.size() - 1; i >= 0; i--)
+        if (std::find(whoNOT.begin(), whoNOT.end(), messages[i].to.get()) == whoNOT.end() &&
+            (who.empty() || std::find(who.begin(), who.end(), messages[i].to.get()) != who.end()))
+            messages.erase(messages.begin() + i);
 }
-bool MessageCenter::last( unsigned int n,
-                          gameMessage &m,
-                          const std::vector< std::string > &who,
-                          const std::vector< std::string > &whoNOT )
+bool MessageCenter::last(unsigned int n, gameMessage &m, const std::vector<std::string> &who, const std::vector<std::string> &whoNOT)
 {
-    if ( who.empty() && whoNOT.empty() ) {
-        int size  = messages.size();
+    if (who.empty() && whoNOT.empty()) {
+        int size = messages.size();
 
-        int index = size-1-n;
+        int index = size - 1 - n;
         if (index >= 0) {
             m = messages[index];
             return true;
@@ -87,11 +83,10 @@ bool MessageCenter::last( unsigned int n,
     } else {
         int j = 0;
         int i = 0;
-        for (i = messages.size()-1; i >= 0; i--)
-            if ( std::find( whoNOT.begin(), whoNOT.end(),
-                           messages[i].to.get() ) == whoNOT.end()
-                && ( who.empty() || std::find( who.begin(), who.end(), messages[i].to.get() ) != who.end() ) ) {
-                if (j == (int) n)
+        for (i = messages.size() - 1; i >= 0; i--)
+            if (std::find(whoNOT.begin(), whoNOT.end(), messages[i].to.get()) == whoNOT.end() &&
+                (who.empty() || std::find(who.begin(), who.end(), messages[i].to.get()) != who.end())) {
+                if (j == (int)n)
                     break;
                 j++;
             }
@@ -101,4 +96,3 @@ bool MessageCenter::last( unsigned int n,
         return true;
     }
 }
-

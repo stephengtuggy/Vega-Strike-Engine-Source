@@ -1,5 +1,5 @@
 //
-//C++ Implementation: Technique
+// C++ Implementation: Technique
 //
 #include "config.h"
 
@@ -19,11 +19,11 @@
 #include "audio/Exceptions.h"
 
 using namespace XMLDOM;
-using std::map;
 using std::auto_ptr;
+using std::map;
 
 #ifdef _MSC_VER
-//Undefine those nasty MS macros - why god why!?
+// Undefine those nasty MS macros - why god why!?
 #undef max
 #undef min
 #endif
@@ -34,14 +34,23 @@ namespace __impl
 
 class Exception : public std::exception
 {
-private:
+  private:
     std::string _message;
-public:
-    virtual ~Exception() throw () {}
-    Exception() {}
-    Exception( const Exception &other ) : _message( other._message ) {}
-    explicit Exception( const std::string &message ) : _message( message ) {}
-    virtual const char * what() const throw ()
+
+  public:
+    virtual ~Exception() throw()
+    {
+    }
+    Exception()
+    {
+    }
+    Exception(const Exception &other) : _message(other._message)
+    {
+    }
+    explicit Exception(const std::string &message) : _message(message)
+    {
+    }
+    virtual const char *what() const throw()
     {
         return _message.c_str();
     }
@@ -49,120 +58,130 @@ public:
 
 class InvalidParameters : public Exception
 {
-public: InvalidParameters() {}
-    InvalidParameters( const string &msg ) : Exception( msg ) {}
+  public:
+    InvalidParameters()
+    {
+    }
+    InvalidParameters(const string &msg) : Exception(msg)
+    {
+    }
 };
 
 class ProgramCompileError : public Exception
 {
-public: ProgramCompileError() {}
-    ProgramCompileError( const string &msg ) : Exception( msg ) {}
+  public:
+    ProgramCompileError()
+    {
+    }
+    ProgramCompileError(const string &msg) : Exception(msg)
+    {
+    }
 };
 
-template < typename T >
-static T parseEnum( const string &s, const map< string, T > &enumMap )
+template <typename T> static T parseEnum(const string &s, const map<string, T> &enumMap)
 {
-    typename map< string, T >::const_iterator it = enumMap.find( s );
-    if ( it != enumMap.end() )
+    typename map<string, T>::const_iterator it = enumMap.find(s);
+    if (it != enumMap.end())
         return it->second;
-    else throw InvalidParameters( "Enumerated value \""+s+"\" not recognized" );
+    else
+        throw InvalidParameters("Enumerated value \"" + s + "\" not recognized");
 }
 
-template < typename T >
-static T parseEnum( const string &s, const map< string, T > &enumMap, T deflt )
+template <typename T> static T parseEnum(const string &s, const map<string, T> &enumMap, T deflt)
 {
-    typename map< string, T >::const_iterator it = enumMap.find( s );
-    if ( it != enumMap.end() )
+    typename map<string, T>::const_iterator it = enumMap.find(s);
+    if (it != enumMap.end())
         return it->second;
     else
         return deflt;
 }
 
-static Technique::Pass::TextureUnit::SourceType parseSourceType( const string &s, string::size_type &sep )
+static Technique::Pass::TextureUnit::SourceType parseSourceType(const string &s, string::size_type &sep)
 {
-    static map< string, Technique::Pass::TextureUnit::SourceType >enumMap;
-    if ( enumMap.empty() ) {
-        enumMap["decal"]  = Technique::Pass::TextureUnit::Decal;
-        enumMap["file"]   = Technique::Pass::TextureUnit::File;
+    static map<string, Technique::Pass::TextureUnit::SourceType> enumMap;
+    if (enumMap.empty()) {
+        enumMap["decal"]       = Technique::Pass::TextureUnit::Decal;
+        enumMap["file"]        = Technique::Pass::TextureUnit::File;
         enumMap["environment"] = Technique::Pass::TextureUnit::Environment;
-        enumMap["detail"] = Technique::Pass::TextureUnit::Detail;
+        enumMap["detail"]      = Technique::Pass::TextureUnit::Detail;
     }
-    return parseEnum( s.substr( 0, sep = s.find_first_of( ':' ) ), enumMap, Technique::Pass::TextureUnit::None );
+    return parseEnum(s.substr(0, sep = s.find_first_of(':')), enumMap, Technique::Pass::TextureUnit::None);
 }
 
-static Technique::Pass::TextureUnit::Kind parseTexKind( const string &s )
+static Technique::Pass::TextureUnit::Kind parseTexKind(const string &s)
 {
-    static map< string, Technique::Pass::TextureUnit::Kind >enumMap;
-    if ( enumMap.empty() ) {
-        enumMap["default"] = Technique::Pass::TextureUnit::TexDefault;
-        enumMap["2d"] = Technique::Pass::TextureUnit::Tex2D;
-        enumMap["3d"] = Technique::Pass::TextureUnit::Tex3D;
-        enumMap["cube"]    = Technique::Pass::TextureUnit::TexCube;
+    static map<string, Technique::Pass::TextureUnit::Kind> enumMap;
+    if (enumMap.empty()) {
+        enumMap["default"]       = Technique::Pass::TextureUnit::TexDefault;
+        enumMap["2d"]            = Technique::Pass::TextureUnit::Tex2D;
+        enumMap["3d"]            = Technique::Pass::TextureUnit::Tex3D;
+        enumMap["cube"]          = Technique::Pass::TextureUnit::TexCube;
         enumMap["separatedCube"] = Technique::Pass::TextureUnit::TexSepCube;
     }
-    return parseEnum( s, enumMap, Technique::Pass::TextureUnit::TexDefault );
+    return parseEnum(s, enumMap, Technique::Pass::TextureUnit::TexDefault);
 }
 
-static Technique::Pass::Type parsePassType( const std::string &s )
+static Technique::Pass::Type parsePassType(const std::string &s)
 {
-    static map< string, Technique::Pass::Type >enumMap;
-    if ( enumMap.empty() ) {
+    static map<string, Technique::Pass::Type> enumMap;
+    if (enumMap.empty()) {
         enumMap["fixed"]  = Technique::Pass::FixedPass;
         enumMap["shader"] = Technique::Pass::ShaderPass;
     }
-    return parseEnum( s, enumMap );
+    return parseEnum(s, enumMap);
 }
 
-static bool parseBool( const std::string &s )
+static bool parseBool(const std::string &s)
 {
-    if ( s.empty() ) throw InvalidParameters( "Missing required attribute" );
+    if (s.empty())
+        throw InvalidParameters("Missing required attribute");
     else
-        return XMLSupport::parse_bool( s );
+        return XMLSupport::parse_bool(s);
 }
 
-static Technique::Pass::Tristate parseTristate( const std::string &s )
+static Technique::Pass::Tristate parseTristate(const std::string &s)
 {
-    static map< string, Technique::Pass::Tristate >enumMap;
-    if ( enumMap.empty() ) {
+    static map<string, Technique::Pass::Tristate> enumMap;
+    if (enumMap.empty()) {
         enumMap["true"]  = Technique::Pass::True;
         enumMap["false"] = Technique::Pass::False;
         enumMap["auto"]  = Technique::Pass::Auto;
     }
-    return parseEnum( s, enumMap );
+    return parseEnum(s, enumMap);
 }
 
 static Technique::Pass::BlendMode parseBlendMode(const std::string &s)
 {
     static map<string, Technique::Pass::BlendMode> enumMap;
     if (enumMap.empty()) {
-        enumMap["default"]     = Technique::Pass::Default;
-        enumMap["add"]         = Technique::Pass::Add;
-        enumMap["multiply"]    = Technique::Pass::Multiply;
-        enumMap["alpha_blend"] = Technique::Pass::AlphaBlend;
-        enumMap["decal"]       = Technique::Pass::Decal;
-        enumMap["premult_alpha"]=Technique::Pass::PremultAlphaBlend;
-        enumMap["multi_alpha_blend"]=Technique::Pass::MultiAlphaBlend;
+        enumMap["default"]           = Technique::Pass::Default;
+        enumMap["add"]               = Technique::Pass::Add;
+        enumMap["multiply"]          = Technique::Pass::Multiply;
+        enumMap["alpha_blend"]       = Technique::Pass::AlphaBlend;
+        enumMap["decal"]             = Technique::Pass::Decal;
+        enumMap["premult_alpha"]     = Technique::Pass::PremultAlphaBlend;
+        enumMap["multi_alpha_blend"] = Technique::Pass::MultiAlphaBlend;
     }
     return parseEnum(s, enumMap);
 }
 
-static Technique::Pass::Face parseFace( const std::string &s )
+static Technique::Pass::Face parseFace(const std::string &s)
 {
-    static map< string, Technique::Pass::Face >enumMap;
-    if ( enumMap.empty() ) {
+    static map<string, Technique::Pass::Face> enumMap;
+    if (enumMap.empty()) {
         enumMap["none"]    = Technique::Pass::None;
         enumMap["back"]    = Technique::Pass::Back;
         enumMap["front"]   = Technique::Pass::Front;
         enumMap["both"]    = Technique::Pass::FrontAndBack;
         enumMap["default"] = Technique::Pass::DefaultFace;
     }
-    return parseEnum( s, enumMap );
+    return parseEnum(s, enumMap);
 }
 
-static Technique::Pass::DepthFunction parseDepthFunction( const std::string &s )
+static Technique::Pass::DepthFunction parseDepthFunction(const std::string &s)
 {
-    static map< string, Technique::Pass::DepthFunction >enumMap;
-    if ( enumMap.empty() ) {
+    static map<string, Technique::Pass::DepthFunction> enumMap;
+    if (enumMap.empty()) {
         enumMap["less"]    = Technique::Pass::Less;
         enumMap["lequal"]  = Technique::Pass::LEqual;
         enumMap["greater"] = Technique::Pass::Greater;
@@ -178,71 +197,73 @@ static Technique::Pass::PolyMode parsePolyMode(const std::string &s)
 {
     static map<string, Technique::Pass::PolyMode> enumMap;
     if (enumMap.empty()) {
-        enumMap["point"]  = Technique::Pass::Point;
-        enumMap["line"]   = Technique::Pass::Line;
-        enumMap["fill"]   = Technique::Pass::Fill;
+        enumMap["point"] = Technique::Pass::Point;
+        enumMap["line"]  = Technique::Pass::Line;
+        enumMap["fill"]  = Technique::Pass::Fill;
     }
     return parseEnum(s, enumMap);
 }
 
-static Technique::Pass::ShaderParam::Semantic parseAutoParamSemantic( const std::string &s )
+static Technique::Pass::ShaderParam::Semantic parseAutoParamSemantic(const std::string &s)
 {
-    static map< string, Technique::Pass::ShaderParam::Semantic >enumMap;
-    if ( enumMap.empty() ) {
-        enumMap["EnvColor"] = Technique::Pass::ShaderParam::EnvColor;
-        enumMap["CloakingPhase"]     = Technique::Pass::ShaderParam::CloakingPhase;
-        enumMap["Damage"]            = Technique::Pass::ShaderParam::Damage;
-        enumMap["Damage4"]           = Technique::Pass::ShaderParam::Damage4;
-        enumMap["DetailPlane0"]      = Technique::Pass::ShaderParam::DetailPlane0;
-        enumMap["DetailPlane1"]      = Technique::Pass::ShaderParam::DetailPlane1;
-        enumMap["NumLights"]         = Technique::Pass::ShaderParam::NumLights;
-        enumMap["ActiveLightsArray"] = Technique::Pass::ShaderParam::ActiveLightsArray;
-        enumMap["ApparentLightSizeArray"] =
-                                       Technique::Pass::ShaderParam::ApparentLightSizeArray;
-        enumMap["GameTime"]          = Technique::Pass::ShaderParam::GameTime;
+    static map<string, Technique::Pass::ShaderParam::Semantic> enumMap;
+    if (enumMap.empty()) {
+        enumMap["EnvColor"]               = Technique::Pass::ShaderParam::EnvColor;
+        enumMap["CloakingPhase"]          = Technique::Pass::ShaderParam::CloakingPhase;
+        enumMap["Damage"]                 = Technique::Pass::ShaderParam::Damage;
+        enumMap["Damage4"]                = Technique::Pass::ShaderParam::Damage4;
+        enumMap["DetailPlane0"]           = Technique::Pass::ShaderParam::DetailPlane0;
+        enumMap["DetailPlane1"]           = Technique::Pass::ShaderParam::DetailPlane1;
+        enumMap["NumLights"]              = Technique::Pass::ShaderParam::NumLights;
+        enumMap["ActiveLightsArray"]      = Technique::Pass::ShaderParam::ActiveLightsArray;
+        enumMap["ApparentLightSizeArray"] = Technique::Pass::ShaderParam::ApparentLightSizeArray;
+        enumMap["GameTime"]               = Technique::Pass::ShaderParam::GameTime;
     }
-    return parseEnum( s, enumMap );
+    return parseEnum(s, enumMap);
 }
 
-static int parseIteration( const std::string &s )
+static int parseIteration(const std::string &s)
 {
-    static string once( "once" );
+    static string once("once");
     if (s == once)
         return 0;
-    else if ( s.empty() ) throw InvalidParameters( "Invalid iteration attribute" );
+    else if (s.empty())
+        throw InvalidParameters("Invalid iteration attribute");
     else
-        return XMLSupport::parse_int( s );
+        return XMLSupport::parse_int(s);
 }
 
-static int parseInt( const std::string &s )
+static int parseInt(const std::string &s)
 {
-    if ( s.empty() ) throw InvalidParameters( "Invalid integer attribute" );
+    if (s.empty())
+        throw InvalidParameters("Invalid integer attribute");
     else
-        return XMLSupport::parse_int( s );
+        return XMLSupport::parse_int(s);
 }
 
-static int parseInt( const std::string &s, int deflt )
+static int parseInt(const std::string &s, int deflt)
 {
-    if ( s.empty() )
+    if (s.empty())
         return deflt;
     else
-        return XMLSupport::parse_int( s );
+        return XMLSupport::parse_int(s);
 }
 
-static float parseFloat( const std::string &s )
+static float parseFloat(const std::string &s)
 {
-    if ( s.empty() ) throw InvalidParameters( "Invalid float attribute" );
+    if (s.empty())
+        throw InvalidParameters("Invalid float attribute");
     else
-        return XMLSupport::parse_floatf( s );
+        return XMLSupport::parse_floatf(s);
 }
 
-static void parseFloat4( const std::string &s, float value[4] )
+static void parseFloat4(const std::string &s, float value[4])
 {
     string::size_type ini = 0, end;
-    int i = 0;
+    int               i   = 0;
     while (i < 4 && ini != string::npos) {
-        value[i++] = parseFloat( s.substr( ini, end = s.find_first_of( ',', ini ) ) );
-        ini = ( (end == string::npos) ? end : (end+1) );
+        value[i++] = parseFloat(s.substr(ini, end = s.find_first_of(',', ini)));
+        ini        = ((end == string::npos) ? end : (end + 1));
     }
     if (i >= 4 && ini != string::npos) {
         VSFileSystem::vs_dbg(1) << boost::format("WARNING: invalid float4: %1%") % s << std::endl;
@@ -252,93 +273,93 @@ static void parseFloat4( const std::string &s, float value[4] )
     }
 }
 
-//end namespace
-};
+// end namespace
+}; // namespace __impl
 
 using namespace __impl;
 
 Technique::Pass::Pass()
-    : program( 0 )
-    , type( FixedPass )
-    , colorWrite( true )
-    , zWrite( True )
-    , perLightIteration( 0 )
-    , maxIterations( 0 )
-    , blendMode( Default )
-    , depthFunction( LEqual )
-    , cullMode( DefaultFace )
-    , polyMode( Fill )
-    , offsetFactor( 0 )
-    , offsetUnits( 0 )
-    , lineWidth( 1 )
-    , sequence( 0 )
-{}
+    : program(0),
+      type(FixedPass),
+      colorWrite(true),
+      zWrite(True),
+      perLightIteration(0),
+      maxIterations(0),
+      blendMode(Default),
+      depthFunction(LEqual),
+      cullMode(DefaultFace),
+      polyMode(Fill),
+      offsetFactor(0),
+      offsetUnits(0),
+      lineWidth(1),
+      sequence(0)
+{
+}
 
 Technique::Pass::~Pass()
 {
-    //Should deallocate the program... but... GFX doesn't have that API.
+    // Should deallocate the program... but... GFX doesn't have that API.
 }
 
-void Technique::Pass::setProgram( const string &vertex, const string &fragment )
+void Technique::Pass::setProgram(const string &vertex, const string &fragment)
 {
     vertexProgram   = vertex;
     fragmentProgram = fragment;
-    program = 0;
+    program         = 0;
 }
 
-void Technique::Pass::addTextureUnit( const string &source,
-                                      int target,
-                                      const string &deflt,
-                                      const string &paramName,
-                                      Technique::Pass::TextureUnit::Kind texKind )
+void Technique::Pass::addTextureUnit(
+    const string &source, int target, const string &deflt, const string &paramName, Technique::Pass::TextureUnit::Kind texKind)
 {
-    textureUnits.resize( textureUnits.size()+1 );
-    TextureUnit &newTU     = textureUnits.back();
+    textureUnits.resize(textureUnits.size() + 1);
+    TextureUnit &newTU = textureUnits.back();
 
     string::size_type ssep = string::npos, dsep = string::npos;
-    newTU.sourceType = parseSourceType( source, ssep );
-    newTU.defaultType     = parseSourceType( deflt, dsep );
-    newTU.targetIndex     =
-    newTU.origTargetIndex = target;
-    newTU.targetParamName = paramName;
-    newTU.targetParamId   = -1;
-    newTU.texKind = texKind;
-    switch (newTU.sourceType)
-    {
+    newTU.sourceType  = parseSourceType(source, ssep);
+    newTU.defaultType = parseSourceType(deflt, dsep);
+    newTU.targetIndex = newTU.origTargetIndex = target;
+    newTU.targetParamName                     = paramName;
+    newTU.targetParamId                       = -1;
+    newTU.texKind                             = texKind;
+    switch (newTU.sourceType) {
     case TextureUnit::Decal:
     case TextureUnit::Detail:
-        if (ssep == string::npos) throw InvalidParameters( "Decal/Detail reference missing source index" );
-        newTU.sourceIndex = atoi( source.c_str()+ssep+1 );
+        if (ssep == string::npos)
+            throw InvalidParameters("Decal/Detail reference missing source index");
+        newTU.sourceIndex = atoi(source.c_str() + ssep + 1);
         break;
     case TextureUnit::File:
-        if (ssep == string::npos) throw InvalidParameters( "File reference missing path" );
-        newTU.sourcePath.assign( source, ssep+1, string::npos );
+        if (ssep == string::npos)
+            throw InvalidParameters("File reference missing path");
+        newTU.sourcePath.assign(source, ssep + 1, string::npos);
         break;
     case TextureUnit::Environment:
         break;
-    default: throw InvalidParameters( "Missing source" );
+    default:
+        throw InvalidParameters("Missing source");
     }
-    switch (newTU.defaultType)
-    {
+    switch (newTU.defaultType) {
     case TextureUnit::Decal:
     case TextureUnit::Detail:
-        if (dsep == string::npos) throw InvalidParameters( "Decal/Detail reference missing source index" );
-        newTU.defaultIndex = atoi( deflt.c_str()+dsep+1 );
+        if (dsep == string::npos)
+            throw InvalidParameters("Decal/Detail reference missing source index");
+        newTU.defaultIndex = atoi(deflt.c_str() + dsep + 1);
         break;
     case TextureUnit::File:
-        if (dsep == string::npos) throw InvalidParameters( "File reference missing path" );
-        newTU.defaultPath.assign( deflt, dsep+1, string::npos );
+        if (dsep == string::npos)
+            throw InvalidParameters("File reference missing path");
+        newTU.defaultPath.assign(deflt, dsep + 1, string::npos);
         break;
-    case TextureUnit::None: //FIXME added by chuck_starchaser; please verify correctness
-    case TextureUnit::Environment: //FIXME added by chuck_starchaser; please verify correctness
-    default: //FIXME added by chuck_starchaser; please verify correctness
-        break; //FIXME added by chuck_starchaser; please verify correctness
+    case TextureUnit::None:        // FIXME added by chuck_starchaser; please verify correctness
+    case TextureUnit::Environment: // FIXME added by chuck_starchaser; please verify correctness
+    default:                       // FIXME added by chuck_starchaser; please verify correctness
+        break;                     // FIXME added by chuck_starchaser; please verify correctness
     }
 }
 
-void Technique::Pass::addShaderParam( const string &name, float value[4], bool optional )
+void Technique::Pass::addShaderParam(const string &name, float value[4], bool optional)
 {
-    shaderParams.resize( shaderParams.size()+1 );
+    shaderParams.resize(shaderParams.size() + 1);
     ShaderParam &newSP = shaderParams.back();
 
     newSP.name     = name;
@@ -349,9 +370,9 @@ void Technique::Pass::addShaderParam( const string &name, float value[4], bool o
         newSP.value[i] = value[i];
 }
 
-void Technique::Pass::addShaderParam( const string &name, ShaderParam::Semantic semantic, bool optional )
+void Technique::Pass::addShaderParam(const string &name, ShaderParam::Semantic semantic, bool optional)
 {
-    shaderParams.resize( shaderParams.size()+1 );
+    shaderParams.resize(shaderParams.size() + 1);
     ShaderParam &newSP = shaderParams.back();
 
     newSP.name     = name;
@@ -385,31 +406,26 @@ void Technique::Pass::compile()
                 defines += "#define VGL_NV_fragment_program2 1\n";
 
             // Compile program
-            prog = GFXCreateProgram( vertexProgram.c_str(), fragmentProgram.c_str(),
-                                     (defines.empty() ? NULL : defines.c_str()) );
+            prog = GFXCreateProgram(vertexProgram.c_str(), fragmentProgram.c_str(), (defines.empty() ? NULL : defines.c_str()));
             if (prog == 0) {
-                throw ProgramCompileError("Error compiling program vp:\"" + vertexProgram +
-                                          "\" fp:\"" + fragmentProgram + "\"");
+                throw ProgramCompileError("Error compiling program vp:\"" + vertexProgram + "\" fp:\"" + fragmentProgram + "\"");
             } else {
-                VSFileSystem::vs_dbg(1)
-                    << boost::format("Successfully compiled and linked program \"%1%+%2%\"") %
-                           vertexProgram % fragmentProgram
-                    << std::endl;
+                VSFileSystem::vs_dbg(1) << boost::format("Successfully compiled and linked program \"%1%+%2%\"") % vertexProgram %
+                                               fragmentProgram
+                                        << std::endl;
             }
         }
 
         for (ShaderParamList::iterator it = shaderParams.begin(); it != shaderParams.end(); ++it) {
-            it->id = GFXNamedShaderConstant( prog, it->name.c_str() );
+            it->id = GFXNamedShaderConstant(prog, it->name.c_str());
             if (it->id < 0) {
                 if (!it->optional) {
-                    throw ProgramCompileError("Cannot resolve shader constant \"" + it->name +
-                                              "\"");
+                    throw ProgramCompileError("Cannot resolve shader constant \"" + it->name + "\"");
                 } else {
-                    VSFileSystem::vs_dbg(1)
-                        << boost::format("Cannot resolve <<optional>> shader constant \"%1%\" in "
-                                         "program \"%2%+%3%\"") %
-                               it->name % vertexProgram % fragmentProgram
-                        << std::endl;
+                    VSFileSystem::vs_dbg(1) << boost::format("Cannot resolve <<optional>> shader constant \"%1%\" in "
+                                                             "program \"%2%+%3%\"") %
+                                                   it->name % vertexProgram % fragmentProgram
+                                            << std::endl;
                 }
             }
         }
@@ -418,36 +434,35 @@ void Technique::Pass::compile()
             if (tit->sourceType == TextureUnit::File) {
                 // Yep, we don't want to reload textures
                 if (tit->texture.get() == 0) {
-                    tit->texture.reset( new Texture( tit->sourcePath.c_str() ) );
-                    if ( !tit->texture->LoadSuccess() ) throw InvalidParameters(
-                            "Cannot load texture file \""+tit->sourcePath+"\"" );
+                    tit->texture.reset(new Texture(tit->sourcePath.c_str()));
+                    if (!tit->texture->LoadSuccess())
+                        throw InvalidParameters("Cannot load texture file \"" + tit->sourcePath + "\"");
                 }
             } else if (tit->defaultType == TextureUnit::File) {
                 // Yep, we don't want to reload textures
                 if (tit->texture.get() == 0) {
-                    tit->texture.reset( new Texture( tit->defaultPath.c_str() ) );
-                    if ( !tit->texture->LoadSuccess() ) throw InvalidParameters(
-                            "Cannot load texture file \""+tit->defaultPath+"\"" );
+                    tit->texture.reset(new Texture(tit->defaultPath.c_str()));
+                    if (!tit->texture->LoadSuccess())
+                        throw InvalidParameters("Cannot load texture file \"" + tit->defaultPath + "\"");
                 }
             }
             if (!tit->targetParamName.empty()) {
-                tit->targetParamId = GFXNamedShaderConstant( prog, tit->targetParamName.c_str() );
+                tit->targetParamId = GFXNamedShaderConstant(prog, tit->targetParamName.c_str());
                 if (tit->targetParamId < 0) {
                     if (tit->origTargetIndex >= 0)
-                        throw ProgramCompileError(
-                            "Cannot resolve shader constant \""+tit->targetParamName+"\"" );
+                        throw ProgramCompileError("Cannot resolve shader constant \"" + tit->targetParamName + "\"");
                     else
                         tit->targetIndex = -1;
                 } else {
                     if (tit->origTargetIndex < 0)
-                        tit->targetIndex = lastTU+1;
-                    lastTU = std::max( tit->targetIndex, lastTU );
+                        tit->targetIndex = lastTU + 1;
+                    lastTU = std::max(tit->targetIndex, lastTU);
                 }
             }
         }
 
         // COMMIT ;-)
-        program = prog;
+        program        = prog;
         programVersion = GFXGetProgramVersion();
     }
 }
@@ -464,43 +479,32 @@ bool Technique::Pass::isCompiled(int programVersion) const
     return (type != ShaderPass) || (program != 0 && this->programVersion == programVersion);
 }
 
-Technique::Technique( const string &nam ) :
-    name( nam )
-    , compiled( false )
-    , programVersion( 0 )
+Technique::Technique(const string &nam) : name(nam), compiled(false), programVersion(0)
 {
-    static string passTag( "pass" );
-    static string techniqueTag( "technique" );
-    static string vpTag( "vertex_program" );
-    static string fpTag( "fragment_program" );
-    static string tuTag( "texture_unit" );
-    static string paramTag( "param" );
-    static string autoParamTag( "auto_param" );
+    static string passTag("pass");
+    static string techniqueTag("technique");
+    static string vpTag("vertex_program");
+    static string fpTag("fragment_program");
+    static string tuTag("texture_unit");
+    static string paramTag("param");
+    static string autoParamTag("auto_param");
 
     VSFileXMLSerializer serializer;
-    serializer.options = 0;     //only tags interest us
+    serializer.options = 0; // only tags interest us
     serializer.initialise();
 
     try {
         // Try a specialized version
-        serializer.importXML(
-            game_options.techniquesBasePath+"/"
-            +game_options.techniquesSubPath+"/"
-            +name+".technique" );
-    } catch(Audio::FileOpenException e) {
-        VSFileSystem::vs_dbg(1) << boost::format(
-                                       "Cannot find specialized technique, trying generic: %1%") %
-                                       e.what()
-                                << std::endl;
+        serializer.importXML(game_options.techniquesBasePath + "/" + game_options.techniquesSubPath + "/" + name + ".technique");
+    } catch (Audio::FileOpenException e) {
+        VSFileSystem::vs_dbg(1) << boost::format("Cannot find specialized technique, trying generic: %1%") % e.what() << std::endl;
         // Else try a default
-        serializer.importXML(
-            game_options.techniquesBasePath+"/"
-            +name+".technique" );
+        serializer.importXML(game_options.techniquesBasePath + "/" + name + ".technique");
     }
 
-    auto_ptr< XMLDOM::XMLDocument >doc( serializer.close() );
+    auto_ptr<XMLDOM::XMLDocument> doc(serializer.close());
 
-    //Search for the <technique> tag
+    // Search for the <technique> tag
     XMLElement *techniqueNode = 0;
     {
         for (XMLElement::const_child_iterator it = doc->root.childrenBegin(); it != doc->root.childrenEnd(); ++it) {
@@ -510,120 +514,102 @@ Technique::Technique( const string &nam ) :
                 break;
             }
         }
-        if (techniqueNode == 0) throw InvalidParameters( "No technique tag!" );
+        if (techniqueNode == 0)
+            throw InvalidParameters("No technique tag!");
     }
 
-    fallback = techniqueNode->getAttributeValue( "fallback", "" );
+    fallback = techniqueNode->getAttributeValue("fallback", "");
 
     unsigned int nextSequence = 0;
     for (XMLElement::const_child_iterator it = techniqueNode->childrenBegin(); it != techniqueNode->childrenEnd(); ++it) {
         XMLElement *el = *it;
         if (el->type() == XMLElement::XET_TAG) {
             if (el->tagName() == passTag) {
-                passes.resize( passes.size()+1 );
+                passes.resize(passes.size() + 1);
                 Pass &pass = passes.back();
 
-                pass.type              = parsePassType( el->getAttributeValue( "type", "" ) );
-                pass.colorWrite        = parseBool( el->getAttributeValue( "cwrite", "true" ) );
-                pass.zWrite            = parseTristate( el->getAttributeValue( "zwrite", "auto" ) );
-                pass.perLightIteration = parseIteration( el->getAttributeValue( "iteration", "once" ) );
-                pass.maxIterations     = parseInt( el->getAttributeValue( "maxiterations", "0" ) );
-                pass.blendMode         = parseBlendMode( el->getAttributeValue( "blend", "default" ) );
-                pass.sequence          = parseInt( el->getAttributeValue( "sequence", "" ), nextSequence );
-                pass.depthFunction     = parseDepthFunction( el->getAttributeValue( "depth_function", "lequal" ) );
-                pass.cullMode          = parseFace( el->getAttributeValue( "cull", "default" ) );
-                pass.polyMode          = parsePolyMode( el->getAttributeValue( "polygon_mode", "fill" ) );
-                pass.offsetUnits       = parseFloat( el->getAttributeValue( "polygon_offset_units", "0" ) );
-                pass.offsetFactor      = parseFloat( el->getAttributeValue( "polygon_offset_factor", "0" ) );
-                pass.lineWidth         = parseFloat( el->getAttributeValue( "line_width", "1" ) );
-                pass.sRGBAware         = parseBool( el->getAttributeValue( "srgb_aware", "false" ) );
-                nextSequence           = pass.sequence+1;
+                pass.type              = parsePassType(el->getAttributeValue("type", ""));
+                pass.colorWrite        = parseBool(el->getAttributeValue("cwrite", "true"));
+                pass.zWrite            = parseTristate(el->getAttributeValue("zwrite", "auto"));
+                pass.perLightIteration = parseIteration(el->getAttributeValue("iteration", "once"));
+                pass.maxIterations     = parseInt(el->getAttributeValue("maxiterations", "0"));
+                pass.blendMode         = parseBlendMode(el->getAttributeValue("blend", "default"));
+                pass.sequence          = parseInt(el->getAttributeValue("sequence", ""), nextSequence);
+                pass.depthFunction     = parseDepthFunction(el->getAttributeValue("depth_function", "lequal"));
+                pass.cullMode          = parseFace(el->getAttributeValue("cull", "default"));
+                pass.polyMode          = parsePolyMode(el->getAttributeValue("polygon_mode", "fill"));
+                pass.offsetUnits       = parseFloat(el->getAttributeValue("polygon_offset_units", "0"));
+                pass.offsetFactor      = parseFloat(el->getAttributeValue("polygon_offset_factor", "0"));
+                pass.lineWidth         = parseFloat(el->getAttributeValue("line_width", "1"));
+                pass.sRGBAware         = parseBool(el->getAttributeValue("srgb_aware", "false"));
+                nextSequence           = pass.sequence + 1;
 
                 string vp, fp;
                 for (XMLElement::const_child_iterator cit = el->childrenBegin(); cit != el->childrenEnd(); ++cit) {
                     XMLElement *el = *cit;
                     if (el->type() == XMLElement::XET_TAG) {
                         if (el->tagName() == vpTag) {
-                            if ( !vp.empty() ) throw InvalidParameters(
-                                    "Duplicate vertex program reference in technique \""+name+"\"" );
-                            vp = el->getAttributeValue( "src", "" );
+                            if (!vp.empty())
+                                throw InvalidParameters("Duplicate vertex program reference in technique \"" + name + "\"");
+                            vp = el->getAttributeValue("src", "");
                         } else if (el->tagName() == fpTag) {
-                            if ( !fp.empty() ) throw InvalidParameters(
-                                    "Duplicate fragment program reference in technique \""+name+"\"" );
-                            fp = el->getAttributeValue( "src", "" );
+                            if (!fp.empty())
+                                throw InvalidParameters("Duplicate fragment program reference in technique \"" + name + "\"");
+                            fp = el->getAttributeValue("src", "");
                         } else if (el->tagName() == tuTag) {
                             int target;
                             if (pass.type == Pass::ShaderPass)
-                                target = parseInt( el->getAttributeValue( "target", "" ), -1 );
+                                target = parseInt(el->getAttributeValue("target", ""), -1);
                             else
-                                target = parseInt( el->getAttributeValue( "target", "" ) );
-                            pass.addTextureUnit(
-                                el->getAttributeValue( "src", "" ),
-                                target,
-                                el->getAttributeValue( "default", "" ),
-                                el->getAttributeValue( "name", "" ),
-                                parseTexKind( el->getAttributeValue( "kind", "" ) ) );
-                            VSFileSystem::vs_dbg(2)
-                                << boost::format("Added texture unit #%1% \"%2%\"") %
-                                       pass.getNumTextureUnits() % el->getAttributeValue("name", "")
-                                << std::endl;
+                                target = parseInt(el->getAttributeValue("target", ""));
+                            pass.addTextureUnit(el->getAttributeValue("src", ""),
+                                                target,
+                                                el->getAttributeValue("default", ""),
+                                                el->getAttributeValue("name", ""),
+                                                parseTexKind(el->getAttributeValue("kind", "")));
+                            VSFileSystem::vs_dbg(2) << boost::format("Added texture unit #%1% \"%2%\"") % pass.getNumTextureUnits() %
+                                                           el->getAttributeValue("name", "")
+                                                    << std::endl;
                         } else if (el->tagName() == paramTag) {
                             float value[4];
-                            parseFloat4( el->getAttributeValue( "value", "" ), value );
+                            parseFloat4(el->getAttributeValue("value", ""), value);
                             pass.addShaderParam(
-                                el->getAttributeValue( "name", "" ),
-                                value,
-                                parseBool( el->getAttributeValue( "optional", "false" ) ) );
+                                el->getAttributeValue("name", ""), value, parseBool(el->getAttributeValue("optional", "false")));
                             VSFileSystem::vs_dbg(2)
                                 << boost::format("Added constant #%1% \"%2%\" with value "
                                                  "(%3$.2f,%4$.2f,%5$.2f,%6$.2f) as %7%") %
-                                       pass.getNumShaderParams() %
-                                       el->getAttributeValue("name", "") % value[0] % value[1] %
-                                       value[2] % value[3] %
-                                       (parseBool(el->getAttributeValue("optional", "false"))
-                                            ? "optional"
-                                            : "required")
+                                       pass.getNumShaderParams() % el->getAttributeValue("name", "") % value[0] % value[1] % value[2] %
+                                       value[3] % (parseBool(el->getAttributeValue("optional", "false")) ? "optional" : "required")
                                 << std::endl;
                         } else if (el->tagName() == autoParamTag) {
-                            pass.addShaderParam(
-                                el->getAttributeValue( "name", "" ),
-                                parseAutoParamSemantic( el->getAttributeValue( "semantic", "" ) ),
-                                parseBool( el->getAttributeValue( "optional", "false" ) ) );
+                            pass.addShaderParam(el->getAttributeValue("name", ""),
+                                                parseAutoParamSemantic(el->getAttributeValue("semantic", "")),
+                                                parseBool(el->getAttributeValue("optional", "false")));
                             VSFileSystem::vs_dbg(2)
-                                << boost::format(
-                                       "Added param #%1% \"%2%\" with semantic %3% as %4%") %
-                                       pass.getNumShaderParams() %
-                                       el->getAttributeValue("name", "") %
-                                       el->getAttributeValue("semantic", "") %
-                                       (parseBool(el->getAttributeValue("optional", "false"))
-                                            ? "optional"
-                                            : "required")
+                                << boost::format("Added param #%1% \"%2%\" with semantic %3% as %4%") % pass.getNumShaderParams() %
+                                       el->getAttributeValue("name", "") % el->getAttributeValue("semantic", "") %
+                                       (parseBool(el->getAttributeValue("optional", "false")) ? "optional" : "required")
                                 << std::endl;
                         } else {
-                            //TODO: Warn about unrecognized (hence ignored) tag
+                            // TODO: Warn about unrecognized (hence ignored) tag
                         }
                     }
                 }
                 if (pass.type == Pass::ShaderPass) {
-                    if ( vp.empty() )
-                        throw InvalidParameters( "Missing vertex program reference in technique \""+name+"\"" );
-                    if ( fp.empty() )
-                        throw InvalidParameters( "Missing fragment program reference in technique \""+name+"\"" );
-                    pass.setProgram( vp, fp );
+                    if (vp.empty())
+                        throw InvalidParameters("Missing vertex program reference in technique \"" + name + "\"");
+                    if (fp.empty())
+                        throw InvalidParameters("Missing fragment program reference in technique \"" + name + "\"");
+                    pass.setProgram(vp, fp);
                 }
             } else {
-                //TODO: Warn about unrecognized (hence ignored) tag
+                // TODO: Warn about unrecognized (hence ignored) tag
             }
         }
     }
 }
 
-Technique::Technique( const Technique &src ) :
-    name( src.name )
-    , fallback( src.fallback )
-    , compiled( false )
-    , programVersion( 0 )
-    , passes( src.passes )
+Technique::Technique(const Technique &src) : name(src.name), fallback(src.fallback), compiled(false), programVersion(0), passes(src.passes)
 {
     // Not much else to do
     // Compiled techniques are still valid, and setting any parameter
@@ -640,46 +626,43 @@ void Technique::compile()
     if (!compiled || (GFXGetProgramVersion() != programVersion)) {
         for (PassList::iterator it = passes.begin(); it != passes.end(); ++it)
             it->compile();
-        compiled = true;
+        compiled       = true;
         programVersion = GFXGetProgramVersion();
     }
 }
 
-typedef map< string, TechniquePtr >TechniqueMap;
-static TechniqueMap techniqueCache;
+typedef map<string, TechniquePtr> TechniqueMap;
+static TechniqueMap               techniqueCache;
 
-TechniquePtr Technique::getTechnique( const std::string &name )
+TechniquePtr Technique::getTechnique(const std::string &name)
 {
-    TechniqueMap::const_iterator it = techniqueCache.find( name );
-    if ( it != techniqueCache.end() ) {
+    TechniqueMap::const_iterator it = techniqueCache.find(name);
+    if (it != techniqueCache.end()) {
         return it->second;
     } else {
-        TechniquePtr ptr( new Technique( name ) );
-        while ( !ptr->isCompiled() ) {
+        TechniquePtr ptr(new Technique(name));
+        while (!ptr->isCompiled()) {
             try {
                 ptr->compile();
-                VSFileSystem::vs_fprintf( stdout,
-                                         "Compilation of technique %s successful\n",
-                                         ptr->getName().c_str() );
-            }
-            catch (ProgramCompileError e) {
+                VSFileSystem::vs_fprintf(stdout, "Compilation of technique %s successful\n", ptr->getName().c_str());
+            } catch (ProgramCompileError e) {
                 std::string fallback = ptr->getFallback();
-                VSFileSystem::vs_fprintf( stderr,
+                VSFileSystem::vs_fprintf(stderr,
                                          "Compilation of technique %s failed... trying %s\n"
                                          "Cause: %s\n",
                                          ptr->getName().c_str(),
                                          fallback.c_str(),
-                                         e.what() );
+                                         e.what());
                 if (!fallback.empty() && fallback != name)
-                    ptr = getTechnique( fallback );
+                    ptr = getTechnique(fallback);
                 else
                     break;
             }
         }
-        if ( ptr->isCompiled() )
+        if (ptr->isCompiled())
             techniqueCache[name] = ptr;
         else
-            throw InvalidParameters( "Could not compile any technique for \""+name+"\"" );
+            throw InvalidParameters("Could not compile any technique for \"" + name + "\"");
         return ptr;
     }
 }

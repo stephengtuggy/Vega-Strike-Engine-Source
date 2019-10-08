@@ -7,37 +7,31 @@
 namespace Radar
 {
 
-ViewArea::ViewArea()
-    : sprite(0)
+ViewArea::ViewArea() : sprite(0)
 {
 }
 
 void ViewArea::SetSprite(VSSprite *sprite)
 {
     this->sprite = sprite;
-    if (sprite)
-    {
+    if (sprite) {
         sprite->GetPosition(position.x, position.y);
         position.z = 0;
         sprite->GetSize(size.x, size.y);
         size.x = std::fabs(size.x);
         size.y = std::fabs(size.y);
         size.z = 0;
-    }
-    else
-    {
+    } else {
         position = Vector(0, 0, 0);
-        size = Vector(0, 0, 0);
+        size     = Vector(0, 0, 0);
     }
 }
 
-Vector ViewArea::Scale(const Vector& v) const
+Vector ViewArea::Scale(const Vector &v) const
 {
     assert(sprite);
 
-    return Vector(position.x + size.x / 2 * v.x,
-                  position.y + size.y / 2 * v.y,
-                  position.z + size.y / 2 * v.z);
+    return Vector(position.x + size.x / 2 * v.x, position.y + size.y / 2 * v.y, position.z + size.y / 2 * v.z);
 }
 
 GFXColor ViewArea::GetColor() const

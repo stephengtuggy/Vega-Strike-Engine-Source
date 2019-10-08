@@ -30,7 +30,7 @@
 
 FILEHandle::FILEHandle(const std::string &fname, const char perms[])
 {
-	file = fopen(fname.c_str(), perms);
-	if (!file)
-		throw errno;
+    file = fopen(fname.c_str(), perms);
+    if (!file)
+        throw errno;
 }

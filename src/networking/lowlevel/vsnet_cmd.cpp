@@ -16,76 +16,76 @@
 
 #include "vsnet_cmd.h"
 
-std::ostream&operator<<( std::ostream &ostr, Cmd cmd )
+std::ostream &operator<<(std::ostream &ostr, Cmd cmd)
 {
-    ostr<<displayCmd( cmd );
+    ostr << displayCmd(cmd);
     return ostr;
 }
 
-#define CASE( a ) \
-case a:           \
-    return #a; break;
+#define CASE(a)                                                                                                                            \
+    case a:                                                                                                                                \
+        return #a;                                                                                                                         \
+        break;
 
-const char * displayCmd( Cmd cmd )
+const char *displayCmd(Cmd cmd)
 {
-    switch (cmd)
-    {
-        CASE( CMD_LOGIN )
-        CASE( CMD_LOGOUT )
-        CASE( CMD_POSUPDATE )
-        CASE( CMD_ADDCLIENT )
-        CASE( CMD_PING )
-        CASE( CMD_SNAPSHOT )
-        CASE( CMD_SERVERTIME )
+    switch (cmd) {
+        CASE(CMD_LOGIN)
+        CASE(CMD_LOGOUT)
+        CASE(CMD_POSUPDATE)
+        CASE(CMD_ADDCLIENT)
+        CASE(CMD_PING)
+        CASE(CMD_SNAPSHOT)
+        CASE(CMD_SERVERTIME)
 
-        CASE( CMD_CREATECHAR )
-        CASE( CMD_LOCATIONS )
-        CASE( LOGIN_ERROR )
-        CASE( LOGIN_ACCEPT )
-        CASE( LOGIN_DATA )
-        CASE( LOGIN_ALREADY )
-        CASE( LOGIN_NEW )
-        CASE( CMD_RESPAWN )
-        CASE( CMD_RESYNCACCOUNTS )
-        CASE( CMD_SAVEACCOUNTS )
+        CASE(CMD_CREATECHAR)
+        CASE(CMD_LOCATIONS)
+        CASE(LOGIN_ERROR)
+        CASE(LOGIN_ACCEPT)
+        CASE(LOGIN_DATA)
+        CASE(LOGIN_ALREADY)
+        CASE(LOGIN_NEW)
+        CASE(CMD_RESPAWN)
+        CASE(CMD_RESYNCACCOUNTS)
+        CASE(CMD_SAVEACCOUNTS)
 
-        CASE( CMD_SNAPCARGO )
-        CASE( CMD_CARGOUPGRADE )
-        CASE( CMD_CREDITS )
-        CASE( CMD_FIREREQUEST )
-        CASE( CMD_UNFIREREQUEST )
-        CASE( CMD_TARGET )
-        CASE( CMD_SCAN )
-        CASE( CMD_DAMAGE )
-        CASE( CMD_SNAPDAMAGE )
-        CASE( CMD_KILL )
-        CASE( CMD_JUMP )
-        CASE( CMD_ASKFILE )
-        CASE( CMD_DOWNLOAD )
-        CASE( CMD_SOUNDSAMPLE )
-        CASE( CMD_TXTMESSAGE )
-        CASE( CMD_SECSNDSAMPLE )
-        CASE( CMD_SECMESSAGE )
-        CASE( CMD_STARTNETCOMM )
-        CASE( CMD_STOPNETCOMM )
-        CASE( CMD_DOCK )
-        CASE( CMD_UNDOCK )
+        CASE(CMD_SNAPCARGO)
+        CASE(CMD_CARGOUPGRADE)
+        CASE(CMD_CREDITS)
+        CASE(CMD_FIREREQUEST)
+        CASE(CMD_UNFIREREQUEST)
+        CASE(CMD_TARGET)
+        CASE(CMD_SCAN)
+        CASE(CMD_DAMAGE)
+        CASE(CMD_SNAPDAMAGE)
+        CASE(CMD_KILL)
+        CASE(CMD_JUMP)
+        CASE(CMD_ASKFILE)
+        CASE(CMD_DOWNLOAD)
+        CASE(CMD_SOUNDSAMPLE)
+        CASE(CMD_TXTMESSAGE)
+        CASE(CMD_SECSNDSAMPLE)
+        CASE(CMD_SECMESSAGE)
+        CASE(CMD_STARTNETCOMM)
+        CASE(CMD_STOPNETCOMM)
+        CASE(CMD_DOCK)
+        CASE(CMD_UNDOCK)
 
-        CASE( CMD_NEWSUBSCRIBE )
+        CASE(CMD_NEWSUBSCRIBE)
 
-        CASE( CMD_ENTERCLIENT )
-        CASE( CMD_EXITCLIENT )
-        CASE( CMD_ADDEDYOU )
-        CASE( CMD_DISCONNECT )
-        CASE( CMD_CONNECT )
-        CASE( CMD_CHOOSESHIP )
+        CASE(CMD_ENTERCLIENT)
+        CASE(CMD_EXITCLIENT)
+        CASE(CMD_ADDEDYOU)
+        CASE(CMD_DISCONNECT)
+        CASE(CMD_CONNECT)
+        CASE(CMD_CHOOSESHIP)
 
-        CASE( CMD_SAVEDATA )
-        CASE( CMD_MISSION )
-        CASE( CMD_CUSTOM )
-        CASE( CMD_SHIPDEALER )
-        CASE( CMD_COMM )
-    //CASE( CMD_ACK          )
+        CASE(CMD_SAVEDATA)
+        CASE(CMD_MISSION)
+        CASE(CMD_CUSTOM)
+        CASE(CMD_SHIPDEALER)
+        CASE(CMD_COMM)
+    // CASE( CMD_ACK          )
     default:
         return "CMD_UNKNOWN";
 
@@ -94,4 +94,3 @@ const char * displayCmd( Cmd cmd )
 }
 
 #undef CASE
-

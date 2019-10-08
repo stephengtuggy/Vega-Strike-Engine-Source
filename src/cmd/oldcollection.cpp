@@ -6,14 +6,12 @@
 #include "unit_generic.h"
 #endif
 
-UnitCollection::UnitListNode::UnitListNode( Unit *unit ) : unit( unit )
-    , next( NULL )
+UnitCollection::UnitListNode::UnitListNode(Unit *unit) : unit(unit), next(NULL)
 {
     if (unit)
         unit->Ref();
 }
-UnitCollection::UnitListNode::UnitListNode( Unit *unit, UnitListNode *next ) : unit( unit )
-    , next( next )
+UnitCollection::UnitListNode::UnitListNode(Unit *unit, UnitListNode *next) : unit(unit), next(next)
 {
     if (unit)
         unit->Ref();
@@ -32,105 +30,104 @@ void UnitCollection::destr()
     while (u->next) {
         tmp     = u->next;
         u->next = u->next->next;
-        PushUnusedNode( tmp );
+        PushUnusedNode(tmp);
     }
     u->unit = NULL;
     u->next = NULL;
-    PushUnusedNode( u );
+    PushUnusedNode(u);
 }
 
-void* UnitCollection::PushUnusedNode( UnitListNode *node )
+void *UnitCollection::PushUnusedNode(UnitListNode *node)
 {
-    static UnitListNode cat( NULL, NULL );
-    static UnitListNode dog( NULL, &cat );
-    static bool cachunk = true;
+    static UnitListNode cat(NULL, NULL);
+    static UnitListNode dog(NULL, &cat);
+    static bool         cachunk = true;
     if (cachunk)
         cachunk = false;
-    //VSFileSystem::vs_fprintf (stderr,"%x %x",&dog,&cat);
-    static std::vector< UnitCollection::UnitListNode* >dogpile;
+    // VSFileSystem::vs_fprintf (stderr,"%x %x",&dog,&cat);
+    static std::vector<UnitCollection::UnitListNode *> dogpile;
     if (node == NULL) {
         return &dogpile;
     } else {
         node->next = &dog;
-        dogpile.push_back( node );
+        dogpile.push_back(node);
     }
     return NULL;
 }
 void UnitCollection::FreeUnusedNodes()
 {
-    static std::vector< UnitCollection::UnitListNode* >bakdogpile;
-    std::vector< UnitCollection::UnitListNode* > *dogpile = (std::vector< UnitCollection::UnitListNode* >*)PushUnusedNode(
-        NULL );
-    bakdogpile.swap( *dogpile );
-    while ( !dogpile->empty() ) {
+    static std::vector<UnitCollection::UnitListNode *> bakdogpile;
+    std::vector<UnitCollection::UnitListNode *> *      dogpile = (std::vector<UnitCollection::UnitListNode *> *)PushUnusedNode(NULL);
+    bakdogpile.swap(*dogpile);
+    while (!dogpile->empty()) {
         delete dogpile->back();
         dogpile->pop_back();
     }
 }
-void UnitCollection::UnitIterator::moveBefore( UnitCollection &otherList )
+void UnitCollection::UnitIterator::moveBefore(UnitCollection &otherList)
 {
     if (pos->next->unit) {
         UnitListNode *tmp = pos->next->next;
-        otherList.prepend( pos->next );
+        otherList.prepend(pos->next);
         pos->next = tmp;
     } else {
-        assert( 0 );
+        assert(0);
     }
 }
-void UnitCollection::prepend( UnitIterator *iter )
+void UnitCollection::prepend(UnitIterator *iter)
 {
     UnitListNode *n = u;
-    Unit *tmp;
-    while ( ( tmp = iter->current() ) ) {
-        //iter->current checks for killed()
-        n->next = new UnitListNode( tmp, n->next );
+    Unit *        tmp;
+    while ((tmp = iter->current())) {
+        // iter->current checks for killed()
+        n->next = new UnitListNode(tmp, n->next);
         iter->advance();
     }
 }
-void UnitCollection::append( UnitIterator *iter )
+void UnitCollection::append(UnitIterator *iter)
 {
     UnitListNode *n = u;
     while (n->next->unit != NULL)
         n = n->next;
     Unit *tmp;
-    while ( ( tmp = iter->current() ) ) {
-        n->next = new UnitListNode( tmp, n->next );
-        n = n->next;
+    while ((tmp = iter->current())) {
+        n->next = new UnitListNode(tmp, n->next);
+        n       = n->next;
         iter->advance();
     }
 }
-void UnitCollection::append( Unit *unit )
+void UnitCollection::append(Unit *unit)
 {
     UnitListNode *n = u;
     while (n->next->unit != NULL)
         n = n->next;
-    n->next = new UnitListNode( unit, n->next );
+    n->next = new UnitListNode(unit, n->next);
 }
-void UnitCollection::UnitListNode::PostInsert( Unit *unit )
+void UnitCollection::UnitListNode::PostInsert(Unit *unit)
 {
     if (next->unit != NULL)
-        next->next = new UnitListNode( unit, next->next );
+        next->next = new UnitListNode(unit, next->next);
     else
-        next = new UnitListNode( unit, next );
+        next = new UnitListNode(unit, next);
 }
-void UnitCollection::UnitIterator::postinsert( Unit *unit )
+void UnitCollection::UnitIterator::postinsert(Unit *unit)
 {
-    pos->PostInsert( unit );
+    pos->PostInsert(unit);
 }
-void UnitCollection::FastIterator::postinsert( Unit *unit )
+void UnitCollection::FastIterator::postinsert(Unit *unit)
 {
-    pos->PostInsert( unit );
+    pos->PostInsert(unit);
 }
 void UnitCollection::UnitListNode::Remove()
 {
     if (next->unit) {
         UnitListNode *tmp = next->next;
-        //delete next; //takes care of unref! And causes a shitload of bugs
-        //concurrent lists, man
-        PushUnusedNode( next );
+        // delete next; //takes care of unref! And causes a shitload of bugs
+        // concurrent lists, man
+        PushUnusedNode(next);
         next = tmp;
     } else {
-        assert( 0 );
+        assert(0);
     }
 }
 void UnitCollection::UnitIterator::remove()
@@ -148,43 +145,44 @@ void UnitCollection::ConstIterator::GetNextValidUnit()
         pos = pos->next;
 }
 
-const UnitCollection& UnitCollection::operator=( const UnitCollection &uc )
+const UnitCollection &UnitCollection::operator=(const UnitCollection &uc)
 {
 #ifdef _DEBUG
-    printf( "warning could cause problems with concurrent lists. Make sure no one is traversing gotten list" );
+    printf("warning could cause problems with concurrent lists. Make sure no one is traversing gotten list");
 #endif
     destr();
     init();
-    un_iter ui = createIterator();
-    const UnitListNode *n = uc.u;
+    un_iter             ui = createIterator();
+    const UnitListNode *n  = uc.u;
     while (n) {
         if (n->unit) {
-            ui.postinsert( n->unit );
+            ui.postinsert(n->unit);
             ++ui;
         }
         n = n->next;
     }
     return uc;
 }
-UnitCollection::UnitCollection( const UnitCollection &uc ) : u( NULL )
+UnitCollection::UnitCollection(const UnitCollection &uc) : u(NULL)
 {
     init();
-    un_iter ui = createIterator();
-    const UnitListNode *n = uc.u;
+    un_iter             ui = createIterator();
+    const UnitListNode *n  = uc.u;
     while (n) {
         if (n->unit) {
-            ui.postinsert( n->unit );
+            ui.postinsert(n->unit);
             ++ui;
         }
         n = n->next;
     }
 }
 
-bool UnitCollection::contains( const Unit *unit ) const
+bool UnitCollection::contains(const Unit *unit) const
 {
-    if ( empty() ) return false;
+    if (empty())
+        return false;
     ConstFastIterator it = constFastIterator();
-    while ( !it.isDone() ) {
+    while (!it.isDone()) {
         if (it.current() == unit)
             return true;
 
@@ -194,12 +192,13 @@ bool UnitCollection::contains( const Unit *unit ) const
     return false;
 }
 
-bool UnitCollection::remove( const Unit *unit )
+bool UnitCollection::remove(const Unit *unit)
 {
     bool res = false;
-    if ( empty() ) return false;
+    if (empty())
+        return false;
     FastIterator it = fastIterator();
-    while ( !it.isDone() ) {
+    while (!it.isDone()) {
         if (it.current() == unit)
             it.remove(), res = true;
 
@@ -211,9 +210,8 @@ bool UnitCollection::remove( const Unit *unit )
 
 void UnitCollection::cleanup()
 {
-    //NOTE: advance() will be cleaning up the list by itself
+    // NOTE: advance() will be cleaning up the list by itself
     un_iter ui = createIterator();
-    while ( !ui.isDone() )
+    while (!ui.isDone())
         ui.advance();
 }
-

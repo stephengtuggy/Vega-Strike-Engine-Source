@@ -11,7 +11,6 @@
 // Precompiled Header
 #include "Stdafx.h"
 
-
 using namespace Opcode;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -24,18 +23,18 @@ using namespace Opcode;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 udword Alignment(udword address)
 {
-	// Returns 0 for null addresses
-	if(!address) return 0;
+    // Returns 0 for null addresses
+    if (!address)
+        return 0;
 
-	// Test all bits
-	udword Align = 1;
-	for(udword i=1;i<32;i++)
-	{
-		// Returns as soon as the alignment is broken
-		if(address&Align)	return Align;
-		Align<<=1;
-	}
-	// Here all bits are null, except the highest one (else the address would be null)
-	return Align;
+    // Test all bits
+    udword Align = 1;
+    for (udword i = 1; i < 32; i++) {
+        // Returns as soon as the alignment is broken
+        if (address & Align)
+            return Align;
+        Align <<= 1;
+    }
+    // Here all bits are null, except the highest one (else the address would be null)
+    return Align;
 }
-

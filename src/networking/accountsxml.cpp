@@ -35,9 +35,9 @@
 #include <expat.h>
 
 using std::vector;
-using XMLSupport::EnumMap;
 using XMLSupport::Attribute;
 using XMLSupport::AttributeList;
+using XMLSupport::EnumMap;
 
 using namespace VSFileSystem;
 
@@ -49,17 +49,17 @@ using namespace VSFileSystem;
 
 void Account::display()
 {
-    cout<<"Serial #: "<<serial<<endl;
-    cout<<"Name: "<<callsign<<endl;
-    cout<<"Pass: "<<passwd<<endl;
+    cout << "Serial #: " << serial << endl;
+    cout << "Name: " << callsign << endl;
+    cout << "Pass: " << passwd << endl;
     if (this->type == 0)
-        cout<<"Type : UNKNOWN"<<endl;
+        cout << "Type : UNKNOWN" << endl;
     else if (this->type == 1)
-        cout<<"Type : PLAYER"<<endl;
+        cout << "Type : PLAYER" << endl;
     else if (this->type == 2)
-        cout<<"Type : ADMIN"<<endl;
+        cout << "Type : ADMIN" << endl;
     else
-        cout<<"Type : ERROR"<<endl;
+        cout << "Type : ERROR" << endl;
 }
 
 namespace accountXML
@@ -70,13 +70,12 @@ namespace accountXML
  *************************************************************
  */
 
-enum Names
-{
+enum Names {
     UNKNOWN,
     PLAYER,
     ADMIN,
     ACCOUNTS,
-    //attributes
+    // attributes
     NAME,
     PASSWORD,
     SERIAL,
@@ -85,53 +84,50 @@ enum Names
 };
 
 const EnumMap::Pair element_names[] = {
-    EnumMap::Pair( "UNKNOWN",  UNKNOWN ), //don't add anything until below Admin so it maps to enum ACCOUNT_TYPE
-    EnumMap::Pair( "PLAYER",   PLAYER ),
-    EnumMap::Pair( "ADMIN",    ADMIN ),
-    EnumMap::Pair( "ACCOUNTS", ACCOUNTS )
-};
+    EnumMap::Pair("UNKNOWN", UNKNOWN), // don't add anything until below Admin so it maps to enum ACCOUNT_TYPE
+    EnumMap::Pair("PLAYER", PLAYER),
+    EnumMap::Pair("ADMIN", ADMIN),
+    EnumMap::Pair("ACCOUNTS", ACCOUNTS)};
 
 const EnumMap::Pair attribute_names[] = {
-    EnumMap::Pair( "UNKNOWN",    UNKNOWN ),
-    EnumMap::Pair( "NAME",       NAME ),
-    EnumMap::Pair( "PASSWORD",   PASSWORD ),
-    EnumMap::Pair( "SERVERIP",   SERVERIP ),
-    EnumMap::Pair( "SERVERPORT", SERVERPORT ),
+    EnumMap::Pair("UNKNOWN", UNKNOWN),
+    EnumMap::Pair("NAME", NAME),
+    EnumMap::Pair("PASSWORD", PASSWORD),
+    EnumMap::Pair("SERVERIP", SERVERIP),
+    EnumMap::Pair("SERVERPORT", SERVERPORT),
 };
 
-const EnumMap element_map( element_names, 4 );
-const EnumMap attribute_map( attribute_names, 5 );
-string  curname;
-string  file;
+const EnumMap element_map(element_names, 4);
+const EnumMap attribute_map(attribute_names, 5);
+string        curname;
+string        file;
 
 Account tmpacct;
-//Account acct;
-int     level = -1;
-vsUMap< string, Account* >accounttable;
-int     nbaccounts = 0;
+// Account acct;
+int                       level = -1;
+vsUMap<string, Account *> accounttable;
+int                       nbaccounts = 0;
 
-void beginElement( void *userData, const XML_Char *name, const XML_Char **atts )
+void beginElement(void *userData, const XML_Char *name, const XML_Char **atts)
 {
-    AttributeList attributes( atts );
-    tmpacct = Account();
-    Names elem = (Names) element_map.lookup( string( name ) );
+    AttributeList attributes(atts);
+    tmpacct    = Account();
+    Names elem = (Names)element_map.lookup(string(name));
 
     AttributeList::const_iterator iter;
-    switch (elem)
-    {
+    switch (elem) {
     case UNKNOWN:
         tmpacct.type = Account::UNKNOWN;
         break;
     case ACCOUNTS:
-        assert( level == -1 );
+        assert(level == -1);
         level++;
         break;
     case PLAYER:
     case ADMIN:
-        assert( level == 0 );
+        assert(level == 0);
         level++;
-        switch (elem)
-        {
+        switch (elem) {
         case PLAYER:
             tmpacct.type = Account::PLAYER;
             break;
@@ -143,25 +139,24 @@ void beginElement( void *userData, const XML_Char *name, const XML_Char **atts )
             break;
         }
         for (iter = attributes.begin(); iter != attributes.end(); iter++) {
-            switch ( attribute_map.lookup( (*iter).name ) )
-            {
+            switch (attribute_map.lookup((*iter).name)) {
             case UNKNOWN:
-                VSFileSystem::vs_fprintf( stderr, "Unknown Account Element %s\n", (*iter).name.c_str() );
+                VSFileSystem::vs_fprintf(stderr, "Unknown Account Element %s\n", (*iter).name.c_str());
                 break;
             case NAME:
-                tmpacct.callsign   = (*iter).value;
+                tmpacct.callsign = (*iter).value;
                 break;
             case PASSWORD:
-                tmpacct.passwd     = (*iter).value;
+                tmpacct.passwd = (*iter).value;
                 break;
             case SERVERIP:
-                tmpacct.serverip   = (*iter).value;
+                tmpacct.serverip = (*iter).value;
                 break;
             case SERVERPORT:
                 tmpacct.serverport = (*iter).value;
                 break;
             default:
-                assert( 0 );
+                assert(0);
                 break;
             }
         }
@@ -175,23 +170,22 @@ void beginElement( void *userData, const XML_Char *name, const XML_Char **atts )
     }
 }
 
-void endElement( void *userData, const XML_Char *name )
+void endElement(void *userData, const XML_Char *name)
 {
-    Names elem = (Names) element_map.lookup( name );
-    switch (elem)
-    {
+    Names elem = (Names)element_map.lookup(name);
+    switch (elem) {
     case UNKNOWN:
         break;
     case ACCOUNTS:
-        assert( level == 0 );
+        assert(level == 0);
         level--;
         break;
     case PLAYER:
     case ADMIN:
-        assert( level == 1 );
+        assert(level == 1);
         level--;
-        if (!accounttable[strtoupper( tmpacct.callsign )]) {
-            accounttable[strtoupper( tmpacct.callsign )] = new Account( tmpacct );
+        if (!accounttable[strtoupper(tmpacct.callsign)]) {
+            accounttable[strtoupper(tmpacct.callsign)] = new Account(tmpacct);
             nbaccounts++;
         }
         break;
@@ -201,75 +195,68 @@ void endElement( void *userData, const XML_Char *name )
 }
 
 //
-}
+} // namespace accountXML
 
 using namespace accountXML;
 
-vector< Account* >getAllAccounts()
+vector<Account *> getAllAccounts()
 {
-    vector< Account* >retval;
-    for (vsUMap< string, Account* >::iterator iter = accounttable.begin();
-         iter != accounttable.end();
-         ++iter)
+    vector<Account *> retval;
+    for (vsUMap<string, Account *>::iterator iter = accounttable.begin(); iter != accounttable.end(); ++iter)
         if (iter->second)
-            retval.push_back( iter->second );
+            retval.push_back(iter->second);
     return retval;
 }
 
-Account * getAcctSerial( ObjSerial ser )
+Account *getAcctSerial(ObjSerial ser)
 {
-    for (vsUMap< string, Account* >::iterator iter = accounttable.begin();
-         iter != accounttable.end();
-         ++iter)
+    for (vsUMap<string, Account *>::iterator iter = accounttable.begin(); iter != accounttable.end(); ++iter)
         if (iter->second)
             if (iter->second->getSerial() == ser)
                 return iter->second;
     return NULL;
 }
 
-Account * getAcctAddress( SOCKETALT ser )
+Account *getAcctAddress(SOCKETALT ser)
 {
-    for (vsUMap< string, Account* >::iterator iter = accounttable.begin();
-         iter != accounttable.end();
-         ++iter)
+    for (vsUMap<string, Account *>::iterator iter = accounttable.begin(); iter != accounttable.end(); ++iter)
         if (iter->second)
-            if ( iter->second->getSocket().sameAddress( ser ) )
+            if (iter->second->getSocket().sameAddress(ser))
                 return iter->second;
     return NULL;
 }
 
-void LoadAccounts( const char *filename )
+void LoadAccounts(const char *filename)
 {
     file = filename;
-    VSFile      f;
-    VSError     err    = f.OpenReadOnly( filename, AccountFile );
+    VSFile  f;
+    VSError err = f.OpenReadOnly(filename, AccountFile);
     if (err > Ok)
         return;
-    XML_Parser  parser = XML_ParserCreate( NULL );
-    XML_SetElementHandler( parser, &beginElement, &endElement );
-    std::string data( f.ReadFull() );
-    XML_Parse( parser, data.c_str(), f.Size(), 1 );
+    XML_Parser parser = XML_ParserCreate(NULL);
+    XML_SetElementHandler(parser, &beginElement, &endElement);
+    std::string data(f.ReadFull());
+    XML_Parse(parser, data.c_str(), f.Size(), 1);
     f.Close();
-    XML_ParserFree( parser );
+    XML_ParserFree(parser);
 }
 
-void addAcct( string key, Account *acct )
+void addAcct(string key, Account *acct)
 {
-    accounttable[strtoupper( key )] = acct;
+    accounttable[strtoupper(key)] = acct;
 }
 
-Account * getAcctNoReload( const string &key )
+Account *getAcctNoReload(const string &key)
 {
-    return accounttable[strtoupper( key )];
+    return accounttable[strtoupper(key)];
 }
 
-Account * getAcctTemplate( const string &key )
+Account *getAcctTemplate(const string &key)
 {
-    Account *acct = accounttable[strtoupper( key )];
+    Account *acct = accounttable[strtoupper(key)];
     if (acct == NULL) {
-        LoadAccounts( file.c_str() );
-        acct = accounttable[strtoupper( key )];
+        LoadAccounts(file.c_str());
+        acct = accounttable[strtoupper(key)];
     }
     return acct;
 }
-

@@ -1,19 +1,19 @@
 /***************************************************************************
-*                          common.cpp  -  description
-*                             -------------------
-*    begin                : Wed Jun 26 2002
-*    copyright            : (C) 2002 by jhunt
-*    email                : jhunt@jaja
-***************************************************************************/
+ *                          common.cpp  -  description
+ *                             -------------------
+ *    begin                : Wed Jun 26 2002
+ *    copyright            : (C) 2002 by jhunt
+ *    email                : jhunt@jaja
+ ***************************************************************************/
 
 /***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
 #include <string>
 #include <stdio.h>
 
@@ -26,12 +26,12 @@ using std::string;
 
 #ifndef _WIN32
 
-//Directories to look for data
+// Directories to look for data
 const char *datadirs[] = {
     ".",
     "../data",
     "../../data",
-//Added for MacOS X
+    // Added for MacOS X
     "../Resources/data",
 #ifdef DATA_DIR
     DATA_DIR,
@@ -56,31 +56,31 @@ string getdatadir()
 {
     string datadir;
     char   tmppwd[65536];
-    if (NULL == getcwd( tmppwd, 32768 ))
+    if (NULL == getcwd(tmppwd, 32768))
         tmppwd[0] = '\0';
     unsigned int i = 0;
-    for (; i < ( sizeof (datadirs)/sizeof (datadirs[0]) ); i++) {
-        if( chdir( datadirs[i] ) )
+    for (; i < (sizeof(datadirs) / sizeof(datadirs[0])); i++) {
+        if (chdir(datadirs[i]))
             continue;
-        FILE *tfp = fopen( "vegastrike.config", "r" );
+        FILE *tfp = fopen("vegastrike.config", "r");
         if (tfp) {
-            fclose( tfp );
-            //We have found the data directory
+            fclose(tfp);
+            // We have found the data directory
             break;
         }
     }
-    if ( i >= sizeof (datadirs)/sizeof (datadirs[0]) ) {
-        printf( "Unable to find data directory\n" );
-        for (i = 0; i < ( sizeof (datadirs)/sizeof (datadirs[0]) ); i++)
-            printf( "Tried %s\n", datadirs[i] );
+    if (i >= sizeof(datadirs) / sizeof(datadirs[0])) {
+        printf("Unable to find data directory\n");
+        for (i = 0; i < (sizeof(datadirs) / sizeof(datadirs[0])); i++)
+            printf("Tried %s\n", datadirs[i]);
         datadir = tmppwd;
-        if( chdir( tmppwd ) )
-            printf( "Unable to set current directory to data directory\n" );
+        if (chdir(tmppwd))
+            printf("Unable to set current directory to data directory\n");
     }
-    //Set data dir
+    // Set data dir
     else if (datadirs[i][0] != '/') {
-        //Was a relative path
-        datadir  = tmppwd;
+        // Was a relative path
+        datadir = tmppwd;
         datadir += '/';
         datadir += datadirs[i];
     } else {
@@ -90,4 +90,3 @@ string getdatadir()
 }
 
 #endif //!_WIN32
-

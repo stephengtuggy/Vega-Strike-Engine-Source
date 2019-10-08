@@ -6,7 +6,8 @@
 #include <vector>
 #include <string>
 #include <set>
-//no sane programmer has a max size... but this is late...and you can set the thing...be aware that a bad datafile could crash your computer
+// no sane programmer has a max size... but this is late...and you can set the thing...be aware that a bad datafile could crash your
+// computer
 
 #define MAXSIZE 2048
 
@@ -14,18 +15,20 @@ using namespace std;
 
 class Averaging
 {
-public:
-    vector< int >samples;
-    Averaging() {}
-    Averaging&operator+=( int a )
+  public:
+    vector<int> samples;
+    Averaging()
     {
-        samples.push_back( a );
+    }
+    Averaging &operator+=(int a)
+    {
+        samples.push_back(a);
         return *this;
     }
     float spread()
     {
-        int min = -1;
-        int max = -1;
+        int min       = -1;
+        int max       = -1;
         int zerocount = 0;
         for (int i = 0; i < samples.size(); ++i) {
             if (samples[i] == 0) {
@@ -37,22 +40,22 @@ public:
                     max = samples[i];
             }
         }
-        //printf ("maxmin %d %d\n",max,min);
+        // printf ("maxmin %d %d\n",max,min);
         if (zerocount == 0) {
             if (max == min && samples.size() <= 1)
-                return .25*max;
+                return .25 * max;
             if (max == min)
-                return .1*max;
-            return max-min;
+                return .1 * max;
+            return max - min;
         } else {
-            return max*2;
+            return max * 2;
         }
     }
     float realaverage()
     {
         float ave = 0;
         for (int i = 0; i < samples.size(); ++i)
-            ave += samples[i]/(float) samples.size();
+            ave += samples[i] / (float)samples.size();
         return ave;
     }
     float average()
@@ -62,24 +65,24 @@ public:
             if (samples[i] == 0)
                 return 0;
         for (int i = 0; i < samples.size(); ++i)
-            ave += samples[i]/(float) samples.size();
+            ave += samples[i] / (float)samples.size();
         return ave;
     }
 };
 
-void merge( map< string, Averaging > &inout, map< string, Averaging >in )
+void merge(map<string, Averaging> &inout, map<string, Averaging> in)
 {
-    for (map< string, Averaging >::iterator i = in.begin(); i != in.end(); ++i)
+    for (map<string, Averaging>::iterator i = in.begin(); i != in.end(); ++i)
         for (int j = 0; j < i->second.samples.size(); ++j)
             inout[i->first] += i->second.samples[j];
 }
-map< string, string >basekey;
-map< string, map< string, Averaging > >total;
-int main( int argc, char **argv )
+map<string, string>                 basekey;
+map<string, map<string, Averaging>> total;
+int                                 main(int argc, char **argv)
 {
     std::string arg;
     if (argc < 2)
-        fprintf( stderr, "Usage: ./a.out csvfile pleasricultural_name\n" );
+        fprintf(stderr, "Usage: ./a.out csvfile pleasricultural_name\n");
     if (argc == 2)
         arg = "agricultural_planets";
     else
@@ -98,7 +101,7 @@ int main( int argc, char **argv )
     basekey["Burton"]             = "agricultural_planets";
     basekey["Drake"]              = "mining_base__pirates";
     basekey["Edinburg"]           = "refinery";
-    basekey["Edom"] = "agricultural_planets";
+    basekey["Edom"]               = "agricultural_planets";
     basekey["Palan"]              = "agricultural_planets";
     basekey["Elysia"]             = "agricultural_planets";
     basekey["Erewhon"]            = "agricultural_planets";
@@ -136,7 +139,7 @@ int main( int argc, char **argv )
     basekey["Romulus"]            = "mining_base";
     basekey["Rygannon"]           = "mining_base";
     basekey["Saratov"]            = "mining_base";
-    basekey["Siva"] = "agricultural_planets";
+    basekey["Siva"]               = "agricultural_planets";
     basekey["Speke"]              = "pleasure_planets";
     basekey["Surtur"]             = "agricultural_planets";
     basekey["Thisbury"]           = "refinery";
@@ -146,77 +149,69 @@ int main( int argc, char **argv )
     basekey["Victoria"]           = "agricultural_planets";
     basekey["Vishnu"]             = "mining_base";
     basekey["Wickerton"]          = "refinery";
-    FILE  *fp = fopen( argv[1], "r" );
-    char   name[MAXSIZE];
-    char   field[MAXSIZE];
-    char   end[MAXSIZE];
-    map< string, Averaging >base;
-    set< string >cargotypes;
-    string key;
-    while (fgets( end, MAXSIZE, fp ) != NULL) {
-        if ( end == string( ",,\n" ) ) {
+    FILE *                 fp     = fopen(argv[1], "r");
+    char                   name[MAXSIZE];
+    char                   field[MAXSIZE];
+    char                   end[MAXSIZE];
+    map<string, Averaging> base;
+    set<string>            cargotypes;
+    string                 key;
+    while (fgets(end, MAXSIZE, fp) != NULL) {
+        if (end == string(",,\n")) {
             int maxsamples = 0;
-            for (map< string, Averaging >::iterator i = base.begin();
-                 i != base.end();
-                 ++i) {
+            for (map<string, Averaging>::iterator i = base.begin(); i != base.end(); ++i) {
                 int tmp = i->second.samples.size();
                 if (tmp > maxsamples)
                     maxsamples = tmp;
             }
-            for (map< string, Averaging >::iterator i = base.begin();
-                 i != base.end();
-                 ++i)
+            for (map<string, Averaging>::iterator i = base.begin(); i != base.end(); ++i)
                 while (i->second.samples.size() < maxsamples)
                     i->second += 0;
-            merge( total[key], base );
-            base = map< string, Averaging > ();
+            merge(total[key], base);
+            base = map<string, Averaging>();
             key  = "";
-            while (fgets( field, MAXSIZE, fp ) != NULL)
-                if ( field != string( ",,\n" ) ) {
-                    sscanf( field, "%s", end );
+            while (fgets(field, MAXSIZE, fp) != NULL)
+                if (field != string(",,\n")) {
+                    sscanf(field, "%s", end);
                     string tmp = end;
-                    key  = tmp.substr( 0, tmp.find( "," ) );
+                    key        = tmp.substr(0, tmp.find(","));
                     if (basekey[key] == "")
-                        printf( "Key Lookup :%s:\n", key.c_str() );
+                        printf("Key Lookup :%s:\n", key.c_str());
                     key  = (basekey[key] == "") ? key : basekey[key];
-                    base = map< string, Averaging > ();
+                    base = map<string, Averaging>();
                     break;
                 }
         } else {
             int   quant, price;
-            char *firstcomma = strstr( end, "," );
+            char *firstcomma = strstr(end, ",");
             if (firstcomma) {
-                char *secondcomma = strstr( firstcomma+1, "," );
+                char *secondcomma = strstr(firstcomma + 1, ",");
                 if (secondcomma) {
                     *firstcomma++  = '\0';
                     *secondcomma++ = '\0';
-                    //printf ("Have %s %s\n",end,firstcomma);
-                    base[end] += atoi( firstcomma );
-                    cargotypes.insert( end );
+                    // printf ("Have %s %s\n",end,firstcomma);
+                    base[end] += atoi(firstcomma);
+                    cargotypes.insert(end);
                 }
             }
         }
     }
-    for (set< string >::iterator j = cargotypes.begin(); j != cargotypes.end(); ++j) {
-        cout<<", "<<*j;
-        cout<<", "<<*j<<"_MaxMinusMinOver2";
+    for (set<string>::iterator j = cargotypes.begin(); j != cargotypes.end(); ++j) {
+        cout << ", " << *j;
+        cout << ", " << *j << "_MaxMinusMinOver2";
     }
-    cout<<endl;
-    for (map< string, map< string, Averaging > >::iterator i = total.begin(); i != total.end(); ++i) {
-        cout<<i->first;
-        for (set< string >::iterator j = cargotypes.begin(); j != cargotypes.end(); ++j) {
-            if ( i->second.find( *j ) != i->second.end() ) {
-                cout<<","
-                    <<i->second[*j].average()
-                    <<","
-                    <<i->second[*j].spread()/2;
+    cout << endl;
+    for (map<string, map<string, Averaging>>::iterator i = total.begin(); i != total.end(); ++i) {
+        cout << i->first;
+        for (set<string>::iterator j = cargotypes.begin(); j != cargotypes.end(); ++j) {
+            if (i->second.find(*j) != i->second.end()) {
+                cout << "," << i->second[*j].average() << "," << i->second[*j].spread() / 2;
             } else {
-                //cout << *j<<",NOTHING, NOTHING, ";
-                cout<<",,";
+                // cout << *j<<",NOTHING, NOTHING, ";
+                cout << ",,";
             }
         }
-        cout<<endl;
+        cout << endl;
     }
     return 0;
 }
-

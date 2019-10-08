@@ -11,27 +11,23 @@
 // Precompiled Header
 #include "Stdafx.h"
 
-
 using namespace Opcode;
 
-void 	SRand(udword seed)
+void SRand(udword seed)
 {
-	srand(seed);
+    srand(seed);
 }
 
-udword  Rand()
+udword Rand()
 {
-	return rand();
+    return rand();
 }
-
 
 static BasicRandom gRandomGenerator(42);
 
 udword GetRandomIndex(udword max_index)
 {
-	// We don't use rand() since it's limited to RAND_MAX
-	udword Index = gRandomGenerator.Randomize();
-	return Index % max_index;
+    // We don't use rand() since it's limited to RAND_MAX
+    udword Index = gRandomGenerator.Randomize();
+    return Index % max_index;
 }
-
-

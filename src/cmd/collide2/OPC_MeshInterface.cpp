@@ -25,7 +25,7 @@
  *	\author		Pierre Terdiman
  *	\version	1.3
  *	\date		March, 20, 2001
-*/
+ */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -111,13 +111,12 @@
  *	\author		Pierre Terdiman
  *	\version	1.3
  *	\date		November, 27, 2002
-*/
+ */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Precompiled Header
 #include "Stdafx.h"
-
 
 using namespace Opcode;
 
@@ -126,20 +125,21 @@ using namespace Opcode;
  *	Constructor.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-MeshInterface::MeshInterface() :
+MeshInterface::MeshInterface()
+    :
 #ifdef OPC_USE_CALLBACKS
-	mUserData		(null),
-	mObjCallback	(null),
+      mUserData(null),
+      mObjCallback(null),
 #else
-	mTris			(null),
-	mVerts			(null),
-	#ifdef OPC_USE_STRIDE
-	mTriStride		(sizeof(IndexedTriangle)),
-	mVertexStride	(sizeof(Point)),
-	#endif
+      mTris(null),
+      mVerts(null),
+#ifdef OPC_USE_STRIDE
+      mTriStride(sizeof(IndexedTriangle)),
+      mVertexStride(sizeof(Point)),
 #endif
-	mNbTris			(0),
-	mNbVerts		(0)
+#endif
+      mNbTris(0),
+      mNbVerts(0)
 {
 }
 
@@ -160,13 +160,16 @@ MeshInterface::~MeshInterface()
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool MeshInterface::IsValid() const
 {
-	if(!mNbTris || !mNbVerts)	return false;
+    if (!mNbTris || !mNbVerts)
+        return false;
 #ifdef OPC_USE_CALLBACKS
-	if(!mObjCallback)			return false;
+    if (!mObjCallback)
+        return false;
 #else
-	if(!mTris || !mVerts)		return false;
+    if (!mTris || !mVerts)
+        return false;
 #endif
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -176,28 +179,26 @@ bool MeshInterface::IsValid() const
  *	\return		number of degenerate faces
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-udword MeshInterface::CheckTopology()	const
+udword MeshInterface::CheckTopology() const
 {
-	// Check topology. If the model contains degenerate faces, collision report can be wrong in some cases.
-	// e.g. it happens with the standard MAX teapot. So clean your meshes first... If you don't have a mesh cleaner
-	// you can try this: www.codercorner.com/Consolidation.zip
+    // Check topology. If the model contains degenerate faces, collision report can be wrong in some cases.
+    // e.g. it happens with the standard MAX teapot. So clean your meshes first... If you don't have a mesh cleaner
+    // you can try this: www.codercorner.com/Consolidation.zip
 
-	udword NbDegenerate = 0;
+    udword NbDegenerate = 0;
 
-	VertexPointers VP;
+    VertexPointers VP;
 
-	// Using callbacks, we don't have access to vertex indices. Nevertheless we still can check for
-	// redundant vertex pointers, which cover all possibilities (callbacks/pointers/strides).
-	for(udword i=0;i<mNbTris;i++)
-	{
-		GetTriangle(VP, i);
+    // Using callbacks, we don't have access to vertex indices. Nevertheless we still can check for
+    // redundant vertex pointers, which cover all possibilities (callbacks/pointers/strides).
+    for (udword i = 0; i < mNbTris; i++) {
+        GetTriangle(VP, i);
 
-		if(		(VP.Vertex[0]==VP.Vertex[1])
-			||	(VP.Vertex[1]==VP.Vertex[2])
-			||	(VP.Vertex[2]==VP.Vertex[0]))	NbDegenerate++;
-	}
+        if ((VP.Vertex[0] == VP.Vertex[1]) || (VP.Vertex[1] == VP.Vertex[2]) || (VP.Vertex[2] == VP.Vertex[0]))
+            NbDegenerate++;
+    }
 
-	return NbDegenerate;
+    return NbDegenerate;
 }
 
 #ifdef OPC_USE_CALLBACKS
@@ -209,13 +210,14 @@ udword MeshInterface::CheckTopology()	const
  *	\return		true if success
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool MeshInterface::SetCallback(RequestCallback callback, void* user_data)
+bool MeshInterface::SetCallback(RequestCallback callback, void *user_data)
 {
-//	if(!callback)	return SetIceError("MeshInterface::SetCallback: callback pointer is null");
-	if(!callback) return(false);
-	mObjCallback	= callback;
-	mUserData		= user_data;
-	return true;
+    //	if(!callback)	return SetIceError("MeshInterface::SetCallback: callback pointer is null");
+    if (!callback)
+        return (false);
+    mObjCallback = callback;
+    mUserData    = user_data;
+    return true;
 }
 #else
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -226,32 +228,35 @@ bool MeshInterface::SetCallback(RequestCallback callback, void* user_data)
  *	\return		true if success
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool MeshInterface::SetPointers(const IndexedTriangle* tris, const Point* verts)
+bool MeshInterface::SetPointers(const IndexedTriangle *tris, const Point *verts)
 {
-//	if(!tris || !verts)	return SetIceError("MeshInterface::SetPointers: pointer is null", null);
-	if(!tris || !verts) return(false);
-		
-	mTris	= tris;
-	mVerts	= verts;
-	return true;
+    //	if(!tris || !verts)	return SetIceError("MeshInterface::SetPointers: pointer is null", null);
+    if (!tris || !verts)
+        return (false);
+
+    mTris  = tris;
+    mVerts = verts;
+    return true;
 }
 #ifdef OPC_USE_STRIDE
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  *	Strides control
- *	\param		tri_stride		[in] size of a triangle in bytes. The first sizeof(IndexedTriangle) bytes are used to get vertex indices.
- *	\param		vertex_stride	[in] size of a vertex in bytes. The first sizeof(Point) bytes are used to get vertex position.
- *	\return		true if success
+ *	\param		tri_stride		[in] size of a triangle in bytes. The first sizeof(IndexedTriangle) bytes are used to get
+ *vertex indices. \param		vertex_stride	[in] size of a vertex in bytes. The first sizeof(Point) bytes are used to get vertex
+ *position. \return		true if success
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool MeshInterface::SetStrides(udword tri_stride, udword vertex_stride)
 {
-	if(tri_stride<sizeof(IndexedTriangle))	return SetIceError("MeshInterface::SetStrides: invalid triangle stride", null);
-	if(vertex_stride<sizeof(Point))			return SetIceError("MeshInterface::SetStrides: invalid vertex stride", null);
+    if (tri_stride < sizeof(IndexedTriangle))
+        return SetIceError("MeshInterface::SetStrides: invalid triangle stride", null);
+    if (vertex_stride < sizeof(Point))
+        return SetIceError("MeshInterface::SetStrides: invalid vertex stride", null);
 
-	mTriStride		= tri_stride;
-	mVertexStride	= vertex_stride;
-	return true;
+    mTriStride    = tri_stride;
+    mVertexStride = vertex_stride;
+    return true;
 }
 #endif
 #endif
@@ -264,39 +269,38 @@ bool MeshInterface::SetStrides(udword tri_stride, udword vertex_stride)
  *	\return		true if success
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool MeshInterface::RemapClient(udword nb_indices, const udword* permutation) const
+bool MeshInterface::RemapClient(udword nb_indices, const udword *permutation) const
 {
-	// Checkings
-	if(!nb_indices || !permutation)	return false;
-	if(nb_indices!=mNbTris)			return false;
+    // Checkings
+    if (!nb_indices || !permutation)
+        return false;
+    if (nb_indices != mNbTris)
+        return false;
 
 #ifdef OPC_USE_CALLBACKS
-	// We can't really do that using callbacks
-	return false;
+    // We can't really do that using callbacks
+    return false;
 #else
-	IndexedTriangle* Tmp = new IndexedTriangle[mNbTris];
-	CHECKALLOC(Tmp);
+    IndexedTriangle *Tmp = new IndexedTriangle[mNbTris];
+    CHECKALLOC(Tmp);
 
-	#ifdef OPC_USE_STRIDE
-	udword Stride = mTriStride;
-	#else
-	udword Stride = sizeof(IndexedTriangle);
-	#endif
-
-	for(udword i=0;i<mNbTris;i++)
-	{
-		const IndexedTriangle* T = (const IndexedTriangle*)(((ubyte*)mTris) + i * Stride);
-		Tmp[i] = *T;
-	}
-
-	for(udword i=0;i<mNbTris;i++)
-	{
-		IndexedTriangle* T = (IndexedTriangle*)(((ubyte*)mTris) + i * Stride);
-		*T = Tmp[permutation[i]];
-	}
-
-	DELETEARRAY(Tmp);
+#ifdef OPC_USE_STRIDE
+    udword Stride = mTriStride;
+#else
+    udword Stride = sizeof(IndexedTriangle);
 #endif
-	return true;
-}
 
+    for (udword i = 0; i < mNbTris; i++) {
+        const IndexedTriangle *T = (const IndexedTriangle *)(((ubyte *)mTris) + i * Stride);
+        Tmp[i]                   = *T;
+    }
+
+    for (udword i = 0; i < mNbTris; i++) {
+        IndexedTriangle *T = (IndexedTriangle *)(((ubyte *)mTris) + i * Stride);
+        *T                 = Tmp[permutation[i]];
+    }
+
+    DELETEARRAY(Tmp);
+#endif
+    return true;
+}

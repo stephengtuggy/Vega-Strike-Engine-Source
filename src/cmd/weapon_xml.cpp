@@ -11,76 +11,73 @@
 #include "endianness.h"
 #include "options.h"
 
+extern enum weapon_info::MOUNT_SIZE lookupMountSize(const char *str);
 
-
-extern enum weapon_info::MOUNT_SIZE lookupMountSize( const char *str );
-
-
-#if (defined (__APPLE__) == POSH_BIG_ENDIAN) || !defined (INTEL_X86)
-//pre-optimization bug with "gcc 3.1 (20021003) prerelease"
-int counts = time( NULL );
+#if (defined(__APPLE__) == POSH_BIG_ENDIAN) || !defined(INTEL_X86)
+// pre-optimization bug with "gcc 3.1 (20021003) prerelease"
+int counts = time(NULL);
 #else
 int counts = 0;
 #endif
 
-weapon_info getWeaponInfoFromBuffer( char *netbuf, int &size )
+weapon_info getWeaponInfoFromBuffer(char *netbuf, int &size)
 {
-    weapon_info    wi( weapon_info::UNKNOWN );
+    weapon_info    wi(weapon_info::UNKNOWN);
     unsigned short file_len = 0, weap_len = 0;
-    int offset = 0;
+    int            offset = 0;
 
-    //Get the weapon_info structure
-    memcpy( &wi, netbuf+offset, sizeof (wi) );
-    offset  += sizeof (wi);
-    memcpy( &file_len, netbuf+offset, sizeof (file_len) );
-    offset  += sizeof (file_len);
-    file_len = VSSwapHostShortToLittle( file_len );
+    // Get the weapon_info structure
+    memcpy(&wi, netbuf + offset, sizeof(wi));
+    offset += sizeof(wi);
+    memcpy(&file_len, netbuf + offset, sizeof(file_len));
+    offset += sizeof(file_len);
+    file_len       = VSSwapHostShortToLittle(file_len);
     char *filename = new char[file_len];
-    memcpy( filename, netbuf, file_len );
-    offset  += file_len;
-    memcpy( &weap_len, netbuf+offset, sizeof (weap_len) );
-    offset  += sizeof (weap_len);
-    weap_len = VSSwapHostShortToLittle( weap_len );
+    memcpy(filename, netbuf, file_len);
+    offset += file_len;
+    memcpy(&weap_len, netbuf + offset, sizeof(weap_len));
+    offset += sizeof(weap_len);
+    weap_len       = VSSwapHostShortToLittle(weap_len);
     char *weapname = new char[weap_len];
-    memcpy( weapname, netbuf, weap_len );
-    wi.file  = string( filename );
-    wi.weapon_name = string( weapname );
+    memcpy(weapname, netbuf, weap_len);
+    wi.file        = string(filename);
+    wi.weapon_name = string(weapname);
     delete[] filename;
     delete[] weapname;
 
     return wi;
 }
 
-void setWeaponInfoToBuffer( weapon_info wi, char *netbuf, int &bufsize )
+void setWeaponInfoToBuffer(weapon_info wi, char *netbuf, int &bufsize)
 {
-    bufsize = sizeof (wi)+sizeof (wi.file)+sizeof (wi.weapon_name);
-    netbuf  = new char[bufsize+1];
+    bufsize         = sizeof(wi) + sizeof(wi.file) + sizeof(wi.weapon_name);
+    netbuf          = new char[bufsize + 1];
     netbuf[bufsize] = 0;
-    int offset = 0;
+    int offset      = 0;
 
-    unsigned short file_len = wi.file.length();
-    unsigned short weap_len = wi.weapon_name.length();
-    char *file = new char[file_len+1];
-    char *weapon_name = new char[weap_len+1];
-    memcpy( file, wi.file.c_str(), file_len );
+    unsigned short file_len    = wi.file.length();
+    unsigned short weap_len    = wi.weapon_name.length();
+    char *         file        = new char[file_len + 1];
+    char *         weapon_name = new char[weap_len + 1];
+    memcpy(file, wi.file.c_str(), file_len);
     file[file_len] = 0;
-    memcpy( weapon_name, wi.weapon_name.c_str(), weap_len );
+    memcpy(weapon_name, wi.weapon_name.c_str(), weap_len);
     weapon_name[weap_len] = 0;
 
-    //Copy the struct weapon_info in the buffer
-    memcpy( netbuf+offset, &wi, sizeof (wi) );
-    offset += sizeof (wi);
-    //Copy the size of filename in the buffer
-    memcpy( netbuf+offset, &file_len, sizeof (file_len) );
-    offset += sizeof (file_len);
-    //Copy the filename in the buffer because in weapon_info, it is a string
-    memcpy( netbuf+offset, file, file_len );
+    // Copy the struct weapon_info in the buffer
+    memcpy(netbuf + offset, &wi, sizeof(wi));
+    offset += sizeof(wi);
+    // Copy the size of filename in the buffer
+    memcpy(netbuf + offset, &file_len, sizeof(file_len));
+    offset += sizeof(file_len);
+    // Copy the filename in the buffer because in weapon_info, it is a string
+    memcpy(netbuf + offset, file, file_len);
     offset += file_len;
-    //Copy the size of filename in the buffer
-    memcpy( netbuf+offset, &weap_len, sizeof (weap_len) );
-    offset += sizeof (weap_len);
-    //Copy the weapon_name in the buffer because in weapon_info, it is a string
-    memcpy( netbuf+offset, weapon_name, weap_len );
+    // Copy the size of filename in the buffer
+    memcpy(netbuf + offset, &weap_len, sizeof(weap_len));
+    offset += sizeof(weap_len);
+    // Copy the weapon_name in the buffer because in weapon_info, it is a string
+    memcpy(netbuf + offset, weapon_name, weap_len);
 
     delete[] file;
     delete[] weapon_name;
@@ -88,32 +85,32 @@ void setWeaponInfoToBuffer( weapon_info wi, char *netbuf, int &bufsize )
 
 void weapon_info::netswap()
 {
-    //Enum elements are the size of an int
-    //byte order swap doesn't work with ENUM - MAY NEED TO FIND A WORKAROUND SOMEDAY
-    //type = VSSwapHostIntToLittle( type);
-    //size = VSSwapHostIntToLittle( size);
+    // Enum elements are the size of an int
+    // byte order swap doesn't work with ENUM - MAY NEED TO FIND A WORKAROUND SOMEDAY
+    // type = VSSwapHostIntToLittle( type);
+    // size = VSSwapHostIntToLittle( size);
     offset.netswap();
-    role_bits = VSSwapHostIntToLittle( role_bits );
-    sound     = VSSwapHostIntToLittle( sound );
-    r              = VSSwapHostFloatToLittle( r );
-    g              = VSSwapHostFloatToLittle( g );
-    b              = VSSwapHostFloatToLittle( b );
-    a              = VSSwapHostFloatToLittle( a );
-    Speed          = VSSwapHostFloatToLittle( Speed );
-    PulseSpeed     = VSSwapHostFloatToLittle( PulseSpeed );
-    RadialSpeed    = VSSwapHostFloatToLittle( RadialSpeed );
-    Range          = VSSwapHostFloatToLittle( Range );
-    Radius         = VSSwapHostFloatToLittle( Radius );
-    Length         = VSSwapHostFloatToLittle( Length );
-    Damage         = VSSwapHostFloatToLittle( Damage );
-    PhaseDamage    = VSSwapHostFloatToLittle( PhaseDamage );
-    Stability      = VSSwapHostFloatToLittle( Stability );
-    Longrange      = VSSwapHostFloatToLittle( Longrange );
-    LockTime       = VSSwapHostFloatToLittle( LockTime );
-    EnergyRate     = VSSwapHostFloatToLittle( EnergyRate );
-    RefireRate     = VSSwapHostFloatToLittle( RefireRate );
-    volume         = VSSwapHostFloatToLittle( volume );
-    TextureStretch = VSSwapHostFloatToLittle( TextureStretch );
+    role_bits      = VSSwapHostIntToLittle(role_bits);
+    sound          = VSSwapHostIntToLittle(sound);
+    r              = VSSwapHostFloatToLittle(r);
+    g              = VSSwapHostFloatToLittle(g);
+    b              = VSSwapHostFloatToLittle(b);
+    a              = VSSwapHostFloatToLittle(a);
+    Speed          = VSSwapHostFloatToLittle(Speed);
+    PulseSpeed     = VSSwapHostFloatToLittle(PulseSpeed);
+    RadialSpeed    = VSSwapHostFloatToLittle(RadialSpeed);
+    Range          = VSSwapHostFloatToLittle(Range);
+    Radius         = VSSwapHostFloatToLittle(Radius);
+    Length         = VSSwapHostFloatToLittle(Length);
+    Damage         = VSSwapHostFloatToLittle(Damage);
+    PhaseDamage    = VSSwapHostFloatToLittle(PhaseDamage);
+    Stability      = VSSwapHostFloatToLittle(Stability);
+    Longrange      = VSSwapHostFloatToLittle(Longrange);
+    LockTime       = VSSwapHostFloatToLittle(LockTime);
+    EnergyRate     = VSSwapHostFloatToLittle(EnergyRate);
+    RefireRate     = VSSwapHostFloatToLittle(RefireRate);
+    volume         = VSSwapHostFloatToLittle(volume);
+    TextureStretch = VSSwapHostFloatToLittle(TextureStretch);
 }
 
 #include "xml_support.h"
@@ -123,14 +120,13 @@ void weapon_info::netswap()
 #include <expat.h>
 
 using std::vector;
-using XMLSupport::EnumMap;
 using XMLSupport::Attribute;
 using XMLSupport::AttributeList;
+using XMLSupport::EnumMap;
 
 namespace BeamXML
 {
-enum Names
-{
+enum Names {
     UNKNOWN,
     WEAPONS,
     BEAM,
@@ -151,7 +147,9 @@ enum Names
     BLUE,
     ALPHA,
     SPEED,
-    OFFSETX, OFFSETY, OFFSETZ,
+    OFFSETX,
+    OFFSETY,
+    OFFSETZ,
     PULSESPEED,
     RADIALSPEED,
     RANGE,
@@ -166,97 +164,87 @@ enum Names
     VOLUME,
     DETONATIONRADIUS,
     LOCKTIME,
-    ROLE, ANTIROLE,
+    ROLE,
+    ANTIROLE,
     TEXTURESTRETCH
 
 };
 
 const EnumMap::Pair element_names[] = {
-    EnumMap::Pair( "UNKNOWN",    UNKNOWN ),   //don't add anything until below missile so it maps to enum WEAPON_TYPE
-    EnumMap::Pair( "Beam",       BEAM ),
-    EnumMap::Pair( "Ball",       BALL ),
-    EnumMap::Pair( "Bolt",       BOLT ),
-    EnumMap::Pair( "Missile",    PROJECTILE ),
-    EnumMap::Pair( "Weapons",    WEAPONS ),
-    EnumMap::Pair( "Appearance", APPEARANCE ),
-    EnumMap::Pair( "Energy",     ENERGY ),
-    EnumMap::Pair( "Damage",     DAMAGE ),
-    EnumMap::Pair( "Distance",   DISTANCE )
-};
+    EnumMap::Pair("UNKNOWN", UNKNOWN), // don't add anything until below missile so it maps to enum WEAPON_TYPE
+    EnumMap::Pair("Beam", BEAM),
+    EnumMap::Pair("Ball", BALL),
+    EnumMap::Pair("Bolt", BOLT),
+    EnumMap::Pair("Missile", PROJECTILE),
+    EnumMap::Pair("Weapons", WEAPONS),
+    EnumMap::Pair("Appearance", APPEARANCE),
+    EnumMap::Pair("Energy", ENERGY),
+    EnumMap::Pair("Damage", DAMAGE),
+    EnumMap::Pair("Distance", DISTANCE)};
 
-const EnumMap::Pair attribute_names[] = {
-    EnumMap::Pair( "UNKNOWN",         UNKNOWN ),
-    EnumMap::Pair( "Name",            NAME ),
-    EnumMap::Pair( "MountSize",       WEAPSIZE ),
-    EnumMap::Pair( "file",            XFILE ),
-    EnumMap::Pair( "soundMp3",        SOUNDMP3 ),
-    EnumMap::Pair( "soundWav",        SOUNDWAV ),
-    EnumMap::Pair( "r",               RED ),
-    EnumMap::Pair( "g",               GREEN ),
-    EnumMap::Pair( "b",               BLUE ),
-    EnumMap::Pair( "a",               ALPHA ),
-    EnumMap::Pair( "Speed",           SPEED ),
-    EnumMap::Pair( "Pulsespeed",      PULSESPEED ),
-    EnumMap::Pair( "DetonationRange", DETONATIONRADIUS ),
-    EnumMap::Pair( "LockTime",        LOCKTIME ),
-    EnumMap::Pair( "Radialspeed",     RADIALSPEED ),
-    EnumMap::Pair( "Range",           RANGE ),
-    EnumMap::Pair( "Radius",          RADIUS ),
-    EnumMap::Pair( "Rate",            RATE ),
-    EnumMap::Pair( "Damage",          DAMAGE ),
-    EnumMap::Pair( "PhaseDamage",     PHASEDAMAGE ),
-    EnumMap::Pair( "Stability",       STABILITY ),
-    EnumMap::Pair( "Longrange",       LONGRANGE ),
-    EnumMap::Pair( "Consumption",     CONSUMPTION ),
-    EnumMap::Pair( "Refire",          REFIRE ),
-    EnumMap::Pair( "Length",          LENGTH ),
-    EnumMap::Pair( "OffsetX",         OFFSETX ),
-    EnumMap::Pair( "OffsetY",         OFFSETY ),
-    EnumMap::Pair( "OffsetZ",         OFFSETZ ),
-    EnumMap::Pair( "Volume",          VOLUME ),
-    EnumMap::Pair( "Role",            ROLE ),
-    EnumMap::Pair( "AntiRole",        ANTIROLE ),
-    EnumMap::Pair( "TextureStretch",  TEXTURESTRETCH )
-};
+const EnumMap::Pair attribute_names[] = {EnumMap::Pair("UNKNOWN", UNKNOWN),
+                                         EnumMap::Pair("Name", NAME),
+                                         EnumMap::Pair("MountSize", WEAPSIZE),
+                                         EnumMap::Pair("file", XFILE),
+                                         EnumMap::Pair("soundMp3", SOUNDMP3),
+                                         EnumMap::Pair("soundWav", SOUNDWAV),
+                                         EnumMap::Pair("r", RED),
+                                         EnumMap::Pair("g", GREEN),
+                                         EnumMap::Pair("b", BLUE),
+                                         EnumMap::Pair("a", ALPHA),
+                                         EnumMap::Pair("Speed", SPEED),
+                                         EnumMap::Pair("Pulsespeed", PULSESPEED),
+                                         EnumMap::Pair("DetonationRange", DETONATIONRADIUS),
+                                         EnumMap::Pair("LockTime", LOCKTIME),
+                                         EnumMap::Pair("Radialspeed", RADIALSPEED),
+                                         EnumMap::Pair("Range", RANGE),
+                                         EnumMap::Pair("Radius", RADIUS),
+                                         EnumMap::Pair("Rate", RATE),
+                                         EnumMap::Pair("Damage", DAMAGE),
+                                         EnumMap::Pair("PhaseDamage", PHASEDAMAGE),
+                                         EnumMap::Pair("Stability", STABILITY),
+                                         EnumMap::Pair("Longrange", LONGRANGE),
+                                         EnumMap::Pair("Consumption", CONSUMPTION),
+                                         EnumMap::Pair("Refire", REFIRE),
+                                         EnumMap::Pair("Length", LENGTH),
+                                         EnumMap::Pair("OffsetX", OFFSETX),
+                                         EnumMap::Pair("OffsetY", OFFSETY),
+                                         EnumMap::Pair("OffsetZ", OFFSETZ),
+                                         EnumMap::Pair("Volume", VOLUME),
+                                         EnumMap::Pair("Role", ROLE),
+                                         EnumMap::Pair("AntiRole", ANTIROLE),
+                                         EnumMap::Pair("TextureStretch", TEXTURESTRETCH)};
 
-const EnumMap element_map( element_names, 10 );
-const EnumMap attribute_map( attribute_names, 32 );
-Hashtable< string, weapon_info, 257 >lookuptable;
-string curname;
-weapon_info tmpweapon( weapon_info::BEAM );
-int    level = -1;
+const EnumMap                       element_map(element_names, 10);
+const EnumMap                       attribute_map(attribute_names, 32);
+Hashtable<string, weapon_info, 257> lookuptable;
+string                              curname;
+weapon_info                         tmpweapon(weapon_info::BEAM);
+int                                 level = -1;
 
-void beginElementXML_Char( void *userData, const XML_Char *name, const XML_Char **atts )
+void beginElementXML_Char(void *userData, const XML_Char *name, const XML_Char **atts)
 {
-    beginElement( userData, (const XML_Char*) name, (const XML_Char**) atts );
+    beginElement(userData, (const XML_Char *)name, (const XML_Char **)atts);
 }
 
 #define color_step (49)
 
-#define Gamma_Needed( gamma, count, depth )           \
-    (                                                 \
-        !(                                            \
-            ( count/(100*depth*gamma) )               \
-            %( (6*(color_step*100+depth)/gamma-1)/3 ) \
-            -100                                      \
-         )                                            \
-    )
+#define Gamma_Needed(gamma, count, depth) (!((count / (100 * depth * gamma)) % ((6 * (color_step * 100 + depth) / gamma - 1) / 3) - 100))
 
-void beginElement( void *userData, const char *name, const char **atts )
+void beginElement(void *userData, const char *name, const char **atts)
 {
 
-    static float  gun_speed     = game_options.gun_speed * (game_options.gun_speed_adjusted_game_speed ? game_options.game_speed : 1);
-    static int    gamma = (int) ( 20*game_options.weapon_gamma );
-    AttributeList attributes( atts );
+    static float  gun_speed = game_options.gun_speed * (game_options.gun_speed_adjusted_game_speed ? game_options.game_speed : 1);
+    static int    gamma     = (int)(20 * game_options.weapon_gamma);
+    AttributeList attributes(atts);
     enum weapon_info::WEAPON_TYPE weaptyp;
-    Names elem = (Names) element_map.lookup( string( name ) );
+    Names                         elem = (Names)element_map.lookup(string(name));
 #ifdef TESTBEAMSONLY
     if (elem == BOLT)
         elem = BEAM;
 #endif
     AttributeList::const_iterator iter;
-    switch (elem)
-    {
+    switch (elem) {
     case UNKNOWN:
         break;
     case WEAPONS:
@@ -267,8 +255,7 @@ void beginElement( void *userData, const char *name, const char **atts )
     case BALL:
     case PROJECTILE:
         level++;
-        switch (elem)
-        {
+        switch (elem) {
         case BOLT:
             weaptyp = weapon_info::BOLT;
             break;
@@ -285,26 +272,25 @@ void beginElement( void *userData, const char *name, const char **atts )
             weaptyp = weapon_info::UNKNOWN;
             break;
         }
-        tmpweapon.Type( weaptyp );
+        tmpweapon.Type(weaptyp);
         for (iter = attributes.begin(); iter != attributes.end(); iter++) {
-            switch ( attribute_map.lookup( (*iter).name ) )
-            {
+            switch (attribute_map.lookup((*iter).name)) {
             case UNKNOWN:
-                VSFileSystem::vs_fprintf( stderr, "Unknown Weapon Element %s", (*iter).name.c_str() );
+                VSFileSystem::vs_fprintf(stderr, "Unknown Weapon Element %s", (*iter).name.c_str());
                 break;
             case NAME:
-                curname = (*iter).value;
+                curname               = (*iter).value;
                 tmpweapon.weapon_name = curname;
                 break;
             case ROLE:
-                tmpweapon.role_bits   = ROLES::readBitmask( iter->value );
+                tmpweapon.role_bits = ROLES::readBitmask(iter->value);
                 break;
             case ANTIROLE:
-                tmpweapon.role_bits   = ROLES::readBitmask( iter->value );
-                tmpweapon.role_bits   = ~tmpweapon.role_bits;
+                tmpweapon.role_bits = ROLES::readBitmask(iter->value);
+                tmpweapon.role_bits = ~tmpweapon.role_bits;
                 break;
             case WEAPSIZE:
-                tmpweapon.MntSize( lookupMountSize( (*iter).value.c_str() ) );
+                tmpweapon.MntSize(lookupMountSize((*iter).value.c_str()));
                 break;
             default:
                 break;
@@ -315,163 +301,160 @@ void beginElement( void *userData, const char *name, const char **atts )
         level++;
         counts++;
         for (iter = attributes.begin(); iter != attributes.end(); iter++) {
-            switch ( attribute_map.lookup( (*iter).name ) )
-            {
+            switch (attribute_map.lookup((*iter).name)) {
             case UNKNOWN:
-                VSFileSystem::vs_fprintf( stderr, "Unknown Weapon Element %s", (*iter).name.c_str() );
+                VSFileSystem::vs_fprintf(stderr, "Unknown Weapon Element %s", (*iter).name.c_str());
                 break;
             case XFILE:
-                tmpweapon.file     = (*iter).value;
+                tmpweapon.file = (*iter).value;
                 break;
             case SOUNDMP3:
-                tmpweapon.sound    = AUDCreateSoundMP3( (*iter).value, tmpweapon.type != weapon_info::PROJECTILE );
+                tmpweapon.sound = AUDCreateSoundMP3((*iter).value, tmpweapon.type != weapon_info::PROJECTILE);
                 break;
             case SOUNDWAV:
-                tmpweapon.sound    = AUDCreateSoundWAV( (*iter).value, tmpweapon.type == weapon_info::PROJECTILE );
+                tmpweapon.sound = AUDCreateSoundWAV((*iter).value, tmpweapon.type == weapon_info::PROJECTILE);
                 break;
             case OFFSETX:
-                tmpweapon.offset.i = XMLSupport::parse_floatf( iter->value );
+                tmpweapon.offset.i = XMLSupport::parse_floatf(iter->value);
                 break;
             case OFFSETY:
-                tmpweapon.offset.j = XMLSupport::parse_floatf( iter->value );
+                tmpweapon.offset.j = XMLSupport::parse_floatf(iter->value);
                 break;
             case OFFSETZ:
-                tmpweapon.offset.k = XMLSupport::parse_floatf( iter->value );
+                tmpweapon.offset.k = XMLSupport::parse_floatf(iter->value);
                 break;
             case RED:
-                tmpweapon.r = XMLSupport::parse_floatf( (*iter).value );
+                tmpweapon.r = XMLSupport::parse_floatf((*iter).value);
                 break;
             case GREEN:
-                tmpweapon.g = XMLSupport::parse_floatf( (*iter).value );
+                tmpweapon.g = XMLSupport::parse_floatf((*iter).value);
                 break;
             case BLUE:
-                tmpweapon.b = XMLSupport::parse_floatf( (*iter).value );
+                tmpweapon.b = XMLSupport::parse_floatf((*iter).value);
                 break;
             case ALPHA:
-                tmpweapon.a = XMLSupport::parse_floatf( (*iter).value );
+                tmpweapon.a = XMLSupport::parse_floatf((*iter).value);
                 break;
             case TEXTURESTRETCH:
-                tmpweapon.TextureStretch =
-                    XMLSupport::parse_floatf( (*iter).value );
+                tmpweapon.TextureStretch = XMLSupport::parse_floatf((*iter).value);
                 break;
             default:
                 break;
             }
         }
-        if ( (gamma > 0) && Gamma_Needed( gamma, counts, 32 ) ) {
-            //approximate the color func
-            tmpweapon.b = (tmpweapon.b+color_step*5)/255.;
-            tmpweapon.g = (tmpweapon.g+color_step/5)/255.;
-            tmpweapon.r = (tmpweapon.r+color_step*2)/255.;
+        if ((gamma > 0) && Gamma_Needed(gamma, counts, 32)) {
+            // approximate the color func
+            tmpweapon.b = (tmpweapon.b + color_step * 5) / 255.;
+            tmpweapon.g = (tmpweapon.g + color_step / 5) / 255.;
+            tmpweapon.r = (tmpweapon.r + color_step * 2) / 255.;
         }
         break;
     case ENERGY:
         level++;
         for (iter = attributes.begin(); iter != attributes.end(); iter++) {
-            switch ( attribute_map.lookup( (*iter).name ) )
-            {
+            switch (attribute_map.lookup((*iter).name)) {
             case UNKNOWN:
-                VSFileSystem::vs_fprintf( stderr, "Unknown Weapon Element %s", (*iter).name.c_str() );
+                VSFileSystem::vs_fprintf(stderr, "Unknown Weapon Element %s", (*iter).name.c_str());
                 break;
             case CONSUMPTION:
-                tmpweapon.EnergyRate = XMLSupport::parse_floatf( (*iter).value );
+                tmpweapon.EnergyRate = XMLSupport::parse_floatf((*iter).value);
                 break;
             case RATE:
-                tmpweapon.EnergyRate = XMLSupport::parse_floatf( (*iter).value );
+                tmpweapon.EnergyRate = XMLSupport::parse_floatf((*iter).value);
                 break;
             case STABILITY:
-                tmpweapon.Stability  = XMLSupport::parse_floatf( (*iter).value );
+                tmpweapon.Stability = XMLSupport::parse_floatf((*iter).value);
                 break;
             case REFIRE:
-                tmpweapon.RefireRate = XMLSupport::parse_floatf( (*iter).value );
+                tmpweapon.RefireRate = XMLSupport::parse_floatf((*iter).value);
                 break;
             case LOCKTIME:
-                tmpweapon.LockTime   = XMLSupport::parse_floatf( (*iter).value );
+                tmpweapon.LockTime = XMLSupport::parse_floatf((*iter).value);
                 break;
             default:
                 break;
             }
         }
         break;
-    case DAMAGE:
-        {
-            level++;
-            for (iter = attributes.begin(); iter != attributes.end(); iter++) {
-                switch ( attribute_map.lookup( (*iter).name ) )
-                {
-                case UNKNOWN:
-                    VSFileSystem::vs_fprintf( stderr, "Unknown Weapon Element %s", (*iter).name.c_str() );
-                    break;
-                case DAMAGE:
-                    tmpweapon.Damage = game_options.weapon_damage_efficiency*XMLSupport::parse_floatf( (*iter).value );
-                    break;
-                case RADIUS:
-                    tmpweapon.Radius = XMLSupport::parse_floatf( (*iter).value );
-                    break;
-                case RADIALSPEED:
-                    tmpweapon.RadialSpeed = XMLSupport::parse_floatf( (*iter).value );
-                    break;
-                case PHASEDAMAGE:
-                    tmpweapon.PhaseDamage = game_options.weapon_damage_efficiency*XMLSupport::parse_floatf( (*iter).value );
-                    break;
-                case RATE:
-                    tmpweapon.Damage    = game_options.weapon_damage_efficiency*XMLSupport::parse_floatf( (*iter).value );
-                    break;
-                case LONGRANGE:
-                    tmpweapon.Longrange = XMLSupport::parse_float( (*iter).value );
-                    break;
-                default:
-                    break;
-                }
+    case DAMAGE: {
+        level++;
+        for (iter = attributes.begin(); iter != attributes.end(); iter++) {
+            switch (attribute_map.lookup((*iter).name)) {
+            case UNKNOWN:
+                VSFileSystem::vs_fprintf(stderr, "Unknown Weapon Element %s", (*iter).name.c_str());
+                break;
+            case DAMAGE:
+                tmpweapon.Damage = game_options.weapon_damage_efficiency * XMLSupport::parse_floatf((*iter).value);
+                break;
+            case RADIUS:
+                tmpweapon.Radius = XMLSupport::parse_floatf((*iter).value);
+                break;
+            case RADIALSPEED:
+                tmpweapon.RadialSpeed = XMLSupport::parse_floatf((*iter).value);
+                break;
+            case PHASEDAMAGE:
+                tmpweapon.PhaseDamage = game_options.weapon_damage_efficiency * XMLSupport::parse_floatf((*iter).value);
+                break;
+            case RATE:
+                tmpweapon.Damage = game_options.weapon_damage_efficiency * XMLSupport::parse_floatf((*iter).value);
+                break;
+            case LONGRANGE:
+                tmpweapon.Longrange = XMLSupport::parse_float((*iter).value);
+                break;
+            default:
+                break;
             }
-            break;
         }
+        break;
+    }
     case DISTANCE:
         level++;
         for (iter = attributes.begin(); iter != attributes.end(); iter++) {
-            switch ( attribute_map.lookup( (*iter).name ) )
-            {
+            switch (attribute_map.lookup((*iter).name)) {
             case UNKNOWN:
-                VSFileSystem::vs_fprintf( stderr, "Unknown Weapon Element %s", (*iter).name.c_str() );
+                VSFileSystem::vs_fprintf(stderr, "Unknown Weapon Element %s", (*iter).name.c_str());
                 break;
             case VOLUME:
-                tmpweapon.volume = XMLSupport::parse_float( (*iter).value );
+                tmpweapon.volume = XMLSupport::parse_float((*iter).value);
                 break;
             case SPEED:
-                tmpweapon.Speed  = XMLSupport::parse_float( (*iter).value );
+                tmpweapon.Speed = XMLSupport::parse_float((*iter).value);
                 if (tmpweapon.Speed < 1000) {
-                    tmpweapon.Speed = tmpweapon.Speed*(game_options.gun_speed_adjusted_game_speed ? (1.0+gun_speed/1.25) : gun_speed);
+                    tmpweapon.Speed = tmpweapon.Speed * (game_options.gun_speed_adjusted_game_speed ? (1.0 + gun_speed / 1.25) : gun_speed);
                 } else {
                     if (tmpweapon.Speed < 2000) {
-                        tmpweapon.Speed = tmpweapon.Speed*( game_options.gun_speed_adjusted_game_speed ? (1.0+gun_speed/2.5) : (gun_speed) );
+                        tmpweapon.Speed =
+                            tmpweapon.Speed * (game_options.gun_speed_adjusted_game_speed ? (1.0 + gun_speed / 2.5) : (gun_speed));
                     } else {
                         if (tmpweapon.Speed < 4000)
-                            tmpweapon.Speed = tmpweapon.Speed*( game_options.gun_speed_adjusted_game_speed ? (1.0+gun_speed/6.0) : (gun_speed) );
+                            tmpweapon.Speed =
+                                tmpweapon.Speed * (game_options.gun_speed_adjusted_game_speed ? (1.0 + gun_speed / 6.0) : (gun_speed));
                         else if (tmpweapon.Speed < 8000)
-                            tmpweapon.Speed = tmpweapon.Speed*( game_options.gun_speed_adjusted_game_speed ? (1.0+gun_speed/17.0) : (gun_speed) );
+                            tmpweapon.Speed =
+                                tmpweapon.Speed * (game_options.gun_speed_adjusted_game_speed ? (1.0 + gun_speed / 17.0) : (gun_speed));
                     }
                 }
                 break;
             case PULSESPEED:
                 if (tmpweapon.type == weapon_info::BEAM)
-                    tmpweapon.PulseSpeed = XMLSupport::parse_float( (*iter).value );
+                    tmpweapon.PulseSpeed = XMLSupport::parse_float((*iter).value);
                 break;
             case DETONATIONRADIUS:
                 if (tmpweapon.type != weapon_info::BEAM)
-                    tmpweapon.PulseSpeed = XMLSupport::parse_float( (*iter).value );
+                    tmpweapon.PulseSpeed = XMLSupport::parse_float((*iter).value);
                 break;
             case RADIALSPEED:
-                tmpweapon.RadialSpeed = XMLSupport::parse_float( (*iter).value );
+                tmpweapon.RadialSpeed = XMLSupport::parse_float((*iter).value);
                 break;
             case RANGE:
-                tmpweapon.Range = ( game_options.gun_speed_adjusted_game_speed ? (1.0+gun_speed/16.0) : (gun_speed) )*XMLSupport::parse_float(
-                    (*iter).value );
+                tmpweapon.Range = (game_options.gun_speed_adjusted_game_speed ? (1.0 + gun_speed / 16.0) : (gun_speed)) *
+                                  XMLSupport::parse_float((*iter).value);
                 break;
             case RADIUS:
-                tmpweapon.Radius = XMLSupport::parse_float( (*iter).value );
+                tmpweapon.Radius = XMLSupport::parse_float((*iter).value);
                 break;
             case LENGTH:
-                tmpweapon.Length = XMLSupport::parse_float( (*iter).value );
+                tmpweapon.Length = XMLSupport::parse_float((*iter).value);
                 break;
             default:
                 break;
@@ -485,11 +468,10 @@ void beginElement( void *userData, const char *name, const char **atts )
 
 #undef Gamma_Needed
 
-void endElement( void *userData, const XML_Char *name )
+void endElement(void *userData, const XML_Char *name)
 {
-    Names elem = (Names) element_map.lookup( name );
-    switch (elem)
-    {
+    Names elem = (Names)element_map.lookup(name);
+    switch (elem) {
     case UNKNOWN:
         break;
     case WEAPONS:
@@ -500,7 +482,7 @@ void endElement( void *userData, const XML_Char *name )
     case BALL:
     case PROJECTILE:
         level--;
-        lookuptable.Put( strtoupper( curname ), new weapon_info( tmpweapon ) );
+        lookuptable.Put(strtoupper(curname), new weapon_info(tmpweapon));
         tmpweapon.init();
         break;
     case ENERGY:
@@ -514,57 +496,57 @@ void endElement( void *userData, const XML_Char *name )
     }
 }
 
-//namespace BeamXML
-}
+// namespace BeamXML
+} // namespace BeamXML
 
 using namespace BeamXML;
 using namespace VSFileSystem;
 
-weapon_info * getTemplate( const string &kkey )
+weapon_info *getTemplate(const string &kkey)
 {
-    weapon_info *wi = lookuptable.Get( strtoupper( kkey ) );
+    weapon_info *wi = lookuptable.Get(strtoupper(kkey));
     if (wi) {
-        if ( !WeaponMeshCache::getCachedMutable( wi->weapon_name ) ) {
+        if (!WeaponMeshCache::getCachedMutable(wi->weapon_name)) {
             static FileLookupCache lookup_cache;
-            string meshname = strtolower( kkey )+".bfxm";
-            if (CachedFileLookup( lookup_cache, meshname, MeshFile ) <= Ok) {
-                WeaponMeshCache::setCachedMutable( wi->weapon_name, wi->gun =
-                                                      Mesh::LoadMesh( meshname.c_str(), Vector( 1, 1, 1 ), 0, NULL ) );
-                WeaponMeshCache::setCachedMutable( wi->weapon_name+"_flare", wi->gun1 =
-                                                      Mesh::LoadMesh( meshname.c_str(), Vector( 1, 1, 1 ), 0, NULL ) );
+            string                 meshname = strtolower(kkey) + ".bfxm";
+            if (CachedFileLookup(lookup_cache, meshname, MeshFile) <= Ok) {
+                WeaponMeshCache::setCachedMutable(wi->weapon_name, wi->gun = Mesh::LoadMesh(meshname.c_str(), Vector(1, 1, 1), 0, NULL));
+                WeaponMeshCache::setCachedMutable(wi->weapon_name + "_flare",
+                                                  wi->gun1 = Mesh::LoadMesh(meshname.c_str(), Vector(1, 1, 1), 0, NULL));
             }
         }
     }
     return wi;
 }
 
-void LoadWeapons( const char *filename )
+void LoadWeapons(const char *filename)
 {
     using namespace VSFileSystem;
-    VSFile     f;
-    VSError    err    = f.OpenReadOnly( filename, UnknownFile );
+    VSFile  f;
+    VSError err = f.OpenReadOnly(filename, UnknownFile);
     if (err > Ok)
         return;
-    XML_Parser parser = XML_ParserCreate( NULL );
-    XML_SetElementHandler( parser, &beginElementXML_Char, &endElement );
-    XML_Parse( parser, ( f.ReadFull() ).c_str(), f.Size(), 1 );
+    XML_Parser parser = XML_ParserCreate(NULL);
+    XML_SetElementHandler(parser, &beginElementXML_Char, &endElement);
+    XML_Parse(parser, (f.ReadFull()).c_str(), f.Size(), 1);
     f.Close();
-    XML_ParserFree( parser );
+    XML_ParserFree(parser);
 }
 
 float weapon_info::Refire() const
 {
     unsigned int len = weapon_name.length();
-    if (g_game.difficulty > .98 || len < 9 || weapon_name[len-8] != 'C' || weapon_name[len-9] != '_' || weapon_name[len-7]
-        != 'o' || weapon_name[len-6] != 'm' || weapon_name[len-5] != 'p' || weapon_name[len-4] != 'u' || weapon_name[len-3]
-        != 't' || weapon_name[len-2] != 'e' || weapon_name[len-1] != 'r')
+    if (g_game.difficulty > .98 || len < 9 || weapon_name[len - 8] != 'C' || weapon_name[len - 9] != '_' || weapon_name[len - 7] != 'o' ||
+        weapon_name[len - 6] != 'm' || weapon_name[len - 5] != 'p' || weapon_name[len - 4] != 'u' || weapon_name[len - 3] != 't' ||
+        weapon_name[len - 2] != 'e' || weapon_name[len - 1] != 'r')
         return RefireRate;
-    return this->RefireRate*( game_options.refire_difficulty_scaling/(1.0f+(game_options.refire_difficulty_scaling-1.0f)*g_game.difficulty) );
+    return this->RefireRate *
+           (game_options.refire_difficulty_scaling / (1.0f + (game_options.refire_difficulty_scaling - 1.0f) * g_game.difficulty));
 }
 
 bool weapon_info::isMissile() const
 {
-    if (game_options.projectile_means_missile  && this->type == weapon_info::PROJECTILE)
+    if (game_options.projectile_means_missile && this->type == weapon_info::PROJECTILE)
         return true;
     if (game_options.projectile_means_missile == false && this->size >= weapon_info::LIGHTMISSILE)
         return true;

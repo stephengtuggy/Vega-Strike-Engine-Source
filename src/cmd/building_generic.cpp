@@ -1,28 +1,20 @@
 #include "building_generic.h"
 
-Building::Building( ContinuousTerrain *parent,
-                    bool vehicle,
-                    const char *filename,
-                    bool SubUnit,
-                    int faction,
-                    const string &modifications,
-                    Flightgroup *fg ) : Unit( filename, SubUnit, faction, modifications, fg )
+Building::Building(
+    ContinuousTerrain *parent, bool vehicle, const char *filename, bool SubUnit, int faction, const string &modifications, Flightgroup *fg)
+    : Unit(filename, SubUnit, faction, modifications, fg)
 {
-    this->vehicle = vehicle;
-    continuous    = true;
+    this->vehicle      = vehicle;
+    continuous         = true;
     this->parent.plane = NULL;
 }
 
-Building::Building( Terrain *parent,
-                    bool vehicle,
-                    const char *filename,
-                    bool SubUnit,
-                    int faction,
-                    const string &modifications,
-                    Flightgroup *fg ) : Unit( filename, SubUnit, faction, modifications, fg )
+Building::Building(
+    Terrain *parent, bool vehicle, const char *filename, bool SubUnit, int faction, const string &modifications, Flightgroup *fg)
+    : Unit(filename, SubUnit, faction, modifications, fg)
 {
-    this->vehicle = vehicle;
-    continuous    = false;
+    this->vehicle        = vehicle;
+    continuous           = false;
     this->parent.terrain = NULL;
 }
 
@@ -48,7 +40,6 @@ Building::Building( Terrain *parent,
  *  NetLocalTorque+=((tmp1-tmp1*(tmp1.Dot (GetAngularVelocity())/tmp1.Dot(tmp1))))*1./GetMass();
  *  }
  */
-//tmp is unknow since I can't include planetary_transform yet
-//SetCurPosition (tmp);
+// tmp is unknow since I can't include planetary_transform yet
+// SetCurPosition (tmp);
 //}
-

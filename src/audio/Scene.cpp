@@ -5,15 +5,15 @@
 #include "Scene.h"
 #include "config.h"
 
-namespace Audio {
+namespace Audio
+{
 
-    Scene::Scene(const std::string &nam) throw() :
-        name(nam)
-    {
-    }
-    
-    Scene::~Scene()
-    {
-    }
+Scene::Scene(const std::string &nam) throw() : name(nam)
+{
+}
 
-};
+Scene::~Scene()
+{
+}
+
+}; // namespace Audio

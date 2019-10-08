@@ -2,7 +2,7 @@
 #include "config.h"
 #include <boost/version.hpp>
 #include <boost/python.hpp>
-typedef boost::python::dict       BoostPythonDictionary;
+typedef boost::python::dict BoostPythonDictionary;
 
 #include "cmd/container.h"
 #include <string>
@@ -19,4 +19,3 @@ typedef boost::python::dict       BoostPythonDictionary;
 
 #include "define_odd_unit_functions.h"
 #endif
-

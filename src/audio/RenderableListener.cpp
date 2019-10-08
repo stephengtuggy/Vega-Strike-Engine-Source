@@ -5,25 +5,25 @@
 #include "RenderableListener.h"
 #include "config.h"
 
-namespace Audio {
+namespace Audio
+{
 
-    RenderableListener::RenderableListener(Listener *_listener) throw() : 
-        listener(_listener)
-    {
-    }
-    
-    RenderableListener::~RenderableListener()
-    {
-        // Just in case.
-        listener = 0;
-    }
-    
-    void RenderableListener::update(int flags) 
-        throw()
-    {
-        try {
-            updateImpl(flags);
-        } catch(Exception e) {}
-    }
+RenderableListener::RenderableListener(Listener *_listener) throw() : listener(_listener)
+{
+}
 
-};
+RenderableListener::~RenderableListener()
+{
+    // Just in case.
+    listener = 0;
+}
+
+void RenderableListener::update(int flags) throw()
+{
+    try {
+        updateImpl(flags);
+    } catch (Exception e) {
+    }
+}
+
+}; // namespace Audio

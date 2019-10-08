@@ -15,7 +15,7 @@
  *                                                                         *
  **************************************************************************/
 
-#if defined(_WIN32) && _MSC_VER > 1300 
+#if defined(_WIN32) && _MSC_VER > 1300
 #define __restrict
 #endif
 #include "central.h"
@@ -28,35 +28,49 @@
 #include <stdio.h>
 #include <unistd.h>
 #endif
-glob_t *MISSIONS;
+glob_t *            MISSIONS;
 struct mission_data DATA;
 
 // Primary initialization function. Sets everything up and takes care of the program
-char *Start(int run_vegastrike) {
-	InitGraphics();
+char *Start(int run_vegastrike)
+{
+    InitGraphics();
 
-	DATA.name = NewString("");
-	DATA.author = NewString("");
-	DATA.description = NewString("");
-	DATA.briefing = NewString("");
-	DATA.path = NewString("");
-	DATA.numplayers = NewString("");
+    DATA.name        = NewString("");
+    DATA.author      = NewString("");
+    DATA.description = NewString("");
+    DATA.briefing    = NewString("");
+    DATA.path        = NewString("");
+    DATA.numplayers  = NewString("");
 
-	ShowMain(1);
-	gtk_main();
-	return DATA.path;
+    ShowMain(1);
+    gtk_main();
+    return DATA.path;
 }
 
-void RunMission(void) {
-	if (DATA.path[0] == '\0') { cout << "No mission selected\n"; return; }
-	cout << "Starting " << MISSION_PROGRAM << " with mission " << DATA.path << endl;
+void RunMission(void)
+{
+    if (DATA.path[0] == '\0') {
+        cout << "No mission selected\n";
+        return;
+    }
+    cout << "Starting " << MISSION_PROGRAM << " with mission " << DATA.path << endl;
 #ifdef _WIN32
-	char execname [2048];
-	char mypath[1500];
-	_getcwd (mypath,1499);
-	sprintf (execname,"%s\\Vegastrike",mypath);
-	_spawnl(P_NOWAIT,execname,execname,(string("\"")+string(DATA.path)+string("\"")).c_str(), (string("-m")+DATA.numplayers).c_str(), NULL);
+    char execname[2048];
+    char mypath[1500];
+    _getcwd(mypath, 1499);
+    sprintf(execname, "%s\\Vegastrike", mypath);
+    _spawnl(P_NOWAIT,
+            execname,
+            execname,
+            (string("\"") + string(DATA.path) + string("\"")).c_str(),
+            (string("-m") + DATA.numplayers).c_str(),
+            NULL);
 #else
-	execlp("./vegastrike", "./vegastrike", (string("\"")+string(DATA.path)+string("\"")).c_str(), (string("-m")+DATA.numplayers).c_str(), NULL);
+    execlp("./vegastrike",
+           "./vegastrike",
+           (string("\"") + string(DATA.path) + string("\"")).c_str(),
+           (string("-m") + DATA.numplayers).c_str(),
+           NULL);
 #endif
 }

@@ -4,23 +4,23 @@
 UnitContainer::UnitContainer()
 {
     unit = NULL;
-    VSCONSTRUCT1( 'U' )
+    VSCONSTRUCT1('U')
 }
-UnitContainer::UnitContainer( Unit *un ) : unit( NULL )
+UnitContainer::UnitContainer(Unit *un) : unit(NULL)
 {
-    SetUnit( un );
-    VSCONSTRUCT1( 'U' );
+    SetUnit(un);
+    VSCONSTRUCT1('U');
 }
 UnitContainer::~UnitContainer()
 {
     VSDESTRUCT1
     if (unit)
         unit->UnRef();
-    //bad idea...arrgh!
+    // bad idea...arrgh!
 }
-void UnitContainer::SetUnit( Unit *un )
+void UnitContainer::SetUnit(Unit *un)
 {
-    //if the unit is null then go here otherwise if the unit is killed then go here
+    // if the unit is null then go here otherwise if the unit is killed then go here
     if (un != NULL ? un->Killed() == true : true) {
         if (unit)
             unit->UnRef();
@@ -33,4 +33,3 @@ void UnitContainer::SetUnit( Unit *un )
         unit->Ref();
     }
 }
-

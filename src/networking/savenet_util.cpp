@@ -7,66 +7,76 @@
 
 using std::string;
 
-void SaveNetUtil::GetSaveStrings( ClientPtr clt, string &savestr, string &xmlstr, bool detail )
+void SaveNetUtil::GetSaveStrings(ClientPtr clt, string &savestr, string &xmlstr, bool detail)
 {
-    if (!clt) return;
-    Unit *un  = clt->game_unit.GetUnit();
-    if (!un) return;
+    if (!clt)
+        return;
+    Unit *un = clt->game_unit.GetUnit();
+    if (!un)
+        return;
     /*
      *  Cockpit * cp = _Universe->isPlayerStarship( un);
      *  const QVector POS( un->curr_physical_state.position);
      *  if (cp) {
      *       // Only get the player data, the dynamic universe part is separated
-     *       savestr = cp->savegame->WritePlayerData ( POS, cp->unitfilename, cp->savegame->GetStarSystem().c_str(), cp->credits, FactionUtil::GetFactionName( cp->GetParent()->faction));
+     *       savestr = cp->savegame->WritePlayerData ( POS, cp->unitfilename, cp->savegame->GetStarSystem().c_str(), cp->credits,
+     * FactionUtil::GetFactionName( cp->GetParent()->faction));
      *  }
      *  xmlstr = un->WriteUnitString();
      */
-    int cpnum = _Universe->whichPlayerStarship( un );
-    if (cpnum < 0) return;
-    GetSaveStrings( cpnum, savestr, xmlstr, detail );
+    int cpnum = _Universe->whichPlayerStarship(un);
+    if (cpnum < 0)
+        return;
+    GetSaveStrings(cpnum, savestr, xmlstr, detail);
 }
 
-void SaveNetUtil::GetSaveStrings( int numplayer, string &savestr, string &xmlstr, bool savevars )
+void SaveNetUtil::GetSaveStrings(int numplayer, string &savestr, string &xmlstr, bool savevars)
 {
     Cockpit *cp;
-    Unit    *un;
-    cp = _Universe->AccessCockpit( numplayer );
+    Unit *   un;
+    cp = _Universe->AccessCockpit(numplayer);
     if (cp) {
         un = cp->GetParent();
         if (un) {
-            xmlstr  = un->WriteUnitString();
-            const QVector POS( un->LocalPosition() );
-            string fname( cp->activeStarSystem->getFileName() );
-            vector< string > packedInfo;
-            
+            xmlstr = un->WriteUnitString();
+            const QVector  POS(un->LocalPosition());
+            string         fname(cp->activeStarSystem->getFileName());
+            vector<string> packedInfo;
+
             cp->PackUnitInfo(packedInfo);
-            
-            savestr = cp->savegame->WriteSaveGame( fname.c_str(), un->LocalPosition(), cp->credits, packedInfo, numplayer,
-                                                   FactionUtil::GetFactionName( cp->GetParent()->faction ), false );
-            //Only get the player data, the dynamic universe part is separated
-            //savestr = cp->savegame->WritePlayerData ( POS, cp->unitfilename, fname.c_str(), cp->credits, FactionUtil::GetFactionName( cp->GetParent()->faction));
+
+            savestr = cp->savegame->WriteSaveGame(fname.c_str(),
+                                                  un->LocalPosition(),
+                                                  cp->credits,
+                                                  packedInfo,
+                                                  numplayer,
+                                                  FactionUtil::GetFactionName(cp->GetParent()->faction),
+                                                  false);
+            // Only get the player data, the dynamic universe part is separated
+            // savestr = cp->savegame->WritePlayerData ( POS, cp->unitfilename, fname.c_str(), cp->credits, FactionUtil::GetFactionName(
+            // cp->GetParent()->faction));
         }
     }
 }
 
-void SaveNetUtil::GetSaveBuffer( string savestr, string xmlstr, char *buffer )
+void SaveNetUtil::GetSaveBuffer(string savestr, string xmlstr, char *buffer)
 {
-    unsigned int total_size = savestr.length()+xmlstr.length()+2*sizeof (unsigned int);
+    unsigned int total_size = savestr.length() + xmlstr.length() + 2 * sizeof(unsigned int);
     unsigned int nxmllen, nsavelen;
-    //char * buffer = new char[total_size];
-    memset( buffer, 0, total_size );
-    nsavelen = htonl( savestr.length() );
-    nxmllen  = htonl( xmlstr.length() );
-    //Put the save length in the buffer
-    memcpy( buffer, &nsavelen, sizeof (unsigned int) );
-    //Put the save string in the buffer
-    memcpy( buffer+sizeof (unsigned int), savestr.c_str(), savestr.length() );
-    //Put the xml length in the buffer
-    memcpy( buffer+sizeof (unsigned int)+savestr.length(), &nxmllen, sizeof (unsigned int) );
-    //Put the xml string in the buffer
-    memcpy( buffer+2*sizeof (unsigned int)+savestr.length(), xmlstr.c_str(), xmlstr.length() );
+    // char * buffer = new char[total_size];
+    memset(buffer, 0, total_size);
+    nsavelen = htonl(savestr.length());
+    nxmllen  = htonl(xmlstr.length());
+    // Put the save length in the buffer
+    memcpy(buffer, &nsavelen, sizeof(unsigned int));
+    // Put the save string in the buffer
+    memcpy(buffer + sizeof(unsigned int), savestr.c_str(), savestr.length());
+    // Put the xml length in the buffer
+    memcpy(buffer + sizeof(unsigned int) + savestr.length(), &nxmllen, sizeof(unsigned int));
+    // Put the xml string in the buffer
+    memcpy(buffer + 2 * sizeof(unsigned int) + savestr.length(), xmlstr.c_str(), xmlstr.length());
 
-    //return buffer;
+    // return buffer;
 }
 
 /*
@@ -95,4 +105,3 @@ void SaveNetUtil::GetSaveBuffer( string savestr, string xmlstr, char *buffer )
  *       VSFileSystem::Close( fp);
  *  }
  */
-

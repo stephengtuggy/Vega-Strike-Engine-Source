@@ -25,32 +25,33 @@ using std::string;
 #include "networking/acctserver.h"
 #include "lin_time.h"
 
-void VSExit( int code )
+void VSExit(int code)
 {
-    exit( code );
+    exit(code);
 }
 
-string getStarSystemSector( const string &in )
+string getStarSystemSector(const string &in)
 {
-    return string( "" );
+    return string("");
 }
 
-string GetUnitDir( string filename )
+string GetUnitDir(string filename)
 {
-    return string( "" );
+    return string("");
 }
 
-char  SERVER = 2;
-float simulation_atom_var = (float) 1.0/10.0;
-float audio_atom_var = (float) 1.0/18.0;
+char  SERVER              = 2;
+float simulation_atom_var = (float)1.0 / 10.0;
+float audio_atom_var      = (float)1.0 / 18.0;
 class NetClient
-{};
+{
+};
 NetClient *Network;
 
-int main( int argc, char **argv )
+int main(int argc, char **argv)
 {
     InitTime();
-    setNewTime( ( (double) time( NULL ) )-VEGA_EPOCH );
+    setNewTime(((double)time(NULL)) - VEGA_EPOCH);
     AccountServer *Server = new AccountServer;
 
     Server->start();
@@ -58,4 +59,3 @@ int main( int argc, char **argv )
     delete Server;
     return 0;
 }
-

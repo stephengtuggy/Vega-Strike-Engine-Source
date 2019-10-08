@@ -6,11 +6,7 @@ namespace Radar
 {
 
 DualDisplayBase::DualDisplayBase()
-    : isPaused(false),
-      randomEngine(),
-      randomDistribution(),
-      randomGenerator(randomEngine, randomDistribution),
-      lastRandomNumber(0.0)
+    : isPaused(false), randomEngine(), randomDistribution(), randomGenerator(randomEngine, randomDistribution), lastRandomNumber(0.0)
 {
 }
 
@@ -26,17 +22,15 @@ void DualDisplayBase::OnPauseEnd()
 
 float DualDisplayBase::Jitter(float errorOffset, float errorRange)
 {
-    if (!isPaused)
-    {
+    if (!isPaused) {
         lastRandomNumber = randomGenerator();
     }
     return errorOffset + errorRange * lastRandomNumber;
 }
 
-void DualDisplayBase::Jitter(float errorOffset, float errorRange, Vector& position)
+void DualDisplayBase::Jitter(float errorOffset, float errorRange, Vector &position)
 {
-    if (!isPaused)
-    {
+    if (!isPaused) {
         lastRandomVector = Vector(randomGenerator(), randomGenerator(), randomGenerator());
     }
     position.x += (-0.5 * errorOffset + (errorRange * lastRandomVector.x)) * position.x;

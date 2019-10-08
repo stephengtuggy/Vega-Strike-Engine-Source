@@ -1,6 +1,6 @@
 #include <config.h>
 
-#if defined (USE_NET_THREAD_SDL)
+#if defined(USE_NET_THREAD_SDL)
 #include "vsnet_thread.h"
 
 #error This thread library should not be in use right now. Bitrot !
@@ -12,43 +12,43 @@
 //#include "jthread.h"
 //#include "jmutex.h"
 //#include "jcond.h"
-//using namespace std;
+// using namespace std;
 ///*------------------------------------------------------------*
 //* definition of VSThread                                     *
 //*------------------------------------------------------------*/
 //
-//void VSThread::init( )
+// void VSThread::init( )
 //{
 //}
 //
-//struct VSThread::Private : public JThread
+// struct VSThread::Private : public JThread
 //{
-//VSThread* _t;
-//public:
-//Private( VSThread* t ) : _t(t) { }
+// VSThread* _t;
+// public:
+// Private( VSThread* t ) : _t(t) { }
 //
-//virtual void* Thread( ) {
+// virtual void* Thread( ) {
 //_t->run( );
-//return NULL;
+// return NULL;
 //}
 //};
 //
-//VSThread::VSThread( bool /*detached*/ )
+// VSThread::VSThread( bool /*detached*/ )
 //{
 //_internal = new Private( this );
 //}
 //
-//VSThread::~VSThread( )
+// VSThread::~VSThread( )
 //{
-//delete _internal;
+// delete _internal;
 //}
 //
-//void VSThread::start( )
+// void VSThread::start( )
 //{
 //_internal->Start( );
 //}
 //
-//void VSThread::join( )
+// void VSThread::join( )
 //{
 //}
 //
@@ -56,34 +56,34 @@
 //* definition of VSMutex                                      *
 //*------------------------------------------------------------*/
 //
-//struct VSMutex::Private : public JMutex
+// struct VSMutex::Private : public JMutex
 //{
 //};
 //
-//VSMutex::VSMutex( )
+// VSMutex::VSMutex( )
 //{
 //_internal = new Private;
 //_internal->Init( );
 //}
 //
-//VSMutex::~VSMutex( )
+// VSMutex::~VSMutex( )
 //{
-//delete _internal;
+// delete _internal;
 //}
 //
-//void VSMutex::lock( )
+// void VSMutex::lock( )
 //{
-//if( _internal->Lock( ) != 0 )
+// if( _internal->Lock( ) != 0 )
 //{
-//cerr << "Can't lock JMutex" << endl;
+// cerr << "Can't lock JMutex" << endl;
 //}
 //}
 //
-//void VSMutex::unlock( )
+// void VSMutex::unlock( )
 //{
-//if( _internal->Unlock( ) != 0 )
+// if( _internal->Unlock( ) != 0 )
 //{
-//cerr << "Can't unlock JMutex" << endl;
+// cerr << "Can't unlock JMutex" << endl;
 //}
 //}
 //
@@ -91,44 +91,43 @@
 //* definition of VSCond                                       *
 //*------------------------------------------------------------*/
 //
-//struct VSCond::Private : public JCond
+// struct VSCond::Private : public JCond
 //{
 //};
 //
-//VSCond::VSCond( )
+// VSCond::VSCond( )
 //{
 //_internal = new Private;
 //_internal->Init( );
 //}
 //
-//VSCond::~VSCond( )
+// VSCond::~VSCond( )
 //{
-//delete _internal;
+// delete _internal;
 //}
 //
-//void VSCond::wait( VSMutex& mx )
+// void VSCond::wait( VSMutex& mx )
 //{
-//if( _internal->Wait( *mx._internal ) != 0 )
+// if( _internal->Wait( *mx._internal ) != 0 )
 //{
-//cerr << "Can't wait for JCond condition variable" << endl;
-//}
-//}
-//
-//void VSCond::signal( )
-//{
-//if( _internal->Signal( ) != 0 )
-//{
-//cerr << "Can't signal JCond condition variable" << endl;
+// cerr << "Can't wait for JCond condition variable" << endl;
 //}
 //}
 //
-//void VSCond::broadcast( )
+// void VSCond::signal( )
 //{
-//if( _internal->Broadcast( ) != 0 )
+// if( _internal->Signal( ) != 0 )
 //{
-//cerr << "Can't broadcast to JCond condition variable" << endl;
+// cerr << "Can't signal JCond condition variable" << endl;
+//}
+//}
+//
+// void VSCond::broadcast( )
+//{
+// if( _internal->Broadcast( ) != 0 )
+//{
+// cerr << "Can't broadcast to JCond condition variable" << endl;
 //}
 //}
 
 #endif /* defined(USE_NET_THREAD_SDL) */
-

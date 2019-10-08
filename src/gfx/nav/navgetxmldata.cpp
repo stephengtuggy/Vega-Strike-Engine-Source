@@ -2,7 +2,7 @@
 
 using std::string;
 
-string retrievedata( string data, string type )
+string retrievedata(string data, string type)
 {
     int length = data.size();
     if (length == 0)
@@ -12,51 +12,51 @@ string retrievedata( string data, string type )
     char   testchar   = 'p';
     string teststring = "";
 
-    int    counter    = 0;
+    int counter = 0;
     while (counter < length) {
         if (data[counter] == '=') {
-            //find an =
+            // find an =
             int tempcounter = counter;
-            teststring = "";
+            teststring      = "";
             while (tempcounter > 0) {
-                //count backwards to find its start
-                tempcounter = tempcounter-1;
+                // count backwards to find its start
+                tempcounter = tempcounter - 1;
                 testchar    = data[tempcounter];
-                if ( (testchar == '"') || (tempcounter == 0) || (testchar == ' ') ) {
-                    //found its start
+                if ((testchar == '"') || (tempcounter == 0) || (testchar == ' ')) {
+                    // found its start
                     if (tempcounter == 0)
-                        teststring = testchar+teststring;
-                    //if(testchar == ' ')
-                    //teststring = ' ' + teststring;
+                        teststring = testchar + teststring;
+                    // if(testchar == ' ')
+                    // teststring = ' ' + teststring;
 
-                    //kill spaces at front and back
+                    // kill spaces at front and back
                     //***********************************
                     int    startspaces  = 0;
-                    int    endspaces    = teststring.size()-1;
+                    int    endspaces    = teststring.size() - 1;
                     string possibletype = "";
                     while (teststring[startspaces] == ' ')
                         startspaces += 1;
                     while (teststring[endspaces] == ' ')
                         endspaces -= 1;
                     for (int j = startspaces; j <= endspaces; j++)
-                        possibletype = possibletype+teststring[j];
+                        possibletype = possibletype + teststring[j];
                     //***********************************
-                    //if match, return the data afterwards
+                    // if match, return the data afterwards
                     //***********************************
                     if (possibletype == type) {
-                        //cout << possibletype;
+                        // cout << possibletype;
                         size_t returncounter = counter;
                         string returnstring  = "";
-                        returncounter += 1;                             //pass the =
+                        returncounter += 1; // pass the =
                         while (data[returncounter] == ' ')
                             returncounter += 1;
-                        returncounter += 1;                             //pass the "
-                        while (data[returncounter] == ' ')                              //pass starting spaces in answer
+                        returncounter += 1;                // pass the "
+                        while (data[returncounter] == ' ') // pass starting spaces in answer
                             returncounter += 1;
-                        while ( returncounter < (data.size()-1) ) {
-                            if ( (data[returncounter] == '"') || (data[returncounter] == ' ') )                                //read upto the second comment
+                        while (returncounter < (data.size() - 1)) {
+                            if ((data[returncounter] == '"') || (data[returncounter] == ' ')) // read upto the second comment
                                 break;
-                            returnstring   = returnstring+data[returncounter];
+                            returnstring = returnstring + data[returncounter];
                             returncounter += 1;
                         }
                         return returnstring;
@@ -67,11 +67,10 @@ string retrievedata( string data, string type )
                     }
                     break;
                 }
-                teststring = testchar+teststring;
+                teststring = testchar + teststring;
             }
         }
         counter += 1;
     }
     return "";
 }
-

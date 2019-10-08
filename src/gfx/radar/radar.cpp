@@ -14,8 +14,7 @@ namespace Radar
 
 std::auto_ptr<Display> Factory(Type::Value type)
 {
-    switch (type)
-    {
+    switch (type) {
     case Type::NullDisplay:
         return std::auto_ptr<Display>(new NullDisplay);
 

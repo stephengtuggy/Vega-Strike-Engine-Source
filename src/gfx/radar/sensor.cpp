@@ -11,10 +11,7 @@ extern Unit *getTopLevelOwner(); // WTF... located in star_system_generic.cpp
 namespace Radar
 {
 
-Sensor::Sensor(Unit *player)
-    : player(player),
-      closeRange(30000.0),
-      useThreatAssessment(false)
+Sensor::Sensor(Unit *player) : player(player), closeRange(30000.0), useThreatAssessment(false)
 {
 }
 
@@ -77,14 +74,14 @@ Track Sensor::CreateTrack(const Unit *target) const
     return Track(player, target);
 }
 
-Track Sensor::CreateTrack(const Unit *target, const Vector& position) const
+Track Sensor::CreateTrack(const Unit *target, const Vector &position) const
 {
     assert(player);
 
     return Track(player, target, position);
 }
 
-bool Sensor::IsTracking(const Track& track) const
+bool Sensor::IsTracking(const Track &track) const
 {
     assert(player);
 
@@ -98,7 +95,7 @@ bool Sensor::InsideNebula() const
     return (player->GetNebula() != NULL);
 }
 
-bool Sensor::InRange(const Track& track) const
+bool Sensor::InRange(const Track &track) const
 {
     return (track.GetDistance() <= GetMaxRange());
 }
@@ -107,18 +104,16 @@ bool Sensor::InRange(const Track& track) const
 
 class CollectRadarTracks
 {
-public:
-    CollectRadarTracks()
-        : sensor(NULL),
-          player(NULL),
-          collection(NULL)
-    {}
+  public:
+    CollectRadarTracks() : sensor(NULL), player(NULL), collection(NULL)
+    {
+    }
 
     void init(const Sensor *sensor, Sensor::TrackCollection *collection, Unit *player)
     {
-        this->sensor = sensor;
+        this->sensor     = sensor;
         this->collection = collection;
-        this->player = player;
+        this->player     = player;
     }
 
     bool acquire(const Unit *target, float distance)
@@ -129,39 +124,30 @@ public:
         assert(target);
 
         static bool draw_significant_blips =
-            XMLSupport::parse_bool( vs_config->getVariable( "graphics", "hud", "draw_significant_blips", "true" ) );
-        static bool untarget_out_cone  =
-            XMLSupport::parse_bool( vs_config->getVariable( "graphics", "hud", "untarget_beyond_cone", "false" ) );
-        static float minblipsize =
-            XMLSupport::parse_float( vs_config->getVariable( "graphics", "hud", "min_radarblip_size", "0" ) );
+            XMLSupport::parse_bool(vs_config->getVariable("graphics", "hud", "draw_significant_blips", "true"));
+        static bool  untarget_out_cone = XMLSupport::parse_bool(vs_config->getVariable("graphics", "hud", "untarget_beyond_cone", "false"));
+        static float minblipsize       = XMLSupport::parse_float(vs_config->getVariable("graphics", "hud", "min_radarblip_size", "0"));
 
         if (target != player) {
             const bool isCurrentTarget = (player->Target() == target);
-            double dummy;
-            if (!player->InRange( target, dummy, isCurrentTarget && untarget_out_cone, true, true ))
-            {
+            double     dummy;
+            if (!player->InRange(target, dummy, isCurrentTarget && untarget_out_cone, true, true)) {
                 if (isCurrentTarget)
                     player->Target(NULL);
                 return true;
             }
-            if (!isCurrentTarget &&
-                !draw_significant_blips &&
-                (getTopLevelOwner() == target->owner) &&
+            if (!isCurrentTarget && !draw_significant_blips && (getTopLevelOwner() == target->owner) &&
                 (distance > player->GetComputerData().radar.maxrange))
                 return true;
 
             // Blips will be sorted later as different radars need to sort them differently
-            if (target->rSize() > minblipsize)
-            {
+            if (target->rSize() > minblipsize) {
                 collection->push_back(sensor->CreateTrack(target));
             }
-            if (target->isPlanet() == PLANETPTR && target->radial_size > 0)
-            {
+            if (target->isPlanet() == PLANETPTR && target->radial_size > 0) {
                 const Unit *sub = NULL;
-                for (un_kiter i = target->viewSubUnits(); (sub = *i) != NULL; ++i)
-                {
-                    if (target->rSize() > minblipsize)
-                    {
+                for (un_kiter i = target->viewSubUnits(); (sub = *i) != NULL; ++i) {
+                    if (target->rSize() > minblipsize) {
                         collection->push_back(sensor->CreateTrack(sub));
                     }
                 }
@@ -170,42 +156,33 @@ public:
         return true;
     }
 
-private:
-    const Sensor *sensor;
-    Unit *player;
+  private:
+    const Sensor *           sensor;
+    Unit *                   player;
     Sensor::TrackCollection *collection;
 };
 
 // FIXME: Scale objects according to distance and ignore those below a given threshold (which improves with better sensors)
-const Sensor::TrackCollection& Sensor::FindTracksInRange() const
+const Sensor::TrackCollection &Sensor::FindTracksInRange() const
 {
     assert(player);
 
     collection.clear();
 
     // Find all units within range
-    static float maxUnitRadius =
-        XMLSupport::parse_float(vs_config->getVariable("graphics", "hud", "radar_search_extra_radius", "1000"));
-    static bool allGravUnits =
-        XMLSupport::parse_bool(vs_config->getVariable("graphics", "hud", "draw_gravitational_objects", "true"));
+    static float maxUnitRadius = XMLSupport::parse_float(vs_config->getVariable("graphics", "hud", "radar_search_extra_radius", "1000"));
+    static bool  allGravUnits  = XMLSupport::parse_bool(vs_config->getVariable("graphics", "hud", "draw_gravitational_objects", "true"));
 
     UnitWithinRangeLocator<CollectRadarTracks> unitLocator(GetMaxRange(), maxUnitRadius);
     unitLocator.action.init(this, &collection, player);
-    if (! is_null(player->location[Unit::UNIT_ONLY]))
-    {
-        findObjects(_Universe->activeStarSystem()->collidemap[Unit::UNIT_ONLY],
-                    player->location[Unit::UNIT_ONLY],
-                    &unitLocator);
+    if (!is_null(player->location[Unit::UNIT_ONLY])) {
+        findObjects(_Universe->activeStarSystem()->collidemap[Unit::UNIT_ONLY], player->location[Unit::UNIT_ONLY], &unitLocator);
     }
-    if (allGravUnits)
-    {
-        Unit *target = player->Target();
+    if (allGravUnits) {
+        Unit *      target = player->Target();
         const Unit *gravUnit;
-        bool foundtarget = false;
-        for (un_kiter i = _Universe->activeStarSystem()->gravitationalUnits().constIterator();
-             (gravUnit = *i) != NULL;
-             ++i)
-        {
+        bool        foundtarget = false;
+        for (un_kiter i = _Universe->activeStarSystem()->gravitationalUnits().constIterator(); (gravUnit = *i) != NULL; ++i) {
             unitLocator.action.acquire(gravUnit, UnitUtil::getDistance(player, gravUnit));
             if (gravUnit == target)
                 foundtarget = true;
@@ -216,7 +193,7 @@ const Sensor::TrackCollection& Sensor::FindTracksInRange() const
     return collection;
 }
 
-Sensor::ThreatLevel::Value Sensor::IdentifyThreat(const Track& track) const
+Sensor::ThreatLevel::Value Sensor::IdentifyThreat(const Track &track) const
 {
     assert(player);
 
@@ -226,11 +203,9 @@ Sensor::ThreatLevel::Value Sensor::IdentifyThreat(const Track& track) const
     if (track.IsExploding())
         return ThreatLevel::None;
 
-    if (track.HasWeaponLock())
-    {
+    if (track.HasWeaponLock()) {
         // I am being targetted by...
-        switch (track.GetType())
-        {
+        switch (track.GetType()) {
         case Track::Type::Missile:
             return ThreatLevel::High;
 
@@ -243,8 +218,7 @@ Sensor::ThreatLevel::Value Sensor::IdentifyThreat(const Track& track) const
             if (track.HasTurrets())
                 return ThreatLevel::Medium;
 
-            if (!track.HasWeapons())
-            {
+            if (!track.HasWeapons()) {
                 // So what are you going to threaten me with? Exhaustion gas?
                 return ThreatLevel::None;
             }
@@ -258,28 +232,26 @@ Sensor::ThreatLevel::Value Sensor::IdentifyThreat(const Track& track) const
     return ThreatLevel::None;
 }
 
-GFXColor Sensor::GetColor(const Track& track) const
+GFXColor Sensor::GetColor(const Track &track) const
 {
     assert(player);
 
     static GFXColor friendColor  = vs_config->getColor("friend", GFXColor(-1, -1, -1, -1));
     static GFXColor enemyColor   = vs_config->getColor("enemy", GFXColor(-1, -1, -1, -1));
     static GFXColor neutralColor = vs_config->getColor("neutral", GFXColor(-1, -1, -1, -1));
-    static GFXColor baseColor    = vs_config->getColor("base", GFXColor( -1, -1, -1, -1 ));
-    static GFXColor planetColor  = vs_config->getColor("planet", GFXColor( -1, -1, -1, -1 ));
-    static GFXColor jumpColor    = vs_config->getColor("jump", GFXColor( 0, 1, 1, .8 ));
-    static GFXColor starColor    = vs_config->getColor("star", GFXColor( 1, 1, 1, 1 ));
-    static GFXColor missileColor = vs_config->getColor("missile", GFXColor( .25, 0, .5, 1 ));
-    static GFXColor cargoColor   = vs_config->getColor("cargo", GFXColor( .6, .2, 0, 1 ));
-    static GFXColor noColor      = vs_config->getColor("black_and_white", GFXColor( .5, .5, .5 ));
+    static GFXColor baseColor    = vs_config->getColor("base", GFXColor(-1, -1, -1, -1));
+    static GFXColor planetColor  = vs_config->getColor("planet", GFXColor(-1, -1, -1, -1));
+    static GFXColor jumpColor    = vs_config->getColor("jump", GFXColor(0, 1, 1, .8));
+    static GFXColor starColor    = vs_config->getColor("star", GFXColor(1, 1, 1, 1));
+    static GFXColor missileColor = vs_config->getColor("missile", GFXColor(.25, 0, .5, 1));
+    static GFXColor cargoColor   = vs_config->getColor("cargo", GFXColor(.6, .2, 0, 1));
+    static GFXColor noColor      = vs_config->getColor("black_and_white", GFXColor(.5, .5, .5));
 
-    Track::Type::Value trackType = track.GetType();
+    Track::Type::Value trackType   = track.GetType();
     ThreatLevel::Value threatLevel = IdentifyThreat(track);
 
-    if (UseThreatAssessment())
-    {
-        switch (trackType)
-        {
+    if (UseThreatAssessment()) {
+        switch (trackType) {
         case Track::Type::Missile:
             return missileColor;
 
@@ -288,10 +260,8 @@ GFXColor Sensor::GetColor(const Track& track) const
         }
     }
 
-    if (UseObjectRecognition())
-    {
-        switch (trackType)
-        {
+    if (UseObjectRecognition()) {
+        switch (trackType) {
         case Track::Type::Nebula:
         case Track::Type::Star:
             return starColor;
@@ -313,31 +283,27 @@ GFXColor Sensor::GetColor(const Track& track) const
         }
     }
 
-    if (UseFriendFoe())
-    {
-        switch (trackType)
-        {
+    if (UseFriendFoe()) {
+        switch (trackType) {
         case Track::Type::CapitalShip:
-        case Track::Type::Ship:
-            {
-                if (track.HasLock())
-                    return enemyColor;
+        case Track::Type::Ship: {
+            if (track.HasLock())
+                return enemyColor;
 
-                switch (track.GetRelation())
-                {
-                case Track::Relation::Friend:
-                    return friendColor;
+            switch (track.GetRelation()) {
+            case Track::Relation::Friend:
+                return friendColor;
 
-                case Track::Relation::Enemy:
-                    if (UseThreatAssessment() && (threatLevel == ThreatLevel::None))
-                        return neutralColor;
-
-                    return enemyColor;
-
-                default:
+            case Track::Relation::Enemy:
+                if (UseThreatAssessment() && (threatLevel == ThreatLevel::None))
                     return neutralColor;
-                }
+
+                return enemyColor;
+
+            default:
+                return neutralColor;
             }
+        }
 
         case Track::Type::Cargo:
             return cargoColor;

@@ -45,97 +45,95 @@
 
 #include "mangle.h"
 
-union type_conv
-{
-    float fl_val;
+union type_conv {
+    float        fl_val;
     unsigned int u32_val;
 };
 
-unsigned int float_to_uint32( float value, char exponent, char significand, char denorm )
+unsigned int float_to_uint32(float value, char exponent, char significand, char denorm)
 {
     union type_conv tmp;
     unsigned int    newval, tmpsig;
-    int tmpexp;
+    int             tmpexp;
 
     tmp.fl_val = value;
-    //set the sign bit
-    newval     = SIGN_MASK&tmp.u32_val;
-    newval   >>= EXP_BITS+SIGNIF_BITS-(exponent+significand);
-    //get the exponent and remove its offset
-    tmpexp     = (EXP_MASK&tmp.u32_val)>>SIGNIF_BITS;
-    tmpexp    -= 127;
-    //get the significand but leave one extra bit for use while performing
-    //rounding later
-    tmpsig     = (SIGNIF_MASK&tmp.u32_val)>>(SIGNIF_BITS-significand-1);
-    //if this will be a normalized number, perform rounding
-    if (tmpexp > denorm && tmpsig&1) {
+    // set the sign bit
+    newval = SIGN_MASK & tmp.u32_val;
+    newval >>= EXP_BITS + SIGNIF_BITS - (exponent + significand);
+    // get the exponent and remove its offset
+    tmpexp = (EXP_MASK & tmp.u32_val) >> SIGNIF_BITS;
+    tmpexp -= 127;
+    // get the significand but leave one extra bit for use while performing
+    // rounding later
+    tmpsig = (SIGNIF_MASK & tmp.u32_val) >> (SIGNIF_BITS - significand - 1);
+    // if this will be a normalized number, perform rounding
+    if (tmpexp > denorm && tmpsig & 1) {
         tmpsig++;
-        if ( tmpsig&( 1<<(significand+1) ) ) {
+        if (tmpsig & (1 << (significand + 1))) {
             tmpexp++;
-            tmpsig -= 1<<(significand+1);
+            tmpsig -= 1 << (significand + 1);
         }
     }
-    //remove the bit saved for rounding
+    // remove the bit saved for rounding
     tmpsig >>= 1;
     if (tmpexp == denorm) {
-        if (tmpsig&1)          //more rounding fun
+        if (tmpsig & 1) // more rounding fun
             tmpsig++;
-        if ( tmpsig&(1<<significand) ) {
+        if (tmpsig & (1 << significand)) {
             tmpexp++;
-            tmpsig -= 1<<significand;
-            tmpexp  = 1;
+            tmpsig -= 1 << significand;
+            tmpexp = 1;
         } else {
-            tmpsig  |= 1<<significand;
+            tmpsig |= 1 << significand;
             tmpsig >>= 1;
-            tmpexp   = 0;
+            tmpexp = 0;
         }
     } else if (tmpexp < denorm) {
-        tmpsig  |= 1<<significand;
-        tmpsig >>= denorm-tmpexp;
-        if (tmpsig&1)
+        tmpsig |= 1 << significand;
+        tmpsig >>= denorm - tmpexp;
+        if (tmpsig & 1)
             tmpsig++;
         tmpsig >>= 1;
-        tmpexp   = 0;
-        //if the number is too big, clamp it to the maximum represented value
-    } else if (tmpexp >= (1<<exponent)+denorm) {
-        tmpexp = BITMASK( exponent );
-        tmpsig = BITMASK( significand );
+        tmpexp = 0;
+        // if the number is too big, clamp it to the maximum represented value
+    } else if (tmpexp >= (1 << exponent) + denorm) {
+        tmpexp = BITMASK(exponent);
+        tmpsig = BITMASK(significand);
     } else {
         tmpexp -= denorm;
     }
-    newval |= (tmpexp<<significand)|tmpsig;
+    newval |= (tmpexp << significand) | tmpsig;
     return newval;
 }
 
-float uint32_to_float( unsigned int value, char exponent, char significand, char denorm )
+float uint32_to_float(unsigned int value, char exponent, char significand, char denorm)
 {
     union type_conv newval;
     unsigned int    tmpsig;
-    int tmpexp;
+    int             tmpexp;
 
-    newval.u32_val   = ( 1<<(exponent+significand) )&value;
-    newval.u32_val <<= 31-(exponent+significand);
-    tmpsig   = value&BITMASK( significand );
-    tmpexp   = value&(BITMASK( exponent )<<significand);
+    newval.u32_val = (1 << (exponent + significand)) & value;
+    newval.u32_val <<= 31 - (exponent + significand);
+    tmpsig = value & BITMASK(significand);
+    tmpexp = value & (BITMASK(exponent) << significand);
     tmpexp >>= significand;
-    //if the number should be 0 or -0, go ahead and return
+    // if the number should be 0 or -0, go ahead and return
     if (tmpexp == 0 && tmpsig == 0) {
         return newval.fl_val;
-        //if a denormalized value, rebuild to normalized form
+        // if a denormalized value, rebuild to normalized form
     } else if (tmpexp == 0) {
         tmpsig <<= 1;
-        while ( !( tmpsig&(1<<significand) ) ) {
-            tmpexp  -= 1;
+        while (!(tmpsig & (1 << significand))) {
+            tmpexp -= 1;
             tmpsig <<= 1;
         }
-        tmpsig -= 1<<significand;
+        tmpsig -= 1 << significand;
     }
-    tmpexp  += 127+denorm;
-    tmpsig <<= SIGNIF_BITS-significand;
+    tmpexp += 127 + denorm;
+    tmpsig <<= SIGNIF_BITS - significand;
 
-    newval.u32_val |= tmpexp<<SIGNIF_BITS;
+    newval.u32_val |= tmpexp << SIGNIF_BITS;
     newval.u32_val |= tmpsig;
 
     return newval.fl_val;
 }
-

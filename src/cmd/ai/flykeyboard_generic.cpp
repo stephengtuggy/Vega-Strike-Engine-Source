@@ -6,10 +6,10 @@
 #include "vs_globals.h"
 #include "lin_time.h"
 
-float FlyByKeyboard::clamp_axis( float v )
+float FlyByKeyboard::clamp_axis(float v)
 {
-    static int axis_scale = XMLSupport::parse_int( vs_config->getVariable( "physics", "slide_start", "3" ) );
-    int as = parent->GetComputerData().slide_start;
+    static int axis_scale = XMLSupport::parse_int(vs_config->getVariable("physics", "slide_start", "3"));
+    int        as         = parent->GetComputerData().slide_start;
     if (as == 0)
         as = axis_scale;
     if (as) {
@@ -22,13 +22,13 @@ float FlyByKeyboard::clamp_axis( float v )
     return v;
 }
 
-float FlyByKeyboard::reduce_axis( float v )
+float FlyByKeyboard::reduce_axis(float v)
 {
-    static int axis_scale = XMLSupport::parse_int( vs_config->getVariable( "physics", "slide_end", "2" ) );
-    int as = parent->GetComputerData().slide_end;
+    static int axis_scale = XMLSupport::parse_int(vs_config->getVariable("physics", "slide_end", "2"));
+    int        as         = parent->GetComputerData().slide_end;
     if (as == 0)
         as = axis_scale;
-    if (as && fabs( v ) > as) {
+    if (as && fabs(v) > as) {
         if (v > 0)
             v -= as;
         else
@@ -46,49 +46,50 @@ void FlyByKeyboard::Destroy()
     Order::Destroy();
 }
 
-FlyByKeyboard::~FlyByKeyboard() {}
+FlyByKeyboard::~FlyByKeyboard()
+{
+}
 
-void FlyByKeyboard::KeyboardUp( float v )
+void FlyByKeyboard::KeyboardUp(float v)
 {
     if (v == 0) {
-        axis_key.i = reduce_axis( axis_key.i );
+        axis_key.i = reduce_axis(axis_key.i);
     } else {
-        if ( (v > 0) == (axis_key.i >= 0) )
+        if ((v > 0) == (axis_key.i >= 0))
             axis_key.i += v;
         else
             axis_key.i = v;
     }
-    Up( clamp_axis( axis_key.i ) );
+    Up(clamp_axis(axis_key.i));
 }
 
-void FlyByKeyboard::KeyboardRight( float v )
+void FlyByKeyboard::KeyboardRight(float v)
 {
     if (v == 0) {
-        axis_key.j = reduce_axis( axis_key.j );
+        axis_key.j = reduce_axis(axis_key.j);
     } else {
-        if ( (v > 0) == (axis_key.j >= 0) )
+        if ((v > 0) == (axis_key.j >= 0))
             axis_key.j += v;
         else
             axis_key.j = v;
     }
-    Right( clamp_axis( axis_key.j ) );
+    Right(clamp_axis(axis_key.j));
 }
 
-void FlyByKeyboard::KeyboardRollRight( float v )
+void FlyByKeyboard::KeyboardRollRight(float v)
 {
     if (v == 0) {
-        axis_key.k = reduce_axis( axis_key.k );
+        axis_key.k = reduce_axis(axis_key.k);
     } else {
-        if ( (v > 0) == (axis_key.k >= 0) )
+        if ((v > 0) == (axis_key.k >= 0))
             axis_key.k += v;
         else
             axis_key.k = v;
     }
-    RollRight( clamp_axis( axis_key.k ) );
+    RollRight(clamp_axis(axis_key.k));
 }
 
 void FlyByKeyboard::Execute()
 {
-    FlyByKeyboard::Execute( true );
+    FlyByKeyboard::Execute(true);
 }
-
