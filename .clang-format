@@ -19,5 +19,5 @@ IndentWidth: 4
 IndentWrappedFunctionNames: false
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: Inner
-PointerAlignment: Left
+PointerAlignment: Right
 SortIncludes: false
