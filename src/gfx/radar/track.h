@@ -6,7 +6,7 @@
 #include "gfx/vec.h"
 
 class Unit;
-struct GFXColor;  // Edit from class to struct as defined in gfxlib_struct.
+struct GFXColor; // Edit from class to struct as defined in gfxlib_struct.
 
 namespace Radar
 {
@@ -17,43 +17,22 @@ class Sensor;
 // to that which can be detected through the radar.
 class Track
 {
-public:
-    struct Type
-    {
-        enum Value
-        {
-            Unknown,
-            Nebula,
-            Star,
-            Planet,
-            DeadPlanet,
-            JumpPoint,
-            Asteroid,
-            Base,
-            CapitalShip,
-            Ship,
-            Cargo,
-            Missile
-        };
+  public:
+    struct Type {
+        enum Value { Unknown, Nebula, Star, Planet, DeadPlanet, JumpPoint, Asteroid, Base, CapitalShip, Ship, Cargo, Missile };
     };
 
-    struct Relation
-    {
-        enum Value
-        {
-            Neutral,
-            Friend,
-            Enemy
-        };
+    struct Relation {
+        enum Value { Neutral, Friend, Enemy };
     };
 
-public:
+  public:
     // Get the track position relative to myself
-    const Vector& GetPosition() const;
+    const Vector &GetPosition() const;
     // Get the relative distance between the track and me
     float GetDistance() const;
     // Get the absolute size of the track
-    float GetSize() const;
+    float       GetSize() const;
     Type::Value GetType() const;
 
     // Track is exploding
@@ -76,20 +55,20 @@ public:
     // Determine if track is friend or foe
     Relation::Value GetRelation() const;
 
-protected:
+  protected:
     // Produced by Sensor::CreateTrack
     friend class Sensor;
     Track(Unit *, const Unit *);
-    Track(Unit *, const Unit *, const Vector&);
-    Track(Unit *, const Unit *, const Vector&, float);
+    Track(Unit *, const Unit *, const Vector &);
+    Track(Unit *, const Unit *, const Vector &, float);
 
     Type::Value IdentifyType() const;
 
-protected:
-    Unit *player;
+  protected:
+    Unit *      player;
     const Unit *target;
-    Vector position;
-    float distance;
+    Vector      position;
+    float       distance;
     Type::Value type;
 };
 

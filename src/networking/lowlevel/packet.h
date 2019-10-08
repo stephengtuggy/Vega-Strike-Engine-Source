@@ -15,81 +15,77 @@
 using std::cout;
 using std::endl;
 using std::list;
-//using namespace std;
+// using namespace std;
 
 class Packet
 {
     DECLARE_VALID
 
-    struct Header
-    {
-        unsigned char  command;
-        ObjSerial      serial;
-        unsigned int   timestamp;
-        //unsigned int  delay;
+    struct Header {
+        unsigned char command;
+        ObjSerial     serial;
+        unsigned int  timestamp;
+        // unsigned int  delay;
         unsigned int   data_length;
         unsigned short flags;
 
-        void hton( char *c );
-        void ntoh( const void *c );
+        void hton(char *c);
+        void ntoh(const void *c);
     };
 
-    LOCALCONST_DECL( unsigned short, header_length, sizeof (struct Header) )
+    LOCALCONST_DECL(unsigned short, header_length, sizeof(struct Header))
 
-    Header h;
+    Header    h;
     PacketMem _packet;
 
-public: Packet();
-    Packet( const void *buffer, size_t sz );
-    Packet( PacketMem &buffer );
-    Packet( const Packet &a );
+  public:
+    Packet();
+    Packet(const void *buffer, size_t sz);
+    Packet(PacketMem &buffer);
+    Packet(const Packet &a);
 
     ~Packet();
 
-    Packet& operator=( const Packet &a )
+    Packet &operator=(const Packet &a)
     {
-        copyfrom( a );
+        copyfrom(a);
         return *this;
     }
 
-    void copyfrom( const Packet &a );
+    void copyfrom(const Packet &a);
 
-    bool operator==( const Packet &p ) const
+    bool operator==(const Packet &p) const
     {
-        if (_packet == p._packet) return true;
-        cout<<"Packets are different"<<endl;
+        if (_packet == p._packet)
+            return true;
+        cout << "Packets are different" << endl;
         return false;
     }
 
-/// flags is a bitwise OR of PCKTFLAGS
-    int send( Cmd cmd,
-              ObjSerial nserial,
-              const char *buf,
-              unsigned int length,
-              int flags,
-              const AddressIP *dst,
-              const SOCKETALT &sock,
-              const char *caller_file,
-              int caller_line );
+    /// flags is a bitwise OR of PCKTFLAGS
+    int send(Cmd              cmd,
+             ObjSerial        nserial,
+             const char *     buf,
+             unsigned int     length,
+             int              flags,
+             const AddressIP *dst,
+             const SOCKETALT &sock,
+             const char *     caller_file,
+             int              caller_line);
 
-/// flags is a bitwise OR of PCKTFLAGS
-    inline void bc_create( Cmd cmd,
-                           ObjSerial nserial,
-                           const char *buf,
-                           unsigned int length,
-                           int flags,
-                           const char *caller_file,
-                           int caller_line )
+    /// flags is a bitwise OR of PCKTFLAGS
+    inline void
+    bc_create(Cmd cmd, ObjSerial nserial, const char *buf, unsigned int length, int flags, const char *caller_file, int caller_line)
     {
-        create( cmd, nserial, buf, length, flags, caller_file, caller_line );
+        create(cmd, nserial, buf, length, flags, caller_file, caller_line);
     }
 
-    inline int bc_send( const AddressIP &dst, const SOCKETALT &sock )
+    inline int bc_send(const AddressIP &dst, const SOCKETALT &sock)
     {
-        return send( sock, &dst );
+        return send(sock, &dst);
     }
 
-    void display( const char *file, int line );
+    void display(const char *file, int line);
     void displayHex();
 
     unsigned int getDataLength() const;
@@ -109,42 +105,35 @@ public: Packet();
     }
     inline Cmd getCommand() const
     {
-        return (Cmd) h.command;
+        return (Cmd)h.command;
     }
     inline unsigned short getFlags() const
     {
         return h.flags;
     }
-    inline void setFlag( enum PCKTFLAGS fl )
+    inline void setFlag(enum PCKTFLAGS fl)
     {
         h.flags |= fl;
     }
-    inline void setFlags( unsigned short fl )
+    inline void setFlags(unsigned short fl)
     {
         h.flags = fl;
     }
 
-    const char * getData() const;
-    const char * getSendBuffer() const;
-    int getSendBufferLength() const;
+    const char *getData() const;
+    const char *getSendBuffer() const;
+    int         getSendBufferLength() const;
 
     void reset()
     {
         h.command = 0;
     }
 
-private:
-    void create( Cmd cmd,
-                 ObjSerial nserial,
-                 const char *buf,
-                 unsigned int length,
-                 int flags,
-                 const char *caller_file,
-                 int caller_line );
-    int send( SOCKETALT dst_s, const AddressIP *dst_a );
+  private:
+    void create(Cmd cmd, ObjSerial nserial, const char *buf, unsigned int length, int flags, const char *caller_file, int caller_line);
+    int  send(SOCKETALT dst_s, const AddressIP *dst_a);
 
-    static bool packet_uncompress( PacketMem &dest, const unsigned char *src, size_t sz, Header &header );
+    static bool packet_uncompress(PacketMem &dest, const unsigned char *src, size_t sz, Header &header);
 };
 
 #endif
-

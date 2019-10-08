@@ -27,39 +27,48 @@ class Client;
 #include "boost/smart_ptr.hpp"
 #include "boost/weak_ptr.hpp"
 
-typedef boost::shared_ptr< Client >ClientPtr;
-//typedef boost::weak_ptr<Client>            ClientWeakPtr;
+typedef boost::shared_ptr<Client> ClientPtr;
+// typedef boost::weak_ptr<Client>            ClientWeakPtr;
 #else
 
-template < class T >
-class NormalPtr
+template <class T> class NormalPtr
 {
     T *val;
-public: NormalPtr( T *val ) : val( val ) {}
-    NormalPtr( const NormalPtr< T > &p ) : val( p.val ) {}
-    NormalPtr() : val( NULL ) {}
-    ~NormalPtr() {}
-    T&operator*()
+
+  public:
+    NormalPtr(T *val) : val(val)
+    {
+    }
+    NormalPtr(const NormalPtr<T> &p) : val(p.val)
+    {
+    }
+    NormalPtr() : val(NULL)
+    {
+    }
+    ~NormalPtr()
+    {
+    }
+    T &operator*()
     {
         return *val;
     }
-    const T& operator*() const
+    const T &operator*() const
     {
         return *val;
     }
-    T* operator->()
+    T *operator->()
     {
         return val;
     }
-    const T* operator->() const
+    const T *operator->() const
     {
         return val;
     }
-    T * get()
+    T *get()
     {
         return val;
     }
-    const T * get() const
+    const T *get() const
     {
         return val;
     }
@@ -71,7 +80,8 @@ public: NormalPtr( T *val ) : val( val ) {}
     {
         return false;
     }
-    operator bool() const {
+    operator bool() const
+    {
         return val ? true : false;
     }
     bool operator!() const
@@ -80,19 +90,18 @@ public: NormalPtr( T *val ) : val( val ) {}
     }
 };
 
-typedef NormalPtr< Client >                  ClientPtr;
-typedef NormalPtr< Client >                  ClientWeakPtr;
+typedef NormalPtr<Client> ClientPtr;
+typedef NormalPtr<Client> ClientWeakPtr;
 #endif
 
-typedef std::map< int, ClientPtr >           ClientMap;
-typedef std::pair< int, ClientPtr >          ClientPair;
-typedef std::map< int, ClientPtr >::iterator ClientIt;
+typedef std::map<int, ClientPtr>           ClientMap;
+typedef std::pair<int, ClientPtr>          ClientPair;
+typedef std::map<int, ClientPtr>::iterator ClientIt;
 
-typedef std::list< ClientPtr >               ClientList;
-//typedef std::list<ClientWeakPtr>           ClientWeakList;
-typedef ClientList::iterator ClientListIt,   LI;
-//typedef ClientWeakList::iterator           CWLI;
-typedef std::vector< ClientList* >::iterator VCLI; //VLI;
+typedef std::list<ClientPtr> ClientList;
+// typedef std::list<ClientWeakPtr>           ClientWeakList;
+typedef ClientList::iterator ClientListIt, LI;
+// typedef ClientWeakList::iterator           CWLI;
+typedef std::vector<ClientList *>::iterator VCLI; // VLI;
 
 #endif /* CLIENT_PTR_H */
-

@@ -10,11 +10,10 @@
 namespace VsnetDownload
 {
 /*------------------------------------------------------------*
-* declaration VsnetDownload::Subcommand
-*------------------------------------------------------------*/
+ * declaration VsnetDownload::Subcommand
+ *------------------------------------------------------------*/
 
-enum Subcommand
-{
+enum Subcommand {
     ResolveRequest,
     ResolveResponse,
     DownloadRequest,
@@ -26,32 +25,22 @@ enum Subcommand
     UnexpectedSubcommand
 };
 
-std::ostream&operator<<( std::ostream &ostr, Subcommand e );
+std::ostream &operator<<(std::ostream &ostr, Subcommand e);
 
 namespace Client
 {
-class Manager;
+    class Manager;
 
-/*------------------------------------------------------------*
-* declaration VsnetDownload::Client::State
-*------------------------------------------------------------*/
+    /*------------------------------------------------------------*
+     * declaration VsnetDownload::Client::State
+     *------------------------------------------------------------*/
 
-enum State
-{
-    Idle,
-    Queued,
-    Resolving,
-    Resolved,
-    Requested,
-    FragmentReceived,
-    Completed
-};
+    enum State { Idle, Queued, Resolving, Resolved, Requested, FragmentReceived, Completed };
 
-std::ostream&operator<<( std::ostream &ostr, State s );
+    std::ostream &operator<<(std::ostream &ostr, State s);
 
-std::ostream&operator<<( std::ostream &ostr, VSFileSystem::VSError e );
-}; //namespace Client
-}; //namespace VsnetDownload
+    std::ostream &operator<<(std::ostream &ostr, VSFileSystem::VSError e);
+}; // namespace Client
+}; // namespace VsnetDownload
 
 #endif /* VSNET_DLOADENUM_H */
-

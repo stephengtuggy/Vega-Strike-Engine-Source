@@ -39,30 +39,29 @@ using std::string;
 
 using XMLSupport::AttributeList;
 
-typedef vsUMap< string, KBHandler > CommandMap;
-typedef vsUMap< string, int >       KeyMap;
+typedef vsUMap<string, KBHandler> CommandMap;
+typedef vsUMap<string, int>       KeyMap;
 
 class GameVegaConfig : public VegaConfig
 {
-public:
-    explicit GameVegaConfig( const char *configfile );
+  public:
+    explicit GameVegaConfig(const char *configfile);
 #define AXIS_X 0
 #define AXIS_Y 1
 #define AXIS_Z 2
 #define AXIS_THROTTLE 3
-private:
-    void initCommandMap();
-    void initKeyMap();
+  private:
+    void       initCommandMap();
+    void       initKeyMap();
     CommandMap command_map;
     KeyMap     key_map;
-    int hs_value_index;
-//vector<vColor *> colors;
+    int        hs_value_index;
+    // vector<vColor *> colors;
     void bindKeys();
-    void doBindings( configNode *node );
-    void checkBind( configNode *node );
-    void doAxis( configNode *node );
-    void checkHatswitch( int nr, configNode *node );
+    void doBindings(configNode *node);
+    void checkBind(configNode *node);
+    void doAxis(configNode *node);
+    void checkHatswitch(int nr, configNode *node);
 };
 
 #endif //_VEGACONFIG_H_
-

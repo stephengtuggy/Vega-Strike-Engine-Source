@@ -27,32 +27,31 @@
 #include "networking/const.h"
 #include "vsnet_headers.h"
 
-struct AddressIP : public sockaddr_in
-{
+struct AddressIP : public sockaddr_in {
     AddressIP()
     {
-        memset( this, 0, sizeof (AddressIP) );
+        memset(this, 0, sizeof(AddressIP));
     }
-    AddressIP( const AddressIP &orig )
+    AddressIP(const AddressIP &orig)
     {
-        memcpy( this, &orig, sizeof (AddressIP) );
+        memcpy(this, &orig, sizeof(AddressIP));
     }
-    AddressIP( const sockaddr_in &orig )
+    AddressIP(const sockaddr_in &orig)
     {
-        memcpy( this, &orig, sizeof (AddressIP) );
+        memcpy(this, &orig, sizeof(AddressIP));
     }
 
-    AddressIP( const AddressIP &orig, unsigned short port );
-    AddressIP( const char *address, unsigned short port );
+    AddressIP(const AddressIP &orig, unsigned short port);
+    AddressIP(const char *address, unsigned short port);
 
-    AddressIP& operator=( const AddressIP &orig )
+    AddressIP &operator=(const AddressIP &orig)
     {
-        memcpy( this, &orig, sizeof (AddressIP) );
+        memcpy(this, &orig, sizeof(AddressIP));
         return *this;
     }
-    AddressIP&operator=( const sockaddr_in &orig )
+    AddressIP &operator=(const sockaddr_in &orig)
     {
-        memcpy( this, &orig, sizeof (AddressIP) );
+        memcpy(this, &orig, sizeof(AddressIP));
         return *this;
     }
     /// print ip:port to stdout
@@ -61,20 +60,19 @@ struct AddressIP : public sockaddr_in
     /** note that this string is temporary and should not be used for
      *  anything but debug output.
      */
-    const char * ipadr() const;
+    const char *  ipadr() const;
     unsigned long inaddr() const;
 
-    friend std::ostream&operator<<( std::ostream &ostr, const AddressIP &adr );
+    friend std::ostream &operator<<(std::ostream &ostr, const AddressIP &adr);
 
-    friend bool operator==( const AddressIP &l, const AddressIP &r );
-    friend bool operator!=( const AddressIP &l, const AddressIP &r );
-    friend bool operator<( const AddressIP &l, const AddressIP &r );
+    friend bool operator==(const AddressIP &l, const AddressIP &r);
+    friend bool operator!=(const AddressIP &l, const AddressIP &r);
+    friend bool operator<(const AddressIP &l, const AddressIP &r);
 };
 
-std::ostream&operator<<( std::ostream &ostr, const AddressIP &adr );
+std::ostream &operator<<(std::ostream &ostr, const AddressIP &adr);
 
-bool operator==( const AddressIP &l, const AddressIP &r );
-bool operator!=( const AddressIP &l, const AddressIP &r );
-bool operator<( const AddressIP &l, const AddressIP &r );
+bool operator==(const AddressIP &l, const AddressIP &r);
+bool operator!=(const AddressIP &l, const AddressIP &r);
+bool operator<(const AddressIP &l, const AddressIP &r);
 #endif /* VSNET_ADDRESS_H */
-

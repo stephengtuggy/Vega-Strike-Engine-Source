@@ -34,63 +34,55 @@ class JVOIPRTPTransmissionParams;
 #include "networking/lowlevel/vsnet_dloadmgr.h"
 #include "networking/lowlevel/vsnet_notify.h"
 
-typedef std::list< ClientPtr >::iterator CltPtrIterator;
+typedef std::list<ClientPtr>::iterator CltPtrIterator;
 
 class WebcamSupport;
 
 class NetworkCommunication
 {
-private:
-//Text message
-    std::deque< std::string >message_history;                           //Text message history
-    unsigned short max_messages;                                                //Maximum number of text messages recorded
-    std::list< ClientPtr >   commClients;                                               //List of client communicating on the same frequency
-    CltPtrIterator webcamClient;                                                //The client we are watching the webcam
+  private:
+    // Text message
+    std::deque<std::string> message_history; // Text message history
+    unsigned short          max_messages;    // Maximum number of text messages recorded
+    std::list<ClientPtr> commClients;        // List of client communicating on the same frequency
+    CltPtrIterator       webcamClient;       // The client we are watching the webcam
 
-    char  crypt_key[DESKEY_SIZE];                                               //Key used for encryption on secured channels
-    float min_freq, max_freq;
-    float freq;                                                         //Current communication frequency
-    bool  active;                                                       //Tell wether the communication system is active
-    char  secured;                                                      //Tell wether we are on a secured channel or not
-    unsigned char  method;                                      //Method used to spread comms
+    char          crypt_key[DESKEY_SIZE]; // Key used for encryption on secured channels
+    float         min_freq, max_freq;
+    float         freq;    // Current communication frequency
+    bool          active;  // Tell wether the communication system is active
+    char          secured; // Tell wether we are on a secured channel or not
+    unsigned char method;  // Method used to spread comms
 #ifdef NETCOMM_WEBCAM
-//Webcam support
-    WebcamSupport *Webcam;
-    boost::shared_ptr< VsnetDownload::Client::Manager >_downloader;
-    boost::shared_ptr< VsnetDownload::Server::Manager >_downloadServer;
-    SocketSet _sock_set;
-    VsnetDownload::Client::Buffer *bufitem;
+    // Webcam support
+    WebcamSupport *                                   Webcam;
+    boost::shared_ptr<VsnetDownload::Client::Manager> _downloader;
+    boost::shared_ptr<VsnetDownload::Server::Manager> _downloadServer;
+    SocketSet                                         _sock_set;
+    VsnetDownload::Client::Buffer *                   bufitem;
 #endif
 #ifdef NETCOMM_JVOIP
-    JVOIPSession *session;
-    JVOIPSessionParams *params;
+    JVOIPSession *              session;
+    JVOIPSessionParams *        params;
     JVOIPRTPTransmissionParams *rtpparams;
 #endif
 #ifdef NETCOMM_PORTAUDIO
-    PaDeviceID indev;
-    PaDeviceID outdev;
-    PaDeviceInfo    *devinfo;
+    PaDeviceID       indev;
+    PaDeviceID       outdev;
+    PaDeviceInfo *   devinfo;
     PortAudioStream *instream;
     PortAudioStream *outstream;
 
-    double sample_rate;
-    int    audio_inlength;
+    double         sample_rate;
+    int            audio_inlength;
     unsigned short audio_inbuffer[MAXBUFFER];
     unsigned short audio_outbuffer[MAXBUFFER];
 
-    friend int Pa_RecordCallback( void *inputBuffer,
-                                  void *outputBuffer,
-                                  unsigned long framesPerBuffer,
-                                  PaTimestamp outTime,
-                                  void *userdata );
-    friend int Pa_PlayCallback( void *inputBuffer,
-                                void *outputBuffer,
-                                unsigned long framesPerBuffer,
-                                PaTimestamp outTime,
-                                void *userdata );
+    friend int Pa_RecordCallback(void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer, PaTimestamp outTime, void *userdata);
+    friend int Pa_PlayCallback(void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer, PaTimestamp outTime, void *userdata);
 #endif
 #ifdef CRYPTO
-//Algorithm *			cryptalgo;
+    // Algorithm *			cryptalgo;
     RandomPool   randPool;
     std::string  crypto_method;
     std::string  seed;
@@ -101,37 +93,37 @@ private:
     std::string  privkey;
 #endif
 
-    void GenerateKey();
-    std::string EncryptBuffer( const char *buffer, unsigned int length = 0 );
-    std::string DecryptBuffer( const char *buffer, unsigned int length = 0 );
+    void        GenerateKey();
+    std::string EncryptBuffer(const char *buffer, unsigned int length = 0);
+    std::string DecryptBuffer(const char *buffer, unsigned int length = 0);
 
-public:
-    enum    CommunicationMethod {ClientBroadcast, ServerUnicast};
+  public:
+    enum CommunicationMethod { ClientBroadcast, ServerUnicast };
 
     NetworkCommunication();
-    NetworkCommunication( float minfreq, float maxfreq, bool video, bool secured, std::string method );
-    NetworkCommunication( int nb );
+    NetworkCommunication(float minfreq, float maxfreq, bool video, bool secured, std::string method);
+    NetworkCommunication(int nb);
     ~NetworkCommunication();
 
-    int InitSession( float frequency );
-//void	SendImage( SOCKETALT & send_sock);
-    void SendSound( SOCKETALT &send_sock, ObjSerial serial );
-    void SendMessage( SOCKETALT &send_sock, ObjSerial serial, std::string message );
-    void RecvSound( const char *sndbuffer, int length, bool encrypted = false );
-    void RecvMessage( std::string message, bool encrypted = false );
-    int DestroySession();
+    int InitSession(float frequency);
+    // void	SendImage( SOCKETALT & send_sock);
+    void SendSound(SOCKETALT &send_sock, ObjSerial serial);
+    void SendMessage(SOCKETALT &send_sock, ObjSerial serial, std::string message);
+    void RecvSound(const char *sndbuffer, int length, bool encrypted = false);
+    void RecvMessage(std::string message, bool encrypted = false);
+    int  DestroySession();
 
-    void AddToSession( ClientPtr clt );
-    void RemoveFromSession( ClientPtr clt );
+    void AddToSession(ClientPtr clt);
+    void RemoveFromSession(ClientPtr clt);
 
     bool IsActive()
     {
         return active;
     }
-    char * GetWebcamCapture();
-    char * GetWebcamFromNetwork( int &length );
-    void StartWebcamTransfer();
-    void StopWebcamTransfer();
+    char *GetWebcamCapture();
+    char *GetWebcamFromNetwork(int &length);
+    void  StartWebcamTransfer();
+    void  StopWebcamTransfer();
 
     char HasWebcam();
     char HasPortaudio();
@@ -152,9 +144,8 @@ public:
         return this->max_freq;
     }
 
-private:
+  private:
     void private_init();
 };
 
 #endif
-

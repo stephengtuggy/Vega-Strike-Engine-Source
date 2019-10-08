@@ -24,156 +24,144 @@ namespace VsnetDownload
 {
 namespace Adapter
 {
-struct Base;
-struct ResolveRequest;
-struct ResolveResponse;
-struct DownloadRequest;
-struct DownloadError;
-struct Download;
-struct DownloadFirstFragment;
-struct DownloadFragment;
-struct DownloadLastFragment;
-struct UnexpectedSubcommand;
-};
+    struct Base;
+    struct ResolveRequest;
+    struct ResolveResponse;
+    struct DownloadRequest;
+    struct DownloadError;
+    struct Download;
+    struct DownloadFirstFragment;
+    struct DownloadFragment;
+    struct DownloadLastFragment;
+    struct UnexpectedSubcommand;
+}; // namespace Adapter
 
 class RecvCmdDownload
 {
-public: RecvCmdDownload( NetBuffer &buffer );
+  public:
+    RecvCmdDownload(NetBuffer &buffer);
     ~RecvCmdDownload();
 
     Subcommand parse();
 
-    inline Adapter::ResolveRequest * asResolveRequest() const
+    inline Adapter::ResolveRequest *asResolveRequest() const
     {
-        return (Adapter::ResolveRequest*) _base;
+        return (Adapter::ResolveRequest *)_base;
     }
-    inline Adapter::ResolveResponse * asResolveResponse() const
+    inline Adapter::ResolveResponse *asResolveResponse() const
     {
-        return (Adapter::ResolveResponse*) _base;
+        return (Adapter::ResolveResponse *)_base;
     }
-    inline Adapter::DownloadRequest * asDownloadRequest() const
+    inline Adapter::DownloadRequest *asDownloadRequest() const
     {
-        return (Adapter::DownloadRequest*) _base;
+        return (Adapter::DownloadRequest *)_base;
     }
-    inline Adapter::DownloadError * asDownloadError() const
+    inline Adapter::DownloadError *asDownloadError() const
     {
-        return (Adapter::DownloadError*) _base;
+        return (Adapter::DownloadError *)_base;
     }
-    inline Adapter::Download * asDownload() const
+    inline Adapter::Download *asDownload() const
     {
-        return (Adapter::Download*) _base;
+        return (Adapter::Download *)_base;
     }
-    inline Adapter::DownloadFirstFragment * asDownloadFirstFragment() const
+    inline Adapter::DownloadFirstFragment *asDownloadFirstFragment() const
     {
-        return (Adapter::DownloadFirstFragment*) _base;
+        return (Adapter::DownloadFirstFragment *)_base;
     }
-    inline Adapter::DownloadFragment * asDownloadFragment() const
+    inline Adapter::DownloadFragment *asDownloadFragment() const
     {
-        return (Adapter::DownloadFragment*) _base;
+        return (Adapter::DownloadFragment *)_base;
     }
-    inline Adapter::DownloadLastFragment * asDownloadLastFragment() const
+    inline Adapter::DownloadLastFragment *asDownloadLastFragment() const
     {
-        return (Adapter::DownloadLastFragment*) _base;
+        return (Adapter::DownloadLastFragment *)_base;
     }
-    inline Adapter::UnexpectedSubcommand * asUnexpectedSubcommand() const
+    inline Adapter::UnexpectedSubcommand *asUnexpectedSubcommand() const
     {
-        return (Adapter::UnexpectedSubcommand*) _base;
+        return (Adapter::UnexpectedSubcommand *)_base;
     }
 
-private:
-    NetBuffer     &_buf;
+  private:
+    NetBuffer &    _buf;
     Adapter::Base *_base;
 
     RecvCmdDownload();
-    RecvCmdDownload( const RecvCmdDownload& );
-    RecvCmdDownload& operator=( const RecvCmdDownload& );
+    RecvCmdDownload(const RecvCmdDownload &);
+    RecvCmdDownload &operator=(const RecvCmdDownload &);
 };
 
 namespace Adapter
 {
-struct Base
-{
-    VsnetDownload::Subcommand c;
-};
+    struct Base {
+        VsnetDownload::Subcommand c;
+    };
 
-struct ResolveRequest : public Base
-{
-    struct entry
-    {
-        char   ft;
+    struct ResolveRequest : public Base {
+        struct entry {
+            char   ft;
+            string file;
+        };
+
+        typedef vector<entry>::iterator iterator;
+
+        short         num;
+        vector<entry> files;
+    };
+
+    struct ResolveResponse : public Base {
+        struct entry {
+            string file;
+            char   ok;
+        };
+
+        typedef vector<entry>::iterator iterator;
+
+        short         num;
+        vector<entry> files;
+    };
+
+    struct DownloadRequest : public Base {
+        struct entry {
+            char   ft;
+            string file;
+        };
+
+        typedef vector<entry>::iterator iterator;
+
+        short         num;
+        vector<entry> files;
+    };
+
+    struct DownloadError : public Base {
         string file;
     };
 
-    typedef vector< entry >::iterator iterator;
-
-    short num;
-    vector< entry >files;
-};
-
-struct ResolveResponse : public Base
-{
-    struct entry
-    {
-        string file;
-        char   ok;
+    struct Download : public Base {
+        string         file;
+        short          payload_len;
+        unsigned char *payload;
     };
 
-    typedef vector< entry >::iterator iterator;
-
-    short num;
-    vector< entry >files;
-};
-
-struct DownloadRequest : public Base
-{
-    struct entry
-    {
-        char   ft;
-        string file;
+    struct DownloadFirstFragment : public Base {
+        string         file;
+        int            file_len;
+        short          payload_len;
+        unsigned char *payload;
     };
 
-    typedef vector< entry >::iterator iterator;
+    struct DownloadFragment : public Base {
+        short          payload_len;
+        unsigned char *payload;
+    };
 
-    short num;
-    vector< entry >files;
-};
+    struct DownloadLastFragment : public Base {
+        short          payload_len;
+        unsigned char *payload;
+    };
 
-struct DownloadError : public Base
-{
-    string file;
-};
-
-struct Download : public Base
-{
-    string file;
-    short  payload_len;
-    unsigned char *payload;
-};
-
-struct DownloadFirstFragment : public Base
-{
-    string file;
-    int    file_len;
-    short  payload_len;
-    unsigned char *payload;
-};
-
-struct DownloadFragment : public Base
-{
-    short payload_len;
-    unsigned char *payload;
-};
-
-struct DownloadLastFragment : public Base
-{
-    short payload_len;
-    unsigned char *payload;
-};
-
-struct UnexpectedSubcommand : public Base
-{};
-}; //Adapter
-}; //VsnetDownload
+    struct UnexpectedSubcommand : public Base {
+    };
+}; // namespace Adapter
+}; // namespace VsnetDownload
 
 #endif
-

@@ -8,19 +8,20 @@
  */
 #undef USE_PTHREAD
 #undef USE_NO_THREAD
-#if defined (USE_NET_THREAD_POSIX)
-#  define USE_PTHREAD
+#if defined(USE_NET_THREAD_POSIX)
+#define USE_PTHREAD
 #else
-#  define USE_NO_THREAD
+#define USE_NO_THREAD
 #endif
 
 /*------------------------------------------------------------*
-* declaration of VSThread                                    *
-*------------------------------------------------------------*/
+ * declaration of VSThread                                    *
+ *------------------------------------------------------------*/
 
 class VSThread
 {
-public: VSThread( bool detached );
+  public:
+    VSThread(bool detached);
     virtual ~VSThread();
 
     void start();
@@ -28,28 +29,29 @@ public: VSThread( bool detached );
 
     virtual void run() = 0;
 
-public:
-/// global initialization function for the thread subsystem
+  public:
+    /// global initialization function for the thread subsystem
     static void init();
 
-private:
+  private:
     struct Private;
     Private *_internal;
 };
 
 /*------------------------------------------------------------*
-* declaration of VSMutex                                     *
-*------------------------------------------------------------*/
+ * declaration of VSMutex                                     *
+ *------------------------------------------------------------*/
 
 class VSMutex
 {
-public: VSMutex();
+  public:
+    VSMutex();
     ~VSMutex();
 
     void lock();
     void unlock();
 
-protected:
+  protected:
     struct Private;
     Private *_internal;
 
@@ -57,22 +59,22 @@ protected:
 };
 
 /*------------------------------------------------------------*
-* declaration of VSCond                                      *
-*------------------------------------------------------------*/
+ * declaration of VSCond                                      *
+ *------------------------------------------------------------*/
 
 class VSCond
 {
-public: VSCond();
+  public:
+    VSCond();
     ~VSCond();
 
-    void wait( VSMutex &mx );
+    void wait(VSMutex &mx);
     void signal();
     void broadcast();
 
-private:
+  private:
     struct Private;
     Private *_internal;
 };
 
 #endif /* VSNET_THREAD_H */
-

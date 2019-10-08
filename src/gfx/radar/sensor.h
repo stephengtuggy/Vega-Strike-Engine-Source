@@ -7,7 +7,7 @@
 #include "track.h"
 
 class Unit;
-struct GFXColor;  // Edit from class to struct as defined in gfxlib_struct.
+struct GFXColor; // Edit from class to struct as defined in gfxlib_struct.
 
 namespace Radar
 {
@@ -17,32 +17,23 @@ namespace Radar
 //   2. Information detected by the radar (e.g. tracks)
 class Sensor
 {
-public:
+  public:
     typedef std::vector<Track> TrackCollection;
 
-    struct Capability
-    {
-        enum Value
-        {
-            None = 0,
-            FriendFoe = 1 << 0,
-            ObjectType = 1 << 1,
-            ThreatAssessment = 1 << 2
-        };
+    struct Capability {
+        enum Value { None = 0, FriendFoe = 1 << 0, ObjectType = 1 << 1, ThreatAssessment = 1 << 2 };
     };
 
-    struct ThreatLevel
-    {
-        enum Value
-        {
-            None, // Not attacking
-            Low, // Lock
+    struct ThreatLevel {
+        enum Value {
+            None,   // Not attacking
+            Low,    // Lock
             Medium, // Capship with lock
-            High // Missile
+            High    // Missile
         };
     };
 
-public:
+  public:
     Sensor(Unit *player);
 
     Unit *GetPlayer() const;
@@ -58,24 +49,24 @@ public:
     bool UseThreatAssessment() const;
 
     Track CreateTrack(const Unit *) const;
-    Track CreateTrack(const Unit *, const Vector&) const;
+    Track CreateTrack(const Unit *, const Vector &) const;
 
     // I am tracking target
-    bool IsTracking(const Track&) const;
+    bool IsTracking(const Track &) const;
     bool InsideNebula() const;
-    bool InRange(const Track&) const;
+    bool InRange(const Track &) const;
 
-    const TrackCollection& FindTracksInRange() const;
+    const TrackCollection &FindTracksInRange() const;
 
-    ThreatLevel::Value IdentifyThreat(const Track&) const;
+    ThreatLevel::Value IdentifyThreat(const Track &) const;
 
-    GFXColor GetColor(const Track&) const;
+    GFXColor GetColor(const Track &) const;
 
-protected:
-    Unit *player;
-    float closeRange;
+  protected:
+    Unit *                  player;
+    float                   closeRange;
     mutable TrackCollection collection;
-    bool useThreatAssessment;
+    bool                    useThreatAssessment;
 };
 
 } // namespace Radar

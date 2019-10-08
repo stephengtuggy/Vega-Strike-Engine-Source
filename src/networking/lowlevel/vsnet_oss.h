@@ -36,29 +36,28 @@ namespace VsnetOSS
 {
 /** uses closesocket for WIN32, otherwise close
  */
-INLINE int close_socket( int fd );
+INLINE int close_socket(int fd);
 
-bool set_blocking( int fd, bool isBlock );
+bool set_blocking(int fd, bool isBlock);
 
 /** uses inet_aton if exists, otherwise inet_addr
  */
-INLINE int inet_aton( const char *cp, struct in_addr *inp );
+INLINE int inet_aton(const char *cp, struct in_addr *inp);
 
 /** ensures that the error return value is -1 and nothing else
  */
-INLINE int socket( int domain, int type, int protocol );
+INLINE int socket(int domain, int type, int protocol);
 
 /** make recv calls easier to debug if strangeness is in calling
  *  class, otherwise no known portability issues.
  */
-INLINE int recv( int fd, void *buf, unsigned int len, int flags );
+INLINE int recv(int fd, void *buf, unsigned int len, int flags);
 
-INLINE void memcpy( void *dest, const void *src, int bytesize );
-};
+INLINE void memcpy(void *dest, const void *src, int bytesize);
+}; // namespace VsnetOSS
 
 #ifdef INLINE_VSNET_OSS
 #include "vsnet_oss.cpp"
 #endif
 
 #endif /* VSNET_OSS_H */
-

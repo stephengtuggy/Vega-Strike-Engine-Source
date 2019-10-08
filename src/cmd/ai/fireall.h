@@ -3,8 +3,8 @@ namespace Orders
 {
 class FireAllYouGot : public Order
 {
-public: FireAllYouGot();
+  public:
+    FireAllYouGot();
     void Execute();
 };
-}
-
+} // namespace Orders

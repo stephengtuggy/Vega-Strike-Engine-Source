@@ -24,17 +24,17 @@
 inline std::string vsnetLastError()
 {
     std::ostringstream ostr;
-#if defined (_WIN32) && !defined (__CYGWIN__)
-    ostr<<WSAGetLastError()<<std::ends;
+#if defined(_WIN32) && !defined(__CYGWIN__)
+    ostr << WSAGetLastError() << std::ends;
 #else
-    ostr<<strerror( errno )<<std::ends;
+    ostr << strerror(errno) << std::ends;
 #endif
     return ostr.str();
 }
 
 inline bool vsnetEWouldBlock()
 {
-#if defined (_WIN32) && !defined (__CYGWIN__)
+#if defined(_WIN32) && !defined(__CYGWIN__)
     int tmp = WSAGetLastError();
     return tmp == WSAEWOULDBLOCK;
 
@@ -45,21 +45,21 @@ inline bool vsnetEWouldBlock()
 
 inline bool vsnetEConnAborted()
 {
-#if defined (_WIN32) && !defined (__CYGWIN__)
+#if defined(_WIN32) && !defined(__CYGWIN__)
     int err = WSAGetLastError();
-    return (err == WSAECONNABORTED)
-           || ( err == WSAENETDOWN || (err == WSAENOTCONN) || (err == WSAECONNABORTED) || (err == WSAESHUTDOWN)
-               || (err == WSAETIMEDOUT) ) || (err == WSAECONNRESET);
+    return (err == WSAECONNABORTED) ||
+           (err == WSAENETDOWN || (err == WSAENOTCONN) || (err == WSAECONNABORTED) || (err == WSAESHUTDOWN) || (err == WSAETIMEDOUT)) ||
+           (err == WSAECONNRESET);
 
 #else
-    return (errno == ECONNABORTED) || (errno == ENETDOWN) || (errno == ENOTCONN) || (errno == ESHUTDOWN)
-           || (errno == ECONNRESET) || (errno == ETIMEDOUT);
+    return (errno == ECONNABORTED) || (errno == ENETDOWN) || (errno == ENOTCONN) || (errno == ESHUTDOWN) || (errno == ECONNRESET) ||
+           (errno == ETIMEDOUT);
 #endif
 }
 
 inline bool vsnetEConnReset()
 {
-#if defined (_WIN32) && !defined (__CYGWIN__)
+#if defined(_WIN32) && !defined(__CYGWIN__)
     return WSAGetLastError() == WSAECONNRESET;
 
 #else
@@ -69,7 +69,7 @@ inline bool vsnetEConnReset()
 
 inline int vsnetGetLastError()
 {
-#if defined (_WIN32) && !defined (__CYGWIN__)
+#if defined(_WIN32) && !defined(__CYGWIN__)
     return WSAGetLastError();
 
 #else
@@ -78,4 +78,3 @@ inline int vsnetGetLastError()
 }
 
 #endif /* VSNET_ERR_H */
-

@@ -19,47 +19,46 @@ struct ViewArea;
 
 class BubbleDisplay : public DualDisplayBase
 {
-public:
+  public:
     BubbleDisplay();
     virtual ~BubbleDisplay();
 
-    void Draw(const Sensor&, VSSprite *, VSSprite *);
+    void Draw(const Sensor &, VSSprite *, VSSprite *);
 
     void OnDockEnd();
     void OnJumpBegin();
     void OnJumpEnd();
 
-private:
+  private:
     struct Impl;
     std::auto_ptr<Impl> impl;
 
-protected:
+  protected:
     typedef std::vector<float> ZoomSequence;
 
-    void DrawBackground(const ViewArea&, float);
-    void DrawTrack(const Sensor&, const ViewArea&, const Track&);
-    void DrawTargetMarker(const Vector&, const GFXColor&, float);
+    void DrawBackground(const ViewArea &, float);
+    void DrawTrack(const Sensor &, const ViewArea &, const Track &);
+    void DrawTargetMarker(const Vector &, const GFXColor &, float);
 
     void Animate();
-    void PrepareAnimation(const ZoomSequence&);
+    void PrepareAnimation(const ZoomSequence &);
 
-protected:
+  protected:
     const float innerSphere;
     const float outerSphere;
-    float sphereZoom;
-    float radarTime;
-    float currentTargetMarkerSize;
+    float       sphereZoom;
+    float       radarTime;
+    float       currentTargetMarkerSize;
 
-    struct AnimationItem
-    {
+    struct AnimationItem {
         float sphereZoom;
         float duration;
     };
     typedef std::queue<AnimationItem> AnimationCollection;
-    AnimationCollection animation;
-    float lastAnimationTime;
-    ZoomSequence explodeSequence;
-    ZoomSequence implodeSequence;
+    AnimationCollection               animation;
+    float                             lastAnimationTime;
+    ZoomSequence                      explodeSequence;
+    ZoomSequence                      implodeSequence;
 };
 
 } // namespace Radar

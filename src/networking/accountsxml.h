@@ -37,49 +37,47 @@ using std::vector;
 class Account
 {
     ObjSerial serial;
-    char haschar;
-//int indicates retry count
-    int  isconnected;
+    char      haschar;
+    // int indicates retry count
+    int isconnected;
 
     SOCKETALT server_sock;
 
-public:
-    enum account_type
-    {
+  public:
+    enum account_type {
         UNKNOWN,
         PLAYER,
         ADMIN,
-    }
-    type;
-    FILE  *fp;
+    } type;
+    FILE * fp;
     string callsign;
     string passwd;
     string serverip;
     string serverport;
 
-//Assume player has created ship/char -> to remove in the future
+    // Assume player has created ship/char -> to remove in the future
     Account()
     {
         haschar     = 1;
         isconnected = 0;
     }
-    Account( char *scallsign, char *spasswd )
+    Account(char *scallsign, char *spasswd)
     {
-        callsign = string( scallsign );
-        passwd   = string( spasswd );
+        callsign = string(scallsign);
+        passwd   = string(spasswd);
     }
-    Account( string scallsign, string spasswd )
+    Account(string scallsign, string spasswd)
     {
         callsign = scallsign;
         passwd   = spasswd;
     }
 
-    void display();
+    void  display();
     short isNew()
     {
         return !haschar;
     }
-    void setIsNew( int new1 )
+    void setIsNew(int new1)
     {
         haschar = new1;
     }
@@ -88,7 +86,7 @@ public:
     {
         return this->serial;
     }
-    void setSerial( ObjSerial sernum )
+    void setSerial(ObjSerial sernum)
     {
         this->serial = sernum;
     }
@@ -96,35 +94,35 @@ public:
     {
         return this->server_sock;
     }
-    void setSocket( SOCKETALT sck )
+    void setSocket(SOCKETALT sck)
     {
         this->server_sock = sck;
     }
-    void set( char *scallsign, char *spasswd )
+    void set(char *scallsign, char *spasswd)
     {
-        callsign = string( scallsign );
-        passwd   = string( spasswd );
+        callsign = string(scallsign);
+        passwd   = string(spasswd);
     }
-    void set( string scallsign, string spasswd )
+    void set(string scallsign, string spasswd)
     {
         callsign = scallsign;
         passwd   = spasswd;
     }
 
-    int compareName( char *str )
+    int compareName(char *str)
     {
-        return callsign != string( str );
+        return callsign != string(str);
     }
-    int comparePass( char *str )
+    int comparePass(char *str)
     {
-        return passwd != string( str );
+        return passwd != string(str);
     }
 
-    int compareName( string str )
+    int compareName(string str)
     {
         return callsign != str;
     }
-    int comparePass( string str )
+    int comparePass(string str)
     {
         return passwd != str;
     }
@@ -136,21 +134,21 @@ public:
     {
         return isconnected;
     }
-    void setConnected( bool mode )
+    void setConnected(bool mode)
     {
         isconnected = mode ? 1 : 0;
     }
     void incConnected()
     {
-        if (isconnected) isconnected++;
+        if (isconnected)
+            isconnected++;
     }
 };
-Account * getAcctNoReload( const string &key );
-Account * getAcctTemplate( const string &key );
-vector< Account* >getAllAccounts();
-void LoadAccounts( const char *filename );
-Account * getAcctSerial( ObjSerial ser );
-Account * getAcctAddress( SOCKETALT ser );
-void addAcct( std::string key, Account* );
+Account *         getAcctNoReload(const string &key);
+Account *         getAcctTemplate(const string &key);
+vector<Account *> getAllAccounts();
+void              LoadAccounts(const char *filename);
+Account *         getAcctSerial(ObjSerial ser);
+Account *         getAcctAddress(SOCKETALT ser);
+void              addAcct(std::string key, Account *);
 #endif
-

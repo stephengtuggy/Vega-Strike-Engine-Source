@@ -5,10 +5,10 @@
 #include <math.h>
 
 #ifdef SOLARIS
-extern float __sqrtf( float );
-extern float __cosf( float );
-extern float __sinf( float );
-extern float __tanf( float );
+extern float __sqrtf(float);
+extern float __cosf(float);
+extern float __sinf(float);
+extern float __tanf(float);
 #define sqrtf __sqrtf
 #define cosf __cosf
 #define sinf __sinf
@@ -41,7 +41,7 @@ extern float __tanf( float );
 #undef XVector
 #undef YVector
 
-inline const Vector& QVector::operator=( const Vector &a )
+inline const Vector &QVector::operator=(const Vector &a)
 {
     i = a.i;
     j = a.j;
@@ -49,14 +49,14 @@ inline const Vector& QVector::operator=( const Vector &a )
     return a;
 }
 
-inline QVector::QVector( const Vector &a )
+inline QVector::QVector(const Vector &a)
 {
     i = a.i;
     j = a.j;
     k = a.k;
 }
 
-inline const QVector& Vector::operator=( const QVector &a )
+inline const QVector &Vector::operator=(const QVector &a)
 {
     i = a.i;
     j = a.j;
@@ -64,7 +64,7 @@ inline const QVector& Vector::operator=( const QVector &a )
     return a;
 }
 
-inline Vector::Vector( const QVector &a )
+inline Vector::Vector(const QVector &a)
 {
     i = a.i;
     j = a.j;
@@ -73,13 +73,12 @@ inline Vector::Vector( const QVector &a )
 
 inline QVector Vector::Cast() const
 {
-    return QVector( i, j, k );
+    return QVector(i, j, k);
 }
 
 inline Vector QVector::Cast() const
 {
-    return Vector( i, j, k );
+    return Vector(i, j, k);
 }
 
 #endif
-

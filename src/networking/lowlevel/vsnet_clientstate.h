@@ -30,48 +30,43 @@
 class Unit;
 class NetBuffer;
 
-//Structure used to transmit client updates
+// Structure used to transmit client updates
 class ClientState
 {
-//float			delay;
-    ObjSerial client_serial;
+    // float			delay;
+    ObjSerial      client_serial;
     Transformation pos;
-    Vector    veloc;
-//NO longer supproted--wasnt indicative of actual accel	Vector			accel;
-    Vector    angveloc;
+    Vector         veloc;
+    // NO longer supproted--wasnt indicative of actual accel	Vector			accel;
+    Vector angveloc;
 
-    float     SPECRampCounter;                   //negative means ramping down
-    float     SPECWarpMultiplier;                   //=1.0 and RampCounter=0 means !InWarp
-public: ClientState();
-    ClientState( ObjSerial serial );
-    ClientState( ObjSerial serial, QVector posit, Quaternion orientat, Vector velocity, Vector acc, Vector angvel );
-    ClientState( ObjSerial serial,
-                 QVector posit,
-                 Quaternion orientat,
-                 Vector velocity,
-                 Vector acc,
-                 Vector angvel,
-                 unsigned int del );
-    ClientState( ObjSerial serial, Transformation trans, Vector velocity, Vector acc, Vector angvel, unsigned int del );
-    ClientState( const Unit *un );
+    float SPECRampCounter;    // negative means ramping down
+    float SPECWarpMultiplier; //=1.0 and RampCounter=0 means !InWarp
+  public:
+    ClientState();
+    ClientState(ObjSerial serial);
+    ClientState(ObjSerial serial, QVector posit, Quaternion orientat, Vector velocity, Vector acc, Vector angvel);
+    ClientState(ObjSerial serial, QVector posit, Quaternion orientat, Vector velocity, Vector acc, Vector angvel, unsigned int del);
+    ClientState(ObjSerial serial, Transformation trans, Vector velocity, Vector acc, Vector angvel, unsigned int del);
+    ClientState(const Unit *un);
 
-    const QVector& getPosition() const
+    const QVector &getPosition() const
     {
         return this->pos.position;
     }
-    const Quaternion& getOrientation() const
+    const Quaternion &getOrientation() const
     {
         return this->pos.orientation;
     }
-    const Transformation& getTransformation() const
+    const Transformation &getTransformation() const
     {
         return this->pos;
     }
-    const Vector& getVelocity() const
+    const Vector &getVelocity() const
     {
         return this->veloc;
     }
-    const Vector& getAngularVelocity() const
+    const Vector &getAngularVelocity() const
     {
         return this->angveloc;
     }
@@ -83,55 +78,57 @@ public: ClientState();
     {
         return this->SPECWarpMultiplier;
     }
-//NO longer supported--wasn't indicative of actual aggregated accel		Vector		getAcceleration() const { retu //rn if you change this, change setAcceleration too, and all consturctor this->accel;}
-    void setAcceleration( Vector acc ) {}
+    // NO longer supported--wasn't indicative of actual aggregated accel		Vector		getAcceleration() const { retu //rn if you change this,
+    // change setAcceleration too, and all consturctor this->accel;}
+    void setAcceleration(Vector acc)
+    {
+    }
 
-    void setUnitState( Unit *un ) const;
+    void setUnitState(Unit *un) const;
 
     ObjSerial getSerial() const
     {
         return this->client_serial;
     }
-//float		getDelay() const { return this->delay;}
-//void		setDelay( float del) { this->delay = del;}
-    void setSerial( ObjSerial ser )
+    // float		getDelay() const { return this->delay;}
+    // void		setDelay( float del) { this->delay = del;}
+    void setSerial(ObjSerial ser)
     {
         this->client_serial = ser;
     }
-    void setPosition( QVector posit )
+    void setPosition(QVector posit)
     {
         this->pos.position = posit;
     }
-    void setOrientation( Quaternion orient )
+    void setOrientation(Quaternion orient)
     {
         this->pos.orientation = orient;
     }
-    void setVelocity( Vector vel )
+    void setVelocity(Vector vel)
     {
         this->veloc = vel;
     }
-    void setAngularVelocity( Vector vel )
+    void setAngularVelocity(Vector vel)
     {
         this->angveloc = vel;
     }
-    void setSpecRamp( float rc )
+    void setSpecRamp(float rc)
     {
         this->SPECRampCounter = rc;
     }
-    void setSpecMult( float wfm )
+    void setSpecMult(float wfm)
     {
         this->SPECWarpMultiplier = wfm;
     }
 
-    void display( std::ostream &ostr ) const;
+    void display(std::ostream &ostr) const;
     void display() const;
-    int operator==( const ClientState &ctmp ) const;
-//void	netswap();
+    int  operator==(const ClientState &ctmp) const;
+    // void	netswap();
 
-    friend  class NetBuffer;
+    friend class NetBuffer;
 };
 
-std::ostream&operator<<( std::ostream &ostr, const ClientState &cs );
+std::ostream &operator<<(std::ostream &ostr, const ClientState &cs);
 
 #endif
-

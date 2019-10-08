@@ -19,15 +19,14 @@
 #endif
 
 #ifdef __GNUC__
-#pragma GCC diagnostic ignored "-Wwrite-strings" 
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 #endif
 #include <boost/python/detail/wrap_python.hpp>
 //#include <Python.h>
 #ifdef __GNUC__
-#pragma GCC diagnostic error "-Wwrite-strings" 
+#pragma GCC diagnostic error "-Wwrite-strings"
 #endif
 
 #endif
 
 #endif
-

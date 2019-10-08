@@ -4,11 +4,11 @@
 
 class Unit
 {
-public:
+  public:
     bool killed;
     bool zapped;
     int  ucref;
-    Unit( bool kill ) : killed( kill )
+    Unit(bool kill) : killed(kill)
     {
         ucref  = 0;
         zapped = false;
@@ -16,30 +16,29 @@ public:
     void Kill()
     {
         if (zapped == true)
-            printf( "segfault" );
+            printf("segfault");
         killed = true;
     }
     bool Killed()
     {
         if (zapped == true)
-            printf( "segfault" );
+            printf("segfault");
         return killed;
     }
 
     void Ref()
     {
         if (zapped == true)
-            printf( "segfault" );
+            printf("segfault");
         ucref += 1;
     }
     void UnRef()
     {
         if (zapped == true)
-            printf( "segfault" );
+            printf("segfault");
         ucref -= 1;
         if (ucref == 0 && killed)
             zapped = true;
     }
 };
 #endif
-

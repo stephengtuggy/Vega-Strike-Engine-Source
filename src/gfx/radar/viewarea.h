@@ -6,26 +6,25 @@
 #include "gfx/vec.h"
 #include "gfx/sprite.h"
 
-struct GFXColor;  // Edit from class to struct as defined in gfxlib_struct.
+struct GFXColor; // Edit from class to struct as defined in gfxlib_struct.
 
 namespace Radar
 {
 
-struct ViewArea
-{
+struct ViewArea {
     ViewArea();
 
     void SetSprite(VSSprite *);
 
-    Vector Scale(const Vector&) const;
+    Vector Scale(const Vector &) const;
 
     GFXColor GetColor() const;
 
     bool IsActive() const;
 
     VSSprite *sprite;
-    Vector position;
-    Vector size;
+    Vector    position;
+    Vector    size;
 };
 
 } // namespace Radar

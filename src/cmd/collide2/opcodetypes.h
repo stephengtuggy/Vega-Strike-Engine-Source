@@ -1,16 +1,16 @@
 /*
     Copyright (C) 1998-2004 by Jorrit Tyberghein
-  
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-  
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-  
+
     You should have received a copy of the GNU Library General Public
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -20,16 +20,16 @@
 #define __CS_CSTYPES_H__
 
 // config.h is the VS ./configure determined header.
-#include "config.h" 
+#include "config.h"
 #include <float.h>
 #include <wchar.h>
 #if defined(_WIN32) && !defined(__CYGWIN__) // && defined(_MSC_VER)
 // Hack
 #define CS_COMPILER_MSVC 1
 #ifdef _WIN64
-#  define CS_PROCESSOR_SIZE 64 /* Only used if intptr_t is not found. */
+#define CS_PROCESSOR_SIZE 64 /* Only used if intptr_t is not found. */
 #else
-#  define CS_PROCESSOR_SIZE 32 /* Only used if intptr_t is not found. (cough VC6 cough) */
+#define CS_PROCESSOR_SIZE 32 /* Only used if intptr_t is not found. (cough VC6 cough) */
 #endif
 #define CS_HAVE_INTPTR_T 1
 
@@ -41,7 +41,6 @@
 
 #endif
 // End Hack
-
 
 #if defined(HAVE_STDINT_H)
 #ifndef __STDC_CONSTANT_MACROS
@@ -99,14 +98,14 @@ typedef __int64 int64;
 
 #else // CS_HAVE_STDINT_H || CS_HAVE_INTTYPES_H
 
-typedef uint8_t uint8;
-typedef int8_t int8;
+typedef uint8_t  uint8;
+typedef int8_t   int8;
 typedef uint16_t uint16;
-typedef int16_t int16;
+typedef int16_t  int16;
 typedef uint32_t uint32;
-typedef int32_t int32;
+typedef int32_t  int32;
 typedef uint64_t uint64;
-typedef int64_t int64;
+typedef int64_t  int64;
 #endif
 
 #ifdef CS_HAVE_INT64_C
@@ -128,10 +127,10 @@ typedef int64_t int64;
 #else // CS_HAVE_INT64_C
 
 #if defined(CS_COMPILER_GCC)
-#define CONST_INT64(x)  x ## LL
-#define CONST_UINT64(x) x ## ULL
+#define CONST_INT64(x) x##LL
+#define CONST_UINT64(x) x##ULL
 #elif defined(CS_COMPILER_MSVC) || defined(CS_COMPILER_BCC)
-#define CONST_INT64(x)  x##i64
+#define CONST_INT64(x) x##i64
 #define CONST_UINT64(x) x##ui64
 #else
 #error Do not know how to contruct 64-bit integer constants
@@ -155,9 +154,9 @@ typedef int64_t int64;
 #if !defined(CS_HAVE_INTPTR_T) && !defined(_INTPTR_T_DEFINED)
 
 #if CS_PROCESSOR_SIZE == 64
-typedef int64 intptr_t;
+typedef int64  intptr_t;
 typedef uint64 uintptr_t;
-typedef int64 ptrdiff_t;
+typedef int64  ptrdiff_t;
 #else
 /// Integer at least as wide as a pointer
 typedef int intptr_t;
@@ -179,7 +178,6 @@ typedef int64 intmax_t;
 typedef uint64 uintmax_t;
 #endif
 
-
 // Provide wchar_t and wint_t. If the configure script determined that these
 // types exist in the standard headers, then just employ those types.  For
 // MSVC, where the configure script is not used, check <stddef.h>, <wchar.h>,
@@ -199,16 +197,15 @@ typedef uint64 uintmax_t;
 #if !((defined(CS_HAVE_WINT_T) && defined(_WCTYPE_T_DEFINED)) || defined(_WINT_T) || defined(_WINT_T_DECLARED))
 #ifndef wint_t
 #if _MSC_VER >= 1300
-    typedef unsigned short wint_t;
+typedef unsigned short wint_t;
 #else
-    typedef wchar_t wint_t;
+typedef wchar_t wint_t;
 #endif
 #endif
 #define _WCTYPE_T_DEFINED
 #define _WINT_T
 #define _WINT_T_DECLARED
 #endif
-
 
 #if defined(CS_COMPILER_GCC)
 #ifndef __STRICT_ANSI__
@@ -222,20 +219,20 @@ typedef long long longlong;
 typedef unsigned long long ulonglong;
 #else
 // @@@ Correct?
-typedef int64 longlong;
+typedef int64  longlong;
 typedef uint64 ulonglong;
 #endif
 #elif defined(CS_COMPILER_MSVC) || defined(CS_COMPILER_BCC)
-typedef int64 longlong;
-typedef uint64 ulonglong;
+typedef int64    longlong;
+typedef uint64   ulonglong;
 #else
 #ifdef HAVE_STDINT_H
-typedef int_least64_t longlong;
+typedef int_least64_t  longlong;
 typedef uint_least64_t ulonglong;
-#else 
+#else
 #error Do not know how to declare (u)longlong types
-#endif 
-#endif 
+#endif
+#endif
 
 /**
  * A time value measured in milliseconds (1/1000 of a second).  Ticks do not

@@ -10,5 +10,4 @@
 #include <iostream>
 #include <iomanip>
 
-#endif//__PRECOMPILED_STANDARD_INCLUDED__
-
+#endif //__PRECOMPILED_STANDARD_INCLUDED__

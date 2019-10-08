@@ -4,5 +4,3 @@
 int command(int argc, char *argv[]);
 
 #endif
-
-

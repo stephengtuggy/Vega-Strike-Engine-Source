@@ -24,16 +24,16 @@
 void InitGraphics();
 void ShowMain(int run_vegastrike);
 
-void AddMainLabels(void);
-void AddLabelRow(char *desc, int count, GtkWidget *vbox);
-void AddMissionsToTree(char *path, GtkWidget *tree, int is_parent);
+void       AddMainLabels(void);
+void       AddLabelRow(char *desc, int count, GtkWidget *vbox);
+void       AddMissionsToTree(char *path, GtkWidget *tree, int is_parent);
 GtkWidget *AddItem(GtkWidget *tree, char *name, char *filename);
 
 void select_item(GtkWidget *item, gchar *filename);
 void deselect_item(GtkWidget *item, gchar *filename);
 
 void cb_unselect_child(GtkWidget *root_tree, GtkWidget *child, GtkWidget *subtree);
-void cb_select_child (GtkWidget *root_tree, GtkWidget *child, GtkWidget *subtree);
+void cb_select_child(GtkWidget *root_tree, GtkWidget *child, GtkWidget *subtree);
 void cb_selection_changed(GtkWidget *tree);
 
-#endif    //DISPLAY_GTK_H
+#endif // DISPLAY_GTK_H

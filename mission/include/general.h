@@ -22,7 +22,7 @@
 
 /* Don't forget, these defines can be set at compile time with the compile flag -D */
 
-#define _G_ALL		// Enable everything except _G_DEBUG
+#define _G_ALL // Enable everything except _G_DEBUG
 
 //#define _G_DEBUG		// Debug Messaging
 //#define _G_ERROR		// Error Messaging (internal and external)
@@ -42,7 +42,7 @@
 // Also, any functions which you write that use ShowError() to produce a fatal error also won't
 // cause the program to exit
 
-#define EXIT_ON_FATAL -1	// exit(EXIT_ON_FATAL) on a fatal error. If _G_ERROR is undefined, there will be no message
+#define EXIT_ON_FATAL -1 // exit(EXIT_ON_FATAL) on a fatal error. If _G_ERROR is undefined, there will be no message
 
 #ifdef _G_ALL
 #define _G_ERROR
@@ -53,100 +53,100 @@
 #define _G_STRING_MANAGE
 #define _G_STRING_PARSE
 #define _G_XML
-#endif    // _G_ALL
+#endif // _G_ALL
 
 #define SEPERATOR '/'
 
 #ifdef _G_GLIB
 #include <glib.h>
-#endif    // _G_GLIB
+#endif // _G_GLIB
 
 #ifdef _G_GLOB
 #include <glob.h>
 #include <stdio.h>
-#endif    // _G_GLIB
+#endif // _G_GLIB
 
 #ifdef _G_ERROR
 #include <stdio.h>
-#endif    // _G_ERROR
+#endif // _G_ERROR
 
 #include <stdlib.h>
 
 #ifdef _G_STRING_MANAGE
 #include <string.h>
-#endif    // _G_STRING_MANAGE
+#endif // _G_STRING_MANAGE
 
 #ifdef _G_RANDOM
 #include <time.h>
-#endif    // _G_RANDOM
+#endif // _G_RANDOM
 
 #ifdef _G_DEBUG
-#ifdef __cplusplus		//iostream is only used in debugging
+#ifdef __cplusplus // iostream is only used in debugging
 #include <iostream.h>
-#endif    // __cplusplus
-#endif    // _G_DEBUG
+#endif // __cplusplus
+#endif // _G_DEBUG
 
 #ifndef MAX_READ
 #define MAX_READ 1024
-#endif    // MAX_READ
+#endif // MAX_READ
 
 #ifndef MAX_ELEM
 #define MAX_ELEM 15
-#endif    // MAX_ELEM
+#endif // MAX_ELEM
 
 #ifdef _G_STRING_PARSE
 char *next_parm(char *string);
-//char *split_words(char *string, int max_words);
+// char *split_words(char *string, int max_words);
 char *ptr_copy(char *string);
-void chomp(char *line);
+void  chomp(char *line);
 char *pre_chomp(char *line);
 char *replace(char *line, char *search, char *replace, int LENGTH);
 char *strmov(char *to, char *from);
-void lower(char *line);
-void strappend(char *dest, char *source, int length);
+void  lower(char *line);
+void  strappend(char *dest, char *source, int length);
 char *StripPath(char *filename);
-void StripExtension(char *filename);
-#endif    // _G_STRING_PARSE
+void  StripExtension(char *filename);
+#endif // _G_STRING_PARSE
 
 #ifdef _G_RANDOM
-int randnum(int start, int end);
+int  randnum(int start, int end);
 void randcode(char *line, int length);
-#endif    // _G_STRING_RANDOM
+#endif // _G_STRING_RANDOM
 
 #ifdef _G_NUMBER
 void itoa(char *line, int number, int length);
-int pwer(int start, int end);
-int pwr(int start, int end);
-int do_power(int start, int end, int multiply);
+int  pwer(int start, int end);
+int  pwr(int start, int end);
+int  do_power(int start, int end, int multiply);
 #ifdef __cplusplus
 double pwer(double start, long end);
-#endif    // __cplusplus
+#endif // __cplusplus
 void btoa(char *dest, char *string);
-#endif    // _G_NUMBER
+#endif // _G_NUMBER
 
 #ifdef _G_STRING_MANAGE
 #ifdef _G_GLIB
 char *GetString(GString *line);
-void SetString(GString **ptr, char *line);
-#endif    // G_GLIB
+void  SetString(GString **ptr, char *line);
+#endif // G_GLIB
 
 #ifdef __cplusplus
 char *GetString(char *line);
-void SetString(char **ptr, char *line);
+void  SetString(char **ptr, char *line);
 char *NewString(char *string);
-#endif    // __cplusplus
-#endif    // _G_STRING_MANAGE
+#endif // __cplusplus
+#endif // _G_STRING_MANAGE
 
 void ShowError(char *error_msg, char *error_code, int is_fatal);
 
 #ifdef _G_XML
 char *xml_pre_chomp_comment(char *string);
 char *xml_chomp_comment(char *string);
-#endif    // _G_XML
+#endif // _G_XML
 
 #ifdef _G_GLOB
 glob_t *FindFiles(char *path, char *extension);
 glob_t *FindDirs(char *path);
-#endif    // _G_GLOB
+#endif // _G_GLOB
 
-#endif    // GENERAL_H
+#endif // GENERAL_H

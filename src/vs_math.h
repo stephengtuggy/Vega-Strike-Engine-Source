@@ -28,28 +28,28 @@
 #include <float.h>
 
 #ifdef HAVE_IEEEFP_H
- #include <ieeefp.h>
+#include <ieeefp.h>
 #endif
 
 #ifndef M_PI
- #define M_PI 3.14159265358979323846
+#define M_PI 3.14159265358979323846
 #endif
 #ifndef PI
- #define PI M_PI
+#define PI M_PI
 #endif
 #ifndef M_1_PI
- #define M_1_PI (1/M_PI)
+#define M_1_PI (1 / M_PI)
 #endif
 
-#if defined (HAVE_MATH_H)
- #include <math.h>
+#if defined(HAVE_MATH_H)
+#include <math.h>
 #endif
-#if  defined (HAVE_FINITE) || defined (BSD)
- #define FINITE( x ) ( finite( x ) )
- #define ISNAN( x ) ( isnan( x ) )
+#if defined(HAVE_FINITE) || defined(BSD)
+#define FINITE(x) (finite(x))
+#define ISNAN(x) (isnan(x))
 #else
- #define FINITE( x ) ( _finite( x ) )
- #define ISNAN( x ) ( _isnan( x ) )
+#define FINITE(x) (_finite(x))
+#define ISNAN(x) (_isnan(x))
 #endif
 
 #endif // _VS_MATH_H_

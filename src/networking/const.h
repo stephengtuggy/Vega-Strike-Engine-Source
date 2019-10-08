@@ -50,24 +50,24 @@ typedef unsigned int   InstSerial;
 extern double NETWORK_ATOM;
 extern double DAMAGE_ATOM;
 
-#if defined (_WIN32) && !defined (__CYGWIN__) || defined (MAC_OS_X_VERSION_10_3) || defined (MAC_OS_X_VERSION_10_2) \
-    || defined (MAC_OS_X_VERSION_10_1)
+#if defined(_WIN32) && !defined(__CYGWIN__) || defined(MAC_OS_X_VERSION_10_3) || defined(MAC_OS_X_VERSION_10_2) ||                         \
+    defined(MAC_OS_X_VERSION_10_1)
 //#warning "Win32 platform"
-        #define in_addr_t unsigned long
-        #define socklen_t int
+#define in_addr_t unsigned long
+#define socklen_t int
 #else
 //#warning "GCC platform"
-  #ifndef SOCKET_ERROR
-  #define SOCKET_ERROR -1
-  #endif
+#ifndef SOCKET_ERROR
+#define SOCKET_ERROR -1
+#endif
 #endif
 
-#if !defined (_WIN32) || defined (__CYGWIN__) || defined (__MINGW32__)
-  #define LOCALCONST_DECL( Type, cName, Value ) static const Type cName = Value;
-  #define LOCALCONST_DEF( Class, Type, cName, Value )
+#if !defined(_WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
+#define LOCALCONST_DECL(Type, cName, Value) static const Type cName = Value;
+#define LOCALCONST_DEF(Class, Type, cName, Value)
 #else
-  #define LOCALCONST_DECL( Type, cName, Value ) static Type cName;
-  #define LOCALCONST_DEF( Class, Type, cName, Value ) Type Class::cName = Value;
+#define LOCALCONST_DECL(Type, cName, Value) static Type cName;
+#define LOCALCONST_DEF(Class, Type, cName, Value) Type Class::cName = Value;
 #endif
 
 #if _WIN32_WINNT >= 0x0400
@@ -77,4 +77,3 @@ typedef unsigned char  u_int8_t;
 #endif
 
 #endif /* __CONST_H */
-

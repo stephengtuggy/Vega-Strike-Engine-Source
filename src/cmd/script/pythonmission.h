@@ -5,21 +5,21 @@
 class UnitContainer;
 class PythonMissionBaseClass
 {
-protected:
+  protected:
     virtual void Destructor();
-public:
-    std::vector< UnitContainer* >relevant_units;
+
+  public:
+    std::vector<UnitContainer *> relevant_units;
     PythonMissionBaseClass();
     virtual void Destroy()
     {
         Destructor();
     }
     virtual ~PythonMissionBaseClass();
-    virtual void Execute();
-    virtual void callFunction( std::string s );
+    virtual void        Execute();
+    virtual void        callFunction(std::string s);
     virtual std::string Pickle();
-    virtual void UnPickle( std::string s );
+    virtual void        UnPickle(std::string s);
 };
 
 #endif
-

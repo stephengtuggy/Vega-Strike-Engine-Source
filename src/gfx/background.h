@@ -31,21 +31,21 @@ class Background
     bool        Enabled;
     bool        degamma;
     GFXColor    color;
-    StarVlist  *stars;
-    Texture    *up;
-    Texture    *left;
-    Texture    *front;
-    Texture    *right;
-    Texture    *back;
-    Texture    *down;
+    StarVlist * stars;
+    Texture *   up;
+    Texture *   left;
+    Texture *   front;
+    Texture *   right;
+    Texture *   back;
+    Texture *   down;
     SphereMesh *SphereBackground;
-public: 
-    Background( const char *file, int numstars, float spread, const std::string &starfilename, const GFXColor &color, bool degamma);
+
+  public:
+    Background(const char *file, int numstars, float spread, const std::string &starfilename, const GFXColor &color, bool degamma);
     ~Background();
-    void EnableBG( bool );
+    void EnableBG(bool);
     void Draw();
-    struct BackgroundClone
-    {
+    struct BackgroundClone {
         Texture *backups[7];
         void     FreeClone();
     };
@@ -53,4 +53,3 @@ public:
 };
 
 #endif
-

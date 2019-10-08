@@ -25,4 +25,4 @@ void InitGraphics();
 void ShowMain();
 void ShowChoices(int val);
 
-#endif    //DISPLAY_CONSOLE_H
+#endif // DISPLAY_CONSOLE_H

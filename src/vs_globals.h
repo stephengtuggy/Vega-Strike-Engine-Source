@@ -23,8 +23,8 @@ extern Universe *_Universe;
 #define RESTRICT __restrict__
 #endif
 
-extern void cleanup();
-extern void VSExit( int code );
+extern void   cleanup();
+extern void   VSExit(int code);
 extern bool   STATIC_VARS_DESTROYED;
 extern char   SERVER;
 extern int    loop_count;
@@ -39,8 +39,7 @@ extern bool   run_only_player_starsystem;
 
 // We will be removing all of these and using vs_options instead
 
-typedef struct
-{
+typedef struct {
     char  use_textures;
     char  use_animations;
     char  use_videos;
@@ -48,7 +47,7 @@ typedef struct
     char  use_logos;
     char  use_ship_textures;
     char  use_planet_textures;
-    int   audio_frequency_mode;   //0==11025/8 1==22050/8 2==44100/8  3==11025/16 4==22050/16 5==44100/16
+    int   audio_frequency_mode; // 0==11025/8 1==22050/8 2==44100/8  3==11025/16 4==22050/16 5==44100/16
     int   sound_enabled;
     int   sound_volume;
     int   music_volume;
@@ -57,7 +56,7 @@ typedef struct
     int   capture_mouse;
     float MouseSensitivityX;
     float MouseSensitivityY;
-    float detaillevel;     /*how much the LOD calculation gets multiplied by...higher="bigger" */
+    float detaillevel; /*how much the LOD calculation gets multiplied by...higher="bigger" */
     int   y_resolution;
     int   x_resolution;
     float znear;
@@ -76,23 +75,23 @@ class VegaConfig;
 extern VegaConfig *vs_config;
 class NetServer;
 class NetClient;
-extern NetClient  *Network;
-extern NetServer  *VSServer;
+extern NetClient *Network;
+extern NetServer *VSServer;
 
 class Mission;
-extern Mission    *mission;
-template < class MyType >
-class LeakVector
+extern Mission *mission;
+template <class MyType> class LeakVector
 {
-    std::vector< MyType > *active_missions;
-public:
+    std::vector<MyType> *active_missions;
+
+  public:
     bool empty() const
     {
         return active_missions->empty();
     }
-    void push_back( MyType mis )
+    void push_back(MyType mis)
     {
-        active_missions->push_back( mis );
+        active_missions->push_back(mis);
     }
     MyType back()
     {
@@ -100,14 +99,14 @@ public:
     }
     LeakVector()
     {
-        active_missions = new std::vector< MyType > ();
+        active_missions = new std::vector<MyType>();
     }
 
     unsigned int size() const
     {
         return (active_missions)->size();
     }
-    MyType operator[]( unsigned int i )
+    MyType operator[](unsigned int i)
     {
         return (*active_missions)[i];
     }
@@ -115,17 +114,16 @@ public:
     {
         /* DO NOTHING OR DIE INTENTIONAL LEAK We need this data after Exit*/
     }
-    std::vector< MyType > * Get()
+    std::vector<MyType> *Get()
     {
         return active_missions;
     }
 };
 
-extern LeakVector< Mission* >active_missions;
+extern LeakVector<Mission *> active_missions;
 class ForceFeedback;
 extern ForceFeedback *forcefeedback;
 
 extern double benchmark;
 
 #endif
-

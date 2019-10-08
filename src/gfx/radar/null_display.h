@@ -10,9 +10,11 @@ namespace Radar
 
 class NullDisplay : public Display
 {
-public:
+  public:
     // Shows nothing
-    void Draw(const Sensor&, VSSprite *, VSSprite *) {}
+    void Draw(const Sensor &, VSSprite *, VSSprite *)
+    {
+    }
 };
 
 } // namespace Radar

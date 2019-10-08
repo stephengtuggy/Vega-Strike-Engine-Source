@@ -17,8 +17,7 @@ typedef unsigned char  BYTE;
  * misaligned structs
  * Caution about big endian systems (use endianness.h to read in things)
  */
-typedef struct
-{
+typedef struct {
     DWORD biSize;
     LONG  biWidth;
     LONG  biHeight;
@@ -36,8 +35,7 @@ typedef struct
  * File header of a bitmap. Won't work on mips architecture with
  * misaligned structs
  */
-typedef struct
-{
+typedef struct {
     WORD  bfType;
     DWORD bfSize;
     WORD  bfReserved1;
@@ -48,8 +46,7 @@ typedef struct
 /**
  *  The color data of a bitmap
  */
-typedef struct
-{
+typedef struct {
     BYTE rgbBlue;
     BYTE rgbGreen;
     BYTE rgbRed;
@@ -58,7 +55,7 @@ typedef struct
 #else
 #ifndef NOMINMAX
 #define NOMINMAX
-#endif //tells VCC not to generate min/max macros
+#endif // tells VCC not to generate min/max macros
 #include <windows.h>
 #include <wingdi.h>
 #endif
@@ -87,42 +84,39 @@ typedef struct
  * DDS header structs
  * Some DDS files may not fill in all data members.
  */
-typedef struct
-{
+typedef struct {
     char fourcc[4];
     int  bpp;
 } pxlformat;
 
-typedef struct
-{
-    int size;
-    int flags;
-    int height;
-    int width;
-    int linsize;
-    int depth;
-    int nmips;
+typedef struct {
+    int       size;
+    int       flags;
+    int       height;
+    int       width;
+    int       linsize;
+    int       depth;
+    int       nmips;
     pxlformat pixelFormat;
-    int dcaps1;
-    int dcaps2;
+    int       dcaps1;
+    int       dcaps2;
 } ddsHeader;
-//End DDS header
+// End DDS header
 
-typedef struct
-{
+typedef struct {
     char *Buffer;
     int   Pos;
 } TPngFileBuffer;
 
-typedef unsigned char* (textureTransform)( int &bpp, int &color_type, unsigned long &width, unsigned long &height,
-                                           unsigned char **row_pointers );
+typedef unsigned char *(textureTransform)(
+    int &bpp, int &color_type, unsigned long &width, unsigned long &height, unsigned char **row_pointers);
 textureTransform heightmapTransform;
 textureTransform terrainTransform;
 textureTransform texTransform;
 
-void png_write( const char *myfile, unsigned char *data, unsigned int width, unsigned int height, bool alpha, char bpp );
+void png_write(const char *myfile, unsigned char *data, unsigned int width, unsigned int height, bool alpha, char bpp);
 
-enum VSImageType {PngImage, BmpImage, JpegImage, DdsImage, Unrecognized};
+enum VSImageType { PngImage, BmpImage, JpegImage, DdsImage, Unrecognized };
 
 /*
  * VSImage is a container and low level api to texture input data.
@@ -137,11 +131,11 @@ enum VSImageType {PngImage, BmpImage, JpegImage, DdsImage, Unrecognized};
  */
 class VSImage
 {
-private:
+  private:
     VSFileSystem::VSFile *img_file;
     VSFileSystem::VSFile *img_file2;
-    textureTransform     *tt;
-    VSImageType img_type;
+    textureTransform *    tt;
+    VSImageType           img_type;
 
     int  img_depth;
     int  img_color_type;
@@ -149,108 +143,103 @@ private:
     bool strip_16;
     bool flip;
 
-protected:
-
-    enum CubeSides
-    {
-        SIDE_SINGLE=0,
-        SIDE_POS_X =0x01,
-        SIDE_NEG_X =0x02,
-        SIDE_POS_Y =0x04,
-        SIDE_NEG_Y =0x08,
-        SIDE_POS_Z =0x10,
-        SIDE_NEG_Z =0x20
+  protected:
+    enum CubeSides {
+        SIDE_SINGLE = 0,
+        SIDE_POS_X  = 0x01,
+        SIDE_NEG_X  = 0x02,
+        SIDE_POS_Y  = 0x04,
+        SIDE_NEG_Y  = 0x08,
+        SIDE_POS_Z  = 0x10,
+        SIDE_NEG_Z  = 0x20
     };
 
     char img_sides;
     int  img_nmips;
 
-private:
-
+  private:
     void Init();
-    void Init( VSFileSystem::VSFile *f, textureTransform *t = NULL, bool strip = false, VSFileSystem::VSFile *f2 = NULL );
+    void Init(VSFileSystem::VSFile *f, textureTransform *t = NULL, bool strip = false, VSFileSystem::VSFile *f2 = NULL);
 
-    VSFileSystem::VSError CheckPNGSignature( VSFileSystem::VSFile *file );
-    VSFileSystem::VSError CheckJPEGSignature( VSFileSystem::VSFile *file );
-    VSFileSystem::VSError CheckBMPSignature( VSFileSystem::VSFile *file );
-    VSFileSystem::VSError CheckDDSSignature( VSFileSystem::VSFile *file );
+    VSFileSystem::VSError CheckPNGSignature(VSFileSystem::VSFile *file);
+    VSFileSystem::VSError CheckJPEGSignature(VSFileSystem::VSFile *file);
+    VSFileSystem::VSError CheckBMPSignature(VSFileSystem::VSFile *file);
+    VSFileSystem::VSError CheckDDSSignature(VSFileSystem::VSFile *file);
 
-/*
- * Calls above Check methods to determine if mime type matches supported format.
- * Sets img_type to correct type.
- */
-    void CheckFormat( VSFileSystem::VSFile *file );
+    /*
+     * Calls above Check methods to determine if mime type matches supported format.
+     * Sets img_type to correct type.
+     */
+    void CheckFormat(VSFileSystem::VSFile *file);
 
-/*
- * The following are format specific read functions called by ReadImage().
- * They are responsible for returning usable image data, either
- * an uncompressed data of supported depth/type or DDS
- */
-    unsigned char * ReadPNG();
-    unsigned char * ReadJPEG();
-    unsigned char * ReadBMP();
-    unsigned char * ReadDDS();
+    /*
+     * The following are format specific read functions called by ReadImage().
+     * They are responsible for returning usable image data, either
+     * an uncompressed data of supported depth/type or DDS
+     */
+    unsigned char *ReadPNG();
+    unsigned char *ReadJPEG();
+    unsigned char *ReadBMP();
+    unsigned char *ReadDDS();
 
-    VSFileSystem::VSError WritePNG( unsigned char *data );
-    VSFileSystem::VSError WriteJPEG( unsigned char *data );
-    VSFileSystem::VSError WriteBMP( unsigned char *data );
+    VSFileSystem::VSError WritePNG(unsigned char *data);
+    VSFileSystem::VSError WriteJPEG(unsigned char *data);
+    VSFileSystem::VSError WriteBMP(unsigned char *data);
 
     void AllocatePalette();
 
-public: VSImage();
-//f2 is needed for bmp loading
-    VSImage( VSFileSystem::VSFile *f, textureTransform *t = NULL, bool strip = false, VSFileSystem::VSFile *f2 = NULL );
+  public:
+    VSImage();
+    // f2 is needed for bmp loading
+    VSImage(VSFileSystem::VSFile *f, textureTransform *t = NULL, bool strip = false, VSFileSystem::VSFile *f2 = NULL);
     ~VSImage();
 
-//if we statically allocate it, then gl_texture will kill it when destructor is called...and if we delete this texture we be messed
+    // if we statically allocate it, then gl_texture will kill it when destructor is called...and if we delete this texture we be messed
     unsigned char *palette;
 
-/*
- * Position 3 and greater of VSImageMode are helper modes to differentiate the correct modes of DDS and PNG files.
- * DDS files are assumed to be 24 or 32 bit.
- */
-    enum VSImageMode {_8BIT, _24BIT, _24BITRGBA, _DXT1, _DXT1RGBA, _DXT3, _DXT5} mode;
+    /*
+     * Position 3 and greater of VSImageMode are helper modes to differentiate the correct modes of DDS and PNG files.
+     * DDS files are assumed to be 24 or 32 bit.
+     */
+    enum VSImageMode { _8BIT, _24BIT, _24BITRGBA, _DXT1, _DXT1RGBA, _DXT3, _DXT5 } mode;
 
-///the dimensions of the texture
+    /// the dimensions of the texture
     unsigned long sizeX;
     unsigned long sizeY;
 
-//Defined for gcc which pads the size of structs
-//const static int SIZEOF_BITMAPFILEHEADER;
-    LOCALCONST_DECL( int, SIZEOF_BITMAPFILEHEADER, sizeof (WORD)+sizeof (DWORD)+sizeof (WORD)+sizeof (WORD)+sizeof (DWORD) )
-//Defined for gcc which pads the size of structs
-    LOCALCONST_DECL(
-        int, SIZEOF_BITMAPINFOHEADER, sizeof (DWORD)+sizeof (LONG)+sizeof (LONG)+2*sizeof (WORD)+2*sizeof (DWORD)+2
-        *sizeof (LONG)
-        +2*sizeof (DWORD) )
-//const static int SIZEOF_BITMAPINFOHEADER;
-//Defined for gcc which pads size of structs (not entirely necessary)
-//const static int SIZEOF_RGBQUAD;
-    LOCALCONST_DECL( int, SIZEOF_RGBQUAD, sizeof (BYTE)*4 )
+    // Defined for gcc which pads the size of structs
+    // const static int SIZEOF_BITMAPFILEHEADER;
+    LOCALCONST_DECL(int, SIZEOF_BITMAPFILEHEADER, sizeof(WORD) + sizeof(DWORD) + sizeof(WORD) + sizeof(WORD) + sizeof(DWORD))
+    // Defined for gcc which pads the size of structs
+    LOCALCONST_DECL(int,
+                    SIZEOF_BITMAPINFOHEADER,
+                    sizeof(DWORD) + sizeof(LONG) + sizeof(LONG) + 2 * sizeof(WORD) + 2 * sizeof(DWORD) + 2 * sizeof(LONG) +
+                        2 * sizeof(DWORD))
+    // const static int SIZEOF_BITMAPINFOHEADER;
+    // Defined for gcc which pads size of structs (not entirely necessary)
+    // const static int SIZEOF_RGBQUAD;
+    LOCALCONST_DECL(int, SIZEOF_RGBQUAD, sizeof(BYTE) * 4)
 
-//f2 is needed for bmp loading
-    unsigned char*ReadImage( VSFileSystem::VSFile*f,
-                             textureTransform*t = NULL,
-                             bool strip = false,
-                             VSFileSystem::VSFile*f2 = NULL );
+    // f2 is needed for bmp loading
+    unsigned char *ReadImage(VSFileSystem::VSFile *f, textureTransform *t = NULL, bool strip = false, VSFileSystem::VSFile *f2 = NULL);
 
-    VSFileSystem::VSError WriteImage( char *filename,
-                                      unsigned char *data,
-                                      VSImageType type,
-                                      unsigned int width,
-                                      unsigned int height,
-                                      bool alpha = 1,
-                                      char bpp = 16,
-                                      VSFileSystem::VSFileType ft = VSFileSystem::UnknownFile,
-                                      bool flip = false );
-    VSFileSystem::VSError WriteImage( VSFileSystem::VSFile *pf,
-                                      unsigned char *data,
-                                      VSImageType type,
-                                      unsigned int width,
-                                      unsigned int height,
-                                      bool alpha = 1,
-                                      char bpp = 16,
-                                      bool flip = false );
+    VSFileSystem::VSError WriteImage(char *                   filename,
+                                     unsigned char *          data,
+                                     VSImageType              type,
+                                     unsigned int             width,
+                                     unsigned int             height,
+                                     bool                     alpha = 1,
+                                     char                     bpp   = 16,
+                                     VSFileSystem::VSFileType ft    = VSFileSystem::UnknownFile,
+                                     bool                     flip  = false);
+    VSFileSystem::VSError WriteImage(VSFileSystem::VSFile *pf,
+                                     unsigned char *       data,
+                                     VSImageType           type,
+                                     unsigned int          width,
+                                     unsigned int          height,
+                                     bool                  alpha = 1,
+                                     char                  bpp   = 16,
+                                     bool                  flip  = false);
 
     int Depth() const
     {
@@ -271,4 +260,3 @@ public: VSImage();
 };
 
 #endif
-

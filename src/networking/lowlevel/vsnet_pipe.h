@@ -5,18 +5,18 @@
 
 class VSPipe
 {
-public: VSPipe();
-    int write( const char *buf, int size );
-    int read( char *buf, int size );
-    int closewrite();
-    int closeread();
-    int getread() const;
+  public:
+    VSPipe();
+    int  write(const char *buf, int size);
+    int  read(char *buf, int size);
+    int  closewrite();
+    int  closeread();
+    int  getread() const;
     bool ok() const;
 
-private:
+  private:
     bool _failed;
     int  _pipe[2];
 };
 
 #endif /* VSNET_PIPE_H */
-

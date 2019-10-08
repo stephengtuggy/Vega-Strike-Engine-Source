@@ -18,27 +18,32 @@ class Sensor;
 // Draws radar on display
 class Display
 {
-public:
-    virtual ~Display() {}
+  public:
+    virtual ~Display()
+    {
+    }
 
-    virtual void Draw(const Sensor& sensor, VSSprite*, VSSprite *) = 0;
+    virtual void Draw(const Sensor &sensor, VSSprite *, VSSprite *) = 0;
 
-    virtual void OnDockEnd() {}
-    virtual void OnJumpBegin() {}
-    virtual void OnJumpEnd() {}
-    virtual void OnPauseBegin() {}
-    virtual void OnPauseEnd() {}
+    virtual void OnDockEnd()
+    {
+    }
+    virtual void OnJumpBegin()
+    {
+    }
+    virtual void OnJumpEnd()
+    {
+    }
+    virtual void OnPauseBegin()
+    {
+    }
+    virtual void OnPauseEnd()
+    {
+    }
 };
 
-struct Type
-{
-    enum Value
-    {
-        NullDisplay,
-        SphereDisplay,
-        BubbleDisplay,
-        PlaneDisplay
-    };
+struct Type {
+    enum Value { NullDisplay, SphereDisplay, BubbleDisplay, PlaneDisplay };
 };
 
 std::auto_ptr<Display> Factory(Type::Value);

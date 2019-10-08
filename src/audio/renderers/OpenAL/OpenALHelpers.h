@@ -8,16 +8,19 @@
 #define checkAlError() Audio::__impl::OpenAL::_checkAlErrorAt(alGetError(), __FILE__, __LINE__)
 #define clearAlError() Audio::__impl::OpenAL::_clearAlError();
 
-namespace Audio {
-    namespace __impl {
-        namespace OpenAL {
-            
-            void _checkAlErrorAt(ALenum error, const char *filename, int lineno) throw (Exception);
-            void _clearAlError() throw();
-            ALenum asALFormat(const Format &format) throw(Exception);
-            
-        }
-    }
-}
+namespace Audio
+{
+namespace __impl
+{
+    namespace OpenAL
+    {
 
-#endif//__OPENAL_HELPERS_H__INCLUDED__
+        void   _checkAlErrorAt(ALenum error, const char *filename, int lineno) throw(Exception);
+        void   _clearAlError() throw();
+        ALenum asALFormat(const Format &format) throw(Exception);
+
+    } // namespace OpenAL
+} // namespace __impl
+} // namespace Audio
+
+#endif //__OPENAL_HELPERS_H__INCLUDED__

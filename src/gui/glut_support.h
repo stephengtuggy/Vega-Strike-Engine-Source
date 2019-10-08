@@ -1,19 +1,19 @@
 /***************************************************************************
-*                           glut_support.h  -  description
-*                           --------------------------
-*                           begin                : December 28, 2001
-*                           copyright            : (C) 2001 by David Ranger
-*                           email                : ussreliant@users.sourceforge.net
-***************************************************************************/
+ *                           glut_support.h  -  description
+ *                           --------------------------
+ *                           begin                : December 28, 2001
+ *                           copyright            : (C) 2001 by David Ranger
+ *                           email                : ussreliant@users.sourceforge.net
+ ***************************************************************************/
 
 /***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   any later version.                                                    *
-*                                                                         *
-***************************************************************************/
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   any later version.                                                    *
+ *                                                                         *
+ ***************************************************************************/
 
 #ifndef GLUT_SUPPORT_H
 #define GLUT_SUPPORT_H
@@ -26,20 +26,15 @@
 #include "gfxlib.h"
 using std::vector;
 
-enum MousePointerStyle {
-    MOUSE_POINTER_NONE,
-    MOUSE_POINTER_NORMAL,
-    MOUSE_POINTER_HOVER
-};
+enum MousePointerStyle { MOUSE_POINTER_NONE, MOUSE_POINTER_NORMAL, MOUSE_POINTER_HOVER };
 
-void ShowColor( float x, float y, float wid, float hei, float red, float green, float blue, float alpha );
-void ShowText( float x, float y, float wid, int size, const char *string, int no_end );
-float WidthOfChar( char chr );
-void SetSoftwareMousePosition( int x, int y );
-void StartGUIFrame( GFXBOOL clear = GFXTRUE );
-void DrawGlutMouse( int mousex, int mousey, class VSSprite*spr );
-void EndGUIFrame( MousePointerStyle pointerStyle );
+void       ShowColor(float x, float y, float wid, float hei, float red, float green, float blue, float alpha);
+void       ShowText(float x, float y, float wid, int size, const char *string, int no_end);
+float      WidthOfChar(char chr);
+void       SetSoftwareMousePosition(int x, int y);
+void       StartGUIFrame(GFXBOOL clear = GFXTRUE);
+void       DrawGlutMouse(int mousex, int mousey, class VSSprite *spr);
+void       EndGUIFrame(MousePointerStyle pointerStyle);
 extern int HAS_ALPHA;
 
-#endif    //GLUT_SUPPORT_H
-
+#endif // GLUT_SUPPORT_H

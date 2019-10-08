@@ -20,8 +20,7 @@
  */
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #ifndef _GL_INIT_H_
@@ -52,26 +51,27 @@ extern "C"
 /* Shouldn't need to include glext.h if gl.h is recent, but alas we can't
  * count on that...  */
 
-#if defined (IRIX)
+#if defined(IRIX)
 #include <GL/gl.h>
 #include <GL/glut.h>
-typedef void (*PFNGLLOCKARRAYSEXTPROC)( GLint first, GLsizei count );
-typedef void (*PFNGLUNLOCKARRAYSEXTPROC)( void );
+typedef void (*PFNGLLOCKARRAYSEXTPROC)(GLint first, GLsizei count);
+typedef void (*PFNGLUNLOCKARRAYSEXTPROC)(void);
 
-#elif !defined (_WIN32)
-#if defined (__APPLE__) || defined (MACOSX)
-    #include <GLUT/glut.h>
-    #include <OpenGL/glext.h>
+#elif !defined(_WIN32)
+#if defined(__APPLE__) || defined(MACOSX)
+#include <GLUT/glut.h>
+#include <OpenGL/glext.h>
 #else
-    #include <GL/glut.h>
-    #include <GL/glext.h>
+#include <GL/glut.h>
+#include <GL/glext.h>
 #endif
 
-#if !defined (GL_GLEXT_VERSION) || GL_GLEXT_VERSION < 6
-#   error "*** You need a more recent copy of glext.h.  You can get one at http: //oss.sgi.com/projects/ogl-sample/ABI/glext.h ; it goes in /usr/include/GL. ***"
+#if !defined(GL_GLEXT_VERSION) || GL_GLEXT_VERSION < 6
+#error                                                                                                                                     \
+    "*** You need a more recent copy of glext.h.  You can get one at http: //oss.sgi.com/projects/ogl-sample/ABI/glext.h ; it goes in /usr/include/GL. ***"
 #endif
 #endif
-#if defined (PFNGLLOCKARRAYSEXTPROC) && defined (PFNGLUNLOCKARRAYSEXTPROC)
+#if defined(PFNGLLOCKARRAYSEXTPROC) && defined(PFNGLUNLOCKARRAYSEXTPROC)
 extern PFNGLLOCKARRAYSEXTPROC   glLockArraysEXT_p;
 extern PFNGLUNLOCKARRAYSEXTPROC glUnlockArraysEXT_p;
 #endif
@@ -80,4 +80,3 @@ extern PFNGLUNLOCKARRAYSEXTPROC glUnlockArraysEXT_p;
 } /* extern "C" */
 #endif
 #endif
-

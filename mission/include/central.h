@@ -40,7 +40,7 @@
 #include "hashtable.h"
 
 #ifndef MAX_READ
-#define MAX_READ 1024	// Maximum number of characters to read from a line
+#define MAX_READ 1024 // Maximum number of characters to read from a line
 #endif
 
 #define EXT_MISSION "*.mission"
@@ -48,18 +48,18 @@
 
 #define DIR_MISSION "./mission/"
 char *Start(int run_vegastrike);
-void RunMission(void);
+void  RunMission(void);
 
 struct mission_data {
-	char *name;
-	char *author;
-	char *description;
-	char *briefing;
-	char *path;
-	char *numplayers;
+    char *name;
+    char *author;
+    char *description;
+    char *briefing;
+    char *path;
+    char *numplayers;
 };
 
-extern glob_t *MISSIONS;
+extern glob_t *            MISSIONS;
 extern struct mission_data DATA;
 
-#endif    //CENTRAL_H
+#endif // CENTRAL_H

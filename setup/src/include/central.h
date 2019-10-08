@@ -39,44 +39,44 @@
 #include "file.h"
 
 #ifndef MAX_READ
-#define MAX_READ 1024	// Maximum number of characters to read from a line
+#define MAX_READ 1024 // Maximum number of characters to read from a line
 #endif
 
 #define CONFIG_FILE "setup.config"
 
-void Start(int*,char***);
-void SetGroup(char *group, char *setting);
-void SetInfo(char *catagory, char *info);
-char *GetInfo(char *catagory);
-char *GetSetting(char *group);
-struct catagory *GetCatStruct(char *name);
-struct group *GetGroupStruct(char *name);
+void                      Start(int *, char ***);
+void                      SetGroup(char *group, char *setting);
+void                      SetInfo(char *catagory, char *info);
+char *                    GetInfo(char *catagory);
+char *                    GetSetting(char *group);
+struct catagory *         GetCatStruct(char *name);
+struct group *            GetGroupStruct(char *name);
 typedef struct _GtkWidget GtkWidget;
 struct catagory {
-	char *group;
-	char *name;
-	char *info;
-	GtkWidget *button;
-	struct catagory *next;
+    char *           group;
+    char *           name;
+    char *           info;
+    GtkWidget *      button;
+    struct catagory *next;
 };
 
 struct group {
-	char *name;
-	char *setting;
-	struct group *next;
+    char *        name;
+    char *        setting;
+    struct group *next;
 };
 
 struct global_settings {
-	char *program_name;
-	char *config_file;
-	char *temp_file;
+    char *program_name;
+    char *config_file;
+    char *temp_file;
     char *data_path;
-	int columns;
+    int   columns;
 };
 
 // The structs are used primarily for the interface
-extern struct catagory CATS;
-extern struct group GROUPS;
+extern struct catagory        CATS;
+extern struct group           GROUPS;
 extern struct global_settings CONFIG;
 
-#endif    //CENTRAL_H
+#endif // CENTRAL_H

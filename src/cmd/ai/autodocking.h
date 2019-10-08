@@ -56,7 +56,7 @@ class AutoDocking : public Order
 {
     typedef void (AutoDocking::*StateFunction)(Unit *, Unit *);
 
-public:
+  public:
     typedef std::deque<int> DockingPath;
 
     AutoDocking(Unit *destination);
@@ -65,7 +65,7 @@ public:
 
     static bool CanDock(Unit *player, Unit *station);
 
-protected:
+  protected:
     // States
     void InitialState(Unit *player, Unit *station);
     void SelectionState(Unit *, Unit *);
@@ -80,7 +80,7 @@ protected:
     void EnqueuePort(Unit *, Unit *, size_t);
     void EraseOrders();
 
-private:
+  private:
     StateFunction state;
     UnitContainer target;
     // waypoints followed by docking port (back)

@@ -8,12 +8,11 @@ namespace XMLDOM
 {
 class VSFileXMLSerializer : public XMLDOM::XMLSerializer
 {
-public:
-    bool importXML( const std::string &path, VSFileSystem::VSFileType fileType );
-    virtual bool importXML( const std::string &path );
-    virtual bool exportXML( std::ostream &stream );
+  public:
+    bool         importXML(const std::string &path, VSFileSystem::VSFileType fileType);
+    virtual bool importXML(const std::string &path);
+    virtual bool exportXML(std::ostream &stream);
 };
-};
+}; // namespace XMLDOM
 
 #endif //__VSFILEXMLSERIALIZER_H__INCLUDED__
-

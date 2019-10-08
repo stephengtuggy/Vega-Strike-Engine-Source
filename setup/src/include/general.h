@@ -31,7 +31,7 @@
 #include <string.h>
 #include <time.h>
 
-#ifdef __cplusplus		//iostream is only used in debugging
+#ifdef __cplusplus // iostream is only used in debugging
 #include <iostream>
 #endif
 
@@ -47,26 +47,26 @@
 #define MAX_ELEM 15
 #endif
 
-//char *split_words(char *string, int max_words);
+// char *split_words(char *string, int max_words);
 char *ptr_copy(char *string);
 #ifdef __cplusplus
 extern "C" {
 #endif
 char *next_parm(char *string);
-void chomp(char *line);
+void  chomp(char *line);
 #ifdef __cplusplus
 }
 #endif
 char *pre_chomp(char *line);
 char *replace(char *line, char *search, char *replace, int LENGTH);
 char *strmov(char *to, char *from);
-void lower(char *line);
-void strappend(char *dest, char *source, int length);
-int randnum(int start, int end);
-void randcode(char *line, int length);
-void vs_itoa(char *line, int number, int length);
-int pwer(int start, int end);
-int pwr(int start, int end);
+void  lower(char *line);
+void  strappend(char *dest, char *source, int length);
+int   randnum(int start, int end);
+void  randcode(char *line, int length);
+void  vs_itoa(char *line, int number, int length);
+int   pwer(int start, int end);
+int   pwr(int start, int end);
 #ifdef __cplusplus
 double pwer(double start, long end);
 
@@ -75,13 +75,13 @@ extern "C" {
 void btoa(char *dest, char *string);
 #ifdef GLIB
 char *GetString(GString *line);
-void SetString(GString **ptr, char *line);
-#endif    //GLIB
+void  SetString(GString **ptr, char *line);
+#endif // GLIB
 char *NewString(const char *string);
-#endif    //GENERAL_H
+#endif // GENERAL_H
 
 char *xml_pre_chomp_comment(char *string);
 char *xml_chomp_comment(char *string);
-#ifdef __cplusplus		//iostream is only used in debugging
+#ifdef __cplusplus // iostream is only used in debugging
 }
 #endif

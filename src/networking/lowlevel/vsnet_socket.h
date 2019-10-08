@@ -33,63 +33,63 @@ class SocketSet;
 
 class SOCKETALT
 {
-    typedef boost::shared_ptr< VsnetSocket >ptr;
+    typedef boost::shared_ptr<VsnetSocket> ptr;
 
     ptr _sock;
 
-public:
-    LOCALCONST_DECL( bool, TCP, 1 )
-    LOCALCONST_DECL( bool, UDP, 0 )
+  public:
+    LOCALCONST_DECL(bool, TCP, 1)
+    LOCALCONST_DECL(bool, UDP, 0)
 
-public: SOCKETALT();
-    SOCKETALT( const SOCKETALT &orig );
-    SOCKETALT( VsnetSocket *sock );
-    SOCKETALT( int sock, bool mode, const AddressIP &remote_ip, SocketSet &set );
-//not actually a socketalt    SOCKETALT( std::string url, SocketSet& sets );
-    SOCKETALT& operator=( const SOCKETALT &orig );
+  public:
+    SOCKETALT();
+    SOCKETALT(const SOCKETALT &orig);
+    SOCKETALT(VsnetSocket *sock);
+    SOCKETALT(int sock, bool mode, const AddressIP &remote_ip, SocketSet &set);
+    // not actually a socketalt    SOCKETALT( std::string url, SocketSet& sets );
+    SOCKETALT &operator=(const SOCKETALT &orig);
 
-    int get_fd() const;
+    int  get_fd() const;
     bool valid() const;
     bool isTcp() const;
-    int queueLen( int pri );
-    int optPayloadSize() const;
+    int  queueLen(int pri);
+    int  optPayloadSize() const;
     bool isActive();
-//int  sendbuf( PacketMem& packet, const AddressIP* to, int pcktflags );
-    int sendbuf( Packet *packet, const AddressIP *to, int pcktflags );
+    // int  sendbuf( PacketMem& packet, const AddressIP* to, int pcktflags );
+    int  sendbuf(Packet *packet, const AddressIP *to, int pcktflags);
     bool set_nonblock();
     bool set_block();
 
-    int recvbuf( Packet *p, AddressIP *ipadr );
-    void disconnect( const char *s );
+    int  recvbuf(Packet *p, AddressIP *ipadr);
+    void disconnect(const char *s);
 
-    bool sameAddress( const SOCKETALT &l ) const;
-    bool lowerAddress( const SOCKETALT &l ) const;
+    bool sameAddress(const SOCKETALT &l) const;
+    bool lowerAddress(const SOCKETALT &l) const;
 
-    friend std::ostream&operator<<( std::ostream &ostr, const SOCKETALT &s );
-    friend bool operator==( const SOCKETALT &l, const SOCKETALT &r );
+    friend std::ostream &operator<<(std::ostream &ostr, const SOCKETALT &s);
+    friend bool          operator==(const SOCKETALT &l, const SOCKETALT &r);
 
-    void addToSet( SocketSet &set );
-    void setSet( SocketSet *set );
+    void addToSet(SocketSet &set);
+    void setSet(SocketSet *set);
 
-    const AddressIP& getRemoteAddress() const;
-//returns false if impossible (TCP)
-    bool setRemoteAddress( const AddressIP& );
+    const AddressIP &getRemoteAddress() const;
+    // returns false if impossible (TCP)
+    bool setRemoteAddress(const AddressIP &);
 
-    const AddressIP& getLocalAddress() const;
-    bool setLocalAddress( const AddressIP& );
+    const AddressIP &getLocalAddress() const;
+    bool             setLocalAddress(const AddressIP &);
 
-/** Required by the download manager achieve a sorting of sockets.
- */
+    /** Required by the download manager achieve a sorting of sockets.
+     */
     friend class CompareLt;
     class CompareLt
     {
-public:
-        bool operator()( const SOCKETALT &l, const SOCKETALT &r ) const;
+      public:
+        bool operator()(const SOCKETALT &l, const SOCKETALT &r) const;
     };
 };
 
-std::ostream&operator<<( std::ostream &ostr, const SOCKETALT &s );
-bool operator==( const SOCKETALT &l, const SOCKETALT &r );
+std::ostream &operator<<(std::ostream &ostr, const SOCKETALT &s);
+bool          operator==(const SOCKETALT &l, const SOCKETALT &r);
 
 #endif /* VSNET_SOCKET_H */
-
