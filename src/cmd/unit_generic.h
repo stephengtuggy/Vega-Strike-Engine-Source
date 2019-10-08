@@ -43,6 +43,7 @@ void UncheckUnit(class Unit *un);
 #include <string>
 #include <set>
 #include <map>
+#include <atomic>
 #include "cmd/unit_armorshield.h"
 #include "gfx/matrix.h"
 #include "gfx/quaternion.h"
@@ -863,7 +864,7 @@ class Unit
 
   protected:
     // Is dead already?
-    bool killed;
+    std::atomic_bool killed;
     // Should not be drawn
     enum INVIS { DEFAULTVIS = 0x0, INVISGLOW = 0x1, INVISUNIT = 0x2, INVISCAMERA = 0x4 };
     unsigned char invisible; // 1 means turn off glow, 2 means turn off ship
@@ -889,7 +890,7 @@ class Unit
     // Is dead yet?
     inline bool Killed() const
     {
-        return killed;
+        return killed.load();
     }
     bool IsExploding() const
     {

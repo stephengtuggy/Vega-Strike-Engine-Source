@@ -816,7 +816,7 @@ Unit::~Unit()
     }
 
     free(pImage->cockpit_damage);
-    if ((!killed))
+    if (!Killed())
         VSFileSystem::vs_fprintf(stderr, "Assumed exit on unit %s(if not quitting, report error)\n", name.get().c_str());
     if (ucref)
         VSFileSystem::vs_fprintf(stderr, "DISASTER AREA!!!!");
@@ -936,7 +936,6 @@ void Unit::ZeroAll()
     cloaking      = 0;
     cloakmin      = 0;
     radial_size   = 0;
-    killed        = false;
     invisible     = 0;
     corner_min.i  = 0;
     corner_min.j  = 0;
@@ -945,6 +944,7 @@ void Unit::ZeroAll()
     corner_max.j  = 0;
     corner_max.k  = 0;
     resolveforces = false;
+	killed.store(false);
     // armor has a constructor
     // shield has a constructor
     hull          = 0;
@@ -1074,9 +1074,10 @@ void Unit::Init()
     maxhull                                              = 1; // 10;
     shield.number                                        = 0;
 
+	killed.store(false);
+
     pImage->pExplosion  = NULL;
     pImage->timeexplode = 0;
-    killed              = false;
     ucref               = 0;
     aistate             = NULL;
     Identity(cumulative_transformation_matrix);
@@ -4446,7 +4447,7 @@ void Unit::Kill(bool erasefromsave, bool quitting)
     // eraticate everything. naturally (see previous line) we won't erraticate beams erraticated above
     if (!isSubUnit())
         RemoveFromSystem();
-    killed = true;
+    killed.store(true);
     computer.target.SetUnit(NULL);
 
     // God I can't believe this next line cost me 1 GIG of memory until I added it
@@ -4512,7 +4513,7 @@ void Unit::UnRef()
     CheckUnit(this);
 #endif
     ucref--;
-    if (killed && ucref == 0) {
+    if (Killed() && ucref == 0) {
 #ifdef CONTAINER_DEBUG
         deletedUn.Put((long)this, this);
 #endif
@@ -5405,7 +5406,7 @@ float Unit::ExplodingProgress() const
 
 void Unit::Destroy()
 {
-    if (!killed) {
+    if (!Killed()) {
         if (hull >= 0)
             hull = -1;
         for (int beamcount = 0; beamcount < GetNumMounts(); ++beamcount)

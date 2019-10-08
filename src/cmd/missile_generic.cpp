@@ -102,7 +102,7 @@ void Missile::reactToCollision(
         this->Velocity = smaller->Velocity;
         Velocity       = smaller->Velocity;
         Discharge();
-        if (!killed)
+        if (!Killed())
             DealDamageToHull(smalllocation.Cast(), hull + 1); // should kill, applying addmissile effect
     }
 }
