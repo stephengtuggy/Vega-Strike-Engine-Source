@@ -41,8 +41,12 @@ class CSVTable
     std::vector<std::string>  optimizer_keys;
     std::vector<unsigned int> optimizer_indexes;
 
-    // protected:
-    //     virtual ~CSVTable();
+    virtual ~CSVTable()
+    {
+#ifdef DESTRUCTDEBUG
+        VSFileSystem::vs_dbg(3) << "*** ~CSVTable()" << std::endl;
+#endif
+    }
 };
 
 class CSVRow
@@ -76,6 +80,12 @@ class CSVRow
     std::shared_ptr<CSVTable> getParent()
     {
         return parent;
+    }
+    virtual ~CSVRow()
+    {
+#ifdef DESTRUCTDEBUG
+        VSFileSystem::vs_dbg(3) << "*** ~CSVRow()" << std::endl;
+#endif
     }
 };
 
