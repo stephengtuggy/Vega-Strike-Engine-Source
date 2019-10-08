@@ -1154,8 +1154,8 @@ void Unit::Init()
 
 std::string getMasterPartListUnitName();
 using namespace VSFileSystem;
-extern std::string GetReadPlayerSaveGame(int);
-CSVRow             GetUnitRow(string filename, bool subu, int faction, bool readLast, bool& read);
+extern std::string      GetReadPlayerSaveGame(int);
+std::shared_ptr<CSVRow> GetUnitRow(string filename, bool subu, int faction, bool readLast, bool& read);
 #if 0
 static std::string csvUnit( std::string un )
 {
@@ -1171,8 +1171,8 @@ static std::string csvUnit( std::string un )
 void Unit::Init(
     const char* filename, bool SubU, int faction, std::string unitModifications, Flightgroup* flightgrp, int fg_subnumber, string* netxml)
 {
-    static bool UNITTAB = XMLSupport::parse_bool(vs_config->getVariable("physics", "UnitTable", "false"));
-    CSVRow      unitRow;
+    static bool             UNITTAB = XMLSupport::parse_bool(vs_config->getVariable("physics", "UnitTable", "false"));
+    std::shared_ptr<CSVRow> unitRow;
     this->Unit::Init();
     graphicOptions.SubUnit                        = SubU ? 1 : 0;
     graphicOptions.Animating                      = 1;
@@ -1273,10 +1273,10 @@ void Unit::Init(
         // we have to set the root directory to where the saved unit would have come from.
         // saved only exists if taberr<=Ok && taberr!=Unspecified...that's why we pass in said boolean
         VSFileSystem::current_path.push_back(
-            taberr <= Ok && taberr != Unspecified ? GetUnitRow(filename, SubU, faction, false, tmpbool).getRoot() : unitRow.getRoot());
-        VSFileSystem::current_subdirectory.push_back("/" + unitRow["Directory"]);
+            taberr <= Ok && taberr != Unspecified ? GetUnitRow(filename, SubU, faction, false, tmpbool)->getRoot() : unitRow->getRoot());
+        VSFileSystem::current_subdirectory.push_back("/" + (*unitRow)["Directory"]);
         VSFileSystem::current_type.push_back(UnitFile);
-        LoadRow(unitRow, unitModifications, netxml);
+        LoadRow((*unitRow), unitModifications, netxml);
         VSFileSystem::current_type.pop_back();
         VSFileSystem::current_subdirectory.pop_back();
         VSFileSystem::current_path.pop_back();
@@ -7433,8 +7433,8 @@ bool Unit::RepairUpgradeCargo(Cargo* item, Unit* baseUnit, float* credits)
         Cargo sold;
         bool  notadditive = (item->GetContent().find("add_") != 0 && item->GetContent().find("mult_") != 0);
         if (notadditive || item->GetCategory().find(DamagedCategory) == 0) {
-            Cargo itemCopy = *item; // Copy this because we reload master list before we need it.
-            const Unit* un = getUnitFromUpgradeName(item->content, this->faction);
+            Cargo       itemCopy = *item; // Copy this because we reload master list before we need it.
+            const Unit* un       = getUnitFromUpgradeName(item->content, this->faction);
             if (un) {
                 double percentage = UnitUtil::PercentOperational(this, item->content, item->category, false);
                 double price      = RepairPrice(percentage, itemPrice);

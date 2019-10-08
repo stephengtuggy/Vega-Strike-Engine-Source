@@ -19,17 +19,17 @@
 #include "unit_const_cache.h"
 #define VS_PI 3.1415926535897931
 
-CSVRow LookupUnitRow(const string& unitname, const string& faction)
+std::shared_ptr<CSVRow> LookupUnitRow(const string& unitname, const string& faction)
 {
     string hashname = unitname + "__" + faction;
     for (std::vector<std::shared_ptr<CSVTable>>::reverse_iterator it = unitTables.rbegin(); it != unitTables.rend(); ++it) {
         unsigned int where;
         if ((*it)->RowExists(hashname, where))
-            return CSVRow((*it), where);
+            return std::make_shared<CSVRow>((*it), where);
         else if ((*it)->RowExists(unitname, where))
-            return CSVRow((*it), where);
+            return std::make_shared<CSVRow>((*it), where);
     }
-    return CSVRow();
+    return std::make_shared<CSVRow>();
 }
 
 extern int  GetModeFromName(const char* input_buffer);
@@ -1415,21 +1415,21 @@ void Unit::LoadRow(CSVRow& row, string modification, string* netxml)
     this->setAverageGunSpeed();
 }
 
-CSVRow GetUnitRow(string filename, bool subu, int faction, bool readlast, bool& rread)
+std::shared_ptr<CSVRow> GetUnitRow(string filename, bool subu, int faction, bool readlast, bool& rread)
 {
     std::string hashname = filename + "__" + FactionUtil::GetFactionName(faction);
     for (int i = ((int)unitTables.size()) - (readlast ? 1 : 2); i >= 0; --i) {
         unsigned int where;
         if (unitTables[i]->RowExists(hashname, where)) {
             rread = true;
-            return CSVRow(unitTables[i], where);
+            return std::make_shared<CSVRow>(unitTables[i], where);
         } else if (unitTables[i]->RowExists(filename, where)) {
             rread = true;
-            return CSVRow(unitTables[i], where);
+            return std::make_shared<CSVRow>(unitTables[i], where);
         }
     }
     rread = false;
-    return CSVRow();
+    return std::make_shared<CSVRow>();
 }
 
 void Unit::WriteUnit(const char* modifications)

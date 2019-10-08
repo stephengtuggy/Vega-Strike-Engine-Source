@@ -9,14 +9,15 @@
 // delim should be read as separator and not to be confused with text delimiter see http://creativyst.com/Doc/Articles/CSV/CSV01.htm
 // separator values , and ; while delimiter is listed as quote or "
 std::vector<std::string> readCSV(const std::string& line, std::string delim = ",;");
-std::string writeCSV(const std::vector<std::string>& key, const std::vector<std::string>& table, std::string delim = ",;");
+std::string              writeCSV(const std::vector<std::string>& key, const std::vector<std::string>& table, std::string delim = ",;");
 
-class CSVTable {
-private:
+class CSVTable
+{
+  private:
     void Init(const std::string& data);
 
-public:
-    std::string rootdir;
+  public:
+    std::string              rootdir;
     vsUMap<std::string, int> columns;
     vsUMap<std::string, int> rows;
     std::vector<std::string> key;
@@ -29,28 +30,32 @@ public:
     bool ColumnExists(const std::string& name, unsigned int& where);
     void Merge(const CSVTable& other);
 
-public:
+  public:
     // Optimizer toolbox
     enum optimizer_enum { optimizer_undefined = 0x7fffffff };
     void SetupOptimizer(const std::vector<std::string>& keys, unsigned int type);
 
     // Opaque Optimizers - use the optimizer toolbox to set them up
-    bool optimizer_setup;
-    unsigned int optimizer_type;
-    std::vector<std::string> optimizer_keys;
+    bool                      optimizer_setup;
+    unsigned int              optimizer_type;
+    std::vector<std::string>  optimizer_keys;
     std::vector<unsigned int> optimizer_indexes;
 
-// protected:
-//     virtual ~CSVTable();
+    // protected:
+    //     virtual ~CSVTable();
 };
 
-class CSVRow {
-    std::string::size_type iter;
-    std::weak_ptr<CSVTable> parent; // 2019-10-06 SGT: I believe this has to be a weak_ptr, not a shared_ptr, to prevent memory leaks due to a reference loop between CSVTable and CSVRow
+class CSVRow
+{
+    std::string::size_type    iter;
+    std::shared_ptr<CSVTable> parent;
 
-public:
+  public:
     std::string getRoot();
-    size_t size() const { return parent.lock()->key.size(); }
+    size_t      size() const
+    {
+        return parent->key.size();
+    }
 
     CSVRow(std::shared_ptr<CSVTable> parent, const std::string& key);
     CSVRow(std::shared_ptr<CSVTable> parent, unsigned int which);
@@ -59,13 +64,19 @@ public:
         parent.reset(); // Instead of parent = NULL
         iter = std::string::npos;
     }
-    const std::string& operator[](const std::string&) const;
-    const std::string& operator[](unsigned int) const;
-    const std::string& getKey(unsigned int which) const;
+    const std::string&                 operator[](const std::string&) const;
+    const std::string&                 operator[](unsigned int) const;
+    const std::string&                 getKey(unsigned int which) const;
     std::vector<std::string>::iterator begin();
     std::vector<std::string>::iterator end();
-    bool success() const { return !parent.expired(); }
-    std::shared_ptr<CSVTable> getParent() { return parent.lock(); }
+    bool                               success() const
+    {
+        return (parent.use_count() > 0);
+    }
+    std::shared_ptr<CSVTable> getParent()
+    {
+        return parent;
+    }
 };
 
 /**

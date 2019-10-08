@@ -334,8 +334,9 @@ int Universe::StarSystemIndex(StarSystem* ss)
 static void AppendUnitTables(const string& csvfiles)
 {
     std::shared_ptr<CSVTable> table = loadCSVTableList(csvfiles, VSFileSystem::UnitFile, true);
-    if (table)
+    if (table) {
         unitTables.push_back(table);
+    }
 }
 
 void InitUnitTables()

@@ -252,24 +252,22 @@ CSVRow::CSVRow(std::shared_ptr<CSVTable> parent, unsigned int i)
 const string& CSVRow::operator[](const string& col) const
 {
     static string                 empty_string;
-    std::shared_ptr<CSVTable>     working_cpy_of_parent = this->parent.lock();
-    vsUMap<string, int>::iterator i                     = working_cpy_of_parent->columns.find(col);
-    if (i == working_cpy_of_parent->columns.end())
+    vsUMap<string, int>::iterator i = this->parent->columns.find(col);
+    if (i == this->parent->columns.end()) {
         return empty_string;
-    else
-        return working_cpy_of_parent->table[iter + (*i).second];
+    } else {
+        return this->parent->table[iter + (*i).second];
+    }
 }
 
 const string& CSVRow::operator[](unsigned int col) const
 {
-    std::shared_ptr<CSVTable> working_cpy_of_parent = this->parent.lock();
-    return working_cpy_of_parent->table[iter + col];
+    return this->parent->table[iter + col];
 }
 
 const string& CSVRow::getKey(unsigned int which) const
 {
-    std::shared_ptr<CSVTable> working_cpy_of_parent = this->parent.lock();
-    return working_cpy_of_parent->key[which];
+    return this->parent->key[which];
 }
 
 bool CSVTable::RowExists(const string& name, unsigned int& where)
@@ -294,8 +292,9 @@ std::vector<std::shared_ptr<CSVTable>> unitTables;
 
 string CSVRow::getRoot()
 {
-    if (auto working_cpy_of_parent = parent.lock())
-        return working_cpy_of_parent->rootdir;
+    if (this->parent) {
+        return this->parent->rootdir;
+    }
     fprintf(stderr, "Error getting root for unit\n");
     return "";
 }
