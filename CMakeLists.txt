@@ -587,10 +587,10 @@ IF(DATADIR)
 ENDIF(DATADIR)
 
 # Debug target block. 
-SET(CMAKE_CXX_FLAGS_DEBUG " ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -D DESTRUCTDEBUG=1 -include config.h -pipe -g2 -Wall -fvisibility=hidden" CACHE STRING
+SET(CMAKE_CXX_FLAGS_DEBUG " ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -D DESTRUCTDEBUG=1 -D DEBUG_RUN_PYTHON=1 -include config.h -pipe -g2 -Wall -fvisibility=hidden" CACHE STRING
     "Flags used by the C++ compiler during debug builds."
      FORCE )
-SET( CMAKE_C_FLAGS_DEBUG "  ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -D DESTRUCTDEBUG=1 -include config.h -pipe -g2 -Wall -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
+SET( CMAKE_C_FLAGS_DEBUG "  ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -D DESTRUCTDEBUG=1 -D DEBUG_RUN_PYTHON=1 -include config.h -pipe -g2 -Wall -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
     "Flags used by the C compiler during debug builds."
      FORCE )
 SET( CMAKE_EXE_LINKER_FLAGS_DEBUG
