@@ -109,12 +109,12 @@ Missile *UnitFactory::createMissile(const char *  filename,
     return un;
 }
 
-Planet *UnitFactory::createPlanet()
+std::shared_ptr<Planet> UnitFactory::createPlanet()
 {
     return new Planet;
 }
 
-Planet *UnitFactory::createPlanet(QVector                           x,
+std::shared_ptr<Planet> UnitFactory::createPlanet(QVector                           x,
                                   QVector                           y,
                                   float                             vely,
                                   const Vector &                    rotvel,
@@ -137,7 +137,7 @@ Planet *UnitFactory::createPlanet(QVector                           x,
                                   ObjSerial                         netcreate)
 {
     _Universe->netLock(true);
-    Planet *p = new Planet(x,
+    std::shared_ptr<Planet> p = new Planet(x,
                            y,
                            vely,
                            rotvel,

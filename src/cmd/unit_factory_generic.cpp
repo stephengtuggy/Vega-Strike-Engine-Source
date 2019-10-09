@@ -153,7 +153,7 @@ void UnitFactory::addPlanetBuffer(NetBuffer &                       netbuf,
     netbuf.addChar(inside_out);
 }
 
-Planet *UnitFactory::parsePlanetBuffer(NetBuffer &netbuf)
+std::shared_ptr<Planet> UnitFactory::parsePlanetBuffer(NetBuffer &netbuf)
 {
     ObjSerial    serial = netbuf.getSerial();
     QVector      x      = netbuf.getQVector();

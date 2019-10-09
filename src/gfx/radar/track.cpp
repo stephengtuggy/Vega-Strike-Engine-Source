@@ -112,7 +112,7 @@ Track::Type::Value Track::IdentifyType() const
         return Type::Nebula;
 
     case PLANETPTR: {
-        const Planet *planet = static_cast<const Planet *>(target);
+        const std::shared_ptr<Planet> planet = static_cast<const std::shared_ptr<Planet> >(target);
         if (planet->isJumppoint())
             return Type::JumpPoint;
 

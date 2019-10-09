@@ -79,9 +79,9 @@ class UnitFactory
                                   float         detonation_radius,
                                   ObjSerial     netcreate = 0);
 
-    static Planet *createPlanet();
+    static std::shared_ptr<Planet> createPlanet();
 
-    static Planet *createPlanet(QVector                           x,
+    static std::shared_ptr<Planet> createPlanet(QVector                           x,
                                 QVector                           y,
                                 float                             vely,
                                 const Vector &                    rotvel,
@@ -165,8 +165,8 @@ class UnitFactory
                                 bool                              inside_out,
                                 ObjSerial                         netcreate);
     // Not implemented: lots of orbit stuff is dissipated into private subclasses upon creation.
-    // static void addPlanetBuffer( NetBuffer & netbuf, const Planet *p);
-    static Planet *parsePlanetBuffer(NetBuffer &netbuf);
+    // static void addPlanetBuffer( NetBuffer & netbuf, const std::shared_ptr<Planet> p);
+    static std::shared_ptr<Planet> parsePlanetBuffer(NetBuffer &netbuf);
 
     static void
                    addNebulaBuffer(NetBuffer &netbuf, const char *unitfile, bool SubU, int faction, Flightgroup *fg, int fg_snumber, ObjSerial netcreate);

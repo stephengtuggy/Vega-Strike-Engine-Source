@@ -406,7 +406,7 @@ void                    GamePlanet::Draw(const Transformation &quat, const Matri
 void GamePlanet::ProcessTerrains()
 {
     while (!PlanetTerrainDrawQueue.empty()) {
-        Planet *pl = (Planet *)PlanetTerrainDrawQueue.back()->GetUnit();
+        std::shared_ptr<Planet> pl = (std::shared_ptr<Planet> )PlanetTerrainDrawQueue.back()->GetUnit();
         pl->DrawTerrain();
         PlanetTerrainDrawQueue.back()->SetUnit(NULL);
         delete PlanetTerrainDrawQueue.back();

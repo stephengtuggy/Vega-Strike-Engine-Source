@@ -562,7 +562,7 @@ void GameCockpit::DrawTargetBox(const Radar::Sensor &sensor)
     // FIXME: Replace with UnitUtil::isDockableUnit?
     if (draw_target_nav_symbol &&
         ((target->faction == neutral && target->isUnit() == UNITPTR) || target->isUnit() == ASTEROIDPTR ||
-         (target->isPlanet() && ((Planet *)target)->isAtmospheric() && (draw_jump_nav_symbol || target->GetDestinations().empty())) ||
+         (target->isPlanet() && ((std::shared_ptr<Planet> )target)->isAtmospheric() && (draw_jump_nav_symbol || target->GetDestinations().empty())) ||
          !sensor.InRange(track))) {
         static float nav_symbol_size = XMLSupport::parse_float(vs_config->getVariable("graphics", "nav_symbol_size", ".25"));
         GFXColor4f(1, 1, 1, 1);

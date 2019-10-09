@@ -281,7 +281,7 @@ void orbit(std::shared_ptr<Unit> my_unit, std::shared_ptr<Unit> orbitee, float s
             new PlanetaryOrbit(my_unit, speed / (3.1415926536 * (S.Magnitude() + R.Magnitude())), 0, R, S, center, orbitee));
         if (orbitee)
             if (orbitee->isUnit() == PLANETPTR)
-                ((Planet *)orbitee)->AddSatellite(my_unit);
+                ((std::shared_ptr<Planet> )orbitee)->AddSatellite(my_unit);
         if (my_unit->faction != FactionUtil::GetFactionIndex("neutral")) {
             Order *tmp = new Orders::FireAt(15.0);
             my_unit->EnqueueAI(tmp);
@@ -701,7 +701,7 @@ bool isSun(const std::shared_ptr<Unit> my_unit)
 {
     if (!my_unit)
         return false;
-    return my_unit->isPlanet() && ((Planet *)my_unit)->hasLights();
+    return my_unit->isPlanet() && ((std::shared_ptr<Planet> )my_unit)->hasLights();
 }
 
 bool isSignificant(const std::shared_ptr<Unit> my_unit)

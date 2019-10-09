@@ -59,7 +59,7 @@ string getUnitNameAndFgNoBase(std::shared_ptr<Unit> target)
 {
     Flightgroup *fg = target->getFlightgroup();
     if (target->isUnit() == PLANETPTR) {
-        string hr = ((Planet *)target)->getHumanReadablePlanetType();
+        string hr = ((std::shared_ptr<Planet> )target)->getHumanReadablePlanetType();
         if (!hr.empty())
             return hr + string(":") + reformatName(target->name);
     } else if (target->isUnit() == UNITPTR) {
@@ -889,7 +889,7 @@ void VDU::DrawTarget(GameCockpit *cp, std::shared_ptr<Unit> parent, std::shared_
                        ? target->getHudImage()
                        : (target->GetDestinations().size() != 0
                               ? getJumpImage()
-                              : (((Planet *)target)->hasLights()
+                              : (((std::shared_ptr<Planet> )target)->hasLights()
                                      ? getSunImage()
                                      : (target->getFullname().find("invisible") != string::npos ? getNavImage() : getPlanetImage())))),
                   .6,

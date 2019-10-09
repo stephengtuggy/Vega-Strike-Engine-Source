@@ -8,5 +8,5 @@ void AddAnimation(std::shared_ptr<Cockpit> cp, std::string anim)
 
 bool PlanetHasLights(std::shared_ptr<Unit> un)
 {
-    return ((Planet *)un)->hasLights();
+    return ((std::shared_ptr<Planet> )un)->hasLights();
 }

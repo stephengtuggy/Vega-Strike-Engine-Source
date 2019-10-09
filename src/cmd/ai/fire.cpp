@@ -33,7 +33,7 @@ std::shared_ptr<Unit> getAtmospheric(std::shared_ptr<Unit> targ)
         for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = *i) != NULL; ++i)
             if (un->isUnit() == PLANETPTR) {
                 if ((targ->Position() - un->Position()).Magnitude() < targ->rSize() * .5)
-                    if (!(((Planet *)un)->isAtmospheric()))
+                    if (!(((std::shared_ptr<Planet> )un)->isAtmospheric()))
                         return un;
             }
     }
@@ -45,7 +45,7 @@ bool RequestClearence(std::shared_ptr<Unit> parent, std::shared_ptr<Unit> targ, 
     if (!targ->DockingPortLocations().size())
         return false;
     if (targ->isUnit() == PLANETPTR) {
-        if (((Planet *)targ)->isAtmospheric() && NoDockWithClear()) {
+        if (((std::shared_ptr<Planet> )targ)->isAtmospheric() && NoDockWithClear()) {
             targ = getAtmospheric(targ);
             if (!targ)
                 return false;
@@ -614,7 +614,7 @@ bool FireAt::ShouldFire(std::shared_ptr<Unit> targ, bool &missilelock)
                                                                                               "18")) /
                                                180.); // Roughly 18 degrees
     float        temp             = parent->TrackingGuns(missilelock);
-    bool         isjumppoint      = targ->isUnit() == PLANETPTR && ((Planet *)targ)->GetDestinations().empty() == false;
+    bool         isjumppoint      = targ->isUnit() == PLANETPTR && ((std::shared_ptr<Planet> )targ)->GetDestinations().empty() == false;
     float        fangle           = (fireangle_minagg + fireangle_maxagg * agg) / (1.0f + agg);
     bool retval = ((dist < firewhen) && ((angle > fangle) || (temp && (angle > temp)) || (missilelock && (angle > 0)))) && !isjumppoint;
     if (retval) {
@@ -687,7 +687,7 @@ bool FireAt::isJumpablePlanet(std::shared_ptr<Unit> targ)
 {
     bool istargetjumpableplanet = targ->isUnit() == PLANETPTR;
     if (istargetjumpableplanet) {
-        istargetjumpableplanet = (!((Planet *)targ)->GetDestinations().empty()) && (parent->GetJumpStatus().drive >= 0);
+        istargetjumpableplanet = (!((std::shared_ptr<Planet> )targ)->GetDestinations().empty()) && (parent->GetJumpStatus().drive >= 0);
     }
     return istargetjumpableplanet;
 }

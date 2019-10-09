@@ -261,13 +261,13 @@ void Planet::endElement()
 {
 }
 
-Planet *Planet::GetTopPlanet(int level)
+std::shared_ptr<Planet> Planet::GetTopPlanet(int level)
 {
     if (level > 2) {
         un_iter satiterator = satellites.createIterator();
         assert(*satiterator);
         if ((*satiterator)->isUnit() == PLANETPTR) {
-            return ((Planet *)(*satiterator))->GetTopPlanet(level - 1);
+            return ((std::shared_ptr<Planet> )(*satiterator))->GetTopPlanet(level - 1);
         } else {
             VSFileSystem::vs_fprintf(stderr, "Planets are unable to orbit around units");
             return NULL;
@@ -313,7 +313,7 @@ std::shared_ptr<Unit> Planet::beginElement(QVector                      x,
         un_iter satiterator = satellites.createIterator();
         assert(*satiterator);
         if ((*satiterator)->isUnit() == PLANETPTR) {
-            un = ((Planet *)(*satiterator))
+            un = ((std::shared_ptr<Planet> )(*satiterator))
                      ->beginElement(x,
                                     y,
                                     vely,
@@ -348,7 +348,7 @@ std::shared_ptr<Unit> Planet::beginElement(QVector                      x,
             (*satiterator)->SetAI(new PlanetaryOrbit(*satiterator, vely, pos, x, y, QVector(0, 0, 0), this));
             (*satiterator)->SetOwner(this);
         } else {
-            Planet *p;
+            std::shared_ptr<Planet> p;
             if (dest.size() != 0)
                 radius = ScaleJumpRadius(radius);
             satellites.prepend(p = UnitFactory::createPlanet(x,

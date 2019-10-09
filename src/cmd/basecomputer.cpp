@@ -1740,7 +1740,7 @@ void BaseComputer::recalcTitle()
     string                baseName;
     if (baseUnit) {
         if (baseUnit->isUnit() == PLANETPTR) {
-            string temp = ((Planet *)baseUnit)->getHumanReadablePlanetType() + " Planet";
+            string temp = ((std::shared_ptr<Planet> )baseUnit)->getHumanReadablePlanetType() + " Planet";
             baseName    = temp;
         } else {
             baseName = baseUnit->name;

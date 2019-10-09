@@ -1053,7 +1053,7 @@ double compute_light_dot(std::shared_ptr<Unit> base, std::shared_ptr<Unit> un)
         un_iter ui = ss->getUnitList().createIterator();
         for (; (st = *ui); ++ui)
             if (st->isPlanet()) {
-                if (((Planet *)st)->hasLights()) {
+                if (((std::shared_ptr<Planet> )st)->hasLights()) {
 #ifdef VS_DEBUG
                     QVector v1 = (un->Position() - base->Position()).Normalize();
                     QVector v2 = (st->Position() - base->Position()).Normalize();
@@ -1065,7 +1065,7 @@ double compute_light_dot(std::shared_ptr<Unit> base, std::shared_ptr<Unit> un)
                     }
 #endif
                 } else {
-                    un_iter               ui   = ((Planet *)st)->satellites.createIterator();
+                    un_iter               ui   = ((std::shared_ptr<Planet> )st)->satellites.createIterator();
                     std::shared_ptr<Unit> ownz = NULL;
                     for (; (ownz = *ui); ++ui)
                         if (ownz == base)

@@ -172,7 +172,7 @@ class Planet : public Unit
                                        int                               faction,
                                        string                            fullname,
                                        bool                              inside_out);
-    Planet *              GetTopPlanet(int level);
+    std::shared_ptr<Planet> GetTopPlanet(int level);
     virtual enum clsptr   isUnit() const
     {
         return PLANETPTR;
@@ -216,7 +216,7 @@ class Planet : public Unit
     class PlanetIterator
     {
       public:
-        PlanetIterator(Planet *p)
+        PlanetIterator(std::shared_ptr<Planet> p)
         {
             localCollection.append(p);
             pos = localCollection.createIterator();
@@ -247,7 +247,7 @@ class Planet : public Unit
             if (current() != NULL) {
                 std::shared_ptr<Unit> cur = *pos;
                 if (cur->isUnit() == PLANETPTR)
-                    for (un_iter tmp(((Planet *)cur)->satellites.createIterator()); !tmp.isDone(); ++tmp)
+                    for (un_iter tmp(((std::shared_ptr<Planet> )cur)->satellites.createIterator()); !tmp.isDone(); ++tmp)
                         localCollection.append((*tmp));
                 ++pos;
             }

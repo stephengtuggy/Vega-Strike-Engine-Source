@@ -107,12 +107,12 @@ Missile *UnitFactory::createMissile(const char *  filename,
     return un;
 }
 
-Planet *UnitFactory::createPlanet()
+std::shared_ptr<Planet> UnitFactory::createPlanet()
 {
     return new GamePlanet;
 }
 
-Planet *UnitFactory::createPlanet(QVector                           x,
+std::shared_ptr<Planet> UnitFactory::createPlanet(QVector                           x,
                                   QVector                           y,
                                   float                             vely,
                                   const Vector &                    rotvel,
@@ -134,7 +134,7 @@ Planet *UnitFactory::createPlanet(QVector                           x,
                                   bool                              inside_out,
                                   ObjSerial                         netcreate)
 {
-    Planet *p = new GamePlanet(x,
+    std::shared_ptr<Planet> p = new GamePlanet(x,
                                y,
                                vely,
                                rotvel,

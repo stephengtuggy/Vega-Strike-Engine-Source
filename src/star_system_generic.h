@@ -57,7 +57,7 @@ class StarSystem
         ContinuousTerrain *             ct;
         int                             unitlevel;
         std::vector<GFXLight>           lights;
-        std::vector<Planet *>           moons;
+        std::vector<std::shared_ptr<Planet> >           moons;
         std::string                     backgroundname;
         GFXColor                        backgroundColor;
         bool                            backgroundDegamma;
