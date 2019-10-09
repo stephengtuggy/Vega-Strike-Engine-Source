@@ -1,6 +1,7 @@
 #ifndef _GNUHASH_H_
 #define _GNUHASH_H_
 #include "config.h"
+#include <memory>
 // The following block is to only use tr1 from at least 4.3 since 4.2 apparently bugs out.
 // Windows is untested at the moment.
 #ifdef HAVE_TR1_UNORDERED_MAP
@@ -146,9 +147,9 @@ template <> class hash<std::string>
         hash<size_t> a;
 
       public:
-        size_t operator()(const std::shared_ptr<Unit> const &key) const
+        size_t operator()(const std::shared_ptr<Unit> &key) const
         {
-            return a((size_t)key >> 4);
+            return a((size_t)key.get() >> 4);
         }
     };
     template <> class hash<std::pair<std::shared_ptr<Unit>, std::shared_ptr<Unit>>>
@@ -158,7 +159,7 @@ template <> class hash<std::string>
       public:
         size_t operator()(const std::pair<std::shared_ptr<Unit>, std::shared_ptr<Unit>> &key) const
         {
-            return (size_t)(size_t)(a((int)(((size_t)key.first) >> 4)) ^ a((int)(((size_t)key.second) >> 4)));
+            return (size_t)(size_t)(a((int)(((size_t)key.first.get()) >> 4)) ^ a((int)(((size_t)key.second.get()) >> 4)));
         }
     };
     // Minimum declaration needed by SharedPool.h

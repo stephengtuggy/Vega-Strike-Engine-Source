@@ -46,7 +46,7 @@ struct Type {
     enum Value { NullDisplay, SphereDisplay, BubbleDisplay, PlaneDisplay };
 };
 
-std::auto_ptr<Display> Factory(Type::Value);
+std::unique_ptr<Display> Factory(Type::Value);
 
 } // namespace Radar
 

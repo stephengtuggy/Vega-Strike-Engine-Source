@@ -317,8 +317,8 @@ RadixSort &RadixSort::Sort(const udword *input, udword nb, RadixHint hint)
                 //				mOffset[0] = NbNegativeValues;
                 //// First positive number takes place after the negative ones
                 mLink[0] = &mRanks2[NbNegativeValues]; // First positive number takes place after the negative ones
-                //				for(udword i=1;i<128;i++)		mOffset[i] = mOffset[i-1] + CurCount[i-1];	// 1 to
-                //128 for positive numbers
+                //				for(udword i=1;i<128;i++)		mOffset[i] = mOffset[i-1] + CurCount[i-1];	// 1
+                // to 128 for positive numbers
                 for (i = 1; i < 128; i++)
                     mLink[i] = mLink[i - 1] + CurCount[i - 1]; // 1 to 128 for positive numbers
 
@@ -457,8 +457,8 @@ RadixSort &RadixSort::Sort(const float *input2, udword nb)
                 //				mOffset[0] = NbNegativeValues;
                 //// First positive number takes place after the negative ones
                 mLink[0] = &mRanks2[NbNegativeValues]; // First positive number takes place after the negative ones
-                //				for(udword i=1;i<128;i++)		mOffset[i] = mOffset[i-1] + CurCount[i-1];	// 1 to
-                //128 for positive numbers
+                //				for(udword i=1;i<128;i++)		mOffset[i] = mOffset[i-1] + CurCount[i-1];	// 1
+                // to 128 for positive numbers
                 for (i = 1; i < 128; i++)
                     mLink[i] = mLink[i - 1] + CurCount[i - 1]; // 1 to 128 for positive numbers
 
@@ -466,7 +466,7 @@ RadixSort &RadixSort::Sort(const float *input2, udword nb)
                 //				mOffset[255] = 0;
                 mLink[255] = mRanks2;
                 //				for(i=0;i<127;i++)		mOffset[254-i] = mOffset[255-i] + CurCount[255-i];	//
-                //Fixing the wrong order for negative values
+                // Fixing the wrong order for negative values
                 for (i = 0; i < 127; i++)
                     mLink[254 - i] =
                         mLink[255 - i] + CurCount[255 - i]; // Fixing the wrong order for negative values
@@ -481,8 +481,8 @@ RadixSort &RadixSort::Sort(const float *input2, udword nb)
                         udword Radix = input[i] >> 24; // Radix byte, same as above. AND is useless here (udword).
                         // ### cmp to be killed. Not good. Later.
                         //						if(Radix<128)		mRanks2[mOffset[Radix]++] = i;		//
-                        //Number is positive, same as above 						else				mRanks2[--mOffset[Radix]] = i;		//
-                        // Number is negative, flip the sorting order
+                        // Number is positive, same as above 						else
+                        // mRanks2[--mOffset[Radix]] = i;		// Number is negative, flip the sorting order
                         if (Radix < 128)
                             *mLink[Radix]++ = i; // Number is positive, same as above
                         else
@@ -494,8 +494,8 @@ RadixSort &RadixSort::Sort(const float *input2, udword nb)
                         udword Radix = input[mRanks[i]] >> 24; // Radix byte, same as above. AND is useless here (udword).
                         // ### cmp to be killed. Not good. Later.
                         //						if(Radix<128)		mRanks2[mOffset[Radix]++] = mRanks[i];
-                        //// Number is positive, same as above 						else				mRanks2[--mOffset[Radix]] = mRanks[i];
-                        //// Number is negative, flip the sorting order
+                        //// Number is positive, same as above 						else
+                        /// mRanks2[--mOffset[Radix]] = mRanks[i]; / Number is negative, flip the sorting order
                         if (Radix < 128)
                             *mLink[Radix]++ = mRanks[i]; // Number is positive, same as above
                         else

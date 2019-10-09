@@ -91,8 +91,8 @@ template <class UnitType> class GameUnit : public UnitType
      **** GFX/MESHES STUFF                                                              ***
      **************************************************************************************
      */
-    double                    sparkle_accum;
-    std::auto_ptr<HaloSystem> phalos;
+    double                      sparkle_accum;
+    std::unique_ptr<HaloSystem> phalos;
     /// Process all meshes to be deleted
     /// Split this mesh with into 2^level submeshes at arbitrary planes
     void Split(int level);

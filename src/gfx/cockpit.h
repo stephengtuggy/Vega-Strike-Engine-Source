@@ -73,20 +73,20 @@ class GameCockpit : public Cockpit
 
     float vdu_time[MAXVDUS];
     /// saved values to compare with current values (might need more for damage)
-    std::list<Matrix>             headtrans;
-    float                         shake_time;
-    int                           shake_type;
-    Vector                        oaccel;
-    float                         smooth_fov;
-    float                         last_locktime;
-    float                         last_mlocktime;
-    bool                          armor8;
-    bool                          shield8;
-    std::vector<class Mesh *>     mesh;
-    int                           soundfile;
-    VSSprite *                    Pit[4];
-    VSSprite *                    radarSprites[2];
-    std::auto_ptr<Radar::Display> radarDisplay;
+    std::list<Matrix>               headtrans;
+    float                           shake_time;
+    int                             shake_type;
+    Vector                          oaccel;
+    float                           smooth_fov;
+    float                           last_locktime;
+    float                           last_mlocktime;
+    bool                            armor8;
+    bool                            shield8;
+    std::vector<class Mesh *>       mesh;
+    int                             soundfile;
+    VSSprite *                      Pit[4];
+    VSSprite *                      radarSprites[2];
+    std::unique_ptr<Radar::Display> radarDisplay;
     /// Video Display Units (may need more than 2 in future)
     std::vector<VDU *> vdu;
     /// An information string displayed in the VDU.
