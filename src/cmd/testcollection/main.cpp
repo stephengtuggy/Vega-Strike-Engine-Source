@@ -11,14 +11,14 @@
 /* to build:
  *       g++  -pipe -O2 -DLIST_TESTING=1 -I. -I..  -o testcol ../collection.cpp ./main.cpp
  */
-Unit *createUnit()
+std::shared_ptr<Unit> createUnit()
 {
     return new Unit(false);
 }
 
 void Iteration(UnitCollection *c, int *levels2)
 {
-    Unit *unit = NULL;
+    std::shared_ptr<Unit> unit = NULL;
     ++(*levels2);
     for (un_iter iter = c->createIterator(); unit = *iter;) {
         int temp = rand();
@@ -36,10 +36,10 @@ void Iteration(UnitCollection *c, int *levels2)
 
 int main()
 {
-    Unit *unit;
+    std::shared_ptr<Unit> unit;
     srand(time(NULL));
     UnitCollection *c = new UnitCollection;
-    Unit *          u[SIZE];
+    std::shared_ptr<Unit> u[SIZE];
     time_t          seconds;
     for (int i = 0; i < SIZE; ++i)
         u[i] = createUnit();

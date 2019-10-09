@@ -135,7 +135,7 @@ void ContinuousTerrain::Collide()
             assert(0);
     }
 }
-void ContinuousTerrain::Collide(Unit *un)
+void ContinuousTerrain::Collide(std::shared_ptr<Unit> un)
 {
     bool datacol = false;
     for (int i = 0; i < numcontterr; i++) {
@@ -243,7 +243,7 @@ bool ContinuousTerrain::checkInvScale(double &pos, double campos, float size)
         pos = tmp + campos;
     return retval;
 }
-void ContinuousTerrain::Collide(Unit *un, Matrix t)
+void ContinuousTerrain::Collide(std::shared_ptr<Unit> un, Matrix t)
 {
     Matrix transform;
     if (un->isUnit() == BUILDINGPTR)

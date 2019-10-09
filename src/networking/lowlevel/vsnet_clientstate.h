@@ -48,7 +48,7 @@ class ClientState
     ClientState(ObjSerial serial, QVector posit, Quaternion orientat, Vector velocity, Vector acc, Vector angvel);
     ClientState(ObjSerial serial, QVector posit, Quaternion orientat, Vector velocity, Vector acc, Vector angvel, unsigned int del);
     ClientState(ObjSerial serial, Transformation trans, Vector velocity, Vector acc, Vector angvel, unsigned int del);
-    ClientState(const Unit *un);
+    ClientState(const std::shared_ptr<Unit> un);
 
     const QVector &getPosition() const
     {
@@ -84,7 +84,7 @@ class ClientState
     {
     }
 
-    void setUnitState(Unit *un) const;
+    void setUnitState(std::shared_ptr<Unit> un) const;
 
     ObjSerial getSerial() const
     {

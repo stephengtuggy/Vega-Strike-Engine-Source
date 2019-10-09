@@ -3,14 +3,14 @@
 #include "comm_ai.h"
 #include "event_xml.h"
 // all unified AI's should inherit from FireAt, so they can choose targets together.
-bool  RequestClearence(class Unit *parent, class Unit *targ, unsigned char sex);
-Unit *getAtmospheric(Unit *targ);
+bool  RequestClearence(class std::shared_ptr<Unit> parent, class std::shared_ptr<Unit> targ, unsigned char sex);
+std::shared_ptr<Unit> getAtmospheric(std::shared_ptr<Unit> targ);
 namespace Orders
 {
 class FireAt : public CommunicatingAI
 {
   protected:
-    bool         ShouldFire(Unit *targ, bool &missilelock);
+    bool         ShouldFire(std::shared_ptr<Unit> targ, bool &missilelock);
     float        missileprobability;
     float        lastmissiletime;
     float        delay;
@@ -20,7 +20,7 @@ class FireAt : public CommunicatingAI
     bool         had_target;
     void         FireWeapons(bool shouldfire, bool lockmissile);
     virtual void ChooseTargets(int num, bool force = false); // chooses n targets and puts the best to attack in unit's target container
-    bool         isJumpablePlanet(Unit *);
+    bool         isJumpablePlanet(std::shared_ptr<Unit> );
     void         ReInit(float agglevel);
     virtual void SignalChosenTarget();
 
@@ -31,7 +31,7 @@ class FireAt : public CommunicatingAI
         ChooseTargets(1, true);
     }
     void         PossiblySwitchTarget(bool istargetjumpableplanet);
-    virtual bool PursueTarget(Unit *, bool leader);
+    virtual bool PursueTarget(std::shared_ptr<Unit> , bool leader);
     void         AddReplaceLastOrder(bool replace);
     void         ExecuteLastScriptFor(float time);
     void         FaceTarget(bool end);
@@ -49,11 +49,11 @@ class FireAt : public CommunicatingAI
     void         XMLScript(std::string script);
     void         LastPythonScript();
 
-    virtual void SetParent(Unit *parent)
+    virtual void SetParent(std::shared_ptr<Unit> parent)
     {
         CommunicatingAI::SetParent(parent);
     }
-    Unit *GetParent()
+    std::shared_ptr<Unit> GetParent()
     {
         return CommunicatingAI::GetParent();
     }

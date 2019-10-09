@@ -261,7 +261,7 @@ void AIScript::beginElement(const string &name, const AttributeList &attributes)
 {
     using namespace AiXml;
     xml->itts = false;
-    Unit *tmp;
+    std::shared_ptr<Unit> tmp;
 #ifdef AIDBG
     VSFileSystem::vs_fprintf(stderr, "0");
 #endif
@@ -528,7 +528,7 @@ void AIScript::endElement(const string &name)
     using namespace AiXml;
     QVector temp(0, 0, 0);
     Names   elem = (Names)element_map.lookup(name);
-    Unit *  tmp;
+    std::shared_ptr<Unit> tmp;
     switch (elem) {
     case UNKNOWN:
         xml->unitlevel--;
@@ -765,7 +765,7 @@ void AIScript::LoadXML()
             static float game_speed = XMLSupport::parse_float(vs_config->getVariable("physics", "game_speed", "1"));
             static float game_accel = XMLSupport::parse_float(vs_config->getVariable("physics", "game_accel", "1"));
             {
-                Unit *targ = parent->Target();
+                std::shared_ptr<Unit> targ = parent->Target();
                 if (targ) {
                     Vector PosDifference = (targ->Position() - parent->Position()).Cast();
                     float  pdmag         = PosDifference.Magnitude();

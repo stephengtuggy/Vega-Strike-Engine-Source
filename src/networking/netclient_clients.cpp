@@ -29,7 +29,7 @@ void DoEnterExitAni(QVector pos, float size, bool enter)
         UniverseUtil::playAnimation(tmp, pos, size * scale);
     }
 }
-Unit *NetClient::enterClient(NetBuffer &netbuf, ObjSerial cltserial)
+std::shared_ptr<Unit> NetClient::enterClient(NetBuffer &netbuf, ObjSerial cltserial)
 {
     // Should receive the name
     string         cltname = netbuf.getString();
@@ -37,7 +37,7 @@ Unit *NetClient::enterClient(NetBuffer &netbuf, ObjSerial cltserial)
     string         xmlstr  = netbuf.getString();
     Transformation trans   = netbuf.getTransformation();
     // If not a local player, add it in our array
-    Unit *shouldbenull = UniverseUtil::GetUnitFromSerial(cltserial);
+    std::shared_ptr<Unit> shouldbenull = UniverseUtil::GetUnitFromSerial(cltserial);
     // NETFIXME could be slow--but alas
     if (NULL != shouldbenull) {
         cout << " not adding unit with serial number " << cltserial << " named " << shouldbenull->name.get() << " to system .";
@@ -92,7 +92,7 @@ Unit *NetClient::enterClient(NetBuffer &netbuf, ObjSerial cltserial)
             if (wherepipe == string::npos || cltname.length() == 0)
                 cltname = "Object_" + XMLSupport::tostring(cltserial);
         }
-        Unit *un = UnitFactory::createUnit(
+        std::shared_ptr<Unit> un = UnitFactory::createUnit(
             savedships[0].c_str(),
             false,
             FactionUtil::GetFactionIndex(PLAYER_FACTION_STRING),
@@ -122,7 +122,7 @@ Unit *NetClient::enterClient(NetBuffer &netbuf, ObjSerial cltserial)
     return NULL;
 }
 
-ClientPtr NetClient::AddClientObject(Unit *un, ObjSerial cltserial)
+ClientPtr NetClient::AddClientObject(std::shared_ptr<Unit> un, ObjSerial cltserial)
 {
     un->PrimeOrders(); // Allow you to communicate with it.
     if (!cltserial)
@@ -163,8 +163,8 @@ ClientPtr NetClient::AddClientObject(Unit *un, ObjSerial cltserial)
         clt->prediction->InitInterpolation(un, un->old_state, 0, this->deltatime);
         _Universe->activeStarSystem()->AddUnit(un);
     } else {
-        Unit *myun  = this->game_unit.GetUnit();
-        Unit *cltun = clt->game_unit.GetUnit();
+        std::shared_ptr<Unit> myun  = this->game_unit.GetUnit();
+        std::shared_ptr<Unit> cltun = clt->game_unit.GetUnit();
         if (cltun == NULL || cltserial != cltun->GetSerial())
             clt->game_unit.SetUnit(un ? un : getNetworkUnit(cltserial));
         if (myun == NULL || cltserial != myun->GetSerial())
@@ -202,7 +202,7 @@ void NetClient::AddObjects(NetBuffer &netbuf)
     /*
      *  std::set<ObjSerial> enteredSerials;
      *  for (unsigned int i=0;i<_Universe->numPlayers();++i) {
-     *  Unit*un=_Universe->AccessCockpit(i)->GetParent();
+     *  std::shared_ptr<Unit> un=_Universe->AccessCockpit(i)->GetParent();
      *  if(un) enteredSerials.insert(un->GetSerial());
      *  }
      */
@@ -216,7 +216,7 @@ void NetClient::AddObjects(NetBuffer &netbuf)
             break;
         }
         offset            = noffset; // to make sure we aren't at end of truncated buf
-        Unit *    newunit = NULL;
+        std::shared_ptr<Unit> newunit = NULL;
         ObjSerial serial  = 0;
         switch (subcmd) {
         case ZoneMgr::AddClient:
@@ -230,22 +230,22 @@ void NetClient::AddObjects(NetBuffer &netbuf)
             // enteredSerials.insert(newunit->GetSerial());
             break;
         case ZoneMgr::AddNebula:
-            newunit = (Unit *)UnitFactory::parseNebulaBuffer(netbuf);
+            newunit = (std::shared_ptr<Unit> )UnitFactory::parseNebulaBuffer(netbuf);
             AddClientObject(newunit);
             // enteredSerials.insert(newunit->GetSerial());
             break;
         case ZoneMgr::AddPlanet:
-            newunit = (Unit *)UnitFactory::parsePlanetBuffer(netbuf);
+            newunit = (std::shared_ptr<Unit> )UnitFactory::parsePlanetBuffer(netbuf);
             AddClientObject(newunit);
             // enteredSerials.insert(newunit->GetSerial());
             break;
         case ZoneMgr::AddAsteroid:
-            newunit = (Unit *)UnitFactory::parseAsteroidBuffer(netbuf);
+            newunit = (std::shared_ptr<Unit> )UnitFactory::parseAsteroidBuffer(netbuf);
             AddClientObject(newunit);
             // enteredSerials.insert(newunit->GetSerial());
             break;
         case ZoneMgr::AddMissile:
-            newunit = (Unit *)UnitFactory::parseMissileBuffer(netbuf);
+            newunit = (std::shared_ptr<Unit> )UnitFactory::parseMissileBuffer(netbuf);
             AddClientObject(newunit);
             // enteredSerials.insert(newunit->GetSerial());
             break;
@@ -261,7 +261,7 @@ void NetClient::AddObjects(NetBuffer &netbuf)
     }
     // NETFIXME: What is the point of killing off all non-networked units all the time?
     /*
-     *  Unit *un;
+     *  std::shared_ptr<Unit> un;
      *  for (un_iter it = UniverseUtil::getUnitList();
      *    un=(*it);
      *    ) {
@@ -291,7 +291,7 @@ void NetClient::removeClient(const Packet *packet)
         return;
         // exit( 1);
     }
-    Unit *un = clt->game_unit.GetUnit();
+    std::shared_ptr<Unit> un = clt->game_unit.GetUnit();
     if (un) {
         DoEnterExitAni(un->Position(), un->rSize(), false);
         // Removes the unit from starsystem, destroys it and delete client
@@ -314,7 +314,7 @@ void NetClient::removeClient(const Packet *packet)
 
 void NetClient::sendPosition(const ClientState *cs)
 {
-    Unit *un = this->game_unit.GetUnit();
+    std::shared_ptr<Unit> un = this->game_unit.GetUnit();
     if (!un)
         return;
     // Serial in ClientState is updated in UpdatePhysics code at ClientState creation (with pos, veloc...)
@@ -330,7 +330,7 @@ void NetClient::sendPosition(const ClientState *cs)
     if (netversion > 4960)
         netbuf.addChar(cs->getSpecMult() > 1.0 ? 1 : 0);
     static bool aim_assist = XMLSupport::parse_bool(vs_config->getVariable("network", "aim_assist", "true"));
-    Unit *      targ;
+    std::shared_ptr<Unit> targ;
     if ((targ = un->Target()) != NULL && aim_assist && un->Target()->GetSerial() != 0 /*networked unit*/) {
         if (un->InRange(targ) && !targ->graphicOptions.InWarp && !un->graphicOptions.InWarp) {
             netbuf.addSerial(targ->GetSerial());
@@ -367,7 +367,7 @@ void NetClient::receivePositions(unsigned int numUnits, unsigned int int_ts, Net
             unsigned char cmd;
             bool          localplayer = false;
             ClientPtr     clt;
-            Unit *        un = NULL;
+            std::shared_ptr<Unit> un = NULL;
 
             // Get the ZoneMgr::SnapshotSubCommand from buffer
             cmd         = netbuf.getChar();
@@ -495,7 +495,7 @@ void NetClient::receivePositions(unsigned int numUnits, unsigned int int_ts, Net
     else                                                                                                                                   \
         val
 
-void NetClient::receiveUnitDamage(NetBuffer &netbuf, Unit *un)
+void NetClient::receiveUnitDamage(NetBuffer &netbuf, std::shared_ptr<Unit> un)
 {
     unsigned int   it = 0;
     unsigned short damages;
@@ -612,7 +612,7 @@ void NetClient::receiveUnitDamage(NetBuffer &netbuf, Unit *un)
 void NetClient::inGame()
 {
     NetBuffer netbuf;
-    Unit *    un = this->game_unit.GetUnit();
+    std::shared_ptr<Unit> un = this->game_unit.GetUnit();
     if (!un)
         cout << "Trying to ingame dead unit";
     // ClientState cs( this->serial, un->curr_physical_state, un->Velocity, Vector(0,0,0), 0);
@@ -637,7 +637,7 @@ void NetClient::sendAlive()
      *   if( clt_sock.isTcp() == false )
      *  {
      */
-    Unit *un = this->game_unit.GetUnit();
+    std::shared_ptr<Unit> un = this->game_unit.GetUnit();
     if (!un)
         return;
     Packet p;

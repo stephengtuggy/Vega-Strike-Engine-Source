@@ -266,7 +266,7 @@ varInst *Mission::call_order(missionNode *node, int mode)
     } else if (method_id == CMT_ORDER_newFlyToJumppoint) {
         missionNode *des_node = getArgument(node, mode, 0);
         varInst *    des_vi   = checkObjectExpr(des_node, mode);
-        Unit *       des_unit = getUnitObject(des_node, mode, des_vi);
+        std::shared_ptr<Unit> des_unit = getUnitObject(des_node, mode, des_vi);
         float        vel      = getFloatArg(node, mode, 1);
         bool         afburn   = getBoolArg(node, mode, 2);
         Order *      my_order = NULL;
@@ -285,7 +285,7 @@ varInst *Mission::call_order(missionNode *node, int mode)
         double       range        = getFloatArg(node, mode, 2);
         missionNode *unit_node    = getArgument(node, mode, 3);
         varInst *    unit_vi      = checkObjectExpr(unit_node, mode);
-        Unit *       around_unit  = getUnitObject(unit_node, mode, unit_vi);
+        std::shared_ptr<Unit> around_unit  = getUnitObject(unit_node, mode, unit_vi);
         float        patrol_speed = getFloatArg(node, mode, 4);
         Order *      my_order     = NULL;
         if (mode == SCRIPT_RUN) {
@@ -325,7 +325,7 @@ varInst *Mission::call_order(missionNode *node, int mode)
         varInst *ovi      = getObjectArg(node, mode);
         Order *  my_order = getOrderObject(node, mode, ovi);
         if (mode == SCRIPT_RUN) {
-            Unit *player = _Universe->AccessCockpit()->GetParent();
+            std::shared_ptr<Unit> player = _Universe->AccessCockpit()->GetParent();
             if (player) {
                 if (my_order == player->getAIState()) {
                     printf("IGNOREING order for player\n");

@@ -78,19 +78,19 @@ class AIFlyToWaypointDefend : public AImissionScript
 class AIFlyToJumppoint : public AImissionScript
 {
   public:
-    AIFlyToJumppoint(Unit *jumppoint, float fly_speed, bool aft);
+    AIFlyToJumppoint(std::shared_ptr<Unit> jumppoint, float fly_speed, bool aft);
 };
 
 class AIPatrol : public AImissionScript
 {
   public:
-    AIPatrol(int mode, const QVector &area, float range, Unit *around_unit, float patrol_speed);
+    AIPatrol(int mode, const QVector &area, float range, std::shared_ptr<Unit> around_unit, float patrol_speed);
 };
 
 class AIPatrolDefend : public AImissionScript
 {
   public:
-    AIPatrolDefend(int mode, const QVector &area, float range, Unit *around_unit, float patrol_speed);
+    AIPatrolDefend(int mode, const QVector &area, float range, std::shared_ptr<Unit> around_unit, float patrol_speed);
 };
 
 class AISuperiority : public AImissionScript

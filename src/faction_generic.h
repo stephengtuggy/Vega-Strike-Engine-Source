@@ -101,7 +101,7 @@ namespace FactionUtil
 extern int                      upgradefac;
 extern int                      neutralfac;
 extern int                      planetfac;
-std::vector<class Animation *> *GetRandCommAnimation(int faction, Unit *unit, unsigned char &sex);
+std::vector<class Animation *> *GetRandCommAnimation(int faction, std::shared_ptr<Unit> unit, unsigned char &sex);
 void                            SerializeFaction(FILE *file);
 std::string                     SerializeFaction();
 void                            LoadSerializedFaction(FILE *file);
@@ -110,7 +110,7 @@ int                             numnums(const char *str);
 /// returns the index of the faction with that name
 // int GetFaction (const char *factionname);
 int         GetNumAnimation(int faction);
-class Unit *GetContraband(int faction);
+class std::shared_ptr<Unit> GetContraband(int faction);
 
 const char *GetFaction(int faction);
 

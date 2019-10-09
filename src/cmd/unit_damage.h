@@ -124,7 +124,7 @@ template <class UnitType> void GameUnit<UnitType>::Split(int level)
     unsigned int   k = 0;
     vector<Mesh *> tempmeshes;
     for (vector<Mesh *>::size_type i = 0; i < meshsizes.size(); i++) {
-        Unit *splitsub;
+        std::shared_ptr<Unit> splitsub;
         tempmeshes.clear();
         tempmeshes.reserve(meshsizes[i]);
         for (unsigned int j = 0; j < meshsizes[i] && k < old.size(); ++j, ++k)
@@ -216,7 +216,7 @@ extern unsigned int AddAnimation(const QVector &, const float, bool, const strin
 
 extern Animation *getRandomCachedAni();
 extern string     getRandomCachedAniString();
-extern void       disableSubUnits(Unit *un);
+extern void       disableSubUnits(std::shared_ptr<Unit> un);
 
 template <class UnitType> bool GameUnit<UnitType>::Explode(bool drawit, float timeit)
 {
@@ -253,7 +253,7 @@ template <class UnitType> bool GameUnit<UnitType>::Explode(bool drawit, float ti
         }
         QVector exploc = this->cumulative_transformation.position;
         bool    sub    = this->isSubUnit();
-        Unit *  un     = NULL;
+        std::shared_ptr<Unit> un     = NULL;
         if (!sub)
             if ((un = _Universe->AccessCockpit(0)->GetParent())) {
                 exploc = un->Position() * game_options.explosion_closeness + exploc * (1 - game_options.explosion_closeness);
@@ -324,7 +324,7 @@ template <class UnitType> bool GameUnit<UnitType>::Explode(bool drawit, float ti
     }
     bool alldone = this->pImage->pExplosion ? !this->pImage->pExplosion->Done() : false;
     if (!this->SubUnits.empty()) {
-        Unit *su;
+        std::shared_ptr<Unit> su;
         for (un_iter ui = this->getSubUnits(); (su = *ui); ++ui) {
             bool temp = su->Explode(drawit, timeit);
             if (su->GetImageInformation().pExplosion)

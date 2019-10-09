@@ -40,14 +40,14 @@ std::string getMasterPartListUnitName();
 class UnitFactory
 {
   protected:
-    static Unit *_masterPartList;
+    static std::shared_ptr<Unit> _masterPartList;
 
   public:
-    static Unit *getMasterPartList();
+    static std::shared_ptr<Unit> getMasterPartList();
 
-    static Unit *createUnit();
+    static std::shared_ptr<Unit> createUnit();
 
-    static Unit *createUnit(const char * filename,
+    static std::shared_ptr<Unit> createUnit(const char * filename,
                             bool         SubUnit,
                             int          faction,
                             std::string  customizedUnit = string(""),
@@ -56,14 +56,14 @@ class UnitFactory
                             string *     netxml         = NULL,
                             ObjSerial    netcreate      = 0);
 
-    static Unit *createServerSideUnit(const char * filename,
+    static std::shared_ptr<Unit> createServerSideUnit(const char * filename,
                                       bool         SubUnit,
                                       int          faction,
                                       std::string  customizedUnit = string(""),
                                       Flightgroup *flightgroup    = NULL,
                                       int          fg_subnumber   = 0);
 
-    static Unit *createUnit(std::vector<Mesh *> &meshes, bool Subunit, int faction);
+    static std::shared_ptr<Unit> createUnit(std::vector<Mesh *> &meshes, bool Subunit, int faction);
 
     static Nebula *
     createNebula(const char *unitfile, bool SubU, int faction, Flightgroup *fg = NULL, int fg_snumber = 0, ObjSerial netcreate = 0);
@@ -95,7 +95,7 @@ class UnitFactory
                                 BLENDFUNC                         blenddst,
                                 const vector<string> &            dest,
                                 const QVector &                   orbitcent,
-                                Unit *                            parent,
+                                std::shared_ptr<Unit> parent,
                                 const GFXMaterial &               ourmat,
                                 const std::vector<GFXLightLocal> &ligh,
                                 int                               faction,
@@ -141,8 +141,8 @@ class UnitFactory
                                int                fg_subnumber,
                                string *           netxml,
                                ObjSerial          netcreate);
-    static void  addUnitBuffer(NetBuffer &netbuf, const Unit *un, string *netxml = NULL);
-    static Unit *parseUnitBuffer(NetBuffer &netbuf);
+    static void  addUnitBuffer(NetBuffer &netbuf, const std::shared_ptr<Unit> un, string *netxml = NULL);
+    static std::shared_ptr<Unit> parseUnitBuffer(NetBuffer &netbuf);
 
     static void addPlanetBuffer(NetBuffer &                       netbuf,
                                 QVector                           x,
@@ -157,7 +157,7 @@ class UnitFactory
                                 BLENDFUNC                         ds,
                                 const vector<string> &            dest,
                                 const QVector &                   orbitcent,
-                                Unit *                            parent,
+                                std::shared_ptr<Unit> parent,
                                 const GFXMaterial &               ourmat,
                                 const std::vector<GFXLightLocal> &ligh,
                                 int                               faction,
@@ -195,11 +195,11 @@ class UnitFactory
     static void      addAsteroidBuffer(NetBuffer &netbuf, const Asteroid *ast);
     static Asteroid *parseAsteroidBuffer(NetBuffer &netbuf);
 
-    static void addBuffer(NetBuffer &netbuf, const Unit *un, bool allowSystemTypes, string *netxml = NULL);
+    static void addBuffer(NetBuffer &netbuf, const std::shared_ptr<Unit> un, bool allowSystemTypes, string *netxml = NULL);
 
     static void endBuffer(NetBuffer &netbuf); // Tells the client that we are done sending units... is this necessary?
 
-    static void broadcastUnit(Unit *un, unsigned short zone);
+    static void broadcastUnit(std::shared_ptr<Unit> un, unsigned short zone);
 };
 
 #endif /* _UNIT_FACTORY_H_ */

@@ -219,7 +219,7 @@ static const char *const NEWS_NAME_LABEL = "news";
 // Some upgrade declarations.
 // These should probably be in a header file somewhere.
 
-extern const Unit * makeFinalBlankUpgrade(string name, int faction);
+extern const std::shared_ptr<Unit> makeFinalBlankUpgrade(string name, int faction);
 extern int          GetModeFromName(const char *); // 1=add, 2=mult, 0=neither.
 extern Cargo *      GetMasterPartList(const char *input_buffer);
 extern Unit &       GetUnitMasterPartList();
@@ -227,18 +227,18 @@ static const string LOAD_FAILED = "LOAD_FAILED";
 
 // Some ship dealer declarations.
 // These should probably be in a header file somewhere.
-extern void SwitchUnits(Unit *ol, Unit *nw);
+extern void SwitchUnits(std::shared_ptr<Unit> ol, std::shared_ptr<Unit> nw);
 extern void TerminateCurrentBase(void);
-extern void CurrentBaseUnitSet(Unit *un);
+extern void CurrentBaseUnitSet(std::shared_ptr<Unit> un);
 // For ships stats.
-extern string MakeUnitXMLPretty(std::string, Unit *);
+extern string MakeUnitXMLPretty(std::string, std::shared_ptr<Unit> );
 extern float  totalShieldEnergyCapacitance(const Shield &shield);
 // For Options menu.
 extern void RespawnNow(Cockpit *cockpit);
 
 // headers for functions used internally
 // add to text a nicely-formated description of the unit and its subunits
-void showUnitStats(Unit *playerUnit, string &text, int subunitlevel, int mode, Cargo &item);
+void showUnitStats(std::shared_ptr<Unit> playerUnit, string &text, int subunitlevel, int mode, Cargo &item);
 // build the previous description for a ship purchase item
 string buildShipDescription(Cargo &item, string &descriptiontexture);
 // build the previous description from a cargo purchase item
@@ -246,7 +246,7 @@ string buildCargoDescription(const Cargo &item, BaseComputer &computer, float pr
 // put in buffer a pretty prepresentation of the POSITIVE float f (ie 4,732.17)
 void   prettyPrintFloat(char *buffer, float f, int digitsBefore, int digitsAfter, int bufferLen = 128);
 string buildUpgradeDescription(Cargo &item);
-int    basecargoassets(Unit *base, string cargoname);
+int    basecargoassets(std::shared_ptr<Unit> base, string cargoname);
 
 //"Basic Repair" item that is added to Buy UPGRADE mode.
 const string BASIC_REPAIR_NAME = "Basic Repair & Refuel";
@@ -390,10 +390,10 @@ static float SellPrice(float operational, float price)
 {
     return usedValue(price) - RepairPrice(operational, price);
 }
-extern const Unit *makeTemplateUpgrade(string name, int faction);
+extern const std::shared_ptr<Unit> makeTemplateUpgrade(string name, int faction);
 
 // Ported from old code.  Not sure what it does.
-const Unit *getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0);
+const std::shared_ptr<Unit> getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0);
 
 // Takes in a category of an upgrade or cargo and returns true if it is any type of mountable weapon.
 extern bool isWeapon(std::string name);
@@ -426,7 +426,7 @@ extern bool isWeapon(std::string name);
     } while (0)
 
 // CONSTRUCTOR.
-BaseComputer::BaseComputer(Unit *player, Unit *base, const std::vector<DisplayMode> &modes)
+BaseComputer::BaseComputer(std::shared_ptr<Unit> player, std::shared_ptr<Unit> base, const std::vector<DisplayMode> &modes)
     : m_displayModes(modes), m_player(player), m_base(base), m_currentDisplay(NULL_DISPLAY), m_selectedList(NULL), m_playingMuzak(false)
 {
     // Make sure we get this color loaded.
@@ -1244,7 +1244,7 @@ void BaseComputer::constructControls(void)
             currentFighter->setFont(Font(.07));
             currentFighter->setMultiLine(false);
             currentFighter->setTextColor(GFXColor(1, .7, .9));
-            Unit *player = nc.getUnit();
+            std::shared_ptr<Unit> player = nc.getUnit();
             if (player) {
                 currentFighter->setText(player->getFullname());
             } else {
@@ -1736,7 +1736,7 @@ void BaseComputer::recalcTitle()
     string baseTitle = modeInfo[m_currentDisplay].title;
 
     // Base name.
-    Unit * baseUnit = m_base.GetUnit();
+    std::shared_ptr<Unit> baseUnit = m_base.GetUnit();
     string baseName;
     if (baseUnit) {
         if (baseUnit->isUnit() == PLANETPTR) {
@@ -1790,7 +1790,7 @@ void BaseComputer::recalcTitle()
     case UPGRADE:
     // Fall through.
     case CARGO: {
-        Unit *playerUnit = m_player.GetUnit();
+        std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
         if (playerUnit) {
             const float emptyVolume = m_currentDisplay == CARGO ? playerUnit->getEmptyCargoVolume() : playerUnit->getEmptyUpgradeVolume();
             const float volumeLeft =
@@ -2044,7 +2044,7 @@ bool BaseComputer::configureUpgradeCommitControls(const Cargo &item, Transaction
         assert(commitButton != NULL);
         if (m_player.GetUnit()) {
             bool         CanDoSell = true;
-            Unit *       player    = m_player.GetUnit();
+            std::shared_ptr<Unit> player    = m_player.GetUnit();
             unsigned int numc      = player->numCargo();
             if (!isWeapon(item.category)) {
                 // weapons can always be sold
@@ -2185,7 +2185,7 @@ void BaseComputer::updateTransactionControlsForSelection(TransactionList *tlist)
     string descString;
     string tailString;
     char   tempString[2048];
-    Unit * baseUnit = m_base.GetUnit();
+    std::shared_ptr<Unit> baseUnit = m_base.GetUnit();
     if (tlist->transaction != ACCEPT_MISSION) {
         // Do the money.
         switch (tlist->transaction) {
@@ -2213,7 +2213,7 @@ void BaseComputer::updateTransactionControlsForSelection(TransactionList *tlist)
             if (item.content == BASIC_REPAIR_NAME) {
                 // Basic repair is implemented entirely in this module.
                 // PriceCargo() doesn't know about it.
-                Unit *playerUnit = m_player.GetUnit();
+                std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
                 int   multiplier = 1;
                 if (playerUnit)
                     multiplier = playerUnit->RepairCost();
@@ -2376,7 +2376,7 @@ bool BaseComputer::pickerChangedSelection(const EventCommandId &command, Control
     return true;
 }
 
-bool UpgradeAllowed(const Cargo &item, Unit *playerUnit)
+bool UpgradeAllowed(const Cargo &item, std::shared_ptr<Unit> playerUnit)
 {
     std::string prohibited_upgrades =
         UniverseUtil::LookupUnitStat(playerUnit->name, FactionUtil::GetFactionName(playerUnit->faction), "Prohibited_Upgrades");
@@ -2435,7 +2435,7 @@ bool BaseComputer::isTransactionOK(const Cargo &originalItem, TransactionType tr
         return false;
     }
     // Make sure we have somewhere to put stuff.
-    Unit *playerUnit = m_player.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
     if (!playerUnit)
         return false;
     Cockpit *cockpit = _Universe->isPlayerStarship(playerUnit);
@@ -2444,7 +2444,7 @@ bool BaseComputer::isTransactionOK(const Cargo &originalItem, TransactionType tr
     // Need to fix item so there is only one for cost calculations.
     Cargo item      = originalItem;
     item.quantity   = quantity;
-    Unit *baseUnit  = m_base.GetUnit();
+    std::shared_ptr<Unit> baseUnit  = m_base.GetUnit();
     bool  havemoney = true;
     bool  havespace = true;
     switch (transType) {
@@ -2646,7 +2646,7 @@ void BaseComputer::loadListPicker(TransactionList &tlist, SimplePicker &picker, 
 
 // Load the controls for the CARGO display.
 
-extern int SelectDockPort(Unit *utdw, Unit *parent);
+extern int SelectDockPort(std::shared_ptr<Unit> utdw, std::shared_ptr<Unit> parent);
 
 void BaseComputer::loadCargoControls(void)
 {
@@ -2708,7 +2708,7 @@ class CargoColorSort
 
 // Get a filtered list of items from a unit.
 void BaseComputer::loadMasterList(
-    Unit *un, const vector<string> &filtervec, const vector<string> &invfiltervec, bool removezero, TransactionList &tlist)
+    std::shared_ptr<Unit> un, const vector<string> &filtervec, const vector<string> &invfiltervec, bool removezero, TransactionList &tlist)
 {
     vector<CargoColor> *items = &tlist.masterList;
     for (size_t i = 0; i < un->numCargo(); i++) {
@@ -2772,7 +2772,7 @@ int BaseComputer::maxQuantityForPlayer(const Cargo &item, int suggestedQuantity)
 {
     int result = 0;
 
-    Unit *playerUnit = m_player.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
     if (playerUnit) {
         // Limit by cargo capacity.
         const float volumeLeft = playerUnit->getEmptyCargoVolume() - playerUnit->getCargoVolume();
@@ -2785,7 +2785,7 @@ int BaseComputer::maxQuantityForPlayer(const Cargo &item, int suggestedQuantity)
     return result;
 }
 
-static void eliminateZeroCargo(Unit *un)
+static void eliminateZeroCargo(std::shared_ptr<Unit> un)
 {
     for (int i = un->numCargo() - 1; i >= 0; --i)
         if (un->GetCargo(i).quantity == 0)
@@ -2828,8 +2828,8 @@ void BaseComputer::draw()
 // Buy some items from the Cargo list.  Use -1 for quantity to buy all of the item.
 bool BaseComputer::buySelectedCargo(int requestedQuantity)
 {
-    Unit *playerUnit = m_player.GetUnit();
-    Unit *baseUnit   = m_base.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
+    std::shared_ptr<Unit> baseUnit   = m_base.GetUnit();
     if (!(playerUnit && baseUnit))
         return true;
     Cargo *item = selectedItem();
@@ -2867,8 +2867,8 @@ bool BaseComputer::buyAllCargo(const EventCommandId &command, Control *control)
 // Sell some items from the Cargo list.  Use -1 for quantity to buy all of the item.
 bool BaseComputer::sellSelectedCargo(int requestedQuantity)
 {
-    Unit *playerUnit = m_player.GetUnit();
-    Unit *baseUnit   = m_base.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
+    std::shared_ptr<Unit> baseUnit   = m_base.GetUnit();
     if (!(playerUnit && baseUnit))
         return true;
     Cargo *item = selectedItem();
@@ -2984,7 +2984,7 @@ void BaseComputer::loadNewsControls(void)
             picker->addCell(new SimplePickerCell(last.message));
     } else {
         // Get news from save game.
-        Unit *playerUnit = m_player.GetUnit();
+        std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
         if (playerUnit) {
             const int playerNum = UnitUtil::isPlayerStarship(playerUnit);
             int       len       = getSaveStringLength(playerNum, NEWS_NAME_LABEL);
@@ -3052,7 +3052,7 @@ void BaseComputer::loadLoadSaveControls(void)
     picker->clear();
 
     // Get news from save game.
-    Unit *playerUnit = m_player.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
     if (playerUnit) {
         struct dirent **dirlist;
         std::string     savedir = VSFileSystem::homedir + "/save/";
@@ -3085,7 +3085,7 @@ void BaseComputer::loadMissionsMasterList(TransactionList &tlist)
     // Make sure the list is clear.
     tlist.masterList.clear();
 
-    Unit *unit      = _Universe->AccessCockpit()->GetParent();
+    std::shared_ptr<Unit> unit      = _Universe->AccessCockpit()->GetParent();
     int   playerNum = UnitUtil::isPlayerStarship(unit);
     if (playerNum < 0) {
         VSFileSystem::vs_fprintf(stderr, "Docked ship not a player.");
@@ -3176,8 +3176,8 @@ void BaseComputer::loadMissionsControls(void)
 // Accept a mission.
 bool BaseComputer::acceptMission(const EventCommandId &command, Control *control)
 {
-    Unit *playerUnit = m_player.GetUnit();
-    Unit *baseUnit   = m_base.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
+    std::shared_ptr<Unit> baseUnit   = m_base.GetUnit();
     if (!(playerUnit && baseUnit))
         return true;
     Cargo *item = selectedItem();
@@ -3264,8 +3264,8 @@ void BaseComputer::loadUpgradeControls(void)
 // Load the BUY controls for the UPGRADE display.
 void BaseComputer::loadBuyUpgradeControls(void)
 {
-    Unit *playerUnit = m_player.GetUnit();
-    Unit *baseUnit   = m_base.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
+    std::shared_ptr<Unit> baseUnit   = m_base.GetUnit();
 
     TransactionList &tlist = m_transList1;
     tlist.masterList.clear(); // Just in case
@@ -3306,15 +3306,15 @@ void BaseComputer::loadBuyUpgradeControls(void)
 // Load the SELL controls for the UPGRADE display.
 void BaseComputer::loadSellUpgradeControls(void)
 {
-    Unit *playerUnit = m_player.GetUnit();
-    Unit *baseUnit   = m_base.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
+    std::shared_ptr<Unit> baseUnit   = m_base.GetUnit();
     if (!(playerUnit && baseUnit))
         return;
     TransactionList &tlist = m_transList2;
     tlist.masterList.clear(); // Just in case
 
     // Get a list of upgrades on our ship we could sell.
-    Unit *partListUnit = &GetUnitMasterPartList();
+    std::shared_ptr<Unit> partListUnit = &GetUnitMasterPartList();
 
     loadMasterList(partListUnit, weapfiltervec, std::vector<std::string>(), false, tlist);
     ClearDowngradeMap();
@@ -3350,8 +3350,8 @@ void BaseComputer::loadSellUpgradeControls(void)
 // Change display mode to UPGRADE.
 bool BaseComputer::changeToUpgradeMode(const EventCommandId &command, Control *control)
 {
-    Unit *playerUnit = m_player.GetUnit();
-    Unit *baseUnit   = m_base.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
+    std::shared_ptr<Unit> baseUnit   = m_base.GetUnit();
     if (!(playerUnit && baseUnit))
         return true;
     if (m_currentDisplay != UPGRADE)
@@ -3362,7 +3362,7 @@ bool BaseComputer::changeToUpgradeMode(const EventCommandId &command, Control *c
 }
 
 // Actually do a repair operation.
-static void BasicRepair(Unit *parent)
+static void BasicRepair(std::shared_ptr<Unit> parent)
 {
     if (parent) {
         int repairmultiplier = parent->RepairCost();
@@ -3409,7 +3409,7 @@ class BaseComputer::UpgradeOperation : public ModalDialogCallback
         WindowController & controller);
 
     BaseComputer &m_parent; // Parent class that created us.
-    const Unit *  m_newPart;
+    const std::shared_ptr<Unit> m_newPart;
     Cargo         m_part;           // Description of upgrade part.
     int           m_selectedMount;  // Which mount to use.
     int           m_selectedTurret; // Which turret to use.
@@ -3433,7 +3433,7 @@ class BaseComputer::BuyUpgradeOperation : public BaseComputer::UpgradeOperation
     {
     }
 
-    const Unit *m_theTemplate;
+    const std::shared_ptr<Unit> m_theTemplate;
     int         m_addMultMode;
 };
 
@@ -3454,7 +3454,7 @@ class BaseComputer::SellUpgradeOperation : public BaseComputer::UpgradeOperation
     {
     }
 
-    const Unit *m_downgradeLimiter;
+    const std::shared_ptr<Unit> m_downgradeLimiter;
 };
 
 // Id's for callbacks.
@@ -3503,7 +3503,7 @@ bool BaseComputer::UpgradeOperation::endInit(void)
 // Let the user pick a turret.
 void BaseComputer::UpgradeOperation::showTurretPicker(void)
 {
-    Unit *playerUnit = m_parent.m_player.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_parent.m_player.GetUnit();
     if (!playerUnit) {
         finish();
         return;
@@ -3517,7 +3517,7 @@ void BaseComputer::UpgradeOperation::showTurretPicker(void)
 // Got the mount number.
 bool BaseComputer::UpgradeOperation::gotSelectedMount(int index)
 {
-    Unit *playerUnit = m_parent.m_player.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_parent.m_player.GetUnit();
     if (index < 0 || !playerUnit) {
         // The user cancelled somehow.
         finish();
@@ -3579,8 +3579,8 @@ void BaseComputer::UpgradeOperation::modalDialogResult(const std::string &id, in
 // Start the Buy Upgrade Operation.
 void BaseComputer::BuyUpgradeOperation::start(void)
 {
-    Unit *playerUnit = m_parent.m_player.GetUnit();
-    Unit *baseUnit   = m_parent.m_base.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_parent.m_player.GetUnit();
+    std::shared_ptr<Unit> baseUnit   = m_parent.m_base.GetUnit();
     if (!(playerUnit && baseUnit && commonInit())) {
         finish();
         return;
@@ -3631,7 +3631,7 @@ void BaseComputer::BuyUpgradeOperation::selectMount(void)
         gotSelectedMount(0);
         return;
     }
-    Unit *playerUnit = m_parent.m_player.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_parent.m_player.GetUnit();
     if (!playerUnit) {
         finish();
         return;
@@ -3675,7 +3675,7 @@ void BaseComputer::BuyUpgradeOperation::selectMount(void)
 // Check, and verify user wants Buy Upgrade transaction.  Returns true if more input is required.
 bool BaseComputer::BuyUpgradeOperation::checkTransaction(void)
 {
-    Unit *playerUnit = m_parent.m_player.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_parent.m_player.GetUnit();
     if (!playerUnit) {
         finish();
         return false; // We want the window to die to avoid accessing of deleted memory.
@@ -3694,8 +3694,8 @@ bool BaseComputer::BuyUpgradeOperation::checkTransaction(void)
 // Finish the transaction.
 void BaseComputer::BuyUpgradeOperation::concludeTransaction(void)
 {
-    Unit *playerUnit = m_parent.m_player.GetUnit();
-    Unit *baseUnit   = m_parent.m_base.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_parent.m_player.GetUnit();
+    std::shared_ptr<Unit> baseUnit   = m_parent.m_base.GetUnit();
     if (!(playerUnit && baseUnit)) {
         finish();
         return;
@@ -3737,7 +3737,7 @@ void BaseComputer::BuyUpgradeOperation::concludeTransaction(void)
     finish();
 }
 
-int basecargoassets(Unit *baseUnit, string cargoname)
+int basecargoassets(std::shared_ptr<Unit> baseUnit, string cargoname)
 {
     unsigned int dummy;
     Cargo *      somecargo = baseUnit->GetCargo(cargoname, dummy);
@@ -3750,7 +3750,7 @@ int basecargoassets(Unit *baseUnit, string cargoname)
 // Start the Sell Upgrade Operation.
 void BaseComputer::SellUpgradeOperation::start(void)
 {
-    Unit *playerUnit = m_parent.m_player.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_parent.m_player.GetUnit();
     if (!(playerUnit && commonInit())) {
         finish();
         return;
@@ -3816,7 +3816,7 @@ void BaseComputer::SellUpgradeOperation::selectMount(void)
         gotSelectedMount(0);
         return;
     }
-    Unit *playerUnit = m_parent.m_player.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_parent.m_player.GetUnit();
     if (!playerUnit) {
         finish();
         return;
@@ -3840,7 +3840,7 @@ void BaseComputer::SellUpgradeOperation::selectMount(void)
         if (playerUnit->mounts[i].status == Mount::ACTIVE || playerUnit->mounts[i].status == Mount::INACTIVE) {
             // Something is mounted here.
             const std::string unitName = playerUnit->mounts[i].type->weapon_name;
-            const Unit *      partUnit = UnitConstCache::getCachedConst(StringIntKey(m_part.content, FactionUtil::GetUpgradeFaction()));
+            const std::shared_ptr<Unit> partUnit = UnitConstCache::getCachedConst(StringIntKey(m_part.content, FactionUtil::GetUpgradeFaction()));
             string            ammoexp;
             mountName = tostring(i + 1) + " " + unitName.c_str();
             ammoexp   = (playerUnit->mounts[i].ammo == -1) ? string("") : string((" ammo: " + tostring(playerUnit->mounts[i].ammo)));
@@ -3881,7 +3881,7 @@ void BaseComputer::SellUpgradeOperation::selectMount(void)
 // Check, and verify user wants Sell Upgrade transaction.  Returns true if more input is required.
 bool BaseComputer::SellUpgradeOperation::checkTransaction(void)
 {
-    Unit *playerUnit = m_parent.m_player.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_parent.m_player.GetUnit();
     if (!playerUnit) {
         finish();
         return false; // We want the window to die to avoid accessing of deleted memory.
@@ -3900,8 +3900,8 @@ bool BaseComputer::SellUpgradeOperation::checkTransaction(void)
 // Finish the transaction.
 void BaseComputer::SellUpgradeOperation::concludeTransaction(void)
 {
-    Unit *playerUnit = m_parent.m_player.GetUnit();
-    Unit *baseUnit   = m_parent.m_base.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_parent.m_player.GetUnit();
+    std::shared_ptr<Unit> baseUnit   = m_parent.m_base.GetUnit();
     if (!(playerUnit && baseUnit)) {
         finish();
         return;
@@ -3932,7 +3932,7 @@ bool BaseComputer::buyUpgrade(const EventCommandId &command, Control *control)
     // Take care of Basic Repair, which is implemented entirely in this module.
     Cargo *item = selectedItem();
     if (item) {
-        Unit *playerUnit = m_player.GetUnit();
+        std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
         if (item->content == BASIC_REPAIR_NAME) {
             if (playerUnit) {
                 BasicRepair(playerUnit);
@@ -3945,7 +3945,7 @@ bool BaseComputer::buyUpgrade(const EventCommandId &command, Control *control)
         }
         if (!isWeapon(item->category)) {
             if (playerUnit) {
-                Unit *baseUnit = m_base.GetUnit();
+                std::shared_ptr<Unit> baseUnit = m_base.GetUnit();
                 if (baseUnit) {
                     const int quantity = 1;
                     playerUnit->BuyCargo(item->content, quantity, baseUnit, _Universe->AccessCockpit()->credits);
@@ -3971,8 +3971,8 @@ bool BaseComputer::sellUpgrade(const EventCommandId &command, Control *control)
         if (!isWeapon(item->category)) {
             Cargo     sold;
             const int quantity   = 1;
-            Unit *    playerUnit = m_player.GetUnit();
-            Unit *    baseUnit   = m_base.GetUnit();
+            std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
+            std::shared_ptr<Unit> baseUnit   = m_base.GetUnit();
             if (baseUnit && playerUnit) {
                 playerUnit->SellCargo(item->content, quantity, _Universe->AccessCockpit()->credits, sold, baseUnit);
                 UnitUtil::RecomputeUnitUpgrades(playerUnit);
@@ -3992,8 +3992,8 @@ bool BaseComputer::sellUpgrade(const EventCommandId &command, Control *control)
 bool BaseComputer::fixUpgrade(const EventCommandId &command, Control *control)
 {
     Cargo *item       = selectedItem();
-    Unit * playerUnit = m_player.GetUnit();
-    Unit * baseUnit   = m_base.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
+    std::shared_ptr<Unit> baseUnit   = m_base.GetUnit();
     if (baseUnit && playerUnit && item) {
         float *  credits = NULL;
         Cockpit *cp      = _Universe->isPlayerStarship(playerUnit);
@@ -4018,7 +4018,7 @@ bool BaseComputer::changeToShipDealerMode(const EventCommandId &command, Control
 }
 
 // Create a Cargo for the specified starship.
-Cargo CreateCargoForOwnerStarship(const Cockpit *cockpit, const Unit *base, int i)
+Cargo CreateCargoForOwnerStarship(const Cockpit *cockpit, const std::shared_ptr<Unit> base, int i)
 {
     Cargo cargo;
     cargo.quantity = 1;
@@ -4060,7 +4060,7 @@ Cargo CreateCargoForOwnerStarship(const Cockpit *cockpit, const Unit *base, int 
 }
 
 // Create a Cargo for an owned starship from the name.
-Cargo CreateCargoForOwnerStarshipName(const Cockpit *cockpit, const Unit *base, std::string name, int &index)
+Cargo CreateCargoForOwnerStarshipName(const Cockpit *cockpit, const std::shared_ptr<Unit> base, std::string name, int &index)
 {
     for (size_t i = 1, n = cockpit->GetNumUnits(); i < n; ++i) {
         if (cockpit->GetUnitFileName(i) == name) {
@@ -4072,9 +4072,9 @@ Cargo CreateCargoForOwnerStarshipName(const Cockpit *cockpit, const Unit *base, 
     return Cargo();
 }
 
-void SwapInNewShipName(Cockpit *cockpit, Unit *base, const std::string &newFileName, int swappingShipsIndex)
+void SwapInNewShipName(Cockpit *cockpit, std::shared_ptr<Unit> base, const std::string &newFileName, int swappingShipsIndex)
 {
-    Unit *parent = cockpit->GetParent();
+    std::shared_ptr<Unit> parent = cockpit->GetParent();
     if (parent) {
         size_t putpos                      = (swappingShipsIndex >= 0) ? swappingShipsIndex : cockpit->GetNumUnits();
         cockpit->GetUnitFileName(putpos)   = parent->name;
@@ -4104,7 +4104,7 @@ string buildShipDescription(Cargo &item, std::string &texturedescription)
     Flightgroup *flightGroup = new Flightgroup();
     int          fgsNumber   = 0;
     current_unit_load_mode   = NO_MESH;
-    Unit *newPart            = UnitFactory::createUnit(item.GetContent().c_str(), false, 0, newModifications, flightGroup, fgsNumber);
+    std::shared_ptr<Unit> newPart            = UnitFactory::createUnit(item.GetContent().c_str(), false, 0, newModifications, flightGroup, fgsNumber);
     current_unit_load_mode   = DEFAULT;
     string sHudImage;
     string sImage;
@@ -4138,7 +4138,7 @@ string buildUpgradeDescription(Cargo &item)
     Flightgroup *flightGroup = new Flightgroup(); // sigh
     int          fgsNumber   = 0;
     current_unit_load_mode   = NO_MESH;
-    Unit *newPart =
+    std::shared_ptr<Unit> newPart =
         UnitFactory::createUnit(item.GetContent().c_str(), false, FactionUtil::GetUpgradeFaction(), blnk, flightGroup, fgsNumber);
     current_unit_load_mode = DEFAULT;
     string str             = "";
@@ -4427,7 +4427,7 @@ void BaseComputer::loadShipDealerControls(void)
     recalcTitle();
 }
 
-bool sellShip(Unit *baseUnit, Unit *playerUnit, std::string shipname, BaseComputer *bcomputer)
+bool sellShip(std::shared_ptr<Unit> baseUnit, std::shared_ptr<Unit> playerUnit, std::string shipname, BaseComputer *bcomputer)
 {
     Cockpit *    cockpit   = _Universe->isPlayerStarship(playerUnit);
     unsigned int tempInt   = 1;
@@ -4465,8 +4465,8 @@ bool sellShip(Unit *baseUnit, Unit *playerUnit, std::string shipname, BaseComput
 
 bool BaseComputer::sellShip(const EventCommandId &command, Control *control)
 {
-    Unit *   playerUnit = m_player.GetUnit();
-    Unit *   baseUnit   = m_base.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
+    std::shared_ptr<Unit> baseUnit   = m_base.GetUnit();
     Cargo *  item       = selectedItem();
     Cockpit *cockpit    = _Universe->isPlayerStarship(playerUnit);
     if (!(playerUnit && baseUnit && item && cockpit))
@@ -4474,7 +4474,7 @@ bool BaseComputer::sellShip(const EventCommandId &command, Control *control)
     return ::sellShip(baseUnit, playerUnit, item->content, this);
 }
 
-bool buyShip(Unit *baseUnit, Unit *playerUnit, std::string content, bool myfleet, bool force_base_inventory, BaseComputer *bcomputer)
+bool buyShip(std::shared_ptr<Unit> baseUnit, std::shared_ptr<Unit> playerUnit, std::string content, bool myfleet, bool force_base_inventory, BaseComputer *bcomputer)
 {
     unsigned int tempInt; // Not used.
     Cargo *      shipCargo = baseUnit->GetCargo(content, tempInt);
@@ -4522,7 +4522,7 @@ bool buyShip(Unit *baseUnit, Unit *playerUnit, std::string content, bool myfleet
             UniverseUtil::StopAllSounds();
             UniverseUtil::playSound(
                 "sales/salespitch" + content.substr(0, content.find(".")) + "accept.wav", QVector(0, 0, 0), Vector(0, 0, 0));
-            Unit *newPart = UnitFactory::createUnit(content.c_str(), false, baseUnit->faction, newModifications, flightGroup, fgsNumber);
+            std::shared_ptr<Unit> newPart = UnitFactory::createUnit(content.c_str(), false, baseUnit->faction, newModifications, flightGroup, fgsNumber);
             CurrentSaveGameName = tmpnam;
             newPart->SetFaction(playerUnit->faction);
             if (newPart->name != LOAD_FAILED) {
@@ -4590,8 +4590,8 @@ bool buyShip(Unit *baseUnit, Unit *playerUnit, std::string content, bool myfleet
 // Buy ship from the base.
 bool BaseComputer::buyShip(const EventCommandId &command, Control *control)
 {
-    Unit * playerUnit = m_player.GetUnit();
-    Unit * baseUnit   = m_base.GetUnit();
+    std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
+    std::shared_ptr<Unit> baseUnit   = m_base.GetUnit();
     Cargo *item       = selectedItem();
     if (!(playerUnit && baseUnit && item))
         return true;
@@ -4667,7 +4667,7 @@ bool BaseComputer::showPlayerInfo(const EventCommandId &command, Control *contro
     int           totkills           = 0;
     size_t        fac_loc_before = 0, fac_loc = 0, fac_loc_after = 0;
     for (; i < numFactions; i++) {
-        Unit *        currentplayer = UniverseUtil::getPlayerX(UniverseUtil::getCurrentPlayer());
+        std::shared_ptr<Unit> currentplayer = UniverseUtil::getPlayerX(UniverseUtil::getCurrentPlayer());
         float         relation      = 0;
         size_t        upgrades      = FactionUtil::GetUpgradeFaction();
         size_t        planets       = FactionUtil::GetPlanetFaction();
@@ -4788,9 +4788,9 @@ void prettyPrintFloat(char *buffer, float f, int digitsBefore, int digitsAfter, 
 
 static const char *WeaponTypeStrings[] = {"UNKNOWN", "BEAM", "BALL", "BOLT", "PROJECTILE"};
 
-void showUnitStats(Unit *playerUnit, string &text, int subunitlevel, int mode, Cargo &item)
+void showUnitStats(std::shared_ptr<Unit> playerUnit, string &text, int subunitlevel, int mode, Cargo &item)
 {
-    static Unit *blankUnit               = UnitFactory::createUnit("upgrading_dummy_unit", 1, FactionUtil::GetFactionIndex("upgrades"));
+    static std::shared_ptr<Unit> blankUnit               = UnitFactory::createUnit("upgrading_dummy_unit", 1, FactionUtil::GetFactionIndex("upgrades"));
     static float warpenratio             = XMLSupport::parse_float(vs_config->getVariable("physics", "warp_energy_multiplier", "0.12"));
     static float warpbleed               = XMLSupport::parse_float(vs_config->getVariable("physics", "warpbleed", "20"));
     static float shield_maintenance_cost = XMLSupport::parse_float(vs_config->getVariable("physics", "shield_maintenance_charge", ".25"));
@@ -5757,7 +5757,7 @@ void showUnitStats(Unit *playerUnit, string &text, int subunitlevel, int mode, C
     }
     if (!mode) {
         // handle SubUnits
-        Unit *sub;
+        std::shared_ptr<Unit> sub;
         int   i = 1;
         for (un_iter ki = playerUnit->getSubUnits(); (sub = *ki) != NULL; ++ki, ++i) {
             if (i == 1)
@@ -5773,7 +5773,7 @@ void showUnitStats(Unit *playerUnit, string &text, int subunitlevel, int mode, C
 bool BaseComputer::showShipStats(const EventCommandId &command, Control *control)
 {
     current_unit_load_mode = NO_MESH;
-    Unit *playerUnit       = m_player.GetUnit();
+    std::shared_ptr<Unit> playerUnit       = m_player.GetUnit();
     current_unit_load_mode = DEFAULT;
     const string rawText   = MakeUnitXMLPretty(playerUnit->WriteUnitString(), playerUnit);
 
@@ -5934,7 +5934,7 @@ bool BaseComputer::actionQuitGame(const EventCommandId &command, Control *contro
 
 bool BaseComputer::actionConfirmedSaveGame()
 {
-    Unit *player = m_player.GetUnit();
+    std::shared_ptr<Unit> player = m_player.GetUnit();
     if (player && player->name == "return_to_cockpit") {
         showAlert("Return to a base to save.");
         return false; // should be false, but causes badness.
@@ -5971,7 +5971,7 @@ bool BaseComputer::actionConfirmedSaveGame()
 
 bool BaseComputer::actionSaveGame(const EventCommandId &command, Control *control)
 {
-    Unit *         player = m_player.GetUnit();
+    std::shared_ptr<Unit> player = m_player.GetUnit();
     StaticDisplay *desc   = static_cast<StaticDisplay *>(window()->findControlById("InputText"));
     bool           ok     = true;
     std::string    tmp;
@@ -6006,7 +6006,7 @@ bool BaseComputer::actionSaveGame(const EventCommandId &command, Control *contro
 
 bool BaseComputer::actionConfirmedLoadGame()
 {
-    Unit *         player = m_player.GetUnit();
+    std::shared_ptr<Unit> player = m_player.GetUnit();
     StaticDisplay *desc   = static_cast<StaticDisplay *>(window()->findControlById("InputText"));
     if (desc) {
         std::string tmp = desc->text();
@@ -6042,7 +6042,7 @@ bool BaseComputer::actionNewGame(const EventCommandId &command, Control *control
 
 bool BaseComputer::actionLoadGame(const EventCommandId &command, Control *control)
 {
-    Unit *         player = m_player.GetUnit();
+    std::shared_ptr<Unit> player = m_player.GetUnit();
     StaticDisplay *desc   = static_cast<StaticDisplay *>(window()->findControlById("InputText"));
     if (desc) {
         std::string tmp = desc->text();

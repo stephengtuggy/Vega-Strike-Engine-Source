@@ -10,20 +10,20 @@
 namespace Radar
 {
 
-Track::Track(Unit *player, const Unit *target) : player(player), target(target), distance(0.0)
+Track::Track(std::shared_ptr<Unit> player, const std::shared_ptr<Unit> target) : player(player), target(target), distance(0.0)
 {
     position = player->LocalCoordinates(target);
     distance = UnitUtil::getDistance(player, target);
     type     = IdentifyType();
 }
 
-Track::Track(Unit *player, const Unit *target, const Vector &position) : player(player), target(target), position(position)
+Track::Track(std::shared_ptr<Unit> player, const std::shared_ptr<Unit> target, const Vector &position) : player(player), target(target), position(position)
 {
     distance = UnitUtil::getDistance(player, target);
     type     = IdentifyType();
 }
 
-Track::Track(Unit *player, const Unit *target, const Vector &position, float distance)
+Track::Track(std::shared_ptr<Unit> player, const std::shared_ptr<Unit> target, const Vector &position, float distance)
     : player(player), target(target), position(position), distance(distance)
 {
     type = IdentifyType();

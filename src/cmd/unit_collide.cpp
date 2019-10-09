@@ -107,7 +107,7 @@ Vector Vabs(const Vector &in)
 }
 
 // Slated for removal 0.5
-Matrix WarpMatrixForCollisions(Unit *un, const Matrix &ctm)
+Matrix WarpMatrixForCollisions(std::shared_ptr<Unit> un, const Matrix &ctm)
 {
     if (un->GetWarpVelocity().MagnitudeSquared() * SIMULATION_ATOM * SIMULATION_ATOM < un->rSize() * un->rSize()) {
         return ctm;
@@ -144,7 +144,7 @@ bool Unit::Inside(const QVector &target, const float radius, Vector &normal, flo
 }
 
 bool Unit::InsideCollideTree(
-    Unit *smaller, QVector &bigpos, Vector &bigNormal, QVector &smallpos, Vector &smallNormal, bool bigasteroid, bool smallasteroid)
+    std::shared_ptr<Unit> smaller, QVector &bigpos, Vector &bigNormal, QVector &smallpos, Vector &smallNormal, bool bigasteroid, bool smallasteroid)
 {
     if (smaller->colTrees == NULL || this->colTrees == NULL)
         return false;
@@ -153,7 +153,7 @@ bool Unit::InsideCollideTree(
     if (smaller->colTrees->usingColTree() == false || this->colTrees->usingColTree() == false)
         return false;
     csOPCODECollider::ResetCollisionPairs();
-    Unit *bigger = this;
+    std::shared_ptr<Unit> bigger = this;
 
     csReversibleTransform bigtransform(bigger->cumulative_transformation_matrix);
     csReversibleTransform smalltransform(smaller->cumulative_transformation_matrix);
@@ -194,7 +194,7 @@ bool Unit::InsideCollideTree(
     if (bigger->SubUnits.empty() == false && (bigger->graphicOptions.RecurseIntoSubUnitsOnCollision == true || bigtype == ASTEROIDPTR)) {
         i         = bigger->getSubUnits();
         float rad = smaller->rSize();
-        for (Unit *un; (un = *i); ++i) {
+        for (std::shared_ptr<Unit> un; (un = *i); ++i) {
             float subrad = un->rSize();
             if ((bigtype != ASTEROIDPTR) && (subrad / bigger->rSize() < rsizelim)) {
                 break;
@@ -210,7 +210,7 @@ bool Unit::InsideCollideTree(
         (smaller->graphicOptions.RecurseIntoSubUnitsOnCollision == true || smalltype == ASTEROIDPTR)) {
         i         = smaller->getSubUnits();
         float rad = bigger->rSize();
-        for (Unit *un; (un = *i); ++i) {
+        for (std::shared_ptr<Unit> un; (un = *i); ++i) {
             float subrad = un->rSize();
             if ((smalltype != ASTEROIDPTR) && (subrad / smaller->rSize() < rsizelim))
                 break;
@@ -231,7 +231,7 @@ inline float mysqr(float a)
     return a * a;
 }
 
-bool Unit::Collide(Unit *target)
+bool Unit::Collide(std::shared_ptr<Unit> target)
 {
     // now first OF ALL make sure they're within bubbles of each other...
     if ((Position() - target->Position()).MagnitudeSquared() > mysqr(radial_size + target->radial_size))
@@ -249,14 +249,14 @@ bool Unit::Collide(Unit *target)
         return false;
     if (targetisUnit == ASTEROIDPTR && thisisUnit == ASTEROIDPTR)
         return false;
-    std::multimap<Unit *, Unit *> *last_collisions = &_Universe->activeStarSystem()->last_collisions;
-    last_collisions->insert(std::pair<Unit *, Unit *>(this, target));
+    std::multimap<std::shared_ptr<Unit> , std::shared_ptr<Unit> > *last_collisions = &_Universe->activeStarSystem()->last_collisions;
+    last_collisions->insert(std::pair<std::shared_ptr<Unit> , std::shared_ptr<Unit> >(this, target));
     // unit v unit? use point sampling?
     if ((this->DockedOrDocking() & (DOCKED_INSIDE | DOCKED)) || (target->DockedOrDocking() & (DOCKED_INSIDE | DOCKED)))
         return false;
     // now do some serious checks
-    Unit *bigger;
-    Unit *smaller;
+    std::shared_ptr<Unit> bigger;
+    std::shared_ptr<Unit> smaller;
     if (radial_size < target->radial_size) {
         bigger  = target;
         smaller = this;
@@ -331,9 +331,9 @@ float globQuerySphere(QVector start, QVector end, QVector pos, float radius)
  *  Not sure yet if that would work though...  more importantly, we might have to modify end in here in order
  *  to tell calling code that the bolt should stop at a given point.
  */
-Unit *Unit::rayCollide(const QVector &start, const QVector &end, Vector &norm, float &distance)
+std::shared_ptr<Unit> Unit::rayCollide(const QVector &start, const QVector &end, Vector &norm, float &distance)
 {
-    Unit *tmp;
+    std::shared_ptr<Unit> tmp;
     float rad = this->rSize();
     if ((!SubUnits.empty()) && graphicOptions.RecurseIntoSubUnitsOnCollision)
         if ((tmp = *SubUnits.fastIterator()))
@@ -343,7 +343,7 @@ Unit *Unit::rayCollide(const QVector &start, const QVector &end, Vector &norm, f
     if (graphicOptions.RecurseIntoSubUnitsOnCollision) {
         if (!SubUnits.empty()) {
             un_fiter i(SubUnits.fastIterator());
-            for (Unit *un; (un = *i); ++i)
+            for (std::shared_ptr<Unit> un; (un = *i); ++i)
                 if ((tmp = un->rayCollide(start, end, norm, distance)) != 0)
                     return tmp;
         }
@@ -434,7 +434,7 @@ bool Unit::querySphere(const QVector &pnt, float err) const
     if (graphicOptions.RecurseIntoSubUnitsOnCollision) {
         if (!SubUnits.empty()) {
             un_fkiter i = SubUnits.constFastIterator();
-            for (const Unit *un; (un = *i); ++i)
+            for (const std::shared_ptr<Unit> un; (un = *i); ++i)
                 if ((un)->querySphere(pnt, err))
                     return true;
         }
@@ -446,7 +446,7 @@ float Unit::querySphere(const QVector &start, const QVector &end, float min_radi
 {
     if (!SubUnits.empty()) {
         un_fkiter i = SubUnits.constFastIterator();
-        for (const Unit *un; (un = *i); ++i) {
+        for (const std::shared_ptr<Unit> un; (un = *i); ++i) {
             float tmp;
             if ((tmp = un->querySphere(start, end, min_radius)) != 0)
                 return tmp;

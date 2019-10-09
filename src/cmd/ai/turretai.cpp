@@ -19,15 +19,15 @@ void TurretAI::getAverageGunSpeed(float &speed, float &range, float &mrange) con
     range  = this->range;
     mrange = this->mrange;
 }
-extern unsigned int FireBitmask(Unit *parent, bool shouldfire, bool firemissile);
+extern unsigned int FireBitmask(std::shared_ptr<Unit> parent, bool shouldfire, bool firemissile);
 void                TurretAI::Execute()
 {
-    Unit *targ = parent->Target();
+    std::shared_ptr<Unit> targ = parent->Target();
     if (range == -1) {
         range = mrange = speed = 0;
         parent->getAverageGunSpeed(speed, range, mrange);
         float tspeed, trange, tmrange;
-        Unit *gun;
+        std::shared_ptr<Unit> gun;
         if (parent->GetNumMounts() == 0) {
             speed  = 1;
             range  = 1;
@@ -63,8 +63,8 @@ void                TurretAI::Execute()
             bool shouldfire = ((mag - targ->rSize() - parent->rSize() < range && dot > dot_cutoff) &&
                                (isplayerstarship == false || targ->faction == upg ||
                                 (isplayerstarship &&
-                                 (targ->getRelation((Unit *)parent->owner) < 0 /*now that it is a player, we know it's dereferencable*/
-                                  || targ->Target() == (Unit *)parent->owner))) &&
+                                 (targ->getRelation((std::shared_ptr<Unit> )parent->owner) < 0 /*now that it is a player, we know it's dereferencable*/
+                                  || targ->Target() == (std::shared_ptr<Unit> )parent->owner))) &&
                                targ->faction != neu);
 
             parent->Fire(FireBitmask(parent, shouldfire, rand() < missile_prob * RAND_MAX * SIMULATION_ATOM), true);

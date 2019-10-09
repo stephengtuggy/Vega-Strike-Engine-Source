@@ -167,14 +167,14 @@ class UnitDrawer
     vsUMap<void *, struct empty> gravunits;
 
   public:
-    Unit *parent;
-    Unit *parenttarget;
+    std::shared_ptr<Unit> parent;
+    std::shared_ptr<Unit> parenttarget;
     UnitDrawer()
     {
         parent       = NULL;
         parenttarget = NULL;
     }
-    bool acquire(Unit *unit, float distance)
+    bool acquire(std::shared_ptr<Unit> unit, float distance)
     {
         if (gravunits.find(unit) == gravunits.end())
             return draw(unit);
@@ -194,7 +194,7 @@ class UnitDrawer
             draw(parenttarget);
     }
 
-    bool draw(Unit *unit)
+    bool draw(std::shared_ptr<Unit> unit)
     {
         if (parent == unit || (parent && parent->isSubUnit() && parent->owner == unit))
             parent = NULL;
@@ -210,7 +210,7 @@ class UnitDrawer
         SIMULATION_ATOM            = backup;
         return true;
     }
-    bool grav_acquire(Unit *unit)
+    bool grav_acquire(std::shared_ptr<Unit> unit)
     {
         gravunits[unit] = empty();
         return draw(unit);
@@ -228,13 +228,13 @@ void GameStarSystem::Draw(bool DrawCockpit)
         AnimatedTexture::UpdateAllFrame();
     for (unsigned int i = 0; i < contterrains.size(); ++i)
         contterrains[i]->AdjustTerrain(this);
-    Unit *par;
+    std::shared_ptr<Unit> par;
     if ((par = _Universe->AccessCockpit()->GetParent()) == NULL) {
         _Universe->AccessCamera()->UpdateGFX(GFXTRUE);
     } else if (!par->isSubUnit()) {
         // now we can assume world is topps
         par->cumulative_transformation = linear_interpolate(par->prev_physical_state, par->curr_physical_state, interpolation_blend_factor);
-        Unit *targ                     = par->Target();
+        std::shared_ptr<Unit> targ                     = par->Target();
         if (targ && !targ->isSubUnit()) {
             targ->cumulative_transformation =
                 linear_interpolate(targ->prev_physical_state, targ->curr_physical_state, interpolation_blend_factor);
@@ -245,16 +245,16 @@ void GameStarSystem::Draw(bool DrawCockpit)
     {
         cam_setup_phase = true;
 
-        Unit *saveparent = _Universe->AccessCockpit()->GetSaveParent();
-        Unit *targ       = NULL;
+        std::shared_ptr<Unit> saveparent = _Universe->AccessCockpit()->GetSaveParent();
+        std::shared_ptr<Unit> targ       = NULL;
         if (saveparent)
             targ = saveparent->Target();
         // Array containing the two interesting units, so as not to have to copy-paste code
-        Unit *       camunits[2]   = {saveparent, targ};
+        std::shared_ptr<Unit> camunits[2]   = {saveparent, targ};
         float        backup        = SIMULATION_ATOM;
         unsigned int cur_sim_frame = _Universe->activeStarSystem()->getCurrentSimFrame();
         for (int i = 0; i < 2; ++i) {
-            Unit *unit = camunits[i];
+            std::shared_ptr<Unit> unit = camunits[i];
             // Make sure unit is not null;
             if (unit && !unit->isSubUnit()) {
                 interpolation_blend_factor =
@@ -287,7 +287,7 @@ void GameStarSystem::Draw(bool DrawCockpit)
     UnitWithinRangeOfPosition<UnitDrawer> drawer(game_options.precull_dist, 0, key_iterator);
     // Need to draw really big stuff (i.e. planets, deathstars, and other mind-bogglingly big things that shouldn't be culled despited
     // extreme distance
-    Unit *unit;
+    std::shared_ptr<Unit> unit;
     if ((drawer.action.parent = _Universe->AccessCockpit()->GetParent()) != NULL)
         drawer.action.parenttarget = drawer.action.parent->Target();
     for (un_iter iter = this->GravitationalUnits.createIterator(); (unit = *iter); ++iter) {
@@ -306,7 +306,7 @@ void GameStarSystem::Draw(bool DrawCockpit)
 #if 0
     for (unsigned int sim_counter = 0; sim_counter <= SIM_QUEUE_SIZE; ++sim_counter) {
         double tmp    = queryTime();
-        Unit  *unit;
+        std::shared_ptr<Unit> unit;
         UnitCollection::UnitIterator iter = physics_buffer[sim_counter].createIterator();
         float  backup = SIMULATION_ATOM;
         unsigned int cur_sim_frame = _Universe->activeStarSystem()->getCurrentSimFrame();

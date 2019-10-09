@@ -118,9 +118,9 @@ void PythonUnitIter::advanceNJumppoint(int n)
     }
 }
 
-Unit *GetUnitFromSerial(ObjSerial serial)
+std::shared_ptr<Unit> GetUnitFromSerial(ObjSerial serial)
 {
-    Unit *un;
+    std::shared_ptr<Unit> un;
     if (serial == 0)
         return NULL;
     // Find the unit
@@ -136,7 +136,7 @@ std::string vsConfig(std::string category, std::string option, std::string def)
     return vs_config->getVariable(category, option, def);
 }
 
-Unit *launchJumppoint(string  name_string,
+std::shared_ptr<Unit> launchJumppoint(string  name_string,
                       string  faction_string,
                       string  type_string,
                       string  unittype_string,
@@ -165,7 +165,7 @@ Unit *launchJumppoint(string  name_string,
     cf.nr_ships   = nr_of_ships;
     cf.fg->pos    = pos;
     cf.rot[0] = cf.rot[1] = cf.rot[2] = 0.0f;
-    Unit *tmp                         = mission->call_unit_launch(&cf, clstype, destinations);
+    std::shared_ptr<Unit> tmp                         = mission->call_unit_launch(&cf, clstype, destinations);
     mission->number_of_ships += nr_of_ships;
 
     return tmp;
@@ -173,7 +173,7 @@ Unit *launchJumppoint(string  name_string,
 Cargo getRandCargo(int quantity, string category)
 {
     Cargo *      ret = NULL;
-    Unit *       mpl = &GetUnitMasterPartList();
+    std::shared_ptr<Unit> mpl = &GetUnitMasterPartList();
     unsigned int max = mpl->numCargo();
     if (!category.empty()) {
         size_t Begin, End;
@@ -223,15 +223,15 @@ void SetTimeCompression()
 static UnitContainer scratch_unit;
 static QVector       scratch_vector;
 
-Unit *GetMasterPartList()
+std::shared_ptr<Unit> GetMasterPartList()
 {
     return UnitFactory::getMasterPartList();
 }
-Unit *getScratchUnit()
+std::shared_ptr<Unit> getScratchUnit()
 {
     return scratch_unit.GetUnit();
 }
-void setScratchUnit(Unit *un)
+void setScratchUnit(std::shared_ptr<Unit> un)
 {
     scratch_unit.SetUnit(un);
 }
@@ -272,9 +272,9 @@ void TargetEachOther(string fgname, string faction, string enfgname, string enfa
 {
     int   fac   = FactionUtil::GetFactionIndex(faction);
     int   enfac = FactionUtil::GetFactionIndex(enfaction);
-    Unit *un;
-    Unit *en = NULL;
-    Unit *al = NULL;
+    std::shared_ptr<Unit> un;
+    std::shared_ptr<Unit> en = NULL;
+    std::shared_ptr<Unit> al = NULL;
     for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = *i) && ((!en) || (!al)); ++i) {
         if (un->faction == enfac && UnitUtil::getFlightgroupName(un) == enfgname)
             if ((NULL == en) || (rand() % 3 == 0))
@@ -299,7 +299,7 @@ void StopTargettingEachOther(string fgname, string faction, string enfgname, str
 {
     int   fac   = FactionUtil::GetFactionIndex(faction);
     int   enfac = FactionUtil::GetFactionIndex(enfaction);
-    Unit *un;
+    std::shared_ptr<Unit> un;
     int   clear = 0;
     for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = *i) && clear != 3; ++i) {
         if ((un->faction == enfac && UnitUtil::getFlightgroupName(un) == enfgname)) {
@@ -327,7 +327,7 @@ float GetRelation(std::string myfaction, std::string theirfaction)
     int   myfac    = FactionUtil::GetFactionIndex(myfaction);
     int   theirfac = FactionUtil::GetFactionIndex(theirfaction);
     int   cp       = _Universe->CurrentCockpit();
-    Unit *un       = _Universe->AccessCockpit()->GetParent();
+    std::shared_ptr<Unit> un       = _Universe->AccessCockpit()->GetParent();
     if (!un)
         return FactionUtil::GetIntRelation(myfac, theirfac);
     if (myfac == theirfac)
@@ -345,7 +345,7 @@ void AdjustRelation(std::string myfaction, std::string theirfaction, float facto
     int   theirfac   = FactionUtil::GetFactionIndex(theirfaction);
     float realfactor = factor * rank;
     int   cp         = _Universe->CurrentCockpit();
-    Unit *un         = _Universe->AccessCockpit()->GetParent();
+    std::shared_ptr<Unit> un         = _Universe->AccessCockpit()->GetParent();
     if (!un)
         return;
     if (myfac == theirfac)
@@ -415,10 +415,10 @@ UniverseUtil::PythonUnitIter getUnitList()
 {
     return activeSys->getUnitList().createIterator();
 }
-Unit *getUnit(int index)
+std::shared_ptr<Unit> getUnit(int index)
 {
     un_iter iter = activeSys->getUnitList().createIterator();
-    Unit *  un   = NULL;
+    std::shared_ptr<Unit> un   = NULL;
     for (int i = -1; (un = *iter) && i < index; ++iter) {
         if (un->GetHull() > 0)
             ++i;
@@ -427,22 +427,22 @@ Unit *getUnit(int index)
     }
     return un;
 }
-Unit *getUnitByPtr(void *ptr, Unit *finder, bool allowslowness)
+std::shared_ptr<Unit> getUnitByPtr(void *ptr, std::shared_ptr<Unit> finder, bool allowslowness)
 {
     if (finder) {
         UnitPtrLocator unitLocator(ptr);
         findObjects(activeSys->collidemap[Unit::UNIT_ONLY], finder->location[Unit::UNIT_ONLY], &unitLocator);
         if (unitLocator.retval)
-            return reinterpret_cast<Unit *>(ptr);
+            return reinterpret_cast<std::shared_ptr<Unit> >(ptr);
 
         else if (!finder->isSubUnit())
             return 0;
     }
     if (!allowslowness)
         return 0;
-    return ((activeSys->getUnitList().contains((Unit *)ptr)) ? reinterpret_cast<Unit *>(ptr) : NULL);
+    return ((activeSys->getUnitList().contains((std::shared_ptr<Unit> )ptr)) ? reinterpret_cast<std::shared_ptr<Unit> >(ptr) : NULL);
 }
-Unit *getUnitByName(std::string name)
+std::shared_ptr<Unit> getUnitByName(std::string name)
 {
     un_iter iter = activeSys->getUnitList().createIterator();
     while (!iter.isDone() && UnitUtil::getName(*iter) != name)
@@ -602,12 +602,12 @@ void clearObjectives()
             VSServer->sendSaveData(mission->player_num, Subcmd::Objective | Subcmd::EraseValue, -1, NULL, mission, NULL, NULL);
     }
 }
-void setOwnerII(int which, Unit *owner)
+void setOwnerII(int which, std::shared_ptr<Unit> owner)
 {
     if (which < (int)mission->objectives.size())
         mission->objectives[which].setOwner(owner);
 }
-Unit *getOwner(int which)
+std::shared_ptr<Unit> getOwner(int which)
 {
     if (which < (int)mission->objectives.size())
         return mission->objectives[which].getOwner();
@@ -631,7 +631,7 @@ void IOmessage(int delay, string from, string to, string message)
     else
         mission->msgcenter->add(from, to, message, delay);
 }
-Unit *GetContrabandList(string faction)
+std::shared_ptr<Unit> GetContrabandList(string faction)
 {
     return FactionUtil::GetContraband(FactionUtil::GetFactionIndex(faction));
 }
@@ -670,7 +670,7 @@ QVector SafeStarSystemEntrancePoint(StarSystem *sts, QVector pos, float radial_s
     if (radial_size < 0)
         radial_size = game_options.respawn_unit_size;
     for (unsigned int k = 0; k < 10; ++k) {
-        Unit *un;
+        std::shared_ptr<Unit> un;
         bool  collision = false;
         {
             // fixme, make me faster, use collide map
@@ -706,7 +706,7 @@ QVector SafeEntrancePoint(QVector pos, float radial_size)
 {
     return SafeStarSystemEntrancePoint(_Universe->activeStarSystem(), pos, radial_size);
 }
-Unit *launch(string  name_string,
+std::shared_ptr<Unit> launch(string  name_string,
              string  type_string,
              string  faction_string,
              string  unittype,
@@ -731,12 +731,12 @@ string LookupUnitStat(const string &unitname, const string &faction, const strin
         return string();
 }
 
-static std::vector<Unit *> cachedUnits;
+static std::vector<std::shared_ptr<Unit> > cachedUnits;
 void                       precacheUnit(string type_string, string faction_string)
 {
     cachedUnits.push_back(UnitFactory::createUnit(type_string.c_str(), true, FactionUtil::GetFactionIndex(faction_string)));
 }
-Unit *getPlayer()
+std::shared_ptr<Unit> getPlayer()
 {
     return _Universe->AccessCockpit()->GetParent();
 }
@@ -778,7 +778,7 @@ int getNumPlayers()
 {
     return _Universe->numPlayers();
 }
-Unit *getPlayerX(int which)
+std::shared_ptr<Unit> getPlayerX(int which)
 {
     if (which >= getNumPlayers())
         return NULL;

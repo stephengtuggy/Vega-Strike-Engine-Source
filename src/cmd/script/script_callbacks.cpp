@@ -713,9 +713,9 @@ int Mission::getIntArg(missionNode *node, int mode, int arg_nr)
     return res;
 }
 
-Unit *Mission::getUnitArg(missionNode *node, int mode, int arg_nr)
+std::shared_ptr<Unit> Mission::getUnitArg(missionNode *node, int mode, int arg_nr)
 {
-    Unit *ret = NULL;
+    std::shared_ptr<Unit> ret = NULL;
 
     missionNode *unit_node = getArgument(node, mode, arg_nr);
     varInst *    unit_vi   = checkObjectExpr(unit_node, mode);

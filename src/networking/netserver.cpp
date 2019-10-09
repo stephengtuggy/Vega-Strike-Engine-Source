@@ -91,7 +91,7 @@ string universe_path;
 using namespace VSFileSystem;
 
 // What header are these *supposed* to be defined in ???
-extern const Unit * getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0);
+extern const std::shared_ptr<Unit> getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0);
 extern int          GetModeFromName(const char *); // 1=add, 2=mult, 0=neither.
 static const string LOAD_FAILED = "LOAD_FAILED";
 // Takes in a category of an upgrade or cargo and returns true if it is any type of mountable weapon.
@@ -659,8 +659,8 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
     unsigned short zone;
     char           mis;
     // Find the unit
-    Unit *    un    = NULL;
-    Unit *    unclt = NULL;
+    std::shared_ptr<Unit> un    = NULL;
+    std::shared_ptr<Unit> unclt = NULL;
     ObjSerial target_serial;
     ObjSerial packet_serial = p.getSerial();
     switch (cmd) {
@@ -885,7 +885,7 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
         COUT << "Received a respawning request for " << clt->callsign << "..." << endl;
         {
             // Remove the client from its current starsystem
-            Unit *oldun = clt->game_unit.GetUnit();
+            std::shared_ptr<Unit> oldun = clt->game_unit.GetUnit();
             if (oldun == NULL || oldun->GetHull() <= 0) {
                 zonemgr->removeClient(clt);
                 if (oldun)
@@ -903,8 +903,8 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
         std::string cargoName = netbuf.getString();
         int         type      = netbuf.getChar();
 
-        Unit *docked = NULL;
-        Unit *player = clt->game_unit.GetUnit();
+        std::shared_ptr<Unit> docked = NULL;
+        std::shared_ptr<Unit> player = clt->game_unit.GetUnit();
         if (!player)
             break;
         int cpnum = _Universe->whichPlayerStarship(player);
@@ -912,10 +912,10 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
             break;
         Cockpit *cp = _Universe->AccessCockpit(cpnum);
         {
-            const Unit *un;
+            const std::shared_ptr<Unit> un;
             for (un_kiter ui = player->getStarSystem()->getUnitList().constIterator(); (un = *ui); ++ui)
                 if (un->isDocked(player)) {
-                    docked = const_cast<Unit *>(un); // Stupid STL.
+                    docked = const_cast<std::shared_ptr<Unit> >(un); // Stupid STL.
                     break;
                 }
         }
@@ -1069,7 +1069,7 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
         break;
     }
     case CMD_MISSION: {
-        Unit *sender = clt->game_unit.GetUnit();
+        std::shared_ptr<Unit> sender = clt->game_unit.GetUnit();
         if (!sender)
             break;
         int playernum = _Universe->whichPlayerStarship(sender);
@@ -1117,12 +1117,12 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
     }
     case CMD_COMM: {
         ObjSerial send_to = netbuf.getSerial();
-        Unit *    targ    = UniverseUtil::GetUnitFromSerial(send_to);
+        std::shared_ptr<Unit> targ    = UniverseUtil::GetUnitFromSerial(send_to);
         if (!targ)
             break;
         char  newEdge = netbuf.getChar();
         int   node    = netbuf.getInt32();
-        Unit *parent  = clt->game_unit.GetUnit();
+        std::shared_ptr<Unit> parent  = clt->game_unit.GetUnit();
         if (!parent)
             break;
         FSM *fsm = FactionUtil::GetConversation(parent->faction, targ->faction);
@@ -1157,20 +1157,20 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
         std::string cargoName     = netbuf.getString();
         int         mountOffset   = ((int)netbuf.getInt32());
         int         subunitOffset = ((int)netbuf.getInt32());
-        Unit *      sender        = clt->game_unit.GetUnit();
+        std::shared_ptr<Unit> sender        = clt->game_unit.GetUnit();
         Cockpit *   sender_cpt    = _Universe->isPlayerStarship(sender);
         if (!sender || !sender->getStarSystem() || !sender_cpt)
             break;
         zone                   = sender->getStarSystem()->GetZone();
         unsigned int cargIndex = UINT_MAX;
-        Unit *       seller    = zonemgr->getUnit(seller_ser, zone);
-        Unit *       buyer     = zonemgr->getUnit(buyer_ser, zone);
-        Unit *       docked    = NULL;
+        std::shared_ptr<Unit> seller    = zonemgr->getUnit(seller_ser, zone);
+        std::shared_ptr<Unit> buyer     = zonemgr->getUnit(buyer_ser, zone);
+        std::shared_ptr<Unit> docked    = NULL;
         {
-            const Unit *un;
+            const std::shared_ptr<Unit> un;
             for (un_kiter ui = sender->getStarSystem()->getUnitList().constIterator(); (un = *ui); ++ui) {
                 if (un->isDocked(sender)) {
-                    docked = const_cast<Unit *>(un); // Stupid STL.
+                    docked = const_cast<std::shared_ptr<Unit> >(un); // Stupid STL.
                     break;
                 }
             }
@@ -1277,7 +1277,7 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
         }
         if ((didMoney || weapon) && upgrade && (seller == sender || buyer == sender)) {
             double      percent; // not used.
-            const Unit *unitCarg = getUnitFromUpgradeName(carg.GetContent(), seller->faction);
+            const std::shared_ptr<Unit> unitCarg = getUnitFromUpgradeName(carg.GetContent(), seller->faction);
             if (!unitCarg) {
                 // Return the credits.
                 sendCredits(sender->GetSerial(), sender_cpt->credits);
@@ -1300,7 +1300,7 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
                 templateName = unitDir + ".template";
             }
             // Get the "limiter" for the upgrade.  Stats can't increase more than this.
-            const Unit *templateUnit = UnitConstCache::getCachedConst(StringIntKey(templateName, faction)); // FIXME faction
+            const std::shared_ptr<Unit> templateUnit = UnitConstCache::getCachedConst(StringIntKey(templateName, faction)); // FIXME faction
                                                                                                             // uninitialized!!!
             if (!templateUnit)
                 templateUnit = UnitConstCache::setCachedConst(StringIntKey(templateName, faction), // FIXME faction uninitialized!!!
@@ -1499,7 +1499,7 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
         zonemgr->broadcastText( un->getStarSystem()->GetZone(), packet_serial, &p2, clt->comm_freq );
 #endif
     case CMD_DOCK: {
-        Unit *docking_unit;
+        std::shared_ptr<Unit> docking_unit;
         un = clt->game_unit.GetUnit();
         if (!un)
             break;
@@ -1527,7 +1527,7 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
         break;
     }
     case CMD_UNDOCK: {
-        Unit *docking_unit;
+        std::shared_ptr<Unit> docking_unit;
         un = clt->game_unit.GetUnit();
         if (!un)
             break;

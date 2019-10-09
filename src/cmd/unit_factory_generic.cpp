@@ -8,8 +8,8 @@
 #include "networking/zonemgr.h"
 #include "networking/lowlevel/netbuffer.h"
 
-Unit *UnitFactory::_masterPartList = NULL;
-Unit *UnitFactory::getMasterPartList()
+std::shared_ptr<Unit> UnitFactory::_masterPartList = NULL;
+std::shared_ptr<Unit> UnitFactory::getMasterPartList()
 {
     if (_masterPartList == NULL) {
         static bool making = true;
@@ -52,7 +52,7 @@ void UnitFactory::addUnitBuffer(NetBuffer &        netbuf,
         netbuf.addClientState(curr_state);
 }
 
-void UnitFactory::addUnitBuffer(NetBuffer &netbuf, const Unit *un, string *netxml)
+void UnitFactory::addUnitBuffer(NetBuffer &netbuf, const std::shared_ptr<Unit> un, string *netxml)
 {
     addUnitBuffer(netbuf,
                   un->getFilename(),
@@ -68,7 +68,7 @@ void UnitFactory::addUnitBuffer(NetBuffer &netbuf, const Unit *un, string *netxm
                   un->GetSerial());
 }
 
-Unit *UnitFactory::parseUnitBuffer(NetBuffer &netbuf)
+std::shared_ptr<Unit> UnitFactory::parseUnitBuffer(NetBuffer &netbuf)
 {
     ObjSerial serial = netbuf.getSerial();
     string    file(netbuf.getString());
@@ -94,7 +94,7 @@ Unit *UnitFactory::parseUnitBuffer(NetBuffer &netbuf)
         if (!fg)
             fg = Flightgroup::newFlightgroup(fname, file, facname, "default", 1, 1, "", "", mission);
     }
-    Unit *un = createUnit(file.c_str(), sub, faction, custom, fg, fg_num, NULL, serial);
+    std::shared_ptr<Unit> un = createUnit(file.c_str(), sub, faction, custom, fg, fg_num, NULL, serial);
     if (netbuf.version() <= 4951)
         un->curr_physical_state = netbuf.getTransformation();
     else
@@ -117,7 +117,7 @@ void UnitFactory::addPlanetBuffer(NetBuffer &                       netbuf,
                                   BLENDFUNC                         ds,
                                   const vector<string> &            dest,
                                   const QVector &                   orbitcent,
-                                  Unit *                            parent,
+                                  std::shared_ptr<Unit> parent,
                                   const GFXMaterial &               ourmat,
                                   const std::vector<GFXLightLocal> &ligh,
                                   int                               faction,
@@ -179,7 +179,7 @@ Planet *UnitFactory::parsePlanetBuffer(NetBuffer &netbuf)
         dest.push_back(ctmp);
     }
     const QVector orbitcent(netbuf.getQVector());
-    Unit *        un  = UniverseUtil::GetUnitFromSerial(netbuf.getSerial());
+    std::shared_ptr<Unit> un  = UniverseUtil::GetUnitFromSerial(netbuf.getSerial());
     GFXMaterial   mat = netbuf.getGFXMaterial();
 
     vector<GFXLightLocal> lights;
@@ -304,7 +304,7 @@ void UnitFactory::addMissileBuffer(NetBuffer &netbuf, const Missile *mis)
                      mis->getFullname(),
                      mis->faction,
                      "" /* modifications */,
-                     ClientState(static_cast<const Unit *>(mis)),
+                     ClientState(static_cast<const std::shared_ptr<Unit> >(mis)),
                      mis->damage,
                      mis->phasedamage,
                      mis->time,
@@ -394,7 +394,7 @@ Asteroid *UnitFactory::parseAsteroidBuffer(NetBuffer &netbuf)
     return UnitFactory::createAsteroid(file.c_str(), faction, fg, fg_snumber, diff, serial);
 }
 
-void UnitFactory::addBuffer(NetBuffer &netbuf, const Unit *un, bool allowSystemTypes, string *netxml)
+void UnitFactory::addBuffer(NetBuffer &netbuf, const std::shared_ptr<Unit> un, bool allowSystemTypes, string *netxml)
 {
     switch (un->isUnit()) {
     case UNITPTR:

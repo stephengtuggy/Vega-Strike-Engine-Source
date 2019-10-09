@@ -4,9 +4,9 @@ namespace Orders
 {
 class Ikarus : public AggressiveAI
 {
-    void   ExecuteStrategy(Unit *target);
+    void   ExecuteStrategy(std::shared_ptr<Unit> target);
     void   DecideTarget();
-    void   WillFire(Unit *target);
+    void   WillFire(std::shared_ptr<Unit> target);
     double last_time;
     double cur_time;
 

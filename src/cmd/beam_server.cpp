@@ -5,7 +5,7 @@
 //#include "unit_collide.h"
 #include "images.h"
 
-Beam::Beam(const Transformation &trans, const weapon_info &clne, void *own, Unit *self, int sound)
+Beam::Beam(const Transformation &trans, const weapon_info &clne, void *own, std::shared_ptr<Unit> self, int sound)
     : vlist(NULL), Col(clne.r, clne.g, clne.b, clne.a)
 {
     VSCONSTRUCT2('B')
@@ -25,7 +25,7 @@ Beam::~Beam()
     // delete vlist;  // Do not delete shared vlist.
 }
 
-void Beam::Draw(const Transformation &trans, const Matrix &m, Unit *targ, float tracking_cone)
+void Beam::Draw(const Transformation &trans, const Matrix &m, std::shared_ptr<Unit> targ, float tracking_cone)
 {
     // hope that the correct transformation is on teh stack
 }

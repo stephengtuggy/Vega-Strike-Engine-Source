@@ -19,7 +19,7 @@ ClientState::ClientState()
     this->angveloc.Set(0, 0, 0);
 }
 
-ClientState::ClientState(const Unit *un)
+ClientState::ClientState(const std::shared_ptr<Unit> un)
 {
     this->client_serial   = un->GetSerial();
     this->pos.position    = un->curr_physical_state.position;
@@ -36,7 +36,7 @@ ClientState::ClientState(const Unit *un)
     }
 }
 
-void ClientState::setUnitState(Unit *un) const
+void ClientState::setUnitState(std::shared_ptr<Unit> un) const
 {
     un->curr_physical_state = this->pos;
     un->Velocity            = this->veloc;

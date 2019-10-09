@@ -44,7 +44,7 @@ string ZoneMgr::getSystem(string &name)
  ***********************************************************************************************
  */
 
-void displayUnitInfo(Unit *un, const string callsign, const char *type)
+void displayUnitInfo(std::shared_ptr<Unit> un, const string callsign, const char *type)
 {
     cout << type;
     if (!un) {
@@ -85,7 +85,7 @@ void ZoneMgr::getZoneBuffer(unsigned short zoneid, NetBuffer &netbuf)
             // Test if *k is the same as clt in which case we don't need to send info
             if (true) {
                 // kp->ingame)
-                Unit *un = kp->game_unit.GetUnit();
+                std::shared_ptr<Unit> un = kp->game_unit.GetUnit();
                 if (un->hull < 0 || !un)
                     continue;
                 assert(un->GetSerial() != 0);
@@ -104,7 +104,7 @@ void ZoneMgr::getZoneBuffer(unsigned short zoneid, NetBuffer &netbuf)
             }
         }
         {
-            Unit *un;
+            std::shared_ptr<Unit> un;
             for (un_iter ui = zi->star_system->getUnitList().createIterator(); (un = *ui) != NULL; ++ui) {
                 // NETFIXME Asteroids are disabled for now!
                 if (un->hull < 0 || un->isUnit() == ASTEROIDPTR) // no point sending a zombie.
@@ -135,7 +135,7 @@ StarSystem *ZoneMgr::addZone(string starsys)
     // StarSystem is not loaded so we generate it
     COUT << ">>> ADDING A NEW ZONE = " << starsys << " - ZONE # = " << _Universe->star_system.size() << endl;
     COUT << "--== STAR SYSTEM NOT FOUND - GENERATING ==--" << endl;
-    // list<Unit *> ulst;
+    // list<std::shared_ptr<Unit> > ulst;
     // Generate the StarSystem
     _Universe->netLock(true);
     string starsysfile = starsys + ".system";
@@ -220,7 +220,7 @@ ClientList *ZoneMgr::GetZone(int serial)
  */
 
 /*
- *  void	ZoneMgr::addUnit( Unit * un, int zone)
+ *  void	ZoneMgr::addUnit( std::shared_ptr<Unit> un, int zone)
  *  {
  *       zone_unitlist[zone].push_back( un);
  *       zone_units[zone]++;
@@ -234,7 +234,7 @@ ClientList *ZoneMgr::GetZone(int serial)
  */
 
 /*
- *  void	ZoneMgr::removeUnit( Unit * un, int zone)
+ *  void	ZoneMgr::removeUnit( std::shared_ptr<Unit> un, int zone)
  *  {
  *       if( zone_unitlist[zone].empty())
  *       {
@@ -247,12 +247,12 @@ ClientList *ZoneMgr::GetZone(int serial)
  */
 
 // Returns NULL if no corresponding Unit was found
-Unit *ZoneMgr::getUnit(ObjSerial unserial, unsigned short zone)
+std::shared_ptr<Unit> ZoneMgr::getUnit(ObjSerial unserial, unsigned short zone)
 {
     ZoneInfo *zi = GetZoneInfo(zone);
     if (!zi)
         return NULL;
-    Unit *un = NULL;
+    std::shared_ptr<Unit> un = NULL;
     // Clients not ingame are removed from the drawList so it is ok not to test that
     for (un_iter iter = (zi->getSystem()->getUnitList()).createIterator(); (un = *iter) != NULL; ++iter)
         if (un->GetSerial() == unserial)
@@ -288,7 +288,7 @@ StarSystem *ZoneMgr::addClient(ClientPtr cltw, string starsys, unsigned short &n
     cerr << zi->zone_clients << " clients now in zone " << num_zone << endl;
 
     // QVector safevec;
-    Unit *addun = clt->game_unit.GetUnit();
+    std::shared_ptr<Unit> addun = clt->game_unit.GetUnit();
     if (addun) {
         _Universe->netLock(true);
         sts->AddUnit(addun);
@@ -310,7 +310,7 @@ StarSystem *ZoneMgr::addClient(ClientPtr cltw, string starsys, unsigned short &n
 void ZoneMgr::removeClient(ClientPtr clt)
 {
     StarSystem *sts;
-    Unit *      un      = clt->game_unit.GetUnit();
+    std::shared_ptr<Unit> un      = clt->game_unit.GetUnit();
     int         zonenum = -1;
     /*
      *  if (un && un->activeStarSystem)
@@ -369,7 +369,7 @@ void ZoneMgr::removeClient(ClientPtr clt)
 void ZoneMgr::broadcast(ClientPtr fromcltw, Packet *pckt, bool isTcp, unsigned short minver, unsigned short maxver)
 {
     ClientPtr fromclt(fromcltw);
-    Unit *    un = fromclt->game_unit.GetUnit();
+    std::shared_ptr<Unit> un = fromclt->game_unit.GetUnit();
     if (!un || !un->getStarSystem()) {
         cerr << "Trying to broadcast information with dead client unit" << pckt->getCommand() << endl;
         return;
@@ -382,7 +382,7 @@ void ZoneMgr::broadcast(ClientPtr fromcltw, Packet *pckt, bool isTcp, unsigned s
     }
     for (LI i = lst->begin(); i != lst->end(); i++) {
         ClientPtr clt(*i);
-        Unit *    un2 = clt->game_unit.GetUnit();
+        std::shared_ptr<Unit> un2 = clt->game_unit.GetUnit();
         // Broadcast to other clients
         if ((isTcp || clt->ingame) && clt->netversion >= minver && clt->netversion <= maxver &&
             ((un2 == NULL) || (un->GetSerial() != un2->GetSerial()))) {
@@ -435,7 +435,7 @@ void ZoneMgr::broadcastNoSelf(int zone, ObjSerial serial, Packet *pckt, bool isT
         return;
     for (LI i = lst->begin(); i != lst->end(); i++) {
         ClientPtr clt(*i);
-        Unit *    broadcastTo = clt->game_unit.GetUnit();
+        std::shared_ptr<Unit> broadcastTo = clt->game_unit.GetUnit();
         // Broadcast to all clients including the one who did a request
         if ((isTcp || clt->ingame) && ((!broadcastTo) || broadcastTo->GetSerial() != serial)) {
             if (isTcp)
@@ -457,7 +457,7 @@ void ZoneMgr::broadcastNoSelf(int zone, ObjSerial serial, Packet *pckt, bool isT
 void ZoneMgr::broadcastSample(int zone, ObjSerial serial, Packet *pckt, float frequency)
 {
     ClientList *lst = GetZone(zone);
-    Unit *      un;
+    std::shared_ptr<Unit> un;
     if (lst == NULL)
         return;
     for (LI i = lst->begin(); i != lst->end(); i++) {
@@ -482,7 +482,7 @@ void ZoneMgr::broadcastSample(int zone, ObjSerial serial, Packet *pckt, float fr
 void ZoneMgr::broadcastText(int zone, ObjSerial serial, Packet *pckt, float frequency)
 {
     ClientList *lst = GetZone(zone);
-    Unit *      un;
+    std::shared_ptr<Unit> un;
     if (lst == NULL)
         return;
     for (LI i = lst->begin(); i != lst->end(); i++) {
@@ -537,7 +537,7 @@ void ZoneMgr::broadcastSnapshots(bool update_planets)
                     // This also means clients will receive info about themselves
                     // which they should ignore or take into account sometimes
                     //(according to their ping value)
-                    Unit *unit;
+                    std::shared_ptr<Unit> unit;
 
                     // Add the client we send snapshot to its own deltatime (semi-ping)
                     netbuf.addFloat(cltk->getDeltatime());
@@ -582,9 +582,9 @@ void ZoneMgr::broadcastSnapshots(bool update_planets)
                     }
                 }
                 {
-                    Unit *unit;
+                    std::shared_ptr<Unit> unit;
                     if ((unit = cltk->game_unit.GetUnit()) != NULL) {
-                        Unit *targ = unit->Target();
+                        std::shared_ptr<Unit> targ = unit->Target();
                         if (targ) {
                             double range = unit->GetComputerData().radar.maxrange;
                             unit->GetComputerData().radar.maxrange *= 1.5; // generous
@@ -595,7 +595,7 @@ void ZoneMgr::broadcastSnapshots(bool update_planets)
                     }
                 }
             }
-            Unit *unit;
+            std::shared_ptr<Unit> unit;
             // Clients not ingame are removed from the drawList so it is ok not to test that
             for (un_iter iter = (zi->star_system->getUnitList()).createIterator(); (unit = *iter) != NULL; ++iter) {
                 clsptr typ = unit->isUnit();
@@ -628,9 +628,9 @@ void ZoneMgr::broadcastSnapshots(bool update_planets)
         }
     }
 }
-bool Nearby(ClientPtr clt, Unit *un)
+bool Nearby(ClientPtr clt, std::shared_ptr<Unit> un)
 {
-    Unit *parent = clt->game_unit.GetUnit();
+    std::shared_ptr<Unit> parent = clt->game_unit.GetUnit();
     if (parent) {
         if (un == parent)
             return true;
@@ -653,7 +653,7 @@ bool Nearby(ClientPtr clt, Unit *un)
     }
     return true;
 }
-bool ZoneMgr::addPosition(ClientPtr client, NetBuffer &netbuf, Unit *un, ClientState &un_cs)
+bool ZoneMgr::addPosition(ClientPtr client, NetBuffer &netbuf, std::shared_ptr<Unit> un, ClientState &un_cs)
 {
     bool dodamage = false; // Now done in separate packets in broadcastSnapshots.
     // This test may be wrong for server side units -> may cause more traffic than needed
@@ -753,7 +753,7 @@ void ZoneMgr::broadcastDamage()
                 ClientPtr cp(*k);
                 cp->versionBuf(netbuf);
                 if (cp->ingame) {
-                    Unit *unit;
+                    std::shared_ptr<Unit> unit;
                     // Clients not ingame are removed from the drawList so it is ok not to test that
                     for (un_iter iter = (zi->star_system->getUnitList()).createIterator(); (unit = *iter) != NULL; ++iter)
                         if (unit->GetSerial() != 0) {
@@ -781,7 +781,7 @@ void ZoneMgr::broadcastDamage()
                 }
             }
             {
-                Unit *unit;
+                std::shared_ptr<Unit> unit;
                 // Clients not ingame are removed from the drawList so it is ok not to test that
                 for (un_iter iter = (zi->star_system->getUnitList()).createIterator(); (unit = *iter) != NULL; ++iter) {
                     unit->damages = Unit::NO_DAMAGE;
@@ -794,7 +794,7 @@ void ZoneMgr::broadcastDamage()
     }
 }
 
-void ZoneMgr::addDamage(NetBuffer &netbuf, Unit *un)
+void ZoneMgr::addDamage(NetBuffer &netbuf, std::shared_ptr<Unit> un)
 {
     unsigned int it = 0;
 
@@ -902,12 +902,12 @@ void ZoneInfo::display()
         Client *clt = (*ci).get();
         if (!clt)
             continue;
-        Unit *un = clt->game_unit.GetUnit();
+        std::shared_ptr<Unit> un = clt->game_unit.GetUnit();
         if (un && _Universe->isPlayerStarship(un) == NULL)
             displayUnitInfo(un, clt->callsign, " CltNPC ");
     }
     un_iter iter = (star_system->getUnitList()).createIterator();
-    while (Unit *un = *iter) {
+    while (std::shared_ptr<Unit> un = *iter) {
         char   name[15] = "    NPC ";
         string callsign;
         int    cp;

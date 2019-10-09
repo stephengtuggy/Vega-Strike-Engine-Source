@@ -10,7 +10,7 @@ extern Hashtable<std::string, StarSystem, 127> star_system_table;
 extern std::vector<unorigdest *>               pendingjump;
 
 // From star_system_jump.cpp
-inline bool CompareDest(Unit *un, StarSystem *origin)
+inline bool CompareDest(std::shared_ptr<Unit> un, StarSystem *origin)
 {
     for (unsigned int i = 0; i < un->GetDestinations().size(); i++)
         if (std::string(origin->getFileName()) == std::string(un->GetDestinations()[i]))
@@ -18,17 +18,17 @@ inline bool CompareDest(Unit *un, StarSystem *origin)
     return false;
 }
 
-inline std::vector<Unit *> ComparePrimaries(Unit *primary, StarSystem *origin)
+inline std::vector<std::shared_ptr<Unit> > ComparePrimaries(std::shared_ptr<Unit> primary, StarSystem *origin)
 {
-    std::vector<Unit *> myvec;
+    std::vector<std::shared_ptr<Unit> > myvec;
     if (CompareDest(primary, origin))
         myvec.push_back(primary);
     return myvec;
 }
 
-extern void DealPossibleJumpDamage(Unit *un);
-extern void ActivateAnimation(Unit *);
-void        WarpPursuit(Unit *un, StarSystem *sourcess, std::string destination);
+extern void DealPossibleJumpDamage(std::shared_ptr<Unit> un);
+extern void ActivateAnimation(std::shared_ptr<Unit> );
+void        WarpPursuit(std::shared_ptr<Unit> un, StarSystem *sourcess, std::string destination);
 
 template <class UnitType> bool GameUnit<UnitType>::TransferUnitToSystem(unsigned int kk, StarSystem *&savedStarSystem, bool dosightandsound)
 {
@@ -38,7 +38,7 @@ template <class UnitType> bool GameUnit<UnitType>::TransferUnitToSystem(unsigned
             /// eradicating from system, leaving no trace
             ret = true;
 
-            Unit *unit;
+            std::shared_ptr<Unit> unit;
             for (un_iter iter = pendingjump[kk]->orig->getUnitList().createIterator(); (unit = *iter); ++iter) {
                 if (unit->Threat() == this)
                     unit->Threaten(NULL, 0);
@@ -69,11 +69,11 @@ template <class UnitType> bool GameUnit<UnitType>::TransferUnitToSystem(unsigned
                 pendingjump[kk]->dest->SwapIn();
             }
             _Universe->setActiveStarSystem(pendingjump[kk]->dest);
-            vector<Unit *> possibilities;
-            Unit *         primary;
+            vector<std::shared_ptr<Unit> > possibilities;
+            std::shared_ptr<Unit> primary;
             if (pendingjump[kk]->final_location.i == 0 && pendingjump[kk]->final_location.j == 0 && pendingjump[kk]->final_location.k == 0)
                 for (un_iter iter = pendingjump[kk]->dest->getUnitList().createIterator(); (primary = *iter); ++iter) {
-                    vector<Unit *> tmp;
+                    vector<std::shared_ptr<Unit> > tmp;
                     tmp = ComparePrimaries(primary, pendingjump[kk]->orig);
                     if (!tmp.empty())
                         possibilities.insert(possibilities.end(), tmp.begin(), tmp.end());
@@ -82,7 +82,7 @@ template <class UnitType> bool GameUnit<UnitType>::TransferUnitToSystem(unsigned
                 this->SetCurPosition(pendingjump[kk]->final_location);
             if (!possibilities.empty()) {
                 static int jumpdest = 235034;
-                Unit *     jumpnode = possibilities[jumpdest % possibilities.size()];
+                std::shared_ptr<Unit> jumpnode = possibilities[jumpdest % possibilities.size()];
                 QVector    pos      = jumpnode->Position();
 
                 this->SetCurPosition(pos);
@@ -96,7 +96,7 @@ template <class UnitType> bool GameUnit<UnitType>::TransferUnitToSystem(unsigned
                 }
                 jumpdest += 23231;
             }
-            Unit *tester;
+            std::shared_ptr<Unit> tester;
             for (unsigned int jjj = 0; jjj < 2; ++jjj)
                 for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (tester = *i) != NULL; ++i)
                     if (tester->isUnit() == UNITPTR && tester != this)
@@ -114,16 +114,16 @@ template <class UnitType> bool GameUnit<UnitType>::TransferUnitToSystem(unsigned
         }
         if (this->docked & UnitType::DOCKING_UNITS)
             for (unsigned int i = 0; i < this->pImage->dockedunits.size(); i++) {
-                Unit *unut;
+                std::shared_ptr<Unit> unut;
                 if (NULL != (unut = this->pImage->dockedunits[i]->uc.GetUnit()))
                     unut->TransferUnitToSystem(kk, savedStarSystem, dosightandsound);
             }
         if (this->docked & (UnitType::DOCKED | UnitType::DOCKED_INSIDE)) {
-            Unit *un = this->pImage->DockedTo.GetUnit();
+            std::shared_ptr<Unit> un = this->pImage->DockedTo.GetUnit();
             if (!un) {
                 this->docked &= (~(UnitType::DOCKED | UnitType::DOCKED_INSIDE));
             } else {
-                Unit *targ = NULL;
+                std::shared_ptr<Unit> targ = NULL;
                 for (un_iter i = pendingjump[kk]->dest->getUnitList().createIterator(); (targ = (*i)); ++i)
                     if (targ == un)
                         break;

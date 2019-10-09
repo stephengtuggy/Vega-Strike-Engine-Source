@@ -25,8 +25,8 @@ class Bolt
     CollideMap::iterator          location;
     static int                    AddTexture(bolt_draw *q, std::string filename);
     static int                    AddAnimation(bolt_draw *q, std::string filename, QVector cur_position);
-    bool                          Collide(Unit *target);
-    static bool                   CollideAnon(Collidable::CollideRef bolt_name, Unit *target);
+    bool                          Collide(std::shared_ptr<Unit> target);
+    static bool                   CollideAnon(Collidable::CollideRef bolt_name, std::shared_ptr<Unit> target);
     static Bolt *                 BoltFromIndex(StarSystem *ss, Collidable::CollideRef bolt_name);
     static Collidable::CollideRef BoltIndex(int index, int decal, bool isBall);
     bool                          operator==(const Bolt &b) const

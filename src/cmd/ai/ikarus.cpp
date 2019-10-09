@@ -20,7 +20,7 @@ Ikarus::Ikarus() : AggressiveAI("default.agg.xml")
 {
     last_time = cur_time = 0;
 }
-void Ikarus::ExecuteStrategy(Unit *target)
+void Ikarus::ExecuteStrategy(std::shared_ptr<Unit> target)
 {
     WillFire(target);
     if (queryType(Order::FACING) == NULL) {
@@ -44,7 +44,7 @@ void Ikarus::ExecuteStrategy(Unit *target)
     }
 }
 
-void Ikarus::WillFire(Unit *target)
+void Ikarus::WillFire(std::shared_ptr<Unit> target)
 {
     bool missilelockp = false;
     if (ShouldFire(target, missilelockp)) // this is a function from fire.cpp  you probably want to write a better one
@@ -57,9 +57,9 @@ void Ikarus::WillFire(Unit *target)
 /// you should certainly edit this!!
 void Ikarus::DecideTarget()
 {
-    Unit *targ = parent->Target();
+    std::shared_ptr<Unit> targ = parent->Target();
     if (!targ || /*some other qualifying factor for changing targets*/ 0) {
-        Unit *un = NULL;
+        std::shared_ptr<Unit> un = NULL;
         for (UniverseUtil::PythonUnitIter i = UniverseUtil::getUnitList(); (un = *i); ++i)
             if (parent->getRelation(un) < 0) {
                 parent->Target(un);
@@ -76,7 +76,7 @@ void Ikarus::Execute()
     CommunicatingAI::Execute();
     DecideTarget();
     if (!ProcessCurrentFgDirective(fg)) {
-        Unit *target     = parent->Target();
+        std::shared_ptr<Unit> target     = parent->Target();
         bool  isjumpable = target ? ((!target->GetDestinations().empty()) && parent->GetJumpStatus().drive >= 0) : false;
         if (isjumpable)
             AfterburnTurnTowards(this, parent);

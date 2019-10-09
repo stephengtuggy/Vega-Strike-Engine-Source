@@ -43,10 +43,10 @@ Cockpit *Universe::createCockpit(std::string player)
     return cp;
 }
 
-Unit *DockToSavedBases(int playernum, QVector &safevec)
+std::shared_ptr<Unit> DockToSavedBases(int playernum, QVector &safevec)
 {
     string str = game_options.startDockedTo;
-    Unit * plr = _Universe->AccessCockpit(playernum)->GetParent();
+    std::shared_ptr<Unit> plr = _Universe->AccessCockpit(playernum)->GetParent();
     if (!plr || !plr->getStarSystem()) {
         safevec = QVector(0, 0, 0);
         return NULL;
@@ -54,10 +54,10 @@ Unit *DockToSavedBases(int playernum, QVector &safevec)
     vector<string> strs = loadStringList(playernum, mission_key);
     if (strs.size())
         str = strs[0];
-    Unit *  closestUnit = NULL;
+    std::shared_ptr<Unit> closestUnit = NULL;
     float   lastdist    = 0;
     float   dist        = 0;
-    Unit *  un;
+    std::shared_ptr<Unit> un;
     QVector dock_position(plr->curr_physical_state.position);
     for (un_iter iter = plr->getStarSystem()->getUnitList().createIterator(); (un = *iter); ++iter)
         if (un->name == str || un->getFullname() == str) {
@@ -97,7 +97,7 @@ Unit *DockToSavedBases(int playernum, QVector &safevec)
     return (closestUnit && closestUnit->isDocked(plr)) ? closestUnit : NULL;
 }
 
-Cockpit *Universe::isPlayerStarship(const Unit *doNotDereference)
+Cockpit *Universe::isPlayerStarship(const std::shared_ptr<Unit> doNotDereference)
 {
     using std::vector;
     if (!doNotDereference)
@@ -108,7 +108,7 @@ Cockpit *Universe::isPlayerStarship(const Unit *doNotDereference)
     return NULL;
 }
 
-int Universe::whichPlayerStarship(const Unit *doNotDereference)
+int Universe::whichPlayerStarship(const std::shared_ptr<Unit> doNotDereference)
 {
     if (!doNotDereference)
         return -1;

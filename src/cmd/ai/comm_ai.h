@@ -17,7 +17,7 @@ class CommunicatingAI : public Order
     UnitContainer contraband_searchee;
     Vector        SpeedAndCourse;
     int           which_cargo_item;
-    void          GetMadAt(Unit *which, int howMad);
+    void          GetMadAt(std::shared_ptr<Unit> which, int howMad);
 
   protected:
   public:
@@ -26,7 +26,7 @@ class CommunicatingAI : public Order
     {
         return mood;
     }
-    Unit *GetRandomUnit(float PlayerProbability, float TargetProbability);
+    std::shared_ptr<Unit> GetRandomUnit(float PlayerProbability, float TargetProbability);
     void  RandomInitiateCommunication(float PlayerProbability, float TargetProbability);
     void  TerminateContrabandSearch(bool foundcontraband);
     void  InitiateContrabandSearch(float PlayerProbability, float TargetProbability);
@@ -39,9 +39,9 @@ class CommunicatingAI : public Order
                     float moodswingyness     = 666 /*.2*/,
                     float randomnessresponse = 666 /*.8*/);
     virtual void ProcessCommMessage(class CommunicationMessage &c);
-    virtual void AdjustRelationTo(Unit *un, float factor);
+    virtual void AdjustRelationTo(std::shared_ptr<Unit> un, float factor);
     virtual ~CommunicatingAI();
-    virtual int selectCommunicationMessage(class CommunicationMessage &c, Unit *);
+    virtual int selectCommunicationMessage(class CommunicationMessage &c, std::shared_ptr<Unit> );
     virtual int selectCommunicationMessageMood(CommunicationMessage &c, float mood);
 };
 

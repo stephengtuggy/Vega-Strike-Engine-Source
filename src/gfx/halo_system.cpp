@@ -46,7 +46,7 @@ void DoParticles(
     sparkles.doParticles(pos, radial_size, percent, basevelocity, velocity, particle_size, GFXColor(col[0], col[1], col[2], 1.0f));
 }
 
-void LaunchOneParticle(const Matrix &mat, const Vector &vel, unsigned int seed, Unit *mush, float hull, int faction)
+void LaunchOneParticle(const Matrix &mat, const Vector &vel, unsigned int seed, std::shared_ptr<Unit> mush, float hull, int faction)
 {
     if (mush) {
         bool   done = false;

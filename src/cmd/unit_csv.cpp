@@ -45,7 +45,7 @@ extern void pushMesh(std::vector<Mesh *> &mesh,
 void        addShieldMesh(Unit::XML *xml, const char *filename, const float scale, int faction, class Flightgroup *fg);
 void        addRapidMesh(Unit::XML *xml, const char *filename, const float scale, int faction, class Flightgroup *fg);
 
-static void UpgradeUnit(Unit *un, const std::string &upgrades)
+static void UpgradeUnit(std::shared_ptr<Unit> un, const std::string &upgrades)
 {
     string::size_type when;
     string::size_type ofs = 0;
@@ -66,7 +66,7 @@ static void UpgradeUnit(Unit *un, const std::string &upgrades)
         upgrade = upgrade.substr(0, where1);
         if (upgrade.length() == 0)
             continue;
-        const Unit *upgradee = UnitConstCache::getCachedConst(StringIntKey(upgrade, FactionUtil::GetUpgradeFaction()));
+        const std::shared_ptr<Unit> upgradee = UnitConstCache::getCachedConst(StringIntKey(upgrade, FactionUtil::GetUpgradeFaction()));
         if (!upgradee) {
             upgradee = UnitConstCache::setCachedConst(StringIntKey(upgrade, FactionUtil::GetUpgradeFaction()),
                                                       UnitFactory::createUnit(upgrade.c_str(), true, FactionUtil::GetUpgradeFaction()));
@@ -210,11 +210,11 @@ static int stoi(const string &inp, int def = 0)
     return def;
 }
 
-extern bool CheckAccessory(Unit *);
+extern bool CheckAccessory(std::shared_ptr<Unit> );
 
 extern int parseMountSizes(const char *str);
 
-static void AddMounts(Unit *thus, Unit::XML &xml, const std::string &mounts)
+static void AddMounts(std::shared_ptr<Unit> thus, Unit::XML &xml, const std::string &mounts)
 {
     string::size_type where, when, ofs = 0;
     unsigned int      first_new_mount = thus->mounts.size();
@@ -353,7 +353,7 @@ static vector<SubUnitStruct> GetSubUnits(const std::string &subunits)
     return ret;
 }
 
-static void AddSubUnits(Unit *thus, Unit::XML &xml, const std::string &subunits, int faction, const std::string &modification)
+static void AddSubUnits(std::shared_ptr<Unit> thus, Unit::XML &xml, const std::string &subunits, int faction, const std::string &modification)
 {
     if (SERVER || Network) {
         // Semihack: Keep loading if thus is already a subunit...
@@ -405,7 +405,7 @@ static void AddSubUnits(Unit *thus, Unit::XML &xml, const std::string &subunits,
     }
 }
 
-void AddDocks(Unit *thus, Unit::XML &xml, const string &docks)
+void AddDocks(std::shared_ptr<Unit> thus, Unit::XML &xml, const string &docks)
 {
     string::size_type where, when;
     string::size_type ofs     = 0;
@@ -441,7 +441,7 @@ void AddDocks(Unit *thus, Unit::XML &xml, const string &docks)
     }
 }
 
-void AddLights(Unit *thus, Unit::XML &xml, const string &lights)
+void AddLights(std::shared_ptr<Unit> thus, Unit::XML &xml, const string &lights)
 {
     static float default_halo_activation =
         XMLSupport::parse_float(vs_config->getVariable("graphics", "default_engine_activation", ".00048828125"));
@@ -490,7 +490,7 @@ void AddLights(Unit *thus, Unit::XML &xml, const string &lights)
     }
 }
 
-static void ImportCargo(Unit *thus, const string &imports)
+static void ImportCargo(std::shared_ptr<Unit> thus, const string &imports)
 {
     if (Network != NULL)
         return; // Server takes care of this.
@@ -521,7 +521,7 @@ static void ImportCargo(Unit *thus, const string &imports)
     }
 }
 
-static void AddCarg(Unit *thus, const string &cargos)
+static void AddCarg(std::shared_ptr<Unit> thus, const string &cargos)
 {
     string::size_type where, when, ofs = 0;
     {
@@ -565,7 +565,7 @@ void HudDamage(float *dam, const string &damages)
     }
 }
 
-string WriteHudDamage(Unit *un)
+string WriteHudDamage(std::shared_ptr<Unit> un)
 {
     string       ret;
     const string semi = ";";
@@ -578,7 +578,7 @@ string WriteHudDamage(Unit *un)
     return ret;
 }
 
-string WriteHudDamageFunc(Unit *un)
+string WriteHudDamageFunc(std::shared_ptr<Unit> un)
 {
     string       ret;
     const string semi = ";";
@@ -592,7 +592,7 @@ string WriteHudDamageFunc(Unit *un)
     return ret;
 }
 
-void AddSounds(Unit *thus, string sounds)
+void AddSounds(std::shared_ptr<Unit> thus, string sounds)
 {
     if (sounds.length() != 0) {
         string tmp = nextElement(sounds);
@@ -647,7 +647,7 @@ void AddSounds(Unit *thus, string sounds)
     }
 }
 
-void LoadCockpit(Unit *thus, const string &cockpit)
+void LoadCockpit(std::shared_ptr<Unit> thus, const string &cockpit)
 {
     string::size_type elemstart = 0, elemend = string::npos;
     thus->pImage->cockpitImage    = nextElementString(cockpit, elemstart, elemend);
@@ -1549,7 +1549,7 @@ string Unit::WriteUnitString()
                     vector<SubUnitStruct> subunits = GetSubUnits(unit["Sub_Units"]);
                     if (subunits.size()) {
                         unsigned int k = 0;
-                        Unit *       subun;
+                        std::shared_ptr<Unit> subun;
                         for (; k < subunits.size(); ++k)
                             subunits[k].filename = "destroyed_blank";
                         k = 0;
@@ -1739,7 +1739,7 @@ string Unit::WriteUnitString()
     return ret;
 }
 
-void UpdateMasterPartList(Unit *ret)
+void UpdateMasterPartList(std::shared_ptr<Unit> ret)
 {
     for (unsigned int i = 0; i < _Universe->numPlayers(); ++i) {
         Cockpit *                 cp              = _Universe->AccessCockpit(i);
@@ -1773,13 +1773,13 @@ void UpdateMasterPartList(Unit *ret)
     }
 }
 
-Unit *Unit::makeMasterPartList()
+std::shared_ptr<Unit> Unit::makeMasterPartList()
 {
     unsigned int       i;
     static std::string mpl   = vs_config->getVariable("data", "master_part_list", "master_part_list");
     CSVTable *         table = loadCSVTableList(mpl, VSFileSystem::UnknownFile, false);
 
-    Unit *ret = new Unit();
+    std::shared_ptr<Unit> ret = new Unit();
     ret->name = "master_part_list";
     if (table) {
         vsUMap<std::string, int>::const_iterator it;

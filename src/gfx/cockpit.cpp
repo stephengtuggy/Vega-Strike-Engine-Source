@@ -156,7 +156,7 @@ void GameCockpit::DrawNavigationSymbol(const Vector &Loc, const Vector &P, const
     GFXLineWidth(1);
 }
 
-float GameCockpit::computeLockingSymbol(Unit *par)
+float GameCockpit::computeLockingSymbol(std::shared_ptr<Unit> par)
 {
     return par->computeLockingPercent();
 }
@@ -370,7 +370,7 @@ inline void DrawOneTargetBox(const QVector &Loc,
     GFXDisable(SMOOTH);
 }
 
-inline void DrawDockingBoxes(Unit *un, const Unit *target, const Vector &CamP, const Vector &CamQ, const Vector &CamR)
+inline void DrawDockingBoxes(std::shared_ptr<Unit> un, const std::shared_ptr<Unit> target, const Vector &CamP, const Vector &CamQ, const Vector &CamR)
 {
     if (target->IsCleared(un)) {
         GFXBlendMode(SRCALPHA, INVSRCALPHA);
@@ -422,8 +422,8 @@ void GameCockpit::DrawTargetBoxes(const Radar::Sensor &sensor)
     GFXDisable(DEPTHWRITE);
     GFXBlendMode(SRCALPHA, INVSRCALPHA);
     GFXDisable(LIGHTING);
-    const Unit *target;
-    Unit *      player = sensor.GetPlayer();
+    const std::shared_ptr<Unit> target;
+    std::shared_ptr<Unit> player = sensor.GetPlayer();
     assert(player);
     for (un_kiter uiter = unitlist->constIterator(); (target = *uiter) != NULL; ++uiter) {
         if (target != player) {
@@ -492,9 +492,9 @@ void GameCockpit::DrawTargetBox(const Radar::Sensor &sensor)
 {
     if (sensor.InsideNebula())
         return;
-    Unit *player = sensor.GetPlayer();
+    std::shared_ptr<Unit> player = sensor.GetPlayer();
     assert(player);
-    Unit *target = player->Target();
+    std::shared_ptr<Unit> target = player->Target();
     if (!target)
         return;
 
@@ -526,7 +526,7 @@ void GameCockpit::DrawTargetBox(const Radar::Sensor &sensor)
         GFXEnable(SMOOTH);
         QVector myLoc(_Universe->AccessCamera()->GetPosition());
 
-        Unit *targets_target = target->Target();
+        std::shared_ptr<Unit> targets_target = target->Target();
         if (draw_line_to_targets_target && targets_target != NULL) {
             QVector     ttLoc        = targets_target->Position();
             const float verts[3 * 3] = {
@@ -632,7 +632,7 @@ void GameCockpit::DrawCommunicatingBoxes()
     _Universe->AccessCamera()->GetPQR(CamP, CamQ, CamR);
     // Vector Loc (un->ToLocalCoordinates(target->Position()-un->Position()));
     for (unsigned int i = 0; i < vdu.size(); ++i) {
-        Unit *target = vdu[i]->GetCommunicating();
+        std::shared_ptr<Unit> target = vdu[i]->GetCommunicating();
         if (target) {
             static GFXColor black_and_white = vs_config->getColor("communicating");
             QVector         Loc(target->Position() - _Universe->AccessCamera()->GetPosition());
@@ -663,12 +663,12 @@ void GameCockpit::DrawTurretTargetBoxes(const Radar::Sensor &sensor)
     static VertexBuilder<> verts;
 
     // This avoids rendering the same target box more than once
-    Unit *           subunit;
-    std::set<Unit *> drawn_targets;
+    std::shared_ptr<Unit> subunit;
+    std::set<std::shared_ptr<Unit> > drawn_targets;
     for (un_iter iter = sensor.GetPlayer()->getSubUnits(); (subunit = *iter) != NULL; ++iter) {
         if (!subunit)
             return;
-        Unit *target = subunit->Target();
+        std::shared_ptr<Unit> target = subunit->Target();
         if (!target || (drawn_targets.find(target) != drawn_targets.end()))
             continue;
         drawn_targets.insert(target);
@@ -723,7 +723,7 @@ void GameCockpit::DrawTacticalTargetBox(const Radar::Sensor &sensor)
         return;
     if (sensor.GetPlayer()->getFlightgroup() == NULL)
         return;
-    Unit *target = sensor.GetPlayer()->getFlightgroup()->target.GetUnit();
+    std::shared_ptr<Unit> target = sensor.GetPlayer()->getFlightgroup()->target.GetUnit();
     if (target) {
         Vector CamP, CamQ, CamR;
         _Universe->AccessCamera()->GetPQR(CamP, CamQ, CamR);
@@ -781,7 +781,7 @@ void GameCockpit::EjectDock()
     going_to_dock_screen = true;
 }
 
-void GameCockpit::DoAutoLanding(Unit *un, Unit *target)
+void GameCockpit::DoAutoLanding(std::shared_ptr<Unit> un, std::shared_ptr<Unit> target)
 {
     if (!un || !target)
         return;
@@ -896,7 +896,7 @@ void GameCockpit::AutoLanding()
 {
     static bool autolanding_enable = XMLSupport::parse_bool(vs_config->getVariable("physics", "AutoLandingEnable", "false"));
     if (autolanding_enable) {
-        Unit *player = GetParent();
+        std::shared_ptr<Unit> player = GetParent();
         if (player == NULL)
             return;
 
@@ -905,7 +905,7 @@ void GameCockpit::AutoLanding()
             if (it->radius <= 0)
                 continue;
 
-            Unit *target = it->ref.unit;
+            std::shared_ptr<Unit> target = it->ref.unit;
             if (target == NULL)
                 continue;
 
@@ -947,7 +947,7 @@ void GameCockpit::DrawRadar(const Radar::Sensor &sensor)
     }
 }
 
-float GameCockpit::LookupTargetStat(int stat, Unit *target)
+float GameCockpit::LookupTargetStat(int stat, std::shared_ptr<Unit> target)
 {
     switch (stat) {
     case UnitImages<void>::TARGETSHIELDF:
@@ -965,7 +965,7 @@ float GameCockpit::LookupTargetStat(int stat, Unit *target)
     return 1;
 }
 
-float GameCockpit::LookupUnitStat(int stat, Unit *target)
+float GameCockpit::LookupUnitStat(int stat, std::shared_ptr<Unit> target)
 {
     static float game_speed        = XMLSupport::parse_float(vs_config->getVariable("physics", "game_speed", "1"));
     static bool  display_in_meters = XMLSupport::parse_bool(vs_config->getVariable("physics", "display_in_meters", "true"));
@@ -975,7 +975,7 @@ float GameCockpit::LookupUnitStat(int stat, Unit *target)
     static float numtimes          = fpsmax;
     float        armordat[8]; // short fix
     int          armori;
-    Unit *       tmpunit;
+    std::shared_ptr<Unit> tmpunit;
     if (shield8) {
         switch (stat) {
         case UnitImages<void>::SHIELDF:
@@ -1186,7 +1186,7 @@ float GameCockpit::LookupUnitStat(int stat, Unit *target)
                 abletoautopilot = (target->AutoPilotTo(target, false) ? 1 : 0);
                 static float no_auto_light_below =
                     XMLSupport::parse_float(vs_config->getVariable("physics", "no_auto_light_below", "2000"));
-                Unit *targtarg = target->Target();
+                std::shared_ptr<Unit> targtarg = target->Target();
                 if (targtarg) {
                     if ((target->Position() - targtarg->Position()).Magnitude() - targtarg->rSize() - target->rSize() < no_auto_light_below)
                         abletoautopilot = false;
@@ -1304,7 +1304,7 @@ float GameCockpit::LookupUnitStat(int stat, Unit *target)
         else
             return (float)UnitImages<void>::TOOFAR;
     case UnitImages<void>::CANDOCK_MODAL: {
-        Unit *station = target->Target();
+        std::shared_ptr<Unit> station = target->Target();
         if (station) {
             if (station->CanDockWithMe(target, true) != -1) {
                 if (station->CanDockWithMe(target, false) != -1) {
@@ -1322,7 +1322,7 @@ float GameCockpit::LookupUnitStat(int stat, Unit *target)
     return 1.0f;
 }
 
-void GameCockpit::DrawTargetGauges(Unit *target)
+void GameCockpit::DrawTargetGauges(std::shared_ptr<Unit> target)
 {
     int i;
     // printf ("(debug)UNIT NAME:%s\n",UnitUtil::getName(target).c_str());
@@ -1342,7 +1342,7 @@ GameCockpit::LastState::LastState()
         missilelock = eject = flightcompon = flightcompoff = false;
 }
 
-void GameCockpit::TriggerEvents(Unit *un)
+void GameCockpit::TriggerEvents(std::shared_ptr<Unit> un)
 {
     double curtime = UniverseUtil::GetGameTime();
     if ((curtime - AUDIO_ATOM) < last.processing_time)
@@ -1480,7 +1480,7 @@ void GameCockpit::TriggerEvents(Unit *un)
     }
 }
 
-void GameCockpit::DrawGauges(Unit *un)
+void GameCockpit::DrawGauges(std::shared_ptr<Unit> un)
 {
     int i;
     for (i = 0; i < UnitImages<void>::TARGETSHIELDF; i++) {
@@ -1732,7 +1732,7 @@ void GameCockpit::InitStatic()
 }
 
 /***** WARNING CHANGED ORDER *****/
-GameCockpit::GameCockpit(const char *file, Unit *parent, const std::string &pilot_name)
+GameCockpit::GameCockpit(const char *file, std::shared_ptr<Unit> parent, const std::string &pilot_name)
     : Cockpit(file, parent, pilot_name),
       insidePanYaw(0),
       insidePanPitch(0),
@@ -1901,7 +1901,7 @@ void SuicideKey(const KBData &, KBSTATE k)
         int newtime = time(NULL);
         if (newtime - orig > 8 || orig == 0) {
             orig     = newtime;
-            Unit *un = NULL;
+            std::shared_ptr<Unit> un = NULL;
             if ((un = _Universe->AccessCockpit()->GetParent())) {
                 float armor[8]; // short fix
                 un->ArmorData(armor);
@@ -1988,7 +1988,7 @@ void GameCockpit::Respawn(const KBData &, KBSTATE k)
 }
 
 // SAME AS IN COCKPIT BUT ADDS SETVIEW and ACCESSCAMERA -> ~ DUPLICATE CODE
-int GameCockpit::Autopilot(Unit *target)
+int GameCockpit::Autopilot(std::shared_ptr<Unit> target)
 {
     static bool autopan = XMLSupport::parse_bool(vs_config->getVariable("graphics", "pan_on_auto", "true"));
     int         retauto = 0;
@@ -1998,7 +1998,7 @@ int GameCockpit::Autopilot(Unit *target)
             enableautosound.loadsound(str);
         }
         enableautosound.playsound();
-        Unit *un = NULL;
+        std::shared_ptr<Unit> un = NULL;
         if ((un = GetParent())) {
             autoMessage      = std::string();
             autoMessageTime  = UniverseUtil::GetGameTime();
@@ -2155,7 +2155,7 @@ static void DrawHeadingMarker(const Vector &p, const Vector &q, const Vector &po
 
 static void DrawHeadingMarker(Cockpit &cp, const GFXColor &col)
 {
-    const Unit *  u     = cp.GetParent();
+    const std::shared_ptr<Unit> u     = cp.GetParent();
     const Camera *cam   = cp.AccessCamera();
     bool          drawv = true;
 
@@ -2290,7 +2290,7 @@ void GameCockpit::Draw()
     static bool draw_boxes_inside_only =
         XMLSupport::parse_bool(vs_config->getVariable("graphics", "hud", "DrawTargettingBoxesInside", "true"));
     if (draw_any_boxes && screenshotkey == false && (draw_boxes_inside_only == false || view < CP_CHASE)) {
-        Unit *player = GetParent();
+        std::shared_ptr<Unit> player = GetParent();
         if (player) {
             Radar::Sensor sensor(player);
             DrawTargetBox(sensor);
@@ -2309,7 +2309,7 @@ void GameCockpit::Draw()
                 QVector delta = dest - cur;
                 if (delta.i != 0 || dest.j != 0 || dest.k != 0) {
                     delta.Normalize();
-                    Unit *par                   = GetParent();
+                    std::shared_ptr<Unit> par                   = GetParent();
                     delta                       = delta * howFarToJump() * 1.01 - (par ? (par->Position()) : QVector(0, 0, 0));
                     destination_system_location = delta.Cast();
                     Vector       P, Q, R;
@@ -2336,7 +2336,7 @@ void GameCockpit::Draw()
 
     if (view < CP_CHASE) {
         if (mesh.size()) {
-            Unit *par = GetParent();
+            std::shared_ptr<Unit> par = GetParent();
             if (par) {
                 // cockpit is unaffected by FOV WARP-Link
                 float oldfov = AccessCamera()->GetFov();
@@ -2474,7 +2474,7 @@ void GameCockpit::Draw()
     GFXDisable(DEPTHTEST);
     GFXDisable(DEPTHWRITE);
 
-    Unit *      un;
+    std::shared_ptr<Unit> un;
     float       crosscenx = 0, crossceny = 0;
     static bool crosshairs_on_chasecam = parse_bool(vs_config->getVariable("graphics", "hud", "crosshairs_on_chasecam", "false"));
     static bool crosshairs_on_padlock  = parse_bool(vs_config->getVariable("graphics", "hud", "crosshairs_on_padlock", "false"));
@@ -2551,7 +2551,7 @@ void GameCockpit::Draw()
     for (unsigned int vd = 0; vd < vdu.size(); vd++)
         if (vdu[vd]->getMode() == VDU::TARGET) {
             if ((un = parent.GetUnit())) {
-                Unit *target = parent.GetUnit()->Target();
+                std::shared_ptr<Unit> target = parent.GetUnit()->Target();
                 if (target != NULL) {
                     if (view == CP_FRONT || (view == CP_CHASE && drawChaseVDU) || (view == CP_PAN && drawPanVDU) ||
                         (view == CP_TARGET && drawTgtVDU) ||
@@ -2623,7 +2623,7 @@ void GameCockpit::Draw()
             if (debug_position) {
                 TextPlane tp;
                 char      str[400]; // don't make the sprintf format too big... :-P
-                Unit *    you = parent.GetUnit();
+                std::shared_ptr<Unit> you = parent.GetUnit();
                 if (you) {
                     sprintf(str,
                             "Your Position: (%lf,%lf,%lf); Velocity: (%f,%f,%f); Frame: %lf\n",
@@ -2634,7 +2634,7 @@ void GameCockpit::Draw()
                             you->Velocity.j,
                             you->Velocity.k,
                             getNewTime());
-                    Unit *yourtarg = you->computer.target.GetUnit();
+                    std::shared_ptr<Unit> yourtarg = you->computer.target.GetUnit();
                     if (yourtarg) {
                         sprintf(str + strlen(str),
                                 "Target Position: (%lf,%lf,%lf); Velocity: (%f,%f,%f); Now: %lf\n",
@@ -2673,7 +2673,7 @@ void GameCockpit::Draw()
             XMLSupport::parse_bool(vs_config->getVariable("graphics", "hud", "draw_arrow_on_chasecam", "true"));
         {
             // printf("view: %i\n",view);
-            Unit *parent = NULL;
+            std::shared_ptr<Unit> parent = NULL;
             if (drawarrow && (parent = this->parent.GetUnit())) {
                 Radar::Sensor sensor(parent);
                 if ((view == CP_PAN && !drawarrow_on_pancam) || (view == CP_PANTARGET && !drawarrow_on_pantgt) ||
@@ -2934,9 +2934,9 @@ void GameCockpit::UpdAutoPilot()
                 SetStartupView(this);
             }
             autopilot_time = 0;
-            Unit *par      = GetParent();
+            std::shared_ptr<Unit> par      = GetParent();
             if (par) {
-                Unit *autoun = autopilot_target.GetUnit();
+                std::shared_ptr<Unit> autoun = autopilot_target.GetUnit();
                 autopilot_target.SetUnit(NULL);
                 if (autoun && autopan)
                     par->AutoPilotTo(autoun, false);
@@ -2945,7 +2945,7 @@ void GameCockpit::UpdAutoPilot()
     }
 }
 
-void SwitchUnits2(Unit *nw)
+void SwitchUnits2(std::shared_ptr<Unit> nw)
 {
     if (nw) {
         nw->PrimeOrders();
@@ -3031,7 +3031,7 @@ void GameCockpit::SetStaticAnimation()
             vdu[i]->SetCommAnimation(&Statuc, NULL, true);
 }
 
-void GameCockpit::SetCommAnimation(Animation *ani, Unit *un)
+void GameCockpit::SetCommAnimation(Animation *ani, std::shared_ptr<Unit> un)
 {
     bool seti = false;
     for (unsigned int i = 0; i < vdu.size(); i++)
@@ -3048,7 +3048,7 @@ void GameCockpit::SetCommAnimation(Animation *ani, Unit *un)
 
 string GameCockpit::getTargetLabel()
 {
-    Unit *par = GetParent();
+    std::shared_ptr<Unit> par = GetParent();
     if ((!targetLabel.empty()) && (!par || ((void *)par->Target()) != labeledTargetUnit)) {
         targetLabel = string();
         if (par)
@@ -3070,7 +3070,7 @@ void GameCockpit::RestoreViewPort()
     _Universe->AccessCamera()->RestoreViewPort(0, 0);
 }
 
-static void FaceCamTarget(Cockpit *cp, int cam, Unit *un)
+static void FaceCamTarget(Cockpit *cp, int cam, std::shared_ptr<Unit> un)
 {
     QVector diff = un->Position() - cp->AccessCamera()->GetPosition();
     diff.Normalize();
@@ -3080,7 +3080,7 @@ static void FaceCamTarget(Cockpit *cp, int cam, Unit *un)
     }
 }
 
-static void ShoveCamBehindUnit(int cam, Unit *un, float zoomfactor)
+static void ShoveCamBehindUnit(int cam, std::shared_ptr<Unit> un, float zoomfactor)
 {
     // commented out by chuck_starchaser; --never used
     QVector unpos = (/*un->GetPlanetOrbit() && !un->isSubUnit()*/ NULL) ? un->LocalPosition() : un->Position();
@@ -3091,7 +3091,7 @@ static void ShoveCamBehindUnit(int cam, Unit *un, float zoomfactor)
                                               un->GetAcceleration());
 }
 
-static void ShoveCamBelowUnit(int cam, Unit *un, float zoomfactor)
+static void ShoveCamBelowUnit(int cam, std::shared_ptr<Unit> un, float zoomfactor)
 {
     // commented out by chuck_starchaser; --never used
     QVector unpos = (/*un->GetPlanetOrbit() && !un->isSubUnit()*/ NULL) ? un->LocalPosition() : un->Position();
@@ -3127,7 +3127,7 @@ void GameCockpit::SetupViewPort(bool clip)
     _Universe->AccessCamera()->RestoreViewPort(0, (view == CP_FRONT ? viewport_offset : 0));
     GFXViewPort(0, (int)((view == CP_FRONT ? viewport_offset : 0) * g_game.y_resolution), g_game.x_resolution, g_game.y_resolution);
     _Universe->AccessCamera()->setCockpitOffset(view < CP_CHASE ? cockpit_offset : 0);
-    Unit *un, *tgt;
+    std::shared_ptr<Unit> un, *tgt;
     if ((un = parent.GetUnit())) {
         // Previous frontal orientation - useful, sometimes...
         Vector prev_fp, prev_fq, prev_fr;
@@ -3345,9 +3345,9 @@ Camera *GameCockpit::AccessCamera(int num)
 #define TARGET_ARROW_SIN_THETA (0.34202014332566873304409961468226)
 #define TARGET_ARROW_SIZE (0.05)
 
-void GameCockpit::DrawArrowToTarget(const Radar::Sensor &sensor, Unit *target)
+void GameCockpit::DrawArrowToTarget(const Radar::Sensor &sensor, std::shared_ptr<Unit> target)
 {
-    Unit *player = sensor.GetPlayer();
+    std::shared_ptr<Unit> player = sensor.GetPlayer();
     if (player && target) {
         Radar::Track track = sensor.CreateTrack(target);
         GFXColorf(sensor.GetColor(track));
@@ -3437,7 +3437,7 @@ void GameCockpit::DrawArrowToTarget(const Radar::Sensor &sensor, Vector localcoo
     GFXDisable(SMOOTH);
 }
 
-bool GameCockpit::CheckCommAnimation(Unit *un)
+bool GameCockpit::CheckCommAnimation(std::shared_ptr<Unit> un)
 {
     for (unsigned int i = 0; i < vdu.size(); ++i)
         if (vdu[i]->CheckCommAnimation(un))
@@ -3460,7 +3460,7 @@ void GameCockpit::OnPauseEnd()
     radarDisplay->OnPauseEnd();
 }
 
-void GameCockpit::updateRadar(Unit *ship)
+void GameCockpit::updateRadar(std::shared_ptr<Unit> ship)
 {
     if (ship) {
         // We may have bought a new radar brand while docked, so the actual
@@ -3482,25 +3482,25 @@ void GameCockpit::updateRadar(Unit *ship)
         radarDisplay->OnDockEnd();
     }
 }
-void GameCockpit::SetParent(Unit *unit, const char *filename, const char *unitmodname, const QVector &startloc)
+void GameCockpit::SetParent(std::shared_ptr<Unit> unit, const char *filename, const char *unitmodname, const QVector &startloc)
 {
     this->Cockpit::SetParent(unit, filename, unitmodname, startloc);
     updateRadar(unit);
 }
-void GameCockpit::OnDockEnd(Unit *station, Unit *ship)
+void GameCockpit::OnDockEnd(std::shared_ptr<Unit> station, std::shared_ptr<Unit> ship)
 {
     if (_Universe->isPlayerStarship(ship))
         updateRadar(ship);
 }
 
-void GameCockpit::OnJumpBegin(Unit *ship)
+void GameCockpit::OnJumpBegin(std::shared_ptr<Unit> ship)
 {
     if (_Universe->isPlayerStarship(ship)) {
         radarDisplay->OnJumpBegin();
     }
 }
 
-void GameCockpit::OnJumpEnd(Unit *ship)
+void GameCockpit::OnJumpEnd(std::shared_ptr<Unit> ship)
 {
     if (_Universe->isPlayerStarship(ship)) {
         radarDisplay->OnJumpEnd();

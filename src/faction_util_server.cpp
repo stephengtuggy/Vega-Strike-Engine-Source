@@ -8,7 +8,7 @@ Faction::~Faction()
         contraband->Kill();
 }
 
-std::vector<Animation *> *FactionUtil::GetRandCommAnimation(int faction, Unit *, unsigned char &sex)
+std::vector<Animation *> *FactionUtil::GetRandCommAnimation(int faction, std::shared_ptr<Unit> , unsigned char &sex)
 {
     return NULL;
 }

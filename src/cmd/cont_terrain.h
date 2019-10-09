@@ -40,8 +40,8 @@ class ContinuousTerrain
     QVector GetGroundPosIdentTrans(QVector ShipPos, Vector &norm);
     QVector GetGroundPos(QVector ShipPos, Vector &norm);
     Vector  GetUpVector(const Vector &pos);
-    void    Collide(Unit *un, Matrix trans);
-    void    Collide(Unit *un);
+    void    Collide(std::shared_ptr<Unit> un, Matrix trans);
+    void    Collide(std::shared_ptr<Unit> un);
     void    Collide();
     void    GetTotalSize(float &X, float &Z)
     {

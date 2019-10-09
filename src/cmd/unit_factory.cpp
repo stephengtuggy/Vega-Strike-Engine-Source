@@ -39,19 +39,19 @@ std::string getMasterPartListUnitName()
 void KillDuplicateUnits(ObjSerial likeSerial)
 {
     if (likeSerial != 0 && (Network || SERVER)) {
-        Unit *un;
+        std::shared_ptr<Unit> un;
         for (un_iter it = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = *it) != NULL; ++it)
             if (un->GetSerial() == likeSerial)
                 un->Kill();
     }
 }
 
-Unit *UnitFactory::createUnit()
+std::shared_ptr<Unit> UnitFactory::createUnit()
 {
     return new GameUnit<Unit>(0);
 }
 
-Unit *UnitFactory::createUnit(const char * filename,
+std::shared_ptr<Unit> UnitFactory::createUnit(const char * filename,
                               bool         SubUnit,
                               int          faction,
                               std::string  customizedUnit,
@@ -60,20 +60,20 @@ Unit *UnitFactory::createUnit(const char * filename,
                               string *     netxml,
                               ObjSerial    netcreate)
 {
-    Unit *un = new GameUnit<Unit>(filename, SubUnit, faction, customizedUnit, flightgroup, fg_subnumber, netxml);
+    std::shared_ptr<Unit> un = new GameUnit<Unit>(filename, SubUnit, faction, customizedUnit, flightgroup, fg_subnumber, netxml);
     if (netcreate) {
         KillDuplicateUnits(netcreate);
         un->SetSerial(netcreate);
     }
     return un;
 }
-Unit *UnitFactory::createServerSideUnit(
+std::shared_ptr<Unit> UnitFactory::createServerSideUnit(
     const char *filename, bool SubUnit, int faction, std::string customizedUnit, Flightgroup *flightgroup, int fg_subnumber)
 {
     return new Unit(filename, SubUnit, faction, customizedUnit, flightgroup, fg_subnumber);
 }
 
-Unit *UnitFactory::createUnit(vector<Mesh *> &meshes, bool Subunit, int faction)
+std::shared_ptr<Unit> UnitFactory::createUnit(vector<Mesh *> &meshes, bool Subunit, int faction)
 {
     return new GameUnit<Unit>(meshes, Subunit, faction);
 }
@@ -126,7 +126,7 @@ Planet *UnitFactory::createPlanet(QVector                           x,
                                   BLENDFUNC                         ds,
                                   const vector<string> &            dest,
                                   const QVector &                   orbitcent,
-                                  Unit *                            parent,
+                                  std::shared_ptr<Unit> parent,
                                   const GFXMaterial &               ourmat,
                                   const std::vector<GFXLightLocal> &ligh,
                                   int                               faction,
@@ -195,7 +195,7 @@ UnitFactory::createAsteroid(const char *filename, int faction, Flightgroup *fg, 
     return ast;
 }
 
-void UnitFactory::broadcastUnit(Unit *un, unsigned short zone)
+void UnitFactory::broadcastUnit(std::shared_ptr<Unit> un, unsigned short zone)
 {
 }
 

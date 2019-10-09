@@ -31,7 +31,7 @@ string getCargoUnitName(const char *textname)
 }
 
 PlanetaryOrbit::PlanetaryOrbit(
-    Unit *p, double velocity, double initpos, const QVector &x_axis, const QVector &y_axis, const QVector &centre, Unit *targetunit)
+    std::shared_ptr<Unit> p, double velocity, double initpos, const QVector &x_axis, const QVector &y_axis, const QVector &centre, std::shared_ptr<Unit> targetunit)
     : Order(MOVEMENT, 0), velocity(velocity), theta(initpos), inittheta(initpos), x_size(x_axis), y_size(y_axis), current_orbit_frame(0)
 {
     for (unsigned int t = 0; t < NUM_ORBIT_AVERAGE; ++t)
@@ -80,7 +80,7 @@ void PlanetaryOrbit::Execute()
     if (averaging < 1.0f)
         averaging = 1.0f;
     if (subtype & SSELF) {
-        Unit *unit = group.GetUnit();
+        std::shared_ptr<Unit> unit = group.GetUnit();
         if (unit) {
             unsigned int o = current_orbit_frame++;
             current_orbit_frame %= NUM_ORBIT_AVERAGE;
@@ -240,7 +240,7 @@ Vector Planet::AddSpaceElevator(const std::string &name, const std::string &fact
             ElevatorLoc.p.Set(dir.i * mx.i, dir.j * mx.j, dir.k * mx.k);
         else
             ElevatorLoc.p.Set(-dir.i * mn.i, -dir.j * mn.j, -dir.k * mn.k);
-        Unit *un = UnitFactory::createUnit(name.c_str(), true, FactionUtil::GetFactionIndex(faction), "", NULL);
+        std::shared_ptr<Unit> un = UnitFactory::createUnit(name.c_str(), true, FactionUtil::GetFactionIndex(faction), "", NULL);
         if (pImage->dockingports.back().GetPosition().MagnitudeSquared() < 10)
             pImage->dockingports.clear();
         pImage->dockingports.push_back(DockingPorts(ElevatorLoc.p, un->rSize() * 1.5, 0, DockingPorts::Type::INSIDE));
@@ -272,7 +272,7 @@ Planet *Planet::GetTopPlanet(int level)
     }
 }
 
-void Planet::AddSatellite(Unit *orbiter)
+void Planet::AddSatellite(std::shared_ptr<Unit> orbiter)
 {
     satellites.prepend(orbiter);
     orbiter->SetOwner(this);
@@ -281,7 +281,7 @@ void Planet::AddSatellite(Unit *orbiter)
 extern float        ScaleJumpRadius(float);
 extern Flightgroup *getStaticBaseFlightgroup(int faction);
 
-Unit *Planet::beginElement(QVector                      x,
+std::shared_ptr<Unit> Planet::beginElement(QVector                      x,
                            QVector                      y,
                            float                        vely,
                            const Vector &               rotvel,
@@ -303,7 +303,7 @@ Unit *Planet::beginElement(QVector                      x,
                            bool                         inside_out)
 {
     // this function is OBSOLETE
-    Unit *un = NULL;
+    std::shared_ptr<Unit> un = NULL;
     if (level > 2) {
         un_iter satiterator = satellites.createIterator();
         assert(*satiterator);
@@ -334,7 +334,7 @@ Unit *Planet::beginElement(QVector                      x,
         }
     } else {
         if (isunit == true) {
-            Unit *       sat_unit = NULL;
+            std::shared_ptr<Unit> sat_unit = NULL;
             Flightgroup *fg       = getStaticBaseFlightgroup(faction);
             satellites.prepend(sat_unit = UnitFactory::createUnit(filename.c_str(), false, faction, "", fg, fg->nr_ships - 1));
             sat_unit->setFullname(fullname);
@@ -397,7 +397,7 @@ void Planet::InitPlanet(QVector               x,
                         const string &        unitname,
                         const vector<string> &dest,
                         const QVector &       orbitcent,
-                        Unit *                parent,
+                        std::shared_ptr<Unit> parent,
                         int                   faction,
                         string                fullname,
                         bool                  inside_out,
@@ -448,7 +448,7 @@ void Planet::InitPlanet(QVector               x,
     int tmpfac = faction;
     if (UniverseUtil::LookupUnitStat(tempname, FactionUtil::GetFactionName(faction), "Cargo_Import").length() == 0)
         tmpfac = FactionUtil::GetPlanetFaction();
-    Unit *un = UnitFactory::createUnit(tempname.c_str(), true, tmpfac);
+    std::shared_ptr<Unit> un = UnitFactory::createUnit(tempname.c_str(), true, tmpfac);
 
     static bool smartplanets = XMLSupport::parse_bool(vs_config->getVariable("physics", "planets_can_have_subunits", "false"));
     if (un->name != string("LOAD_FAILED")) {
@@ -490,7 +490,7 @@ Planet::Planet(QVector               x,
                const string &        unitname,
                const vector<string> &dest,
                const QVector &       orbitcent,
-               Unit *                parent,
+               std::shared_ptr<Unit> parent,
                int                   faction,
                string                fullname,
                bool                  inside_out,
@@ -557,7 +557,7 @@ Planet::~Planet()
 void Planet::Kill(bool erasefromsave)
 {
     un_iter iter;
-    Unit *  tmp;
+    std::shared_ptr<Unit> tmp;
     for (iter = satellites.createIterator(); (tmp = *iter); ++iter)
         tmp->SetAI(new Order);
     /* probably not FIXME...right now doesn't work on paged out systems... not a big deal */

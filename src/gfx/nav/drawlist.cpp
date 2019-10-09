@@ -33,7 +33,7 @@ navdrawnode::navdrawnode(int type_, float size_, float x_, float y_, navdrawnode
     source   = NULL;
 }
 
-navdrawnode::navdrawnode(int type_, float size_, float x_, float y_, Unit *source_, navdrawnode *nextitem_) // new node into list
+navdrawnode::navdrawnode(int type_, float size_, float x_, float y_, std::shared_ptr<Unit> source_, navdrawnode *nextitem_) // new node into list
 {
     type     = type_;
     size     = size_;
@@ -80,7 +80,7 @@ void navdrawlist::insert(int type, float size, float x, float y) // insert iteam
     n_contents += 1;
 }
 
-void navdrawlist::insert(int type, float size, float x, float y, Unit *source) // insert iteam at head of list
+void navdrawlist::insert(int type, float size, float x, float y, std::shared_ptr<Unit> source) // insert iteam at head of list
 {
     if (head == NULL) {
         head = new navdrawnode(type, size, x, y, source, NULL);
@@ -119,8 +119,8 @@ void navdrawlist::rotate() // take the head and stick it in the back
     }
 }
 
-string getUnitNameAndFgNoBase(Unit *target);
-void   drawdescription(Unit *             source,
+string getUnitNameAndFgNoBase(std::shared_ptr<Unit> target);
+void   drawdescription(std::shared_ptr<Unit> source,
                        float              x_,
                        float              y_,
                        float              size_x,
@@ -170,7 +170,7 @@ void drawdescription(string             text,
     displayname.bgcol = tpbg;
 }
 
-Unit *navdrawlist::gettailunit()
+std::shared_ptr<Unit> navdrawlist::gettailunit()
 {
     return tail->source;
 }
@@ -199,7 +199,7 @@ void drawlistitem(int                type,
                   float              size,
                   float              x,
                   float              y,
-                  Unit *             source,
+                  std::shared_ptr<Unit> source,
                   navscreenoccupied *screenoccupation,
                   bool               inmouserange,
                   bool               currentistail,

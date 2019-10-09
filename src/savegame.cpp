@@ -307,7 +307,7 @@ void WriteSaveGame(Cockpit *cp, bool auto_save)
     for (unsigned int kk = 0; kk < _Universe->numPlayers(); ++kk)
         if (_Universe->AccessCockpit(kk) == cp)
             player_num = kk;
-    Unit *un = cp->GetSaveParent();
+    std::shared_ptr<Unit> un = cp->GetSaveParent();
     if (!un)
         return;
     if (un->GetHull() > 0) {

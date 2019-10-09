@@ -26,10 +26,10 @@ static bool NoDockWithClear()
 
 VSRandom targrand(time(NULL));
 
-Unit *getAtmospheric(Unit *targ)
+std::shared_ptr<Unit> getAtmospheric(std::shared_ptr<Unit> targ)
 {
     if (targ) {
-        Unit *un;
+        std::shared_ptr<Unit> un;
         for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = *i) != NULL; ++i)
             if (un->isUnit() == PLANETPTR) {
                 if ((targ->Position() - un->Position()).Magnitude() < targ->rSize() * .5)
@@ -40,7 +40,7 @@ Unit *getAtmospheric(Unit *targ)
     return NULL;
 }
 
-bool RequestClearence(Unit *parent, Unit *targ, unsigned char sex)
+bool RequestClearence(std::shared_ptr<Unit> parent, std::shared_ptr<Unit> targ, unsigned char sex)
 {
     if (!targ->DockingPortLocations().size())
         return false;
@@ -61,7 +61,7 @@ bool RequestClearence(Unit *parent, Unit *targ, unsigned char sex)
 }
 
 using Orders::FireAt;
-bool FireAt::PursueTarget(Unit *un, bool leader)
+bool FireAt::PursueTarget(std::shared_ptr<Unit> un, bool leader)
 {
     if (leader)
         return true;
@@ -72,7 +72,7 @@ bool FireAt::PursueTarget(Unit *un, bool leader)
     return false;
 }
 
-bool CanFaceTarget(Unit *su, Unit *targ, const Matrix &matrix)
+bool CanFaceTarget(std::shared_ptr<Unit> su, std::shared_ptr<Unit> targ, const Matrix &matrix)
 {
     return true;
 
@@ -85,7 +85,7 @@ bool CanFaceTarget(Unit *su, Unit *targ, const Matrix &matrix)
         if (pnorm.Dot(worldlimit) < limitmin)
             return false;
     }
-    Unit *ssu;
+    std::shared_ptr<Unit> ssu;
     for (un_iter i = su->getSubUnits(); (ssu = *i) != NULL; ++i)
         if (!CanFaceTarget(ssu, targ, su->cumulative_transformation_matrix))
             return false;
@@ -122,10 +122,10 @@ void FireAt::SignalChosenTarget()
 }
 // temporary way of choosing
 struct TargetAndRange {
-    Unit *t;
+    std::shared_ptr<Unit> t;
     float range;
     float relation;
-    TargetAndRange(Unit *tt, float r, float rel)
+    TargetAndRange(std::shared_ptr<Unit> tt, float r, float rel)
     {
         t              = tt;
         range          = r;
@@ -134,9 +134,9 @@ struct TargetAndRange {
 };
 
 struct RangeSortedTurrets {
-    Unit *tur;
+    std::shared_ptr<Unit> tur;
     float gunrange;
-    RangeSortedTurrets(Unit *t, float r)
+    RangeSortedTurrets(std::shared_ptr<Unit> t, float r)
     {
         tur      = t;
         gunrange = r;
@@ -198,7 +198,7 @@ struct TurretBin {
     }
 };
 
-void AssignTBin(Unit *su, vector<TurretBin> &tbin)
+void AssignTBin(std::shared_ptr<Unit> su, vector<TurretBin> &tbin)
 {
     unsigned int bnum = 0;
     for (; bnum < tbin.size(); bnum++)
@@ -211,7 +211,7 @@ void AssignTBin(Unit *su, vector<TurretBin> &tbin)
     su->getAverageGunSpeed(gspeed, grange, mrange);
     {
         float ggspeed, ggrange, mmrange;
-        Unit *ssu;
+        std::shared_ptr<Unit> ssu;
         for (un_iter i = su->getSubUnits(); (ssu = *i) != NULL; ++i) {
             ssu->getAverageGunSpeed(ggspeed, ggrange, mmrange);
             if (ggspeed > gspeed)
@@ -227,7 +227,7 @@ void AssignTBin(Unit *su, vector<TurretBin> &tbin)
     tbin[bnum].turret.push_back(RangeSortedTurrets(su, grange));
 }
 
-float Priority(Unit *me, Unit *targ, float gunrange, float rangetotarget, float relationship, char *rolepriority)
+float Priority(std::shared_ptr<Unit> me, std::shared_ptr<Unit> targ, float gunrange, float rangetotarget, float relationship, char *rolepriority)
 {
     if (relationship >= 0)
         return -1;
@@ -271,7 +271,7 @@ float Priority(Unit *me, Unit *targ, float gunrange, float rangetotarget, float 
     return range_priority01 * role_priority01 + inertial_priority + threat_priority;
 }
 
-float Priority(Unit *me, Unit *targ, float gunrange, float rangetotarget, float relationship)
+float Priority(std::shared_ptr<Unit> me, std::shared_ptr<Unit> targ, float gunrange, float rangetotarget, float relationship)
 {
     char rolepriority = 0;
     return Priority(me, targ, gunrange, rangetotarget, relationship, &rolepriority);
@@ -297,8 +297,8 @@ template <class T, size_t n> class StaticTuple
 
 template <size_t numTuple> class ChooseTargetClass
 {
-    Unit *                       parent;
-    Unit *                       parentparent;
+    std::shared_ptr<Unit> parent;
+    std::shared_ptr<Unit> parentparent;
     vector<TurretBin> *          tbin;
     StaticTuple<float, numTuple> maxinnerrangeless;
     StaticTuple<float, numTuple> maxinnerrangemore;
@@ -313,12 +313,12 @@ template <size_t numTuple> class ChooseTargetClass
     int                          maxtargets;
 
   public:
-    Unit *mytarg;
+    std::shared_ptr<Unit> mytarg;
     ChooseTargetClass()
     {
     }
     void init(FireAt *                            fireat,
-              Unit *                              un,
+              std::shared_ptr<Unit> un,
               float                               gunrange,
               vector<TurretBin> *                 tbin,
               const StaticTuple<float, numTuple> &innermaxrange,
@@ -348,7 +348,7 @@ template <size_t numTuple> class ChooseTargetClass
         this->numtargets   = 0;
         this->maxtargets   = maxtargets;
     }
-    bool acquire(Unit *un, float distance)
+    bool acquire(std::shared_ptr<Unit> un, float distance)
     {
         double unkey     = un->location[Unit::UNIT_ONLY]->getKey();
         bool   lesscheck = unkey < maxinnerrangeless[0];
@@ -374,7 +374,7 @@ template <size_t numTuple> class ChooseTargetClass
         }
         return ShouldTargetUnit(un, distance);
     }
-    bool ShouldTargetUnit(Unit *un, float distance)
+    bool ShouldTargetUnit(std::shared_ptr<Unit> un, float distance)
     {
         if (un->CloakVisible() > .8) {
             float rangetotarget = distance;
@@ -444,7 +444,7 @@ void FireAt::ChooseTargets(int numtargs, bool force)
     if (lastchangedtarg + mintimetoswitch > 0)
         return; // don't switch if switching too soon
 
-    Unit *curtarg = parent->Target();
+    std::shared_ptr<Unit> curtarg = parent->Target();
     int   hastarg = (curtarg == NULL) ? 0 : 1;
     // Following code exists to limit the number of craft polling for a target in a given frame - this is an expensive operation, and needs
     // to be spread out, or there will be pauses.
@@ -484,7 +484,7 @@ void FireAt::ChooseTargets(int numtargs, bool force)
     // not   allowed to switch targets
     numprocessed++;
     vector<TurretBin> tbin;
-    Unit *            su    = NULL;
+    std::shared_ptr<Unit> su    = NULL;
     un_iter           subun = parent->getSubUnits();
     for (; (su = *subun) != NULL; ++subun) {
         static unsigned int inert          = ROLES::getRole("INERT");
@@ -494,7 +494,7 @@ void FireAt::ChooseTargets(int numtargs, bool force)
             if (su->attackPreference() != inert) {
                 AssignTBin(su, tbin);
             } else {
-                Unit *ssu = NULL;
+                std::shared_ptr<Unit> ssu = NULL;
                 for (un_iter subturret = su->getSubUnits(); (ssu = (*subturret)); ++subturret)
                     AssignTBin(ssu, tbin);
             }
@@ -529,14 +529,14 @@ void FireAt::ChooseTargets(int numtargs, bool force)
             unitLocator.action.ShouldTargetUnit(curtarg, UnitUtil::getDistance(parent, curtarg));
             unsigned int np = _Universe->numPlayers();
             for (unsigned int i = 0; i < np; ++i) {
-                Unit *playa = _Universe->AccessCockpit(i)->GetParent();
+                std::shared_ptr<Unit> playa = _Universe->AccessCockpit(i)->GetParent();
                 if (playa)
                     unitLocator.action.ShouldTargetUnit(playa, UnitUtil::getDistance(parent, playa));
             }
-            Unit *lead = UnitUtil::getFlightgroupLeader(parent);
+            std::shared_ptr<Unit> lead = UnitUtil::getFlightgroupLeader(parent);
             if (lead != NULL && lead != parent && (lead = lead->Target()) != NULL)
                 unitLocator.action.ShouldTargetUnit(lead, UnitUtil::getDistance(parent, lead));
-            Unit *threat = parent->Threat();
+            std::shared_ptr<Unit> threat = parent->Threat();
             if (threat)
                 unitLocator.action.ShouldTargetUnit(threat, UnitUtil::getDistance(parent, threat));
         } else {
@@ -545,7 +545,7 @@ void FireAt::ChooseTargets(int numtargs, bool force)
     }
     if (unitLocator.action.mytarg == NULL) // decided to rechoose or did not have initial target
         findObjects(_Universe->activeStarSystem()->collidemap[Unit::UNIT_ONLY], parent->location[Unit::UNIT_ONLY], &unitLocator);
-    Unit *mytarg = unitLocator.action.mytarg;
+    std::shared_ptr<Unit> mytarg = unitLocator.action.mytarg;
     targetpick += queryTime() - pretable;
     if (mytarg) {
         efrel       = parent->getRelation(mytarg);
@@ -582,7 +582,7 @@ void FireAt::ChooseTargets(int numtargs, bool force)
     SignalChosenTarget();
 }
 
-bool FireAt::ShouldFire(Unit *targ, bool &missilelock)
+bool FireAt::ShouldFire(std::shared_ptr<Unit> targ, bool &missilelock)
 {
     float dist;
     if (!targ) {
@@ -646,10 +646,10 @@ FireAt::~FireAt()
 #endif
 }
 
-unsigned int FireBitmask(Unit *parent, bool shouldfire, bool firemissile)
+unsigned int FireBitmask(std::shared_ptr<Unit> parent, bool shouldfire, bool firemissile)
 {
     unsigned int firebitm = ROLES::EVERYTHING_ELSE;
-    Unit *       un       = parent->Target();
+    std::shared_ptr<Unit> un       = parent->Target();
     if (un) {
         firebitm = (1 << un->unitRole());
 
@@ -682,7 +682,7 @@ void FireAt::FireWeapons(bool shouldfire, bool lockmissile)
     parent->Fire(FireBitmask(parent, shouldfire, fire_missile), true);
 }
 
-bool FireAt::isJumpablePlanet(Unit *targ)
+bool FireAt::isJumpablePlanet(std::shared_ptr<Unit> targ)
 {
     bool istargetjumpableplanet = targ->isUnit() == PLANETPTR;
     if (istargetjumpableplanet) {
@@ -713,7 +713,7 @@ void FireAt::Execute()
     bool tmp         = done;
     Order::Execute();
     done = tmp;
-    Unit *targ;
+    std::shared_ptr<Unit> targ;
     if (parent->isUnit() == UNITPTR) {
         static float cont_update_time = XMLSupport::parse_float(vs_config->getVariable("AI", "ContrabandUpdateTime", "1"));
         if (rand() < RAND_MAX * SIMULATION_ATOM / cont_update_time)

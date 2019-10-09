@@ -32,7 +32,7 @@
 
 using std::list;
 
-typedef list<Unit *>::iterator LUI;
+typedef list<std::shared_ptr<Unit> >::iterator LUI;
 
 typedef std::map<std::string, std::string>           SystemMap;
 typedef std::pair<std::string, std::string>          SystemPair;
@@ -106,7 +106,7 @@ class ZoneMgr
     // vector<ClientList*>		zone_list;
     // vector<int>				zone_clients;
     // List of units in zones (but not Clients)
-    // vector<list<Unit *> >	zone_unitlist;
+    // vector<list<std::shared_ptr<Unit> > >	zone_unitlist;
     // vector<int>				zone_units;
 
     class Systems
@@ -133,9 +133,9 @@ class ZoneMgr
     ZoneInfo *  GetZoneInfo(int serial);
 
     ClientList *GetZone(int serial);
-    // void	addUnit( Unit * un, int zone);
-    // void	removeUnit( Unit *un, int zone);
-    Unit *getUnit(ObjSerial unserial, unsigned short zone);
+    // void	addUnit( std::shared_ptr<Unit> un, int zone);
+    // void	removeUnit( std::shared_ptr<Unit> un, int zone);
+    std::shared_ptr<Unit> getUnit(ObjSerial unserial, unsigned short zone);
 
     void getZoneBuffer(unsigned short zoneid, NetBuffer &netbuf);
 
@@ -147,8 +147,8 @@ class ZoneMgr
     void        broadcastSample(int zone, ObjSerial serial, Packet *pckt, float frequency);
     void        broadcastText(int zone, ObjSerial serial, Packet *pckt, float frequency);
     void        broadcastSnapshots(bool update_planets = false);
-    void        addDamage(NetBuffer &netbuf, Unit *un);
-    bool        addPosition(ClientPtr k, NetBuffer &netbuf, Unit *un, ClientState &un_cs);
+    void        addDamage(NetBuffer &netbuf, std::shared_ptr<Unit> un);
+    bool        addPosition(ClientPtr k, NetBuffer &netbuf, std::shared_ptr<Unit> un, ClientState &un_cs);
     void        broadcastDamage();
     double      isVisible(Quaternion orient, QVector src_pos, QVector tar_pos);
 

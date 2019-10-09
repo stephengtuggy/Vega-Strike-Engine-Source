@@ -96,7 +96,7 @@ void Mission::DirectorEnd()
     RunDirectorScript("endgame");
 }
 
-void Mission::DirectorShipDestroyed(Unit *unit)
+void Mission::DirectorShipDestroyed(std::shared_ptr<Unit> unit)
 {
     Flightgroup *fg = unit->getFlightgroup();
     if (fg == NULL) {

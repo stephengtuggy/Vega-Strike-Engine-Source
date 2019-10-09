@@ -27,7 +27,7 @@ collideTrees::collideTrees(const std::string &hk, csOPCODECollider *cT, csOPCODE
 }
 float loge2 = log(2.f);
 
-csOPCODECollider *collideTrees::colTree(Unit *un, const Vector &othervelocity)
+csOPCODECollider *collideTrees::colTree(std::shared_ptr<Unit> un, const Vector &othervelocity)
 {
     const float         const_factor = 1;
     float               magsqr       = un->GetVelocity().MagnitudeSquared();
@@ -138,7 +138,7 @@ static bool beamCheckCollision(QVector pos, float len, const Collidable &un)
     return (un.GetPosition() - pos).MagnitudeSquared() <= len * len + 2 * len * un.radius + un.radius * un.radius;
 }
 
-void Beam::CollideHuge(const LineCollide &lc, Unit *targetToCollideWith, Unit *firer, Unit *superunit)
+void Beam::CollideHuge(const LineCollide &lc, std::shared_ptr<Unit> targetToCollideWith, std::shared_ptr<Unit> firer, std::shared_ptr<Unit> superunit)
 {
     QVector x0 = center;
     QVector v  = direction * curlength;
@@ -180,7 +180,7 @@ void Beam::CollideHuge(const LineCollide &lc, Unit *targetToCollideWith, Unit *f
                     breakit = true;
                 if ((*curcheck)->radius > 0) {
                     if (beamCheckCollision(center, curlength, (**curcheck))) {
-                        Unit *tmp = (**curcheck).ref.unit;
+                        std::shared_ptr<Unit> tmp = (**curcheck).ref.unit;
                         this->Collide(tmp, firer, superunit);
                         targcheck = (targcheck || tmp == targetToCollideWith);
                     }
@@ -193,7 +193,7 @@ void Beam::CollideHuge(const LineCollide &lc, Unit *targetToCollideWith, Unit *f
             // greater traversal
             while (tmore != cm->end() && (*tmore)->getKey() <= maxlook) {
                 if ((*tmore)->radius > 0) {
-                    Unit *un = (*tmore)->ref.unit;
+                    std::shared_ptr<Unit> un = (*tmore)->ref.unit;
                     if (beamCheckCollision(center, curlength, **tmore++)) {
                         this->Collide(un, firer, superunit);
                         targcheck = (targcheck || un == targetToCollideWith);

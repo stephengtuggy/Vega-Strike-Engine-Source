@@ -20,14 +20,14 @@ class navdrawnode
     float y;
 
     navdrawnode *nextitem;
-    Unit *       source;
+    std::shared_ptr<Unit> source;
 
     navdrawnode();
     navdrawnode(int type, float size, float x, float y, navdrawnode *nextitem);
-    navdrawnode(int type, float size, float x, float y, Unit *source, navdrawnode *nextitem);
+    navdrawnode(int type, float size, float x, float y, std::shared_ptr<Unit> source, navdrawnode *nextitem);
 };
 
-void drawdescription(Unit *             source,
+void drawdescription(std::shared_ptr<Unit> source,
                      float              x,
                      float              y,
                      float              size_x,
@@ -48,7 +48,7 @@ void drawlistitem(int                type,
                   float              size,
                   float              x,
                   float              y,
-                  Unit *             source,
+                  std::shared_ptr<Unit> source,
                   navscreenoccupied *screenoccupation,
                   bool               inmouserange,
                   bool               currentistail,
@@ -74,13 +74,13 @@ class navdrawlist // not really a list... it inserts at head, and reads head fir
 
   public:
     void  insert(int type, float size, float x, float y);
-    void  insert(int type, float size, float x, float y, Unit *source);
+    void  insert(int type, float size, float x, float y, std::shared_ptr<Unit> source);
     void  wipe();
     void  rotate();
     void  draw();
     int   get_n_contents();
     float unselectedalpha;
-    Unit *gettailunit();
+    std::shared_ptr<Unit> gettailunit();
     navdrawlist(bool mouse, navscreenoccupied *screenoccupation, GFXColor *factioncolours);
     ~navdrawlist();
 };

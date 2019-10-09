@@ -61,7 +61,7 @@ class FSM
 
 class CommunicationMessage
 {
-    void Init(Unit *send, Unit *recv);
+    void Init(std::shared_ptr<Unit> send, std::shared_ptr<Unit> recv);
     void SetAnimation(std::vector<class Animation *> *ani, unsigned char sex);
 
   public:
@@ -72,11 +72,11 @@ class CommunicationMessage
     int              curstate;
     int edgenum; // useful for server validation, -1 = did not move via an edge.
     UnitContainer sender;
-    CommunicationMessage(Unit *send, Unit *recv, std::vector<class Animation *> *ani, unsigned char sex);
-    CommunicationMessage(Unit *send, Unit *recv, int curstate, std::vector<class Animation *> *ani, unsigned char sex);
-    CommunicationMessage(Unit *send, Unit *recv, int prevvstate, int curstate, std::vector<class Animation *> *ani, unsigned char sex);
-    CommunicationMessage(Unit *                          send,
-                         Unit *                          recv,
+    CommunicationMessage(std::shared_ptr<Unit> send, std::shared_ptr<Unit> recv, std::vector<class Animation *> *ani, unsigned char sex);
+    CommunicationMessage(std::shared_ptr<Unit> send, std::shared_ptr<Unit> recv, int curstate, std::vector<class Animation *> *ani, unsigned char sex);
+    CommunicationMessage(std::shared_ptr<Unit> send, std::shared_ptr<Unit> recv, int prevvstate, int curstate, std::vector<class Animation *> *ani, unsigned char sex);
+    CommunicationMessage(std::shared_ptr<Unit> send,
+                         std::shared_ptr<Unit> recv,
                          const CommunicationMessage &    prevsvtate,
                          int                             curstate,
                          std::vector<class Animation *> *ani,
@@ -113,6 +113,6 @@ inline std::string GetRelationshipColorString(float rel)
     return GetRelationshipRGBstring(rel).str;
 }
 
-unsigned int DoSpeech(Unit *un, Unit *player_un, const FSM::Node &node);
+unsigned int DoSpeech(std::shared_ptr<Unit> un, std::shared_ptr<Unit> player_un, const FSM::Node &node);
 
 #endif

@@ -34,8 +34,8 @@
 #ifdef CONTAINER_DEBUG
 #include "hashtable.h"
 class Unit;
-void CheckUnit(class Unit *);
-void UncheckUnit(class Unit *un);
+void CheckUnit(class std::shared_ptr<Unit> );
+void UncheckUnit(class std::shared_ptr<Unit> un);
 #endif
 #include "vegastrike.h"
 #include "vs_globals.h"
@@ -115,7 +115,7 @@ class Mount
     float zscale;
     float ComputeAnimatedFrame(Mesh *gun);
     // pass inunit so it can update gunspeed
-    void   ReplaceMounts(Unit *unit, const Mount *other);
+    void   ReplaceMounts(std::shared_ptr<Unit> unit, const Mount *other);
     double Percentage(const Mount *newammo) const;
     // Gotta look at that, if we can make Beam a string in AcctUnit and a Beam elsewhere
     union REF {
@@ -175,17 +175,17 @@ class Mount
      */
     // Uses Sound Forcefeedback and other stuff
     void PhysicsAlignedUnfire();
-    bool PhysicsAlignedFire(Unit *                caller,
+    bool PhysicsAlignedFire(std::shared_ptr<Unit> caller,
                             const Transformation &Cumulative,
                             const Matrix &        mat,
                             const Vector &        Velocity,
                             void *                owner,
-                            Unit *                target,
+                            std::shared_ptr<Unit> target,
                             signed char           autotrack,
                             float                 trackingcone,
                             CollideMap::iterator  hint[]);
-    bool NextMountCloser(Mount *nextmount, Unit *);
-    bool Fire(Unit *firer, void *owner, bool Missile = false, bool collide_only_with_target = false);
+    bool NextMountCloser(Mount *nextmount, std::shared_ptr<Unit> );
+    bool Fire(std::shared_ptr<Unit> firer, void *owner, bool Missile = false, bool collide_only_with_target = false);
     bool IsEmpty() const
     {
         return !(status == ACTIVE || status == INACTIVE);
@@ -211,8 +211,8 @@ struct PlanetaryOrbitData;
 class Unit
 {
   protected:
-    // How many lists are referencing us
-    std::atomic_int       ucref;
+    // // How many lists are referencing us
+    // std::atomic_int       ucref;
     StringPool::Reference csvRow;
 
   public:
@@ -324,15 +324,15 @@ class Unit
      */
 
     // Uses mmm... stuff not desired here ?
-    bool         UpgradeSubUnitsWithFactory(const Unit *up,
+    bool         UpgradeSubUnitsWithFactory(const std::shared_ptr<Unit> up,
                                             int         subunitoffset,
                                             bool        touchme,
                                             bool        downgrade,
                                             int &       numave,
                                             double &    percentage,
-                                            Unit *(*createupgradesubunit)(std::string s, int faction));
-    virtual bool UpgradeSubUnits(const Unit *up, int subunitoffset, bool touchme, bool downgrade, int &numave, double &percentage);
-    bool UpgradeMounts(const Unit *up, int subunitoffset, bool touchme, bool downgrade, int &numave, const Unit *templ, double &percentage);
+                                            std::shared_ptr<Unit> (*createupgradesubunit)(std::string s, int faction));
+    virtual bool UpgradeSubUnits(const std::shared_ptr<Unit> up, int subunitoffset, bool touchme, bool downgrade, int &numave, double &percentage);
+    bool UpgradeMounts(const std::shared_ptr<Unit> up, int subunitoffset, bool touchme, bool downgrade, int &numave, const std::shared_ptr<Unit> templ, double &percentage);
     // the turrets and spinning parts fun fun stuff
     UnitCollection SubUnits;
 
@@ -377,8 +377,8 @@ class Unit
         return graphicOptions.SubUnit ? true : false;
     }
     void setFaceCamera();
-    bool UpAndDownGrade(const Unit *up,
-                        const Unit *templ,
+    bool UpAndDownGrade(const std::shared_ptr<Unit> up,
+                        const std::shared_ptr<Unit> templ,
                         int         mountoffset,
                         int         subunitoffset,
                         bool        touchme,
@@ -386,7 +386,7 @@ class Unit
                         int         additive,
                         bool        forcetransaction,
                         double &    percentage,
-                        const Unit *downgrade_min,
+                        const std::shared_ptr<Unit> downgrade_min,
                         bool        force_change_on_nothing,
                         bool        gen_downgrade_list);
     void ImportPartList(const std::string &category, float price, float pricedev, float quantity, float quantdev);
@@ -397,26 +397,26 @@ class Unit
     void ClearMounts();
     // Loads a user interface for the user to upgrade his ship
     // Uses base stuff -> only in Unit
-    virtual void UpgradeInterface(Unit *base)
+    virtual void UpgradeInterface(std::shared_ptr<Unit> base)
     {
     }
 
-    bool canUpgrade(const Unit *upgrador,
+    bool canUpgrade(const std::shared_ptr<Unit> upgrador,
                     int         mountoffset,
                     int         subunitoffset,
                     int         additive,
                     bool        force,
                     double &    percentage,
-                    const Unit *templ                   = NULL,
+                    const std::shared_ptr<Unit> templ                   = NULL,
                     bool        force_change_on_nothing = false,
                     bool        gen_downgrade_list      = true);
-    bool Upgrade(const Unit *upgrador,
+    bool Upgrade(const std::shared_ptr<Unit> upgrador,
                  int         mountoffset,
                  int         subunitoffset,
                  int         additive,
                  bool        force,
                  double &    percentage,
-                 const Unit *templ                   = NULL,
+                 const std::shared_ptr<Unit> templ                   = NULL,
                  bool        force_change_on_nothing = false,
                  bool        gen_downgrade_list      = true);
     int  RepairCost(); // returns how many things need to be repaired--if nothing is damaged it will return 1 for labor.  doesn't assume any
@@ -424,22 +424,22 @@ class Unit
     int RepairUpgrade(); // returns how many things were repaired
     // returns percentOperational,maxPercentOperational,and whether mount is damaged (1 is damaged, 0 is fine, -1 is invalid mount)
     bool           RepairUpgradeCargo(Cargo *item,
-                                      Unit * baseUnit,
+                                      std::shared_ptr<Unit> baseUnit,
                                       float *credits); // item must not be NULL but baseUnit/credits are only used for pricing.
     Vector         MountPercentOperational(int whichmount);
     bool           ReduceToTemplate();
     virtual double Upgrade(const std::string &file, int mountoffset, int subunitoffset, bool force, bool loop_through_mounts);
-    bool           canDowngrade(const Unit *downgradeor,
+    bool           canDowngrade(const std::shared_ptr<Unit> downgradeor,
                                 int         mountoffset,
                                 int         subunitoffset,
                                 double &    percentage,
-                                const Unit *downgradelimit,
+                                const std::shared_ptr<Unit> downgradelimit,
                                 bool        gen_downgrade_list = true);
-    bool           Downgrade(const Unit *downgradeor,
+    bool           Downgrade(const std::shared_ptr<Unit> downgradeor,
                              int         mountoffset,
                              int         subunitoffset,
                              double &    percentage,
-                             const Unit *downgradelimit,
+                             const std::shared_ptr<Unit> downgradelimit,
                              bool        gen_downgrade_list = true);
 
   protected:
@@ -766,8 +766,8 @@ class Unit
     virtual float ExplosionRadius();
 
   public:
-    bool AutoPilotToErrorMessage(const Unit *un, bool automaticenergyrealloc, std::string &failuremessage, int recursive_level = 2);
-    bool AutoPilotTo(Unit *un, bool automaticenergyrealloc);
+    bool AutoPilotToErrorMessage(const std::shared_ptr<Unit> un, bool automaticenergyrealloc, std::string &failuremessage, int recursive_level = 2);
+    bool AutoPilotTo(std::shared_ptr<Unit> un, bool automaticenergyrealloc);
     // The owner of this unit. This may not collide with owner or units owned by owner. Do not dereference (may be dead pointer)
     void *owner; // void ensures that it won't be referenced by accident
     // The number of frames ahead this was put in the simulation queue
@@ -872,7 +872,7 @@ class Unit
 
   public:
     Vector corner_min, corner_max;
-    Vector LocalCoordinates(const Unit *un) const
+    Vector LocalCoordinates(const std::shared_ptr<Unit> un) const
     {
         return ToLocalCoordinates((un->Position() - Position()).Cast());
     }
@@ -1000,14 +1000,14 @@ class Unit
     void ApplyLocalTorque(const Vector &torque);
     // Applies damage to the local area given by pnt
     float
-    ApplyLocalDamage(const Vector &pnt, const Vector &normal, float amt, Unit *affectedSubUnit, const GFXColor &, float phasedamage = 0);
+    ApplyLocalDamage(const Vector &pnt, const Vector &normal, float amt, std::shared_ptr<Unit> affectedSubUnit, const GFXColor &, float phasedamage = 0);
     // Applies damage from network data
     void ApplyNetDamage(Vector &pnt, Vector &normal, float amt, float ppercentage, float spercentage, GFXColor &color);
     // Applies damage to the pre-transformed area of the ship
     void ApplyDamage(const Vector &pnt,
                      const Vector &normal,
                      float         amt,
-                     Unit *        affectedSubUnit,
+                     std::shared_ptr<Unit> affectedSubUnit,
                      const GFXColor &,
                      void *ownerDoNotDereference,
                      float phasedamage = 0);
@@ -1058,7 +1058,7 @@ class Unit
                                const Vector &        CumulativeVelocity,
                                bool                  ResolveLast,
                                UnitCollection *      uc,
-                               Unit *                superunit);
+                               std::shared_ptr<Unit> superunit);
     virtual void UpdatePhysics2(const Transformation &trans,
                                 const Transformation &old_physical_state,
                                 const Vector &        accel,
@@ -1073,16 +1073,16 @@ class Unit
                                       const Vector &        CumulativeVelocity,
                                       bool                  ResolveLast,
                                       UnitCollection *      uc,
-                                      Unit *                superunit);
+                                      std::shared_ptr<Unit> superunit);
     // A helper for those who override UpdateSubunitPhysics - Process one subunit (also, an easier way of overriding subunit processing
     // uniformly)
-    virtual void UpdateSubunitPhysics(Unit *                subunit,
+    virtual void UpdateSubunitPhysics(std::shared_ptr<Unit> subunit,
                                       const Transformation &trans,
                                       const Matrix &        transmat,
                                       const Vector &        CumulativeVelocity,
                                       bool                  ResolveLast,
                                       UnitCollection *      uc,
-                                      Unit *                superunit);
+                                      std::shared_ptr<Unit> superunit);
     void         AddVelocity(float difficulty);
     // Resolves forces of given unit on a physics frame
     virtual Vector ResolveForces(const Transformation &, const Matrix &);
@@ -1187,8 +1187,8 @@ class Unit
     void  setAverageGunSpeed();
     int   LockMissile() const; //-1 is no lock necessary 1 is locked
     void  LockTarget(bool myboo);
-    bool  TargetLocked(const Unit *checktarget = NULL) const;
-    bool  TargetTracked(const Unit *checktarget = NULL);
+    bool  TargetLocked(const std::shared_ptr<Unit> checktarget = NULL) const;
+    bool  TargetTracked(const std::shared_ptr<Unit> checktarget = NULL);
     float TrackingGuns(bool &missileLock);
     // Changes currently selected weapon
     void ToggleWeapon(bool Missile, bool forward = true);
@@ -1234,22 +1234,22 @@ class Unit
     StringPool::Reference target_fgid[3];
 
   public:
-    bool InRange(const Unit *target, bool cone = true, bool cap = true) const
+    bool InRange(const std::shared_ptr<Unit> target, bool cone = true, bool cap = true) const
     {
         double mm;
         return InRange(target, mm, cone, cap, true);
     }
-    bool        InRange(const Unit *target, double &mm, bool cone, bool cap, bool lock) const;
-    Unit *      Target();
-    const Unit *Target() const;
-    Unit *      VelocityReference();
-    const Unit *VelocityReference() const;
-    Unit *      Threat();
+    bool        InRange(const std::shared_ptr<Unit> target, double &mm, bool cone, bool cap, bool lock) const;
+    std::shared_ptr<Unit> Target();
+    const std::shared_ptr<Unit> Target() const;
+    std::shared_ptr<Unit> VelocityReference();
+    const std::shared_ptr<Unit> VelocityReference() const;
+    std::shared_ptr<Unit> Threat();
     // Uses Universe stuff so only in Unit class
-    void VelocityReference(Unit *targ);
-    void TargetTurret(Unit *targ);
+    void VelocityReference(std::shared_ptr<Unit> targ);
+    void TargetTurret(std::shared_ptr<Unit> targ);
     // Threatens this unit with "targ" as aggressor. Danger should be cos angle to target
-    void Threaten(Unit *targ, float danger);
+    void Threaten(std::shared_ptr<Unit> targ, float danger);
     // Rekeys the threat level to zero for another turn of impending danger
     void ResetThreatLevel()
     {
@@ -1257,9 +1257,9 @@ class Unit
         graphicOptions.missilelock = 0;
     }
     // The cosine of the angle to the target given passed in speed and range
-    float cosAngleTo(Unit *target, float &distance, float speed = 0.001, float range = 0.001, bool turnmargin = true) const;
+    float cosAngleTo(std::shared_ptr<Unit> target, float &distance, float speed = 0.001, float range = 0.001, bool turnmargin = true) const;
     // Highest cosine from given mounts to target. Returns distance and cosine
-    float cosAngleFromMountTo(Unit *target, float &distance) const;
+    float cosAngleFromMountTo(std::shared_ptr<Unit> target, float &distance) const;
     // how locked are we
     float computeLockingPercent();
     // Turns on selection box
@@ -1268,7 +1268,7 @@ class Unit
     void Deselect();
 
     // Shouldn't do anything here - but needed by Python
-    void Target(Unit *targ);
+    void Target(std::shared_ptr<Unit> targ);
 
     // not used yet
     void setTargetFg(std::string primary, std::string secondary = std::string(), std::string tertiary = std::string());
@@ -1286,7 +1286,7 @@ class Unit
     void SortCargo();
 
   public:
-    static Unit *makeMasterPartList();
+    static std::shared_ptr<Unit> makeMasterPartList();
     bool         CanAddCargo(const Cargo &carg) const;
     void         AddCargo(const Cargo &carg, bool sort = true);
     int          RemoveCargo(unsigned int i, int quantity, bool eraseZero = true);
@@ -1298,12 +1298,12 @@ class Unit
     Cargo *      GetCargo(const std::string &s, unsigned int &i);
     const Cargo *GetCargo(const std::string &s, unsigned int &i) const;
     unsigned int numCargo() const;
-    std::string  GetManifest(unsigned int i, Unit *scanningUnit, const Vector &original_velocity) const;
-    bool         SellCargo(unsigned int i, int quantity, float &creds, Cargo &carg, Unit *buyer);
-    bool         SellCargo(const std::string &s, int quantity, float &creds, Cargo &carg, Unit *buyer);
+    std::string  GetManifest(unsigned int i, std::shared_ptr<Unit> scanningUnit, const Vector &original_velocity) const;
+    bool         SellCargo(unsigned int i, int quantity, float &creds, Cargo &carg, std::shared_ptr<Unit> buyer);
+    bool         SellCargo(const std::string &s, int quantity, float &creds, Cargo &carg, std::shared_ptr<Unit> buyer);
     bool         BuyCargo(const Cargo &carg, float &creds);
-    bool         BuyCargo(unsigned int i, unsigned int quantity, Unit *buyer, float &creds);
-    bool         BuyCargo(const std::string &cargo, unsigned int quantity, Unit *buyer, float &creds);
+    bool         BuyCargo(unsigned int i, unsigned int quantity, std::shared_ptr<Unit> buyer, float &creds);
+    bool         BuyCargo(const std::string &cargo, unsigned int quantity, std::shared_ptr<Unit> buyer, float &creds);
     void         EjectCargo(unsigned int index);
     float        getEmptyCargoVolume(void) const;
     float        getCargoVolume(void) const;
@@ -1319,7 +1319,7 @@ class Unit
 
   public:
     class csOPCODECollider *getCollideTree(const Vector &scale = Vector(1, 1, 1), std::vector<struct mesh_polygon> * = NULL);
-    // Because accessing in daughter classes member function from Unit * instances
+    // Because accessing in daughter classes member function from std::shared_ptr<Unit> instances
     Order *aistate;
     Order *getAIState() const
     {
@@ -1368,14 +1368,14 @@ class Unit
     CollideMap::iterator location[2];
     struct collideTrees *colTrees;
     // Sets the parent to be this unit. Unit never dereferenced for this operation
-    void SetCollisionParent(Unit *name);
+    void SetCollisionParent(std::shared_ptr<Unit> name);
     // won't collide with ownery
-    void SetOwner(Unit *target);
-    void SetRecursiveOwner(Unit *target);
+    void SetOwner(std::shared_ptr<Unit> target);
+    void SetRecursiveOwner(std::shared_ptr<Unit> target);
 
     // Shouldn't do anything here - but needed by Python
     // Queries the ray collider with a world space st and end point. Returns the normal and distance on the line of the intersection
-    Unit *rayCollide(const QVector &st, const QVector &end, Vector &normal, float &distance);
+    std::shared_ptr<Unit> rayCollide(const QVector &st, const QVector &end, Vector &normal, float &distance);
 
     // fils in corner_min,corner_max and radial_size
     // Uses Box stuff -> only in NetUnit and Unit
@@ -1411,14 +1411,14 @@ class Unit
         return false;
     }
 
-    bool         InsideCollideTree(Unit *   smaller,
+    bool         InsideCollideTree(std::shared_ptr<Unit> smaller,
                                    QVector &bigpos,
                                    Vector & bigNormal,
                                    QVector &smallpos,
                                    Vector & smallNormal,
                                    bool     bigasteroid   = false,
                                    bool     smallasteroid = false);
-    virtual void reactToCollision(Unit *         smaller,
+    virtual void reactToCollision(std::shared_ptr<Unit> smaller,
                                   const QVector &biglocation,
                                   const Vector & bignormal,
                                   const QVector &smalllocation,
@@ -1426,9 +1426,9 @@ class Unit
                                   float          dist);
     // returns true if jump possible even if not taken
     // Uses Universe thing
-    bool jumpReactToCollision(Unit *smaller);
+    bool jumpReactToCollision(std::shared_ptr<Unit> smaller);
     // Does a collision between this and another unit
-    bool Collide(Unit *target);
+    bool Collide(std::shared_ptr<Unit> target);
     // checks for collisions with all beams and other units roughly and then more carefully
     void CollideAll();
 
@@ -1442,8 +1442,8 @@ class Unit
     unsigned char docked;
     enum DOCKENUM { NOT_DOCKED = 0x0, DOCKED_INSIDE = 0x1, DOCKED = 0x2, DOCKING_UNITS = 0x4 };
     // returns -1 if unit cannot dock, otherwise returns which dock it can dock at
-    int                                     CanDockWithMe(Unit *dockingunit, bool forcedock = false);
-    int                                     ForceDock(Unit *utdw, unsigned int whichdockport);
+    int                                     CanDockWithMe(std::shared_ptr<Unit> dockingunit, bool forcedock = false);
+    int                                     ForceDock(std::shared_ptr<Unit> utdw, unsigned int whichdockport);
     void                                    PerformDockingOperations();
     void                                    FreeDockingPort(unsigned int whichport);
     const std::vector<struct DockingPorts> &DockingPortLocations() const;
@@ -1451,14 +1451,14 @@ class Unit
     {
         return docked;
     }
-    bool IsCleared(const Unit *dockignunit) const;
-    bool isDocked(const Unit *dockingUnit) const;
-    bool UnDock(Unit *unitToDockWith);
+    bool IsCleared(const std::shared_ptr<Unit> dockignunit) const;
+    bool isDocked(const std::shared_ptr<Unit> dockingUnit) const;
+    bool UnDock(std::shared_ptr<Unit> unitToDockWith);
     // Use AI
-    bool RequestClearance(Unit *dockingunit);
-    bool EndRequestClearance(Unit *dockingunit);
+    bool RequestClearance(std::shared_ptr<Unit> dockingunit);
+    bool EndRequestClearance(std::shared_ptr<Unit> dockingunit);
     bool hasPendingClearanceRequests() const;
-    int  Dock(Unit *unitToDockWith);
+    int  Dock(std::shared_ptr<Unit> unitToDockWith);
     void RestoreGodliness();
 
     /*
@@ -1558,19 +1558,19 @@ class Unit
     }
 
     // Uses Universe stuff -> maybe only needed in Unit class
-    bool isEnemy(const Unit *other) const
+    bool isEnemy(const std::shared_ptr<Unit> other) const
     {
         return getRelation(other) < 0.0;
     }
-    bool isFriend(const Unit *other) const
+    bool isFriend(const std::shared_ptr<Unit> other) const
     {
         return getRelation(other) > 0.0;
     }
-    bool isNeutral(const Unit *other) const
+    bool isNeutral(const std::shared_ptr<Unit> other) const
     {
         return getRelation(other) == 0.0;
     }
-    float getRelation(const Unit *other) const;
+    float getRelation(const std::shared_ptr<Unit> other) const;
 
     void TurretFAW();
 
@@ -1582,7 +1582,7 @@ class Unit
     MeshAnimation *pMeshAnimation;
 };
 
-Unit *findUnitInStarsystem(const void *unitDoNotDereference);
+std::shared_ptr<Unit> findUnitInStarsystem(const void *unitDoNotDereference);
 
 // Holds temporary values for inter-function XML communication Saves deprecated restr info
 struct Unit::XML {
@@ -1596,7 +1596,7 @@ struct Unit::XML {
     std::string              shieldmesh_str;
     std::string              rapidmesh_str;
     void *                   data;
-    std::vector<Unit *>      units;
+    std::vector<std::shared_ptr<Unit> >      units;
     int                      unitlevel;
     bool                     hasColTree;
     enum restr { YRESTR = 1, PRESTR = 2, RRESTR = 4 };
@@ -1612,7 +1612,7 @@ struct Unit::XML {
     bool        calculated_role;
 };
 
-inline Unit *UnitContainer::GetUnit()
+inline std::shared_ptr<Unit> UnitContainer::GetUnit()
 {
     if (unit != NULL) {
 #ifdef CONTAINER_DEBUG
@@ -1660,16 +1660,16 @@ class MeshAnimation
     unsigned int loopCount;
 
     string uniqueUnitName;
-    Unit * unitDst;
+    std::shared_ptr<Unit> unitDst;
 
   public:
     double curtime;
 
     static unsigned int unitCount;
 
-    static std::map<string, Unit *> Units;
+    static std::map<string, std::shared_ptr<Unit> > Units;
 
-    MeshAnimation(Unit *_unitDst);
+    MeshAnimation(std::shared_ptr<Unit> _unitDst);
 
     bool Init(const char *filename, int faction, Flightgroup *flightgrp = NULL, const char *animationExt = NULL);
 

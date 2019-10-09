@@ -242,7 +242,7 @@ extern void InitUnitTables();
 extern void CleanupUnitTables();
 bool        isVista = false;
 
-Unit *TheTopLevelUnit;
+std::shared_ptr<Unit> TheTopLevelUnit;
 
 int main(int argc, char *argv[])
 {
@@ -440,7 +440,7 @@ void bootstrap_draw(const std::string &message, Animation *newSplashScreen)
 
     reentryWatchdog = false;
 }
-extern Unit **fighters;
+extern std::shared_ptr<Unit> *fighters;
 
 bool SetPlayerLoc(QVector &sys, bool set)
 {

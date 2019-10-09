@@ -19,7 +19,7 @@ struct WarpTrail {
     QVector       start;
     UnitContainer cur;
     float         tim;
-    WarpTrail(Unit *un, QVector beg, float tim) : cur(un)
+    WarpTrail(std::shared_ptr<Unit> un, QVector beg, float tim) : cur(un)
     {
         start     = beg;
         this->tim = tim;
@@ -28,7 +28,7 @@ struct WarpTrail {
     bool Draw( warptrails *w )
     {
         tim -= GetElapsedTime();
-        Unit   *un = cur.GetUnit();
+        std::shared_ptr<Unit> un = cur.GetUnit();
         if (!un) return false;
         Mesh   *m  = GetWarpMesh( un->faction, w );
         if (!m)
@@ -51,7 +51,7 @@ struct WarpTrail {
     bool Draw(warptrails *w)
     {
         tim -= GetElapsedTime();
-        Unit *un = cur.GetUnit();
+        std::shared_ptr<Unit> un = cur.GetUnit();
         if (!un)
             return false;
         Mesh *m = GetWarpMesh(un->faction, w);
@@ -92,7 +92,7 @@ void warptrails::Draw()
         }
 }
 
-void AddWarp(Unit *un, QVector beg, float tim)
+void AddWarp(std::shared_ptr<Unit> un, QVector beg, float tim)
 {
     wt.warps.push_back(new WarpTrail(un, beg, tim));
 }

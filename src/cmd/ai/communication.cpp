@@ -307,7 +307,7 @@ float FSM::getDeltaRelation(int prevstate, unsigned int current_state) const
     return nodes[current_state].messagedelta;
 }
 
-void CommunicationMessage::Init(Unit *send, Unit *recv)
+void CommunicationMessage::Init(std::shared_ptr<Unit> send, std::shared_ptr<Unit> recv)
 {
     if (send == NULL)
         return;
@@ -360,7 +360,7 @@ void CommunicationMessage::SetCurrentState(int msg, std::vector<Animation *> *an
     assert(this->curstate >= 0);
 }
 
-CommunicationMessage::CommunicationMessage(Unit *send, Unit *recv, int messagechoice, std::vector<Animation *> *ani, unsigned char sex)
+CommunicationMessage::CommunicationMessage(std::shared_ptr<Unit> send, std::shared_ptr<Unit> recv, int messagechoice, std::vector<Animation *> *ani, unsigned char sex)
 {
     Init(send, recv);
     prevstate = fsm->getDefaultState(send->getRelation(recv));
@@ -373,7 +373,7 @@ CommunicationMessage::CommunicationMessage(Unit *send, Unit *recv, int messagech
 }
 
 CommunicationMessage::CommunicationMessage(
-    Unit *send, Unit *recv, int laststate, int thisstate, std::vector<Animation *> *ani, unsigned char sex)
+    std::shared_ptr<Unit> send, std::shared_ptr<Unit> recv, int laststate, int thisstate, std::vector<Animation *> *ani, unsigned char sex)
 {
     Init(send, recv);
     prevstate = laststate;
@@ -382,7 +382,7 @@ CommunicationMessage::CommunicationMessage(
     assert(this->curstate >= 0);
 }
 
-CommunicationMessage::CommunicationMessage(Unit *send, Unit *recv, std::vector<Animation *> *ani, unsigned char sex)
+CommunicationMessage::CommunicationMessage(std::shared_ptr<Unit> send, std::shared_ptr<Unit> recv, std::vector<Animation *> *ani, unsigned char sex)
 {
     Init(send, recv);
     SetAnimation(ani, sex);
@@ -390,7 +390,7 @@ CommunicationMessage::CommunicationMessage(Unit *send, Unit *recv, std::vector<A
 }
 
 CommunicationMessage::CommunicationMessage(
-    Unit *send, Unit *recv, const CommunicationMessage &prevstate, int curstate, std::vector<Animation *> *ani, unsigned char sex)
+    std::shared_ptr<Unit> send, std::shared_ptr<Unit> recv, const CommunicationMessage &prevstate, int curstate, std::vector<Animation *> *ani, unsigned char sex)
 {
     Init(send, recv);
     this->prevstate = prevstate.curstate;
@@ -451,7 +451,7 @@ RGBstring GetRelationshipRGBstring(float rel)
     return colToString(col);
 }
 
-unsigned int DoSpeech(Unit *un, Unit *player_un, const FSM::Node &node)
+unsigned int DoSpeech(std::shared_ptr<Unit> un, std::shared_ptr<Unit> player_un, const FSM::Node &node)
 {
     static float scale_rel_color = XMLSupport::parse_float(vs_config->getVariable("graphics", "hud", "scale_relationship_color", "10.0"));
     static std::string ownname_RGBstr = colToString(vs_config->getColor("player_name", GFXColor(0.0, 0.2, 1.0))).str; // bluish
@@ -481,11 +481,11 @@ unsigned int DoSpeech(Unit *un, Unit *player_un, const FSM::Node &node)
     return dummy;
 }
 
-void LeadMe(Unit *un, string directive, string speech, bool changetarget)
+void LeadMe(std::shared_ptr<Unit> un, string directive, string speech, bool changetarget)
 {
     if (un != NULL) {
         for (unsigned int i = 0; i < _Universe->numPlayers(); i++) {
-            Unit *pun = _Universe->AccessCockpit(i)->GetParent();
+            std::shared_ptr<Unit> pun = _Universe->AccessCockpit(i)->GetParent();
             if (pun)
                 if (pun->getFlightgroup() == un->getFlightgroup())
                     DoSpeech(un, pun, FSM::Node::MakeNode(speech, .1));

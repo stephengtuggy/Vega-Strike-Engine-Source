@@ -5,7 +5,7 @@
 
 using std::list;
 using std::vector;
-void Order::AdjustRelationTo(Unit *un, float factor)
+void Order::AdjustRelationTo(std::shared_ptr<Unit> un, float factor)
 {
     // virtual stub function
 }
@@ -29,7 +29,7 @@ void Order::Communicate(const CommunicationMessage &c)
             (suborders[i])->Communicate(*newC);
             completed |= (suborders[i])->getType();
         }
-    Unit *un;
+    std::shared_ptr<Unit> un;
     bool  already_communicated = false;
     for (list<CommunicationMessage *>::iterator ii = messagequeue.begin(); ii != messagequeue.end(); ii++) {
         un                = (*ii)->sender.GetUnit();
@@ -52,7 +52,7 @@ void Order::Communicate(const CommunicationMessage &c)
         }
     }
     if (SERVER) {
-        Unit *plr = const_cast<UnitContainer &>(c.sender).GetUnit();
+        std::shared_ptr<Unit> plr = const_cast<UnitContainer &>(c.sender).GetUnit();
         int   cp  = _Universe->whichPlayerStarship(parent);
         if (cp >= 1)
             VSServer->sendCommunication(plr, parent, &c);
@@ -72,7 +72,7 @@ void Order::ProcessCommunicationMessages(float AICommresponseTime, bool RemoveMe
         if (messagequeue.back()->curstate == messagequeue.back()->fsm->GetRequestLandNode()) {
             cleared                = true;
             RemoveMessageProcessed = true;
-            Unit *un               = messagequeue.back()->sender.GetUnit();
+            std::shared_ptr<Unit> un               = messagequeue.back()->sender.GetUnit();
             if (un) {
                 CommunicationMessage c(parent, un, NULL, 0);
                 if (parent->getRelation(un) >= 0 || (parent->getFlightgroup() && parent->getFlightgroup()->name == "Base")) {

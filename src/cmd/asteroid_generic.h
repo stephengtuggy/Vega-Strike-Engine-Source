@@ -12,7 +12,7 @@ class Asteroid : public Unit
     {
         return (ASTEROIDPTR);
     }
-    virtual void reactToCollision(Unit *         smaller,
+    virtual void reactToCollision(std::shared_ptr<Unit> smaller,
                                   const QVector &biglocation,
                                   const Vector & bignormal,
                                   const QVector &smalllocation,

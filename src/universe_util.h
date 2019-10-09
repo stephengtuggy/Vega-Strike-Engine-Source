@@ -29,7 +29,7 @@ class PythonUnitIter : public un_iter
     ~PythonUnitIter()
     {
     }
-    inline Unit *current()
+    inline std::shared_ptr<Unit> current()
     {
         return (**this);
     }
@@ -46,7 +46,7 @@ class PythonUnitIter : public un_iter
     void        advanceNInsignificant(int n);
     void        advanceNPlanet(int n);
     void        advanceNJumppoint(int n);
-    inline void preinsert(Unit *unit)
+    inline void preinsert(std::shared_ptr<Unit> unit)
     {
         UnitIterator::preinsert(unit);
     }
@@ -58,7 +58,7 @@ class PythonUnitIter : public un_iter
     {
         UnitIterator::remove();
     }
-    inline class Unit *next()
+    inline class std::shared_ptr<Unit> next()
     {
         advance();
         return current();
@@ -67,10 +67,10 @@ class PythonUnitIter : public un_iter
 
 std::string LookupUnitStat(const std::string &unitname, const std::string &faction, const std::string &statname);
 
-Unit *GetUnitFromSerial(ObjSerial serial);
+std::shared_ptr<Unit> GetUnitFromSerial(ObjSerial serial);
 
 /// this gets a unit with 1 of each cargo type in it
-Unit *GetMasterPartList();
+std::shared_ptr<Unit> GetMasterPartList();
 
 /// this function sets the "current" system to be "name"  where name may be something like "Sol/Sol" or "Crucible/Cephid_17"  this function
 /// may take some time if the system has not been loaded before
@@ -92,15 +92,15 @@ std::string getSystemName();
 PythonUnitIter getUnitList();
 
 /// This function gets a unit given a number (how many iterations to go down in the iterator)
-Unit *getUnit(int index);
+std::shared_ptr<Unit> getUnit(int index);
 
 /// This function gets a unit given a name
-Unit *getUnitByName(std::string name);
+std::shared_ptr<Unit> getUnitByName(std::string name);
 
 /// This function gets a unit given an unreferenceable pointer to it - much faster if finder is provided
-Unit *getUnitByPtr(void *ptr, Unit *finder = 0, bool allowslowness = true);
-Unit *getScratchUnit();
-void  setScratchUnit(Unit *);
+std::shared_ptr<Unit> getUnitByPtr(void *ptr, std::shared_ptr<Unit> finder = 0, bool allowslowness = true);
+std::shared_ptr<Unit> getScratchUnit();
+void  setScratchUnit(std::shared_ptr<Unit> );
 
 void    precacheUnit(std::string name, std::string faction);
 QVector getScratchVector();
@@ -109,7 +109,7 @@ int     getNumUnits();
 void    cacheAnimation(std::string anim);
 
 /// this function launches a wormhole or a jump point.
-Unit *      launchJumppoint(std::string name_string,
+std::shared_ptr<Unit> launchJumppoint(std::string name_string,
                             std::string faction_string,
                             std::string type_string,
                             std::string unittype_string,
@@ -126,7 +126,7 @@ std::string vsConfig(std::string category, std::string option, std::string def);
 /// filename or "default"  the nr of ships is the number of ships to be launched with this group, the number of waves is num
 /// reinforcements... the position is a tuple (x,y,z) where they appear and the squadlogo is a squadron image...you can leave this the empty
 /// string '' for the default squadron logo.
-Unit *launch(std::string name_string,
+std::shared_ptr<Unit> launch(std::string name_string,
              std::string type_string,
              std::string faction_string,
              std::string unittype,
@@ -260,10 +260,10 @@ void StopTargettingEachOther(std::string fgname, std::string faction, std::strin
 void terminateMission(bool term);
 
 /// this gets the player belonging to this mission
-Unit *getPlayer();
+std::shared_ptr<Unit> getPlayer();
 
 /// this gets a player number (if in splitscreen mode)
-Unit *       getPlayerX(int which);
+std::shared_ptr<Unit> getPlayerX(int which);
 unsigned int getCurrentPlayer();
 
 /// this gets the number of active players
@@ -300,10 +300,10 @@ void setCompleteness(int which, float completeNess);
 float getCompleteness(int which);
 
 /// this sets the owner of a completeness
-void setOwnerII(int which, Unit *owner);
+void setOwnerII(int which, std::shared_ptr<Unit> owner);
 
 /// this gets an owner of a completeness (NULL means all players can see this objective)
-Unit *getOwner(int which);
+std::shared_ptr<Unit> getOwner(int which);
 // gets the owner of this mission
 int getMissionOwner();
 // sets the owner of this mission to be a particular cockpit
@@ -317,10 +317,10 @@ int numActiveMissions();
 void IOmessage(int delay, std::string from, std::string to, std::string message);
 
 /// this gets a unit with 1 of each cargo type in it
-Unit *GetMasterPartList();
+std::shared_ptr<Unit> GetMasterPartList();
 
 /// this gets a unit with a faction's contraband list... may be null (check with isNull)
-Unit *GetContrabandList(std::string faction);
+std::shared_ptr<Unit> GetContrabandList(std::string faction);
 
 /// this sets whether or not a player may autopilot.  Normally they are both 0 and the autopiloting is allowed based on if enemies are
 /// near... if you pass in 1 then autopilot will be allowed no matter who is near... if you set -1 then autopilot is never allowed.  global
@@ -336,7 +336,7 @@ float   getPlanetRadiusPercent();
 void cacheAnimation(std::string anim);
 
 /// this function launches a wormhole or ajump point.
-Unit *launchJumppoint(std::string name_string,
+std::shared_ptr<Unit> launchJumppoint(std::string name_string,
                       std::string faction_string,
                       std::string type_string,
                       std::string unittype_string,
@@ -352,7 +352,7 @@ Unit *launchJumppoint(std::string name_string,
 /// filename or "default"  the nr of ships is the number of ships to be launched with this group, the number of waves is num
 /// reinforcements... the position is a tuple (x,y,z) where they appear and the squadlogo is a squadron image...you can leave this the empty
 /// string '' for the default squadron logo.
-Unit *launch(std::string name_string,
+std::shared_ptr<Unit> launch(std::string name_string,
              std::string type_string,
              std::string faction_string,
              std::string unittype,
@@ -395,10 +395,10 @@ void playAnimation(std::string aniName, QVector loc, float size);
 void playAnimationGrow(std::string aniName, QVector loc, float size, float growpercent);
 
 /// this gets the player belonging to this mission
-Unit *getPlayer();
+std::shared_ptr<Unit> getPlayer();
 
 /// this gets a player number (if in splitscreen mode)
-Unit *       getPlayerX(int which);
+std::shared_ptr<Unit> getPlayerX(int which);
 void         StopAllSounds(void);
 unsigned int getCurrentPlayer();
 

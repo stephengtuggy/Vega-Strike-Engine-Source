@@ -137,7 +137,7 @@ void Mesh::initTechnique(const std::string &)
 {
 }
 
-void AddWarp(Unit *un, QVector, float)
+void AddWarp(std::shared_ptr<Unit> un, QVector, float)
 {
 }
 void WarpTrailDraw()

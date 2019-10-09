@@ -208,7 +208,7 @@ template <class SuperClass> class PythonAI : public PythonClass<SuperClass>
     {
         PYTHONCALLBACK(void, this->self, "ChooseTarget");
     }
-    virtual void SetParent(Unit *parent)
+    virtual void SetParent(std::shared_ptr<Unit> parent)
     {
         SuperClass::SetParent(parent);
         PYTHONCALLBACK2(void, this->self, "init", parent);
@@ -221,7 +221,7 @@ template <class SuperClass> class PythonAI : public PythonClass<SuperClass>
     {
         (self_).SuperClass::ChooseTarget();
     }
-    static void default_SetParent(SuperClass &self_, Unit *parent)
+    static void default_SetParent(SuperClass &self_, std::shared_ptr<Unit> parent)
     {
     }
     static PythonClass<SuperClass> *LastPythonClass()

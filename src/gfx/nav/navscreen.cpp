@@ -636,7 +636,7 @@ void NavigationSystem::DrawMission()
 
 // This is the mission info screen
 //**********************************
-extern string MakeUnitXMLPretty(string str, Unit *un);
+extern string MakeUnitXMLPretty(string str, std::shared_ptr<Unit> un);
 void          NavigationSystem::DrawShip()
 {
     GFXDisable(TEXTURE0);
@@ -649,7 +649,7 @@ void          NavigationSystem::DrawShip()
     float  originx = screenskipby4[0]; // left
     float  originy = screenskipby4[3]; // top
     string writethis;
-    Unit * par;
+    std::shared_ptr<Unit> par;
     if ((par = _Universe->AccessCockpit()->GetParent()))
         writethis = MakeUnitXMLPretty(par->WriteUnitString(), par);
     TextPlane displayname;

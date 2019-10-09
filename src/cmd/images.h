@@ -136,7 +136,7 @@ struct DockingPorts {
 struct DockedUnits {
     UnitContainer uc;
     unsigned int  whichdock;
-    DockedUnits(Unit *un, unsigned int w) : uc(un), whichdock(w)
+    DockedUnits(std::shared_ptr<Unit> un, unsigned int w) : uc(un), whichdock(w)
     {
     }
 };
@@ -339,7 +339,7 @@ struct UnitImages {
     std::vector<string>       destination;
     std::vector<DockingPorts> dockingports;
     /// warning unreliable pointer, never dereference!
-    std::vector<Unit *>        clearedunits;
+    std::vector<std::shared_ptr<Unit> >        clearedunits;
     std::vector<DockedUnits *> dockedunits;
     UnitContainer              DockedTo;
     float                      unitscale; // for output
@@ -452,8 +452,8 @@ struct unorigdest {
     bool          justloaded;
     bool          ready;
     QVector       final_location;
-    unorigdest(Unit *      un,
-               Unit *      jumppoint,
+    unorigdest(std::shared_ptr<Unit> un,
+               std::shared_ptr<Unit> jumppoint,
                StarSystem *orig,
                StarSystem *dest,
                float       delay,

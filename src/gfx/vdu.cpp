@@ -55,7 +55,7 @@ string reformatName(string nam)
     return nam;
 }
 
-string getUnitNameAndFgNoBase(Unit *target)
+string getUnitNameAndFgNoBase(std::shared_ptr<Unit> target)
 {
     Flightgroup *fg = target->getFlightgroup();
     if (target->isUnit() == PLANETPTR) {
@@ -626,7 +626,7 @@ static void DrawShield(float    fs,
 }
 
 /*
-static void DrawShieldArmor( Unit *parent, const float StartArmor[8], float x, float y, float w, float h, bool invertfrontback )
+static void DrawShieldArmor( std::shared_ptr<Unit> parent, const float StartArmor[8], float x, float y, float w, float h, bool invertfrontback )
 {
     static bool drawVSarmor = XMLSupport::parse_bool( vs_config->getVariable( "graphics", "drawVSarmor", "true" ) );
     float fs = parent->FShieldData();
@@ -709,7 +709,7 @@ static void DrawShieldArmor( Unit *parent, const float StartArmor[8], float x, f
 }
 */
 
-void VDU::DrawVDUShield(Unit *parent)
+void VDU::DrawVDUShield(std::shared_ptr<Unit> parent)
 {
     float x, y, w, h;
     GetPosition(x, y);
@@ -786,7 +786,7 @@ VSSprite *getNavImage()
     RETURN_STATIC_SPRITE("nav-hud");
 }
 
-double DistanceTwoTargets(Unit *parent, Unit *target)
+double DistanceTwoTargets(std::shared_ptr<Unit> parent, std::shared_ptr<Unit> target)
 {
     double tmp = ((parent->Position() - target->Position()).Magnitude() - ((target->isUnit() == PLANETPTR) ? target->rSize() : 0));
     if (tmp < 0)
@@ -859,7 +859,7 @@ static float TwoOfFour(float a, float b, float c, float d)
     return 0;
 }
 
-void VDU::DrawTarget(GameCockpit *cp, Unit *parent, Unit *target)
+void VDU::DrawTarget(GameCockpit *cp, std::shared_ptr<Unit> parent, std::shared_ptr<Unit> target)
 {
     float x, y, w, h;
     float fs = target->FShieldData();
@@ -1008,7 +1008,7 @@ void VDU::DrawTarget(GameCockpit *cp, Unit *parent, Unit *target)
     }
 }
 
-void VDU::DrawMessages(GameCockpit *parentcp, Unit *target)
+void VDU::DrawMessages(GameCockpit *parentcp, std::shared_ptr<Unit> target)
 {
     static bool network_draw_messages = XMLSupport::parse_bool(vs_config->getVariable("graphics", "network_chat_text", "true"));
     static bool draw_messages         = XMLSupport::parse_bool(vs_config->getVariable("graphics", "chat_text", "true"));
@@ -1107,7 +1107,7 @@ void VDU::DrawScanningMessage()
     // tp->Draw(MangleString ("Scanning target...",_Universe->AccessCamera()->GetNebula()!=NULL?.4:0),0,true);
 }
 
-bool VDU::SetCommAnimation(Animation *ani, Unit *un, bool force)
+bool VDU::SetCommAnimation(Animation *ani, std::shared_ptr<Unit> un, bool force)
 {
     if (comm_ani == NULL || force) {
         if (posmodes & COMM) {
@@ -1126,7 +1126,7 @@ bool VDU::SetCommAnimation(Animation *ani, Unit *un, bool force)
     return false;
 }
 
-Unit *VDU::GetCommunicating()
+std::shared_ptr<Unit> VDU::GetCommunicating()
 {
     if (comm_ani)
         if (!comm_ani->Done())
@@ -1134,10 +1134,10 @@ Unit *VDU::GetCommunicating()
     return NULL;
 }
 
-void VDU::DrawNav(GameCockpit *cp, Unit *you, Unit *targ, const Vector &nav)
+void VDU::DrawNav(GameCockpit *cp, std::shared_ptr<Unit> you, std::shared_ptr<Unit> targ, const Vector &nav)
 {
-    // Unit * you = _Universe->AccessCockpit()->GetParent();
-    // Unit * targ = you!=NULL?you->Target():NULL;
+    // std::shared_ptr<Unit> you = _Universe->AccessCockpit()->GetParent();
+    // std::shared_ptr<Unit> targ = you!=NULL?you->Target():NULL;
     // static float game_speed = XMLSupport::parse_float( vs_config->getVariable( "physics", "game_speed", "1" ) );
     // static bool  lie = XMLSupport::parse_bool( vs_config->getVariable( "physics", "game_speed_lying", "true" ) );
     string nam = "none";
@@ -1219,7 +1219,7 @@ void VDU::DrawComm()
     }
 }
 
-void VDU::DrawManifest(Unit *parent, Unit *target)
+void VDU::DrawManifest(std::shared_ptr<Unit> parent, std::shared_ptr<Unit> target)
 {
     // zadeVDUmanifest
     static string manifest_heading =
@@ -1490,7 +1490,7 @@ static void DrawGun(Vector pos, float w, float h, weapon_info::MOUNT_SIZE sz)
 
 extern const char *DamagedCategory;
 
-void VDU::DrawDamage(Unit *parent)
+void VDU::DrawDamage(std::shared_ptr<Unit> parent)
 {
     // VDUdamage
     float x, y, w, h;
@@ -1516,7 +1516,7 @@ void VDU::DrawDamage(Unit *parent)
                   true,
                   false);
     GFXDisable(TEXTURE0);
-    // Unit *thr = parent->Threat();
+    // std::shared_ptr<Unit> thr = parent->Threat();
     parent->Threat();
     std::string fullname(getUnitNameAndFgNoBase(parent));
     // sprintf (st,"%s\nHull: %.3f",blah.c_str(),parent->GetHull());
@@ -1644,7 +1644,7 @@ void VDU::SetViewingStyle(VIEWSTYLE vs)
     viewStyle = vs;
 }
 
-void VDU::DrawStarSystemAgain(float x, float y, float w, float h, VIEWSTYLE viewStyle, Unit *parent, Unit *target)
+void VDU::DrawStarSystemAgain(float x, float y, float w, float h, VIEWSTYLE viewStyle, std::shared_ptr<Unit> parent, std::shared_ptr<Unit> target)
 {
     GFXEnable(DEPTHTEST);
     GFXEnable(DEPTHWRITE);
@@ -1793,7 +1793,7 @@ GFXColor MountColor(Mount *mnt)
     return mountcolor;
 }
 
-void VDU::DrawWeapon(Unit *parent)
+void VDU::DrawWeapon(std::shared_ptr<Unit> parent)
 {
     static bool   drawweapsprite       = XMLSupport::parse_bool(vs_config->getVariable("graphics", "hud", "draw_weapon_sprite", "false"));
     static string list_empty_mounts_as = vs_config->getVariable(
@@ -1919,7 +1919,7 @@ int VDU::DrawVDUObjective( void *obj, int offset )
 }
 #endif
 
-void DrawObjectivesTextPlane(TextPlane *tp, int scrolloffset, Unit *parent)
+void DrawObjectivesTextPlane(TextPlane *tp, int scrolloffset, std::shared_ptr<Unit> parent)
 {
     std::string rez("\n");
     std::string rezcompleted("");
@@ -1961,7 +1961,7 @@ void DrawObjectivesTextPlane(TextPlane *tp, int scrolloffset, Unit *parent)
     tp->bgcol = tpbg;
 }
 
-void VDU::DrawVDUObjectives(Unit *parent)
+void VDU::DrawVDUObjectives(std::shared_ptr<Unit> parent)
 {
     DrawObjectivesTextPlane(tp, scrolloffset, parent);
 }
@@ -1980,7 +1980,7 @@ bool VDU::SetWebcamAnimation()
     return false;
 }
 
-void VDU::DrawWebcam(Unit *parent)
+void VDU::DrawWebcam(std::shared_ptr<Unit> parent)
 {
     using VSFileSystem::JPEGBuffer;
     int   length;
@@ -2008,7 +2008,7 @@ void VDU::DrawWebcam(Unit *parent)
     }
 }
 
-void VDU::Draw(GameCockpit *parentcp, Unit *parent, const GFXColor &color)
+void VDU::Draw(GameCockpit *parentcp, std::shared_ptr<Unit> parent, const GFXColor &color)
 {
     tp->col = color;
     GFXDisable(LIGHTING);
@@ -2042,7 +2042,7 @@ void VDU::Draw(GameCockpit *parentcp, Unit *parent, const GFXColor &color)
     cols = int(fabs(ceil(w / csx)));
     rows = int(fabs(ceil(h / csy)));
 
-    Unit *targ;
+    std::shared_ptr<Unit> targ;
     h = fabs(h / 2);
     w = fabs(w / 2);
     tp->SetPos(x - w, y + h);
@@ -2196,7 +2196,7 @@ void UpdateViewstyle(VIEWSTYLE &vs)
     }
 }
 
-void VDU::SwitchMode(Unit *parent)
+void VDU::SwitchMode(std::shared_ptr<Unit> parent)
 {
     if (!posmodes)
         return;
@@ -2231,7 +2231,7 @@ void VDU::SwitchMode(Unit *parent)
     }
 }
 
-bool VDU::CheckCommAnimation(Unit *un) const
+bool VDU::CheckCommAnimation(std::shared_ptr<Unit> un) const
 {
     if (comm_ani && comm_ani->Done() == false)
         if (communicating == un || communicating == NULL)

@@ -15,7 +15,7 @@ class Bolt;
 struct LineCollide {
   private:
     union OBJECT {
-        Unit *u;
+        std::shared_ptr<Unit> u;
         Beam *b;
         Bolt *blt;
         int   i;
@@ -50,7 +50,7 @@ struct LineCollide {
     LineCollide(void *objec, collidables typ, const QVector &st, const QVector &en)
         : Mini(st), Maxi(en), lastchecked(NULL), type(typ), hhuge(false)
     {
-        this->object.u = (Unit *)objec;
+        this->object.u = (std::shared_ptr<Unit> )objec;
     }
 
     LineCollide(const LineCollide &l) : Mini(l.Mini), Maxi(l.Maxi), lastchecked(NULL), type(l.type), hhuge(l.hhuge)

@@ -18,7 +18,7 @@ Prediction::~Prediction()
 {
 }
 
-void Prediction::InitInterpolation(Unit *un, const ClientState &last_packet_state, double elapsed_since_last_packet, double deltatime)
+void Prediction::InitInterpolation(std::shared_ptr<Unit> un, const ClientState &last_packet_state, double elapsed_since_last_packet, double deltatime)
 {
     // This function is to call after the state have been updated (which should be after receiving a SNAPSHOT)
 
@@ -27,7 +27,7 @@ void Prediction::InitInterpolation(Unit *un, const ClientState &last_packet_stat
     //- parameter A and B are old_position and new_position (received in the latest packet)
 
     /************* VA IS TO BE UNCOMMENTED ****************/
-    // Unit * un = clt->game_unit.GetUnit();
+    // std::shared_ptr<Unit> un = clt->game_unit.GetUnit();
 
     // NETFIXME: Why cast to int and then back to double?
     // double delay = (double)(unsigned int)deltatime;
@@ -63,7 +63,7 @@ void Prediction::InitInterpolation(Unit *un, const ClientState &last_packet_stat
     // ACCEL="<<AB.i<<","<<AB.j<<","<<AB.k<<endl;
 }
 
-Transformation Prediction::Interpolate(Unit *un, double deltatime) const
+Transformation Prediction::Interpolate(std::shared_ptr<Unit> un, double deltatime) const
 {
     return Transformation(InterpolateOrientation(un, deltatime), InterpolatePosition(un, deltatime));
 }
@@ -74,16 +74,16 @@ Transformation Prediction::Interpolate(Unit *un, double deltatime) const
  ************************************************************************************
  */
 
-void NullPrediction::InitInterpolation(Unit *un, const ClientState &last_packet_state, double elapsed_since_last_packet, double deltatime)
+void NullPrediction::InitInterpolation(std::shared_ptr<Unit> un, const ClientState &last_packet_state, double elapsed_since_last_packet, double deltatime)
 {
 }
 
-QVector NullPrediction::InterpolatePosition(Unit *un, double deltatime) const
+QVector NullPrediction::InterpolatePosition(std::shared_ptr<Unit> un, double deltatime) const
 {
     return A2 + VB * deltatime;
 }
 
-Quaternion NullPrediction::InterpolateOrientation(Unit *un, double deltatime) const
+Quaternion NullPrediction::InterpolateOrientation(std::shared_ptr<Unit> un, double deltatime) const
 {
     return OB; // un->curr_physical_state.orientation;
 }
@@ -94,17 +94,17 @@ Quaternion NullPrediction::InterpolateOrientation(Unit *un, double deltatime) co
  ************************************************************************************
  */
 
-QVector LinearPrediction::InterpolatePosition(Unit *un, double deltatime) const
+QVector LinearPrediction::InterpolatePosition(std::shared_ptr<Unit> un, double deltatime) const
 {
     return Interpolate(un, deltatime).position;
 }
 
-Quaternion LinearPrediction::InterpolateOrientation(Unit *un, double deltatime) const
+Quaternion LinearPrediction::InterpolateOrientation(std::shared_ptr<Unit> un, double deltatime) const
 {
     return Interpolate(un, deltatime).orientation;
 }
 
-Transformation LinearPrediction::Interpolate(Unit *un, double deltatime) const
+Transformation LinearPrediction::Interpolate(std::shared_ptr<Unit> un, double deltatime) const
 {
     static bool no_interp = XMLSupport::parse_bool(vs_config->getVariable("network", "no_interpolation", "false"));
     if (no_interp)
@@ -128,7 +128,7 @@ Transformation LinearPrediction::Interpolate(Unit *un, double deltatime) const
  ************************************************************************************
  */
 
-void CubicSplinePrediction::InitInterpolation(Unit *             un,
+void CubicSplinePrediction::InitInterpolation(std::shared_ptr<Unit> un,
                                               const ClientState &last_packet_state,
                                               double             elapsed_since_last_packet,
                                               double             deltatime)
@@ -140,12 +140,12 @@ void CubicSplinePrediction::InitInterpolation(Unit *             un,
 
 // Don't know how to do here maybe should have a Spline for each 3 vectors of the rotation quaternion
 // Do at least linear interpolation since we inherit from LinearPrediction
-Quaternion CubicSplinePrediction::InterpolateOrientation(Unit *un, double deltatime) const
+Quaternion CubicSplinePrediction::InterpolateOrientation(std::shared_ptr<Unit> un, double deltatime) const
 {
     return OB; // un->curr_physical_state.orientation;
 }
 
-QVector CubicSplinePrediction::InterpolatePosition(Unit *un, double deltatime) const
+QVector CubicSplinePrediction::InterpolatePosition(std::shared_ptr<Unit> un, double deltatime) const
 {
     // There should be another function called when received a new position update and creating the spline
     if (this->deltatime == 0 || deltatime > this->deltatime) {
@@ -162,17 +162,17 @@ QVector CubicSplinePrediction::InterpolatePosition(Unit *un, double deltatime) c
  ************************************************************************************
  */
 
-Quaternion MixedPrediction::InterpolateOrientation(Unit *un, double deltatime) const
+Quaternion MixedPrediction::InterpolateOrientation(std::shared_ptr<Unit> un, double deltatime) const
 {
     return LinearPrediction::InterpolateOrientation(un, deltatime);
 }
 
-QVector MixedPrediction::InterpolatePosition(Unit *un, double deltatime) const
+QVector MixedPrediction::InterpolatePosition(std::shared_ptr<Unit> un, double deltatime) const
 {
     return CubicSplinePrediction::InterpolatePosition(un, deltatime);
 }
 
-Transformation MixedPrediction::Interpolate(Unit *un, double deltatime) const
+Transformation MixedPrediction::Interpolate(std::shared_ptr<Unit> un, double deltatime) const
 {
     Transformation linear(LinearPrediction::Interpolate(un, deltatime));
     linear.position = CubicSplinePrediction::InterpolatePosition(un, deltatime);

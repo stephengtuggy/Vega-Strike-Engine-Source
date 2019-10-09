@@ -6,16 +6,16 @@
 #include "cmd/unit_find.h"
 #include "sensor.h"
 
-extern Unit *getTopLevelOwner(); // WTF... located in star_system_generic.cpp
+extern std::shared_ptr<Unit> getTopLevelOwner(); // WTF... located in star_system_generic.cpp
 
 namespace Radar
 {
 
-Sensor::Sensor(Unit *player) : player(player), closeRange(30000.0), useThreatAssessment(false)
+Sensor::Sensor(std::shared_ptr<Unit> player) : player(player), closeRange(30000.0), useThreatAssessment(false)
 {
 }
 
-Unit *Sensor::GetPlayer() const
+std::shared_ptr<Unit> Sensor::GetPlayer() const
 {
     return player;
 }
@@ -67,14 +67,14 @@ float Sensor::GetLockCone() const
     return player->GetComputerData().radar.lockcone;
 }
 
-Track Sensor::CreateTrack(const Unit *target) const
+Track Sensor::CreateTrack(const std::shared_ptr<Unit> target) const
 {
     assert(player);
 
     return Track(player, target);
 }
 
-Track Sensor::CreateTrack(const Unit *target, const Vector &position) const
+Track Sensor::CreateTrack(const std::shared_ptr<Unit> target, const Vector &position) const
 {
     assert(player);
 
@@ -109,14 +109,14 @@ class CollectRadarTracks
     {
     }
 
-    void init(const Sensor *sensor, Sensor::TrackCollection *collection, Unit *player)
+    void init(const Sensor *sensor, Sensor::TrackCollection *collection, std::shared_ptr<Unit> player)
     {
         this->sensor     = sensor;
         this->collection = collection;
         this->player     = player;
     }
 
-    bool acquire(const Unit *target, float distance)
+    bool acquire(const std::shared_ptr<Unit> target, float distance)
     {
         assert(sensor);
         assert(collection);
@@ -145,7 +145,7 @@ class CollectRadarTracks
                 collection->push_back(sensor->CreateTrack(target));
             }
             if (target->isPlanet() == PLANETPTR && target->radial_size > 0) {
-                const Unit *sub = NULL;
+                const std::shared_ptr<Unit> sub = NULL;
                 for (un_kiter i = target->viewSubUnits(); (sub = *i) != NULL; ++i) {
                     if (target->rSize() > minblipsize) {
                         collection->push_back(sensor->CreateTrack(sub));
@@ -158,7 +158,7 @@ class CollectRadarTracks
 
   private:
     const Sensor *           sensor;
-    Unit *                   player;
+    std::shared_ptr<Unit> player;
     Sensor::TrackCollection *collection;
 };
 
@@ -179,8 +179,8 @@ const Sensor::TrackCollection &Sensor::FindTracksInRange() const
         findObjects(_Universe->activeStarSystem()->collidemap[Unit::UNIT_ONLY], player->location[Unit::UNIT_ONLY], &unitLocator);
     }
     if (allGravUnits) {
-        Unit *      target = player->Target();
-        const Unit *gravUnit;
+        std::shared_ptr<Unit> target = player->Target();
+        const std::shared_ptr<Unit> gravUnit;
         bool        foundtarget = false;
         for (un_kiter i = _Universe->activeStarSystem()->gravitationalUnits().constIterator(); (gravUnit = *i) != NULL; ++i) {
             unitLocator.action.acquire(gravUnit, UnitUtil::getDistance(player, gravUnit));

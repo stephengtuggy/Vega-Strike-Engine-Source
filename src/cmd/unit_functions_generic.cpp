@@ -34,10 +34,10 @@ int cloakVal(int cloak, int cloakmin, int cloakrate, bool cloakglass)
     return cloak;
 }
 
-const Unit *getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0)
+const std::shared_ptr<Unit> getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0)
 {
     const char *name     = upgradeName.c_str();
-    const Unit *partUnit = UnitConstCache::getCachedConst(StringIntKey(name, FactionUtil::GetUpgradeFaction()));
+    const std::shared_ptr<Unit> partUnit = UnitConstCache::getCachedConst(StringIntKey(name, FactionUtil::GetUpgradeFaction()));
     if (!partUnit) {
         partUnit = UnitConstCache::setCachedConst(StringIntKey(name, FactionUtil::GetUpgradeFaction()),
                                                   UnitFactory::createUnit(name, true, FactionUtil::GetUpgradeFaction()));
@@ -51,7 +51,7 @@ const Unit *getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction 
     return partUnit;
 }
 
-int SelectDockPort(Unit *utdw, Unit *parent)
+int SelectDockPort(std::shared_ptr<Unit> utdw, std::shared_ptr<Unit> parent)
 {
     const vector<DockingPorts> *dp   = &utdw->DockingPortLocations();
     float                       dist = FLT_MAX;
@@ -69,12 +69,12 @@ int SelectDockPort(Unit *utdw, Unit *parent)
 }
 
 // From unit_customize.cpp
-Unit *CreateGameTurret(std::string tur, int faction)
+std::shared_ptr<Unit> CreateGameTurret(std::string tur, int faction)
 {
     return UnitFactory::createUnit(tur.c_str(), true, faction);
 }
 
-void SetShieldZero(Unit *un)
+void SetShieldZero(std::shared_ptr<Unit> un)
 {
     switch (un->shield.number) {
     case 8:
@@ -93,7 +93,7 @@ void SetShieldZero(Unit *un)
 }
 
 // un scored a faction kill
-void ScoreKill(Cockpit *cp, Unit *un, Unit *killedUnit)
+void ScoreKill(Cockpit *cp, std::shared_ptr<Unit> un, std::shared_ptr<Unit> killedUnit)
 {
     if (un->isUnit() != UNITPTR || killedUnit->isUnit() != UNITPTR)
         return;
@@ -131,7 +131,7 @@ void ScoreKill(Cockpit *cp, Unit *un, Unit *killedUnit)
         killlist->back()++;
     } else if (UnitUtil::getRelationToFaction(un, faction) < 0 && faction != upgrades && faction != planets) {
         int   whichcp   = rand() % _Universe->numPlayers();
-        Unit *whichrecv = _Universe->AccessCockpit(whichcp)->GetParent();
+        std::shared_ptr<Unit> whichrecv = _Universe->AccessCockpit(whichcp)->GetParent();
         if (whichrecv != NULL) {
             if (UnitUtil::getUnitSystemFile(whichrecv) == UnitUtil::getUnitSystemFile(un)) {
                 if (un->getAIState() && whichrecv->getAIState()) {
@@ -147,7 +147,7 @@ void ScoreKill(Cockpit *cp, Unit *un, Unit *killedUnit)
 }
 
 // From unit_physics.cpp
-signed char ComputeAutoGuarantee(Unit *un)
+signed char ComputeAutoGuarantee(std::shared_ptr<Unit> un)
 {
     Cockpit *    cp;
     unsigned int cpnum = 0;
@@ -165,7 +165,7 @@ signed char ComputeAutoGuarantee(Unit *un)
     return Mission::AUTO_NORMAL;
 }
 
-float getAutoRSize(Unit *orig, Unit *un, bool ignore_friend = false)
+float getAutoRSize(std::shared_ptr<Unit> orig, std::shared_ptr<Unit> un, bool ignore_friend = false)
 {
     static float gamespeed = XMLSupport::parse_float(vs_config->getVariable("physics", "game_speed", "1"));
 
@@ -197,7 +197,7 @@ float getAutoRSize(Unit *orig, Unit *un, bool ignore_friend = false)
 }
 
 // From unit_weapon.cpp
-bool AdjustMatrix(Matrix &mat, const Vector &vel, Unit *target, float speed, bool lead, float cone)
+bool AdjustMatrix(Matrix &mat, const Vector &vel, std::shared_ptr<Unit> target, float speed, bool lead, float cone)
 {
     if (target) {
         QVector pos(mat.p);
@@ -280,7 +280,7 @@ int parseMountSizes(const char *str)
     return ans;
 }
 
-void DealPossibleJumpDamage(Unit *un)
+void DealPossibleJumpDamage(std::shared_ptr<Unit> un)
 {
     float        speed  = un->GetVelocity().Magnitude();
     float        damage = un->GetJumpStatus().damage + (rand() % 100 < 1) ? (rand() % 20) : 0;
@@ -300,7 +300,7 @@ void DealPossibleJumpDamage(Unit *un)
     }
 }
 
-void Enslave(Unit *parent, bool enslave)
+void Enslave(std::shared_ptr<Unit> parent, bool enslave)
 {
     unsigned int  i;
     vector<Cargo> ToBeChanged;

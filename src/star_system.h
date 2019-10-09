@@ -69,10 +69,10 @@ class GameStarSystem : public StarSystem
     void SwapIn();
     /// Disables included lights and terrains
     void SwapOut();
-    // bool JumpTo (Unit * unit, Unit * jumppoint, const std::string &system);
+    // bool JumpTo (std::shared_ptr<Unit> unit, std::shared_ptr<Unit> jumppoint, const std::string &system);
     virtual void VolitalizeJumpAnimation(const int ani);
-    virtual void DoJumpingComeSightAndSound(Unit *un);
-    virtual int  DoJumpingLeaveSightAndSound(Unit *un);
+    virtual void DoJumpingComeSightAndSound(std::shared_ptr<Unit> un);
+    virtual int  DoJumpingLeaveSightAndSound(std::shared_ptr<Unit> un);
     friend class Atmosphere;
     void createBackground(StarSystem::StarXML *xml);
 };

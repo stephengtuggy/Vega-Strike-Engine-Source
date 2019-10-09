@@ -119,7 +119,7 @@ void GamePlanet::AddFog(const std::vector<AtmosphericFogMesh> &v, bool opticalil
         Mesh *fog = MakeFogMesh(v[i], rSize());
         fogs.push_back(fog);
     }
-    Unit *fawg;
+    std::shared_ptr<Unit> fawg;
     if (opticalillusion)
         fawg = new AtmosphereHalo(this->rSize(), fogs, 0);
     else
@@ -234,7 +234,7 @@ GamePlanet::GamePlanet(QVector                           x,
                        BLENDFUNC                         blendDst,
                        const vector<string> &            dest,
                        const QVector &                   orbitcent,
-                       Unit *                            parent,
+                       std::shared_ptr<Unit> parent,
                        const GFXMaterial &               ourmat,
                        const std::vector<GFXLightLocal> &ligh,
                        int                               faction,
@@ -262,12 +262,12 @@ GamePlanet::GamePlanet(QVector                           x,
             stab = ".unstable";
         string wormholename        = wormhole_unit + stab;
         string wormholeneutralname = wormhole_unit + ".neutral" + stab;
-        Unit * jum                 = UnitFactory::createUnit(wormholename.c_str(), true, faction);
+        std::shared_ptr<Unit> jum                 = UnitFactory::createUnit(wormholename.c_str(), true, faction);
         int    neutralfaction      = FactionUtil::GetNeutralFaction();
         faction                    = neutralfaction;
 
-        Unit *neujum  = UnitFactory::createUnit(wormholeneutralname.c_str(), true, neutralfaction);
-        Unit *jump    = jum;
+        std::shared_ptr<Unit> neujum  = UnitFactory::createUnit(wormholeneutralname.c_str(), true, neutralfaction);
+        std::shared_ptr<Unit> jump    = jum;
         bool  anytrue = false;
         while (jump != NULL) {
             if (jump->name != "LOAD_FAILED") {
@@ -451,10 +451,10 @@ void GamePlanet::DrawTerrain()
     }
 }
 
-extern bool CrashForceDock(Unit *thus, Unit *dockingUn, bool force);
+extern bool CrashForceDock(std::shared_ptr<Unit> thus, std::shared_ptr<Unit> dockingUn, bool force);
 extern void abletodock(int dock);
 void        GamePlanet::reactToCollision(
-    Unit *un, const QVector &biglocation, const Vector &bignormal, const QVector &smalllocation, const Vector &smallnormal, float dist)
+    std::shared_ptr<Unit> un, const QVector &biglocation, const Vector &bignormal, const QVector &smalllocation, const Vector &smallnormal, float dist)
 {
 #ifdef JUMP_DEBUG
     VSFileSystem::vs_fprintf(
@@ -549,7 +549,7 @@ void GamePlanet::setAtmosphere(Atmosphere *t)
 
 void GamePlanet::Kill(bool erasefromsave)
 {
-    Unit *tmp;
+    std::shared_ptr<Unit> tmp;
     for (un_iter iter = satellites.createIterator(); (tmp = *iter) != NULL; ++iter)
         tmp->SetAI(new Order);
     /* probably not FIXME...right now doesn't work on paged out systems... not a big deal */

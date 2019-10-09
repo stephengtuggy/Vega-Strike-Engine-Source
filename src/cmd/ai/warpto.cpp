@@ -9,7 +9,7 @@ float max_allowable_travel_time()
     return mat;
 }
 
-bool DistanceWarrantsWarpTo(Unit *parent, float dist, bool following)
+bool DistanceWarrantsWarpTo(std::shared_ptr<Unit> parent, float dist, bool following)
 {
     // first let us decide whether the target is far enough to warrant using warp
     // double dist =UnitUtil::getSignificantDistance(parent,target);
@@ -36,7 +36,7 @@ bool DistanceWarrantsWarpTo(Unit *parent, float dist, bool following)
     return false;
 }
 
-bool DistanceWarrantsTravelTo(Unit *parent, float dist, bool following)
+bool DistanceWarrantsTravelTo(std::shared_ptr<Unit> parent, float dist, bool following)
 {
     // first let us decide whether the target is far enough to warrant using warp
     float diff = 1;
@@ -47,12 +47,12 @@ bool DistanceWarrantsTravelTo(Unit *parent, float dist, bool following)
     return false;
 }
 
-bool TargetWorthPursuing(Unit *parent, Unit *target)
+bool TargetWorthPursuing(std::shared_ptr<Unit> parent, std::shared_ptr<Unit> target)
 {
     return true;
 }
 
-static void ActuallyWarpTo(Unit *parent, const QVector &tarpos, Vector tarvel, Unit *MatchSpeed = NULL)
+static void ActuallyWarpTo(std::shared_ptr<Unit> parent, const QVector &tarpos, Vector tarvel, std::shared_ptr<Unit> MatchSpeed = NULL)
 {
     Vector       vel          = parent->GetVelocity();
     static float mindirveldot = XMLSupport::parse_float(vs_config->getVariable("AI", "warp_cone", ".8"));
@@ -83,7 +83,7 @@ static void ActuallyWarpTo(Unit *parent, const QVector &tarpos, Vector tarvel, U
         parent->computer.velocity_ref.SetUnit(MatchSpeed);
 }
 
-void WarpToP(Unit *parent, Unit *target, bool following)
+void WarpToP(std::shared_ptr<Unit> parent, std::shared_ptr<Unit> target, bool following)
 {
     float dist = UnitUtil::getSignificantDistance(parent, target);
     if (DistanceWarrantsWarpTo(parent, dist, following)) {
@@ -102,7 +102,7 @@ void WarpToP(Unit *parent, Unit *target, bool following)
     }
 }
 
-void WarpToP(Unit *parent, const QVector &target, float radius, bool following)
+void WarpToP(std::shared_ptr<Unit> parent, const QVector &target, float radius, bool following)
 {
     float dist = (parent->Position() - target).Magnitude() - radius - parent->rSize();
     if (DistanceWarrantsWarpTo(parent, dist, following)) {

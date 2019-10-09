@@ -70,7 +70,7 @@ class BaseComputer : public WctlBase<BaseComputer>
     // virtual bool processWindowCommand(const EventCommandId& command, Control* control);
 
     // CONSTRUCTION
-    BaseComputer(Unit *player, Unit *base, const vector<DisplayMode> &modes);
+    BaseComputer(std::shared_ptr<Unit> player, std::shared_ptr<Unit> base, const vector<DisplayMode> &modes);
     virtual ~BaseComputer(void);
 
     // These are the transactions that can happen using this object.
@@ -286,7 +286,7 @@ class BaseComputer : public WctlBase<BaseComputer>
 
     // Get a filtered list of items from a unit.
     void
-    loadMasterList(Unit *un, const vector<string> &filterthis, const vector<string> &invfilterthis, bool removezero, TransactionList &list);
+    loadMasterList(std::shared_ptr<Unit> un, const vector<string> &filterthis, const vector<string> &invfilterthis, bool removezero, TransactionList &list);
 
     // Load a master list with missions.
     void loadMissionsMasterList(TransactionList &list);
@@ -313,7 +313,7 @@ class BaseComputer : public WctlBase<BaseComputer>
     friend class BuyUpgradeOperation;
     friend class SellUpgradeOperation;
 };
-bool buyShip(Unit *base, Unit *player, std::string, bool myfleet, bool force_base_inventory, BaseComputer *);
-bool sellShip(Unit *base, Unit *player, std::string, BaseComputer *);
+bool buyShip(std::shared_ptr<Unit> base, std::shared_ptr<Unit> player, std::string, bool myfleet, bool force_base_inventory, BaseComputer *);
+bool sellShip(std::shared_ptr<Unit> base, std::shared_ptr<Unit> player, std::string, BaseComputer *);
 
 #endif //__BASECOMPUTER_H__

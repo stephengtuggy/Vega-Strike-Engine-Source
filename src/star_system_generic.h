@@ -95,8 +95,8 @@ class StarSystem
         size_t                             checkIter;
         size_t                             navCheckIter;
         Statistics();
-        void AddUnit(Unit *un);
-        void RemoveUnit(Unit *un);
+        void AddUnit(std::shared_ptr<Unit> un);
+        void RemoveUnit(std::shared_ptr<Unit> un);
         void CheckVitals(StarSystem *ss);
     } stats;
     StarSystem();
@@ -138,7 +138,7 @@ class StarSystem
     std::vector<class MissileEffect *> dischargedMissiles;
     unsigned int                       zone; // short fix
   public:
-    std::multimap<Unit *, Unit *> last_collisions;
+    std::multimap<std::shared_ptr<Unit> , std::shared_ptr<Unit> > last_collisions;
     // short fix
     void SetZone(unsigned int zonenum)
     {
@@ -153,7 +153,7 @@ class StarSystem
     virtual void UpdateMissiles();
     void         UpdateUnitPhysics(bool firstframe);
     /// Requeues the unit so that it is simulated ASAP.
-    void         RequestPhysics(Unit *un, unsigned int queue);
+    void         RequestPhysics(std::shared_ptr<Unit> un, unsigned int queue);
     virtual void activateLightMap(int stage = 1)
     {
     }
@@ -226,14 +226,14 @@ class StarSystem
     {
         return GravitationalUnits;
     }
-    Unit *nextSignificantUnit();
+    std::shared_ptr<Unit> nextSignificantUnit();
     /// returns xy sorted bounding spheres of all units in current view
     /// Adds to draw list
-    void AddUnit(Unit *unit);
+    void AddUnit(std::shared_ptr<Unit> unit);
     /// Removes from draw list
-    bool         RemoveUnit(Unit *unit);
-    bool         JumpTo(Unit *             unit,
-                        Unit *             jumppoint,
+    bool         RemoveUnit(std::shared_ptr<Unit> unit);
+    bool         JumpTo(std::shared_ptr<Unit> unit,
+                        std::shared_ptr<Unit> jumppoint,
                         const std::string &system,
                         bool               force            = false,
                         bool               save_coordinates = false /*for intersystem transit the long way*/);
@@ -241,10 +241,10 @@ class StarSystem
     virtual void VolitalizeJumpAnimation(const int ani)
     {
     }
-    virtual void DoJumpingComeSightAndSound(Unit *un)
+    virtual void DoJumpingComeSightAndSound(std::shared_ptr<Unit> un)
     {
     }
-    virtual int DoJumpingLeaveSightAndSound(Unit *un)
+    virtual int DoJumpingLeaveSightAndSound(std::shared_ptr<Unit> un)
     {
         return -1;
     }

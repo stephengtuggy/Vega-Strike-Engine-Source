@@ -7,7 +7,7 @@ using std::string;
 
 namespace UnitUtil
 {
-void switchFg(Unit *my_unit, string arg)
+void switchFg(std::shared_ptr<Unit> my_unit, string arg)
 {
     if (!my_unit)
         return;
@@ -26,11 +26,11 @@ void switchFg(Unit *my_unit, string arg)
     fg = Flightgroup::newFlightgroup(arg, type, FactionUtil::GetFaction(my_unit->faction), order, nr_ships, nr_waves_left, "", "", mission);
     my_unit->SetFg(fg, fg->nr_ships_left - 1);
 }
-int communicateTo(Unit *my_unit, Unit *other_unit, float mood)
+int communicateTo(std::shared_ptr<Unit> my_unit, std::shared_ptr<Unit> other_unit, float mood)
 {
     return 0;
 }
-bool commAnimation(Unit *my_unit, string anim)
+bool commAnimation(std::shared_ptr<Unit> my_unit, string anim)
 {
     return false;
 }

@@ -60,7 +60,7 @@ void Atmosphere::Update(const QVector &position, const Matrix &tmatrix)
     sunboxes.clear();
     QVector localDir;
     float   rho1 = 0.0;
-    Unit *  primary;
+    std::shared_ptr<Unit> primary;
     for (un_iter iter = system->getUnitList().createIterator(); (primary = *iter) != NULL; ++iter)
         if (primary->isUnit() == PLANETPTR && (currPlanet = (GamePlanet *)primary)->hasLights()) {
             /* for now just assume all planets with lights are really bright */

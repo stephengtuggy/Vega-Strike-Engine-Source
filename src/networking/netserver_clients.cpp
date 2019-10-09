@@ -34,9 +34,9 @@ ClientPtr NetServer::addNewClient(SOCKETALT &sock)
 }
 
 // zonemgr.cpp
-extern void displayUnitInfo(Unit *un, const string callsign, const char *type);
+extern void displayUnitInfo(std::shared_ptr<Unit> un, const string callsign, const char *type);
 
-void NetServer::broadcastUnit(Unit *un, unsigned short zone)
+void NetServer::broadcastUnit(std::shared_ptr<Unit> un, unsigned short zone)
 {
     newUnits.push_back(un);
 }
@@ -53,7 +53,7 @@ void NetServer::sendNewUnitQueue()
                 netbuf.setVersion(maxver);
             bool added = false;
             for (std::vector<UnitContainer>::iterator iter = newUnits.begin(); iter != newUnits.end(); ++iter) {
-                Unit *un = (*iter).GetUnit();
+                std::shared_ptr<Unit> un = (*iter).GetUnit();
                 if (un) {
                     StarSystem *sys = un->getStarSystem();
                     if (sys) {
@@ -91,7 +91,7 @@ void NetServer::sendNewUnitQueue()
 
 void NetServer::addClient(ClientPtr clt)
 {
-    Unit *un = clt->game_unit.GetUnit();
+    std::shared_ptr<Unit> un = clt->game_unit.GetUnit();
     if (!un) {
         COUT << "Error: adding NULL (dead) client! " << clt->callsign << endl;
         return;
@@ -133,10 +133,10 @@ void NetServer::addClient(ClientPtr clt)
 
     bool    besafe = true;
     QVector safevec;
-    Unit *  dockedUnit = NULL;
+    std::shared_ptr<Unit> dockedUnit = NULL;
     if (getSaveStringLength(player, "jump_from") > 0) {
         std::string srcsys = getSaveString(player, "jump_from", 0);
-        Unit *      grav;
+        std::shared_ptr<Unit> grav;
         for (un_iter ui = st2->gravitationalUnits().createIterator(); (grav = *ui) != NULL; ++ui) {
             size_t siz = grav->GetDestinations().size();
             for (unsigned int i = 0; i < siz; ++i)
@@ -252,7 +252,7 @@ void NetServer::addClient(ClientPtr clt)
     if (dockedUnit) {
         int dockport = -1;
         for (unsigned int i = 0; i < dockedUnit->pImage->dockedunits.size(); ++i) {
-            Unit *tempun;
+            std::shared_ptr<Unit> tempun;
             if ((tempun = dockedUnit->pImage->dockedunits[i]->uc.GetUnit()) != NULL)
                 if (tempun == un)
                     dockport = i;
@@ -305,7 +305,7 @@ void NetServer::serverTimeInitUDP(ClientPtr clt, NetBuffer &netbuf)
 void NetServer::removeClient(ClientPtr clt)
 {
     Packet packet2;
-    Unit * un = clt->game_unit.GetUnit();
+    std::shared_ptr<Unit> un = clt->game_unit.GetUnit();
     if (!un)
         return; // Don't broadcast if already dead.
 
@@ -478,7 +478,7 @@ aim_assist(ClientState cs, ClientState ocs /*old*/, QVector realtargetpos, Vecto
     return cs;
 }
 
-ClientState aim_assist(ClientState cs, ClientState ocs /*old*/, Unit *target, Vector targetpos, Vector targetvel)
+ClientState aim_assist(ClientState cs, ClientState ocs /*old*/, std::shared_ptr<Unit> target, Vector targetpos, Vector targetvel)
 {
     return aim_assist(cs, ocs, target->Position(), target->Velocity, targetpos, targetvel);
 }
@@ -529,7 +529,7 @@ void NetServer::posUpdate(ClientPtr clt)
     // NETFIXME: do a sanity check on the position.
 
     NetBuffer netbuf(packet.getData(), packet.getDataLength());
-    Unit *    un = clt->game_unit.GetUnit();
+    std::shared_ptr<Unit> un = clt->game_unit.GetUnit();
     if (!un)
         return; // Don't receive data if dead.
 
@@ -559,7 +559,7 @@ void NetServer::posUpdate(ClientPtr clt)
         ObjSerial target_serial = netbuf.getSerial();
         if (target_serial != 0) {
             unsigned int zone                = un->getStarSystem()->GetZone();
-            Unit *       target              = zonemgr->getUnit(target_serial, zone);
+            std::shared_ptr<Unit> target              = zonemgr->getUnit(target_serial, zone);
             Vector       rel_target_position = netbuf.getVector();
             QVector      target_position     = cs.getPosition() + rel_target_position;
             Vector       target_velocity     = netbuf.getVector();
@@ -638,7 +638,7 @@ void AcctLogout(VsnetHTTPSocket *acct_sock, ClientPtr clt)
     if (clt) {
         std::string netbuf;
 
-        Unit *un     = clt->game_unit.GetUnit();
+        std::shared_ptr<Unit> un     = clt->game_unit.GetUnit();
         int   cpnum  = _Universe->whichPlayerStarship(un);
         bool  dosave = false;
         if (clt->loginstate < Client::INGAME)
@@ -667,7 +667,7 @@ void NetServer::logout(ClientPtr clt)
 {
     Packet      p, p1, p2;
     std::string netbuf;
-    Unit *      un       = clt->game_unit.GetUnit();
+    std::shared_ptr<Unit> un       = clt->game_unit.GetUnit();
     std::string callsign = clt->callsign;
     if (clt->loginstate == Client::WAITLISTED) {
         std::map<std::string, WaitListEntry>::iterator iter = waitList.find(clt->callsign);

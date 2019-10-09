@@ -16,11 +16,11 @@ class FireKeyboard : public Order
     float                           rxntime;
     float                           delay;
     float                           autotrackingtoggle;
-    bool                            ShouldFire(Unit *targ);
+    bool                            ShouldFire(std::shared_ptr<Unit> targ);
     std::list<CommunicationMessage> resp;
 
   public:
-    virtual void SetParent(Unit *parent1);
+    virtual void SetParent(std::shared_ptr<Unit> parent1);
     static void  SetShieldsOff(const KBData &, KBSTATE);
     static void  SetShieldsOneThird(const KBData &, KBSTATE);
     static void  SetShieldsTwoThird(const KBData &, KBSTATE);
@@ -141,7 +141,7 @@ class FireKeyboard : public Order
     unsigned int             whichjoystick;
     struct FIREKEYBOARDTYPE &f();
     struct FIREKEYBOARDTYPE &j();
-    unsigned int             DoSpeechAndAni(Unit *un, Unit *parent, class CommunicationMessage &c);
+    unsigned int             DoSpeechAndAni(std::shared_ptr<Unit> un, std::shared_ptr<Unit> parent, class CommunicationMessage &c);
 
   public:
     virtual void ProcessCommMessage(class CommunicationMessage &c);

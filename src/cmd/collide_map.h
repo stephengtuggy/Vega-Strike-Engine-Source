@@ -17,7 +17,7 @@ class Collidable
     float   radius; // radius == 0: to-be-deleted, radius <0 bolt (radius == speed in phys frame), radius >0 unit
 
     union CollideRef {
-        Unit *       unit;
+        std::shared_ptr<Unit> unit;
         unsigned int bolt_index;
     } ref;
     QVector GetPosition() const
@@ -68,7 +68,7 @@ class Collidable
           )
     {
     }
-    Collidable(Unit *un);
+    Collidable(std::shared_ptr<Unit> un);
     Collidable(unsigned int bolt_index, float speed, const QVector &p)
     {
         ref.bolt_index = bolt_index;
@@ -99,7 +99,7 @@ class CollideArray
         CollidableBackref() : Collidable()
         {
         }
-        CollidableBackref(Unit *un) : Collidable(un)
+        CollidableBackref(std::shared_ptr<Unit> un) : Collidable(un)
         {
         }
         CollidableBackref(unsigned int bolt_index, float speed, const QVector &p) : Collidable(bolt_index, speed, p)
@@ -166,8 +166,8 @@ class CollideMap : public CollideArray
     bool CheckCollisions(Bolt *bol, const Collidable &updated);
     bool CheckUnitCollisions(Bolt *            bol,
                              const Collidable &updated);       // DANGER must be used on lists that are only populated with Units, not bolts
-    bool CheckCollisions(Unit *un, const Collidable &updated); // will be handed off to a templated function
-    bool CheckUnitCollisions(Unit *            un,
+    bool CheckCollisions(std::shared_ptr<Unit> un, const Collidable &updated); // will be handed off to a templated function
+    bool CheckUnitCollisions(std::shared_ptr<Unit> un,
                              const Collidable &updated); // DANGER must be used on lists that are only populated with Units, not bolts
 };
 

@@ -46,15 +46,15 @@ class Beam
     Vector        direction;
 
     void RecalculateVertices(const Matrix &trans);
-    void CollideHuge(const LineCollide &, Unit *targetToCollideWith, Unit *firer, Unit *superunit);
+    void CollideHuge(const LineCollide &, std::shared_ptr<Unit> targetToCollideWith, std::shared_ptr<Unit> firer, std::shared_ptr<Unit> superunit);
 
   public:
     void ListenToOwner(bool listen)
     {
         listen_to_owner = listen;
     }
-    Beam(const Transformation &trans, const weapon_info &clne, void *own, Unit *firer, int sound);
-    void Init(const Transformation &trans, const weapon_info &clne, void *own, Unit *firer);
+    Beam(const Transformation &trans, const weapon_info &clne, void *own, std::shared_ptr<Unit> firer, int sound);
+    void Init(const Transformation &trans, const weapon_info &clne, void *own, std::shared_ptr<Unit> firer);
     ~Beam();
     void    RemoveFromSystem(bool eradicate);
     float   refireTime();
@@ -66,13 +66,13 @@ class Beam
     void SetOrientation(const Vector &p, const Vector &q, const Vector &r);
     void UpdatePhysics(const Transformation &,
                        const Matrix &,
-                       class Unit *target,
+                       class std::shared_ptr<Unit> target,
                        float       trackingcone,
-                       Unit *      targetToCollideWith /*prevent AI friendly fire--speed up app*/,
+                       std::shared_ptr<Unit> targetToCollideWith /*prevent AI friendly fire--speed up app*/,
                        float       HeatSink,
-                       Unit *      firer,
-                       Unit *      superunit);
-    void Draw(const Transformation &, const Matrix &, class Unit *target, float trackingcone);
+                       std::shared_ptr<Unit> firer,
+                       std::shared_ptr<Unit> superunit);
+    void Draw(const Transformation &, const Matrix &, class std::shared_ptr<Unit> target, float trackingcone);
     void Destabilize()
     {
         impact = UNSTABLE;
@@ -85,7 +85,7 @@ class Beam
     {
         return curthick == 0 && refiretime > refire;
     }
-    bool        Collide(class Unit *target, Unit *firer, Unit *superunit /*for cargo*/);
+    bool        Collide(class std::shared_ptr<Unit> target, std::shared_ptr<Unit> firer, std::shared_ptr<Unit> superunit /*for cargo*/);
     static void ProcessDrawQueue();
 };
 #endif

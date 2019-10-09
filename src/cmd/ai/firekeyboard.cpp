@@ -409,11 +409,11 @@ void FireKeyboard::RestoreTarget10Key(const KBData &, KBSTATE k)
         g().restoreTargetKeys[9] = PRESS;
 }
 
-extern void LeadMe(Unit *un, string directive, string speech, bool changetarget);
+extern void LeadMe(std::shared_ptr<Unit> un, string directive, string speech, bool changetarget);
 
 static void LeadMe(string directive, string speech, bool changetarget)
 {
-    Unit *un = _Universe->AccessCockpit()->GetParent();
+    std::shared_ptr<Unit> un = _Universe->AccessCockpit()->GetParent();
     if (un)
         LeadMe(un, directive, speech, changetarget);
 }
@@ -428,7 +428,7 @@ void FireKeyboard::RequestClearenceKey(const KBData &, KBSTATE k)
 
 void FireKeyboard::DockKey(const KBData &, KBSTATE k)
 {
-    Unit *u = _Universe->AccessCockpit()->GetParent();
+    std::shared_ptr<Unit> u = _Universe->AccessCockpit()->GetParent();
     if (k == PRESS && u && (u->isSubUnit() == false))
         g().doc = true;
     if (k == RELEASE && u && (u->isSubUnit() == false))
@@ -437,7 +437,7 @@ void FireKeyboard::DockKey(const KBData &, KBSTATE k)
 
 void FireKeyboard::UnDockKey(const KBData &, KBSTATE k)
 {
-    Unit *u = _Universe->AccessCockpit()->GetParent();
+    std::shared_ptr<Unit> u = _Universe->AccessCockpit()->GetParent();
     if (k == PRESS && u && (u->isSubUnit() == false))
         g().und = true;
     if (k == RELEASE && u && (u->isSubUnit() == false))
@@ -745,18 +745,18 @@ void FireKeyboard::TogglePause(const KBData &, KBSTATE k)
         g().togglepausekey = k;
 }
 
-extern unsigned int DoSpeech(Unit *un, Unit *player_un, const FSM::Node &convNode);
-extern Unit *       GetThreat(Unit *par, Unit *leader);
+extern unsigned int DoSpeech(std::shared_ptr<Unit> un, std::shared_ptr<Unit> player_un, const FSM::Node &convNode);
+extern std::shared_ptr<Unit> GetThreat(std::shared_ptr<Unit> par, std::shared_ptr<Unit> leader);
 
 void HelpOut(bool crit, std::string conv)
 {
-    Unit *un = _Universe->AccessCockpit()->GetParent();
+    std::shared_ptr<Unit> un = _Universe->AccessCockpit()->GetParent();
     if (un) {
-        Unit *par = NULL;
+        std::shared_ptr<Unit> par = NULL;
         DoSpeech(un, NULL, FSM::Node::MakeNode(conv, .1));
         for (un_iter ui = _Universe->activeStarSystem()->getUnitList().createIterator(); (par = (*ui)); ++ui)
             if ((crit && UnitUtil::getFactionRelation(par, un) > 0) || par->faction == un->faction) {
-                Unit *               threat = GetThreat(par, un);
+                std::shared_ptr<Unit> threat = GetThreat(par, un);
                 CommunicationMessage c(par, un, NULL, 0);
                 if (threat) {
                     par->Target(threat);
@@ -774,9 +774,9 @@ void HelpOut(bool crit, std::string conv)
 void FireKeyboard::JoinFg(const KBData &, KBSTATE k)
 {
     if (k == PRESS) {
-        Unit *un = _Universe->AccessCockpit()->GetParent();
+        std::shared_ptr<Unit> un = _Universe->AccessCockpit()->GetParent();
         if (un) {
-            Unit *targ = un->Target();
+            std::shared_ptr<Unit> targ = un->Target();
             if (targ) {
                 if (targ->faction == un->faction) {
                     Flightgroup *fg = targ->getFlightgroup();
@@ -922,12 +922,12 @@ void FireKeyboard::MissileKey(const KBData &, KBSTATE k)
         g().missilekey = k;
 }
 
-static bool isNotTurretOwner(Unit *parent, Unit *un)
+static bool isNotTurretOwner(std::shared_ptr<Unit> parent, std::shared_ptr<Unit> un)
 {
     return parent->isSubUnit() == false || un != parent->owner;
 }
 
-bool TargMission(Unit *me, Unit *target)
+bool TargMission(std::shared_ptr<Unit> me, std::shared_ptr<Unit> target)
 {
     for (unsigned int i = 0; i < active_missions.size(); ++i)
         if (active_missions[i]->runtime.pymissions) {
@@ -941,14 +941,14 @@ bool TargMission(Unit *me, Unit *target)
     return false;
 }
 
-bool TargAll(Unit *me, Unit *target)
+bool TargAll(std::shared_ptr<Unit> me, std::shared_ptr<Unit> target)
 {
     static bool can_target_sun = XMLSupport::parse_bool(vs_config->getVariable("graphics", "can_target_sun", "false"));
     return (me->InRange(target, true, false) || me->InRange(target, true, true)) && (can_target_sun || !UnitUtil::isSun(target)) &&
            isNotTurretOwner(me, target);
 }
 
-bool TargSig(Unit *me, Unit *target)
+bool TargSig(std::shared_ptr<Unit> me, std::shared_ptr<Unit> target)
 {
     static bool can_target_asteroid = XMLSupport::parse_bool(vs_config->getVariable("graphics", "can_target_asteroid", "true"));
 
@@ -960,9 +960,9 @@ bool TargSig(Unit *me, Unit *target)
     return ret;
 }
 
-extern Unit *getTopLevelOwner();
+extern std::shared_ptr<Unit> getTopLevelOwner();
 
-bool TargUn(Unit *me, Unit *target)
+bool TargUn(std::shared_ptr<Unit> me, std::shared_ptr<Unit> target)
 {
     static bool can_target_cargo = XMLSupport::parse_bool(vs_config->getVariable("graphics", "can_target_cargo", "false"));
     int         up               = FactionUtil::GetUpgradeFaction();
@@ -970,18 +970,18 @@ bool TargUn(Unit *me, Unit *target)
            getTopLevelOwner() != target->owner && (can_target_cargo || target->faction != up) && isNotTurretOwner(me, target);
 }
 
-bool TargMissile(Unit *me, Unit *target)
+bool TargMissile(std::shared_ptr<Unit> me, std::shared_ptr<Unit> target)
 {
     return me->InRange(target, true, false) && (target->isUnit() == MISSILEPTR) && isNotTurretOwner(me, target);
 }
 
-bool TargIncomingMissile(Unit *me, Unit *target)
+bool TargIncomingMissile(std::shared_ptr<Unit> me, std::shared_ptr<Unit> target)
 {
-    Unit *tt = target->Target();
+    std::shared_ptr<Unit> tt = target->Target();
     return TargMissile(me, target) && (tt == me || (me->isSubUnit() && tt == _Universe->AccessCockpit()->GetSaveParent()));
 }
 
-bool TargFront(Unit *me, Unit *target)
+bool TargFront(std::shared_ptr<Unit> me, std::shared_ptr<Unit> target)
 {
     if (!TargAll(me, target))
         return false;
@@ -994,7 +994,7 @@ bool TargFront(Unit *me, Unit *target)
     return false;
 }
 
-bool TargThreat(Unit *me, Unit *target)
+bool TargThreat(std::shared_ptr<Unit> me, std::shared_ptr<Unit> target)
 {
     if (!TargAll(me, target))
         return false;
@@ -1007,7 +1007,7 @@ bool TargThreat(Unit *me, Unit *target)
     return false;
 }
 
-bool TargNear(Unit *me, Unit *target)
+bool TargNear(std::shared_ptr<Unit> me, std::shared_ptr<Unit> target)
 {
     static bool can_target_sun = XMLSupport::parse_bool(vs_config->getVariable("graphics", "can_target_sun", "false"));
     return (me->getRelation(target) < 0 || TargThreat(me, target) || target->getRelation(me) < 0) && TargAll(me, target) &&
@@ -1022,11 +1022,11 @@ bool TargNear(Unit *me, Unit *target)
 // 3 = base
 // 4 = planet
 // 5 = jump point
-bool getNearestTargetUnit(Unit *me, int iType)
+bool getNearestTargetUnit(std::shared_ptr<Unit> me, int iType)
 {
     QVector pos(me->Position());
-    Unit *  un       = NULL;
-    Unit *  targ     = NULL;
+    std::shared_ptr<Unit> un       = NULL;
+    std::shared_ptr<Unit> targ     = NULL;
     double  minrange = FLT_MAX;
     for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = (*i)); ++i) {
         if (un == me)
@@ -1067,18 +1067,18 @@ bool getNearestTargetUnit(Unit *me, int iType)
     return true;
 }
 
-bool ChooseTargets(Unit *me, bool (*typeofunit)(Unit *, Unit *), bool reverse)
+bool ChooseTargets(std::shared_ptr<Unit> me, bool (*typeofunit)(std::shared_ptr<Unit> , std::shared_ptr<Unit> ), bool reverse)
 {
     UnitCollection &drawlist = _Universe->activeStarSystem()->getUnitList();
-    vector<Unit *>  vec;
-    Unit *          target;
+    vector<std::shared_ptr<Unit> >  vec;
+    std::shared_ptr<Unit> target;
     for (un_iter iter = drawlist.createIterator(); (target = *iter) != NULL; ++iter)
         vec.push_back(target);
     if (vec.size() == 0)
         return false;
     if (reverse)
         std::reverse(vec.begin(), vec.end());
-    std::vector<Unit *>::const_iterator veciter = std::find(vec.begin(), vec.end(), me->Target());
+    std::vector<std::shared_ptr<Unit> >::const_iterator veciter = std::find(vec.begin(), vec.end(), me->Target());
     if (veciter != vec.end())
         ++veciter;
     int cur = 0;
@@ -1120,9 +1120,9 @@ bool ChooseTargets(Unit *me, bool (*typeofunit)(Unit *, Unit *), bool reverse)
     return true;
 }
 
-void ChooseSubTargets(Unit *me)
+void ChooseSubTargets(std::shared_ptr<Unit> me)
 {
-    Unit *parent = UnitUtil::owner(me->Target());
+    std::shared_ptr<Unit> parent = UnitUtil::owner(me->Target());
     if (!parent)
         return;
     un_iter uniter = parent->getSubUnits();
@@ -1132,7 +1132,7 @@ void ChooseSubTargets(Unit *me)
         me->Target(*uniter);
         return;
     }
-    Unit *tUnit;
+    std::shared_ptr<Unit> tUnit;
     for (; (tUnit = *uniter) != NULL; ++uniter)
         if (tUnit == me->Target()) {
             ++uniter;
@@ -1153,7 +1153,7 @@ FireKeyboard::~FireKeyboard()
 #endif
 }
 
-bool FireKeyboard::ShouldFire(Unit *targ)
+bool FireKeyboard::ShouldFire(std::shared_ptr<Unit> targ)
 {
     float dist = FLT_MAX;
     float mrange;
@@ -1166,10 +1166,10 @@ bool FireKeyboard::ShouldFire(Unit *targ)
     return dist < .8 && angle > 1;
 }
 
-static bool UnDockNow(Unit *me, Unit *targ)
+static bool UnDockNow(std::shared_ptr<Unit> me, std::shared_ptr<Unit> targ)
 {
     bool  ret = false;
-    Unit *un;
+    std::shared_ptr<Unit> un;
     for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = *i) != NULL; ++i)
         if (un->isDocked(me))
             if (me->UnDock(un))
@@ -1177,7 +1177,7 @@ static bool UnDockNow(Unit *me, Unit *targ)
     return ret;
 }
 
-void Enslave(Unit *, bool);
+void Enslave(std::shared_ptr<Unit> , bool);
 
 void abletodock(int dock)
 {
@@ -1245,7 +1245,7 @@ void abletodock(int dock)
     }
 }
 
-static bool SuperDock(Unit *parent, Unit *target)
+static bool SuperDock(std::shared_ptr<Unit> parent, std::shared_ptr<Unit> target)
 {
     if (UnitUtil::isCloseEnoughToDock(parent, target)) {
         if (UnitUtil::isDockableUnit(target)) {
@@ -1257,7 +1257,7 @@ static bool SuperDock(Unit *parent, Unit *target)
     return false;
 }
 
-static bool TryDock(Unit *parent, Unit *targ, unsigned char playa, int severity)
+static bool TryDock(std::shared_ptr<Unit> parent, std::shared_ptr<Unit> targ, unsigned char playa, int severity)
 {
     static float  min_docking_relationship = XMLSupport::parse_float(vs_config->getVariable("AI", "min_docking_relationship", "-.002"));
     static bool   can_dock_to_enemy_base   = XMLSupport::parse_bool(vs_config->getVariable("AI", "can_dock_to_enemy_base", "true"));
@@ -1298,7 +1298,7 @@ static bool TryDock(Unit *parent, Unit *targ, unsigned char playa, int severity)
     return isDone;
 }
 
-static bool ExecuteRequestClearenceKey(Unit *parent, Unit *endt)
+static bool ExecuteRequestClearenceKey(std::shared_ptr<Unit> parent, std::shared_ptr<Unit> endt)
 {
     bool tmp = endt->RequestClearance(parent);
     if (endt->getRelation(parent) >= 0) {
@@ -1312,10 +1312,10 @@ static bool ExecuteRequestClearenceKey(Unit *parent, Unit *endt)
     return tmp;
 }
 
-static void DoDockingOps(Unit *parent, Unit *targ, unsigned char playa, unsigned char gender)
+static void DoDockingOps(std::shared_ptr<Unit> parent, std::shared_ptr<Unit> targ, unsigned char playa, unsigned char gender)
 {
     static int maxseverity = XMLSupport::parse_bool(vs_config->getVariable("AI", "dock_to_area", "false")) ? 2 : 1;
-    Unit *     endt        = targ;
+    std::shared_ptr<Unit> endt        = targ;
     bool       wasdock     = vectorOfKeyboardInput[playa].doc;
     if (vectorOfKeyboardInput[playa].doc) {
         bool isDone = false;
@@ -1381,7 +1381,7 @@ static void DoDockingOps(Unit *parent, Unit *targ, unsigned char playa, unsigned
 }
 
 using std::list;
-unsigned int FireKeyboard::DoSpeechAndAni(Unit *un, Unit *parent, class CommunicationMessage &c)
+unsigned int FireKeyboard::DoSpeechAndAni(std::shared_ptr<Unit> un, std::shared_ptr<Unit> parent, class CommunicationMessage &c)
 {
     this->AdjustRelationTo(un, c.getCurrentState()->messagedelta);
     unsigned int retval = DoSpeech(un, parent, *c.getCurrentState());
@@ -1403,7 +1403,7 @@ static void MyFunction()
 
 void FireKeyboard::ProcessCommMessage(class CommunicationMessage &c)
 {
-    Unit *       un                = c.sender.GetUnit();
+    std::shared_ptr<Unit> un                = c.sender.GetUnit();
     unsigned int whichsound        = 0;
     bool         foundValidMessage = false;
     if (_Universe->AccessCockpit()->CheckCommAnimation(un))
@@ -1434,7 +1434,7 @@ void FireKeyboard::ProcessCommMessage(class CommunicationMessage &c)
 }
 using std::list;
 
-static CommunicationMessage *GetTargetMessageQueue(Unit *targ, std::list<CommunicationMessage> &messagequeue)
+static CommunicationMessage *GetTargetMessageQueue(std::shared_ptr<Unit> targ, std::list<CommunicationMessage> &messagequeue)
 {
     CommunicationMessage *mymsg = NULL;
     for (list<CommunicationMessage>::iterator i = messagequeue.begin(); i != messagequeue.end(); i++)
@@ -1444,9 +1444,9 @@ static CommunicationMessage *GetTargetMessageQueue(Unit *targ, std::list<Communi
         }
     return mymsg;
 }
-extern std::set<Unit *> arrested_list_do_not_dereference;
+extern std::set<std::shared_ptr<Unit> > arrested_list_do_not_dereference;
 
-void Arrested(Unit *parent)
+void Arrested(std::shared_ptr<Unit> parent)
 {
     std::string   fac     = UniverseUtil::GetGalaxyFaction(UniverseUtil::getSystemFile());
     int           own     = FactionUtil::GetFactionIndex(fac);
@@ -1456,7 +1456,7 @@ void Arrested(Unit *parent)
     float         ownrel  = UnitUtil::getRelationFromFaction(parent, own);
     bool          attack  = ownrel < 0;
     if (!attack) {
-        Unit *contra = FactionUtil::GetContraband(own);
+        std::shared_ptr<Unit> contra = FactionUtil::GetContraband(own);
         if (contra) {
             for (unsigned int i = 0; (!attack) && i < parent->numCargo(); ++i) {
                 Cargo *ci = &parent->GetCargo(i);
@@ -1471,7 +1471,7 @@ void Arrested(Unit *parent)
         }
     }
     if (!attack) {
-        Unit *un;
+        std::shared_ptr<Unit> un;
         for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = *i) != NULL; ++i)
             if (un->faction == own || un->faction == police || un->faction == police2) {
                 if (un->Target() == parent || un->getRelation(parent) < 0) {
@@ -1494,9 +1494,9 @@ void Arrested(Unit *parent)
                 "all",
                 parent->name + ", you are under arrest!  You will be taken to the prison system and will be tried for your crimes.");
         } else {
-            Unit *un;
-            Unit *owner = NULL;
-            Unit *base  = NULL;
+            std::shared_ptr<Unit> un;
+            std::shared_ptr<Unit> owner = NULL;
+            std::shared_ptr<Unit> base  = NULL;
             for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = *i) != NULL; ++i) {
                 if (owner == NULL && un->getFlightgroup() && un->faction == own)
                     if (UnitUtil::isSignificant(un) && (!un->isJumppoint()))
@@ -1528,9 +1528,9 @@ void Arrested(Unit *parent)
 
 extern void PowerDownShield(Shield *shield, float howmuch);
 
-static void ForceChangeTarget(Unit *parent)
+static void ForceChangeTarget(std::shared_ptr<Unit> parent)
 {
-    Unit *curtarg = parent->Target();
+    std::shared_ptr<Unit> curtarg = parent->Target();
     ChooseTargets(parent, TargUn, false);
     static bool force_change_only_unit = XMLSupport::parse_bool(vs_config->getVariable("graphics", "target_null_if_no_unit", "false"));
     if (parent->Target() == curtarg) {
@@ -1544,9 +1544,9 @@ static void ForceChangeTarget(Unit *parent)
     }
 }
 
-int SelectDockPort(Unit *utdw, Unit *parent);
+int SelectDockPort(std::shared_ptr<Unit> utdw, std::shared_ptr<Unit> parent);
 
-void FireKeyboard::SetParent(Unit *parent1)
+void FireKeyboard::SetParent(std::shared_ptr<Unit> parent1)
 {
     this->Order::SetParent(parent1);
     static bool allow_special_with_weapons =
@@ -1562,7 +1562,7 @@ void FireKeyboard::Execute()
     while (vectorOfKeyboardInput.size() <= whichplayer || vectorOfKeyboardInput.size() <= whichjoystick)
         vectorOfKeyboardInput.push_back(FIREKEYBOARDTYPE());
     ProcessCommunicationMessages(SIMULATION_ATOM, true);
-    Unit *targ = parent->Target();
+    std::shared_ptr<Unit> targ = parent->Target();
     DoDockingOps(parent, targ, whichplayer, parent->pilot->getGender());
     if (SERVER || Network == NULL) {
         if (targ) {
@@ -1666,7 +1666,7 @@ void FireKeyboard::Execute()
     if (f().targetukey == PRESS) {
         f().targetukey               = DOWN;
         static bool smart_targetting = XMLSupport::parse_bool(vs_config->getVariable("graphics", "smart_targetting_key", "true"));
-        Unit *      tmp              = parent->Target();
+        std::shared_ptr<Unit> tmp              = parent->Target();
         bool        sysobj           = false;
         if (tmp)
             if (tmp->owner == getTopLevelOwner())
@@ -1743,7 +1743,7 @@ void FireKeyboard::Execute()
     if (f().rtargetukey == PRESS) {
         f().rtargetukey              = DOWN;
         static bool smart_targetting = XMLSupport::parse_bool(vs_config->getVariable("graphics", "smart_targetting_key", "true"));
-        Unit *      tmp              = parent->Target();
+        std::shared_ptr<Unit> tmp              = parent->Target();
         bool        sysobj           = false;
         if (tmp)
             if (tmp->owner == getTopLevelOwner())
@@ -1896,7 +1896,7 @@ void FireKeyboard::Execute()
         }
         if (f().restoreTargetKeys[i] == PRESS && parent->GetComputerData().radar.canlock) {
             f().restoreTargetKeys[i] = RELEASE;
-            Unit *un;
+            std::shared_ptr<Unit> un;
             for (un_iter u = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = *u) != NULL; ++u)
                 if (un == savedTargets[i]) {
                     parent->Target(un);
@@ -1907,7 +1907,7 @@ void FireKeyboard::Execute()
     for (i = 0; i < NUMCOMMKEYS; i++)
         if (f().commKeys[i] == PRESS) {
             f().commKeys[i] = RELEASE;
-            Unit *targ      = parent->Target();
+            std::shared_ptr<Unit> targ      = parent->Target();
             if (targ) {
                 CommunicationMessage *mymsg = GetTargetMessageQueue(targ, resp);
                 FSM *                 fsm   = FactionUtil::GetConversation(parent->faction, targ->faction);
@@ -1941,7 +1941,7 @@ void FireKeyboard::Execute()
             }
         }
     if (refresh_target) {
-        Unit *targ;
+        std::shared_ptr<Unit> targ;
         if ((targ = parent->Target())) {
             if (parent->isSubUnit())
                 parent->TargetTurret(targ);
@@ -1991,7 +1991,7 @@ void FireKeyboard::Execute()
     // eject pilot and warp pilot to the docking screen instantly.
     if (f().ejectdock == PRESS) {
         f().ejectdock = DOWN;
-        Unit *   utdw = parent;
+        std::shared_ptr<Unit> utdw = parent;
         Cockpit *cp   = NULL; // check if docking ports exist, no docking ports = no need to ejectdock so don't do anything
         if ((SelectDockPort(utdw, parent) > -1) && (cp = _Universe->isPlayerStarship(parent)))
             cp->EjectDock(); // use specialized ejectdock in the future

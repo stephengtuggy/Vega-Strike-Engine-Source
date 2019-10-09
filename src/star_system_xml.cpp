@@ -391,11 +391,11 @@ static void GetLights(const vector<GFXLight> &origlights, vector<GFXLightLocal> 
     free(tmp);
 }
 
-extern Unit *    getTopLevelOwner();
+extern std::shared_ptr<Unit> getTopLevelOwner();
 extern BLENDFUNC parse_alpha(const char *);
-static void      SetSubunitRotation(Unit *un, float difficulty)
+static void      SetSubunitRotation(std::shared_ptr<Unit> un, float difficulty)
 {
-    Unit *unit;
+    std::shared_ptr<Unit> unit;
     for (un_iter iter = un->getSubUnits(); (unit = *iter); ++iter) {
         float x = 2 * difficulty * ((float)rand()) / RAND_MAX - difficulty;
         float y = 2 * difficulty * ((float)rand()) / RAND_MAX - difficulty;
@@ -563,7 +563,7 @@ void StarSystem::beginElement(const string &name, const AttributeList &attribute
 
         blendSrc = SRCALPHA;
         blendDst = INVSRCALPHA;
-        Unit *p  = (Unit *)xml->moons.back()->GetTopPlanet(xml->unitlevel - 1);
+        std::shared_ptr<Unit> p  = (std::shared_ptr<Unit> )xml->moons.back()->GetTopPlanet(xml->unitlevel - 1);
         if (p != NULL) {
             if (p->isUnit() == PLANETPTR) {
                 int   wrapx     = 1;
@@ -637,7 +637,7 @@ void StarSystem::beginElement(const string &name, const AttributeList &attribute
 
         blendSrc = SRCALPHA;
         blendDst = INVSRCALPHA;
-        Unit *p  = (Unit *)xml->moons.back()->GetTopPlanet(xml->unitlevel - 1);
+        std::shared_ptr<Unit> p  = (std::shared_ptr<Unit> )xml->moons.back()->GetTopPlanet(xml->unitlevel - 1);
         if (p != NULL) {
             if (p->isUnit() == PLANETPTR) {
                 string faction(UniverseUtil::GetGalaxyFaction(truncatedfilename));
@@ -763,7 +763,7 @@ void StarSystem::beginElement(const string &name, const AttributeList &attribute
         int   wrapx      = 1;
         bool  inside_out = false;
         int   wrapy      = 1;
-        Unit *p          = (Unit *)xml->moons.back()->GetTopPlanet(xml->unitlevel - 1);
+        std::shared_ptr<Unit> p          = (std::shared_ptr<Unit> )xml->moons.back()->GetTopPlanet(xml->unitlevel - 1);
         if (p != NULL) {
             if (p->isUnit() == PLANETPTR) {
                 float radius = p->rSize();
@@ -812,7 +812,7 @@ void StarSystem::beginElement(const string &name, const AttributeList &attribute
         blendSrc         = SRCALPHA;
         blendDst         = INVSRCALPHA;
         bool  inside_out = false;
-        Unit *p          = (Unit *)xml->moons.back()->GetTopPlanet(xml->unitlevel - 1);
+        std::shared_ptr<Unit> p          = (std::shared_ptr<Unit> )xml->moons.back()->GetTopPlanet(xml->unitlevel - 1);
         if (p != NULL) {
             if (p->isUnit() == PLANETPTR) {
                 float radius = p->rSize() * 1.075;
@@ -1160,7 +1160,7 @@ void StarSystem::beginElement(const string &name, const AttributeList &attribute
                     fullname.c_str(),
                     filename.c_str(),
                     technique.c_str());
-            Unit *un = xml->moons[xml->moons.size() - 1]->beginElement(
+            std::shared_ptr<Unit> un = xml->moons[xml->moons.size() - 1]->beginElement(
                 R,
                 S,
                 velocity,
@@ -1339,7 +1339,7 @@ void StarSystem::beginElement(const string &name, const AttributeList &attribute
                  (xml->ct == NULL && xml->parentterrain == NULL)) &&
                 (xml->unitlevel > 2)) {
                 assert(xml->moons.size() != 0);
-                Unit *  un   = NULL; // FIXME !!! un appears to never be allocated memory !!! "= NULL" added by chuck_starchaser
+                std::shared_ptr<Unit> un   = NULL; // FIXME !!! un appears to never be allocated memory !!! "= NULL" added by chuck_starchaser
                 Planet *plan = xml->moons.back()->GetTopPlanet(xml->unitlevel - 1);
                 if (elem == UNIT) {
                     Flightgroup *fg = getStaticBaseFlightgroup(faction);
@@ -1376,7 +1376,7 @@ void StarSystem::beginElement(const string &name, const AttributeList &attribute
                 un->SetAngularVelocity(ComputeRotVel(rotvel, R, S)); // FIXME un de-referenced before allocation
             } else {
                 if ((elem == BUILDING || elem == VEHICLE) && xml->ct == NULL && xml->parentterrain != NULL) {
-                    Unit *b =
+                    std::shared_ptr<Unit> b =
                         UnitFactory::createBuilding(xml->parentterrain, elem == VEHICLE, filename.c_str(), false, faction, string(""));
                     b->SetSerial(serial);
                     b->SetPosAndCumPos(xml->cursun.Cast() + xml->systemcentroid.Cast());
@@ -1388,7 +1388,7 @@ void StarSystem::beginElement(const string &name, const AttributeList &attribute
                         dest.clear();
                     }
                 } else if ((elem == BUILDING || elem == VEHICLE) && xml->ct != NULL) {
-                    Unit *b = UnitFactory::createBuilding(xml->ct, elem == VEHICLE, filename.c_str(), false, faction);
+                    std::shared_ptr<Unit> b = UnitFactory::createBuilding(xml->ct, elem == VEHICLE, filename.c_str(), false, faction);
                     b->SetSerial(serial);
                     b->SetPosAndCumPos(xml->cursun.Cast() + xml->systemcentroid.Cast());
                     b->EnqueueAI(new Orders::AggressiveAI("default.agg.xml"));
@@ -1403,7 +1403,7 @@ void StarSystem::beginElement(const string &name, const AttributeList &attribute
                 } else {
                     if (elem == UNIT) {
                         Flightgroup *fg        = getStaticBaseFlightgroup(faction);
-                        Unit *       moon_unit = UnitFactory::createUnit(filename.c_str(), false, faction, "", fg, fg->nr_ships - 1);
+                        std::shared_ptr<Unit> moon_unit = UnitFactory::createUnit(filename.c_str(), false, faction, "", fg, fg->nr_ships - 1);
                         moon_unit->SetSerial(serial);
                         moon_unit->setFullname(fullname);
                         xml->moons.push_back((Planet *)moon_unit);
@@ -1422,7 +1422,7 @@ void StarSystem::beginElement(const string &name, const AttributeList &attribute
                         enh->SetSerial(serial);
                     }
                     {
-                        Unit *un = xml->moons.back();
+                        std::shared_ptr<Unit> un = xml->moons.back();
                         for (unsigned int i = 0; i < dest.size(); ++i)
                             un->AddDestination(dest[i]);
                         dest.clear();
@@ -1462,7 +1462,7 @@ void StarSystem::endElement(const string &name)
         --xml->unitlevel;
         if (!game_options.usePlanetFog)
             break;
-        Unit *p = (Unit *)xml->moons.back()->GetTopPlanet(xml->unitlevel);
+        std::shared_ptr<Unit> p = (std::shared_ptr<Unit> )xml->moons.back()->GetTopPlanet(xml->unitlevel);
         if (p != NULL)
             if (p->isUnit() == PLANETPTR)
                 ((Planet *)p)->AddFog(xml->fog, xml->fogopticalillusion);
@@ -1539,7 +1539,7 @@ void StarSystem::LoadXML(const char *filename, const Vector &centroid, const flo
     unsigned int i;
     for (i = 0; i < xml->moons.size(); ++i) {
         if (xml->moons[i]->isUnit() == PLANETPTR) {
-            Unit *un = NULL;
+            std::shared_ptr<Unit> un = NULL;
             for (Planet::PlanetIterator iter((Planet *)xml->moons[i]); (un = *iter); iter.advance())
                 AddUnit(un);
         } else {

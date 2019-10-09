@@ -101,8 +101,8 @@ Mount::Mount(const string &filename, int am, int vol, float xyscale, float zscal
     }
 }
 
-extern bool AdjustMatrix(Matrix &mat, const Vector &velocity, Unit *target, float speed, bool lead, float cone);
-void        AdjustMatrixToTrackTarget(Matrix &mat, const Vector &velocity, Unit *target, float speed, bool lead, float cone)
+extern bool AdjustMatrix(Matrix &mat, const Vector &velocity, std::shared_ptr<Unit> target, float speed, bool lead, float cone);
+void        AdjustMatrixToTrackTarget(Matrix &mat, const Vector &velocity, std::shared_ptr<Unit> target, float speed, bool lead, float cone)
 {
     AdjustMatrix(mat, velocity, target, speed, lead, cone);
 }
@@ -115,7 +115,7 @@ void Mount::UnFire()
     ref.gun->Destabilize();
 }
 
-void Mount::ReplaceMounts(Unit *un, const Mount *other)
+void Mount::ReplaceMounts(std::shared_ptr<Unit> un, const Mount *other)
 {
     int        thisvol  = volume; // short fix
     int        thissize = size;   // short fix
@@ -184,15 +184,15 @@ double Mount::Percentage(const Mount *newammo) const
     else
         return 1. / 1024;
 }
-extern void GetMadAt(Unit *un, Unit *parent, int numhits = 0);
+extern void GetMadAt(std::shared_ptr<Unit> un, std::shared_ptr<Unit> parent, int numhits = 0);
 
 // bool returns whether to refund the cost of firing
-bool Mount::PhysicsAlignedFire(Unit *                caller,
+bool Mount::PhysicsAlignedFire(std::shared_ptr<Unit> caller,
                                const Transformation &Cumulative,
                                const Matrix &        m,
                                const Vector &        velocity,
                                void *                owner,
-                               Unit *                target,
+                               std::shared_ptr<Unit> target,
                                signed char           autotrack,
                                float                 trackingcone,
                                CollideMap::iterator  hint[])
@@ -212,7 +212,7 @@ bool Mount::PhysicsAlignedFire(Unit *                caller,
             // Wait until refire has expired and reactor has produced enough energy for the next bolt.
             return true; // Not ready to refire yet.  But don't stop firing.
 
-        Unit *         temp;
+        std::shared_ptr<Unit> temp;
         Transformation tmp(orient, pos.Cast());
         tmp.Compose(Cumulative, m);
         Matrix mat;
@@ -344,7 +344,7 @@ bool Mount::PhysicsAlignedFire(Unit *                caller,
                     temp->EnqueueAI(new Orders::MatchLinearVelocity(Vector(0, 0, 100000), true, false));
                     temp->EnqueueAI(new Orders::FireAllYouGot);
                 }
-                temp->SetOwner((Unit *)owner);
+                temp->SetOwner((std::shared_ptr<Unit> )owner);
                 temp->Velocity            = velocity + adder;
                 temp->curr_physical_state = temp->prev_physical_state = temp->cumulative_transformation = tmp;
                 CopyMatrix(temp->cumulative_transformation_matrix, m);
@@ -417,9 +417,9 @@ bool Mount::PhysicsAlignedFire(Unit *                caller,
     }
     return true;
 }
-bool Mount::NextMountCloser(Mount *nextmount, Unit *firer)
+bool Mount::NextMountCloser(Mount *nextmount, std::shared_ptr<Unit> firer)
 {
-    Unit *target;
+    std::shared_ptr<Unit> target;
     if (nextmount && (target = firer->Target())) {
         Matrix mat;
         nextmount->orient.to_matrix(mat);
@@ -434,7 +434,7 @@ bool Mount::NextMountCloser(Mount *nextmount, Unit *firer)
     }
     return false;
 }
-bool Mount::Fire(Unit *firer, void *owner, bool Missile, bool listen_to_owner)
+bool Mount::Fire(std::shared_ptr<Unit> firer, void *owner, bool Missile, bool listen_to_owner)
 {
     if (ammo == 0)
         processed = UNFIRED;

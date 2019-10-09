@@ -14,14 +14,14 @@ class DockingOps : public MoveTo
     bool   keeptrying;
 
   public:
-    QVector Movement(Unit *utdw);
-    DockingOps(Unit *unitToDockWith, Order *oldstate, bool physicallyDock, bool keeptrying);
-    virtual void SetParent(Unit *par);
+    QVector Movement(std::shared_ptr<Unit> utdw);
+    DockingOps(std::shared_ptr<Unit> unitToDockWith, Order *oldstate, bool physicallyDock, bool keeptrying);
+    virtual void SetParent(std::shared_ptr<Unit> par);
     void         Execute();
-    bool         RequestClearence(Unit *);
-    bool         DockToTarget(Unit *);
-    bool         PerformDockingOperations(Unit *);
-    bool         Undock(Unit *);
+    bool         RequestClearence(std::shared_ptr<Unit> );
+    bool         DockToTarget(std::shared_ptr<Unit> );
+    bool         PerformDockingOperations(std::shared_ptr<Unit> );
+    bool         Undock(std::shared_ptr<Unit> );
     virtual void Destroy();
     void         RestoreOldAI();
 };

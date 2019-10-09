@@ -158,7 +158,7 @@ class NetServer
 
     void broadcast(NetBuffer &netbuf, ObjSerial serial, unsigned short zone, Cmd command, bool isTcp);
 
-    void broadcastUnit(Unit *un, unsigned short zone);
+    void broadcastUnit(std::shared_ptr<Unit> un, unsigned short zone);
     void sendNewUnitQueue();
     // WEAPON STUFF
     void BroadcastCargoUpgrade(ObjSerial          sender,
@@ -196,7 +196,7 @@ class NetServer
                      GFXColor &     color);
     // void	sendDamages( ObjSerial serial, Vector & pnt, Vector & normal, float amt, GFXColor & color, float phasedamage);
     void sendKill(ObjSerial serial, unsigned short zone);
-    void sendJump(Unit *src, Unit *jumppoint, const string &destination);
+    void sendJump(std::shared_ptr<Unit> src, std::shared_ptr<Unit> jumppoint, const string &destination);
     void sendJumpFinal(ClientPtr clt, const string &server, unsigned short port);
     void sendForcePosition(ClientPtr clt);
 
@@ -210,11 +210,11 @@ class NetServer
     void sendDockDeny(ObjSerial serial, unsigned short zone);
     void sendUnDock(ObjSerial serial, ObjSerial utdwserial, unsigned short zone);
     void sendCredits(ObjSerial serial, float creds);
-    void addUnitCargoSnapshot(const Unit *un, NetBuffer &netbuf);
+    void addUnitCargoSnapshot(const std::shared_ptr<Unit> un, NetBuffer &netbuf);
     void sendCargoSnapshot(ObjSerial serial, const UnitCollection &unitlist);
 
     void sendMessage(const string &from, const string &to, const string &message, float delay);
-    void sendCommunication(Unit *from, Unit *to, const class CommunicationMessage *c);
+    void sendCommunication(std::shared_ptr<Unit> from, std::shared_ptr<Unit> to, const class CommunicationMessage *c);
     void sendSaveData(int            cp,
                       unsigned short packetType,
                       int            pos,

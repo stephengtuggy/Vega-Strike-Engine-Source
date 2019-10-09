@@ -64,7 +64,7 @@ void NetServer::checkTimedoutClients_udp()
                 */
 #ifdef TIMEOUT_USING_UDP_EVEN_THOUGH_THEY_USE_TCP
                 if (cl->ingame == true && deltatmp > clienttimeout) {
-                    Unit *un;
+                    std::shared_ptr<Unit> un;
                     un = cl->game_unit.GetUnit();
                     COUT << "ACTIVITY TIMEOUT for client number ";
                     if (un)
@@ -149,7 +149,7 @@ void NetServer::recvMsg_udp()
         bool      found = false;
         for (LI i = allClients.begin(); i != allClients.end(); i++) {
             tmp        = (*i);
-            Unit *myun = tmp->game_unit.GetUnit();
+            std::shared_ptr<Unit> myun = tmp->game_unit.GetUnit();
             // NETFIXME: Cheat: We have to check the address and port of the sender to make sure it matches that of our client socket.
             if (myun && myun->GetSerial() == nserial) {
                 clt   = tmp;

@@ -31,7 +31,7 @@ class AggressiveAI : public FireAt
     bool                   ProcessCurrentFgDirective(Flightgroup *fg);
 
   public:
-    virtual void SetParent(Unit *parent1);
+    virtual void SetParent(std::shared_ptr<Unit> parent1);
     enum types {
         AGGAI,
         MOVEMENT,
@@ -63,14 +63,14 @@ class AggressiveAI : public FireAt
         TARGET_IN_FRONT_OF_YOU,
         TARGET_GOING_YOUR_DIRECTION
     };
-    AggressiveAI(const char *file, Unit *target = NULL);
+    AggressiveAI(const char *file, std::shared_ptr<Unit> target = NULL);
     void                ExecuteNoEnemies();
     void                Execute();
     virtual std::string getOrderDescription()
     {
         return "aggressive";
     }
-    void   AfterburnerJumpTurnTowards(Unit *target);
+    void   AfterburnerJumpTurnTowards(std::shared_ptr<Unit> target);
     float  Fshield_prev;
     float  Fshield_rate_old;
     double Fshield_prev_time;

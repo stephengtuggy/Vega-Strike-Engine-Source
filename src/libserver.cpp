@@ -26,7 +26,7 @@ void UpdateCameraSnds()
 void NebulaUpdate(StarSystem *ss)
 {
 }
-void SwitchUnits2(Unit *nw)
+void SwitchUnits2(std::shared_ptr<Unit> nw)
 {
 }
 void DoCockpitKeys()

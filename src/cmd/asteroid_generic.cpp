@@ -4,7 +4,7 @@
 #include "cmd/script/flightgroup.h"
 #include "cmd/unit_generic.h"
 
-static void RecursiveSetSchedule(Unit *un)
+static void RecursiveSetSchedule(std::shared_ptr<Unit> un)
 {
     if (un) {
         if (un->SubUnits.empty())
@@ -33,7 +33,7 @@ void Asteroid::Init(float difficulty)
 }
 
 void Asteroid::reactToCollision(
-    Unit *smaller, const QVector &biglocation, const Vector &bignormal, const QVector &smalllocation, const Vector &smallnormal, float dist)
+    std::shared_ptr<Unit> smaller, const QVector &biglocation, const Vector &bignormal, const QVector &smalllocation, const Vector &smallnormal, float dist)
 {
     switch (smaller->isUnit()) {
     case ASTEROIDPTR:

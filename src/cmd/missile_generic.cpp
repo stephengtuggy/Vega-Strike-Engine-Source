@@ -25,7 +25,7 @@ void StarSystem::UpdateMissiles()
     if (!dischargedMissiles.empty()) {
         if (dischargedMissiles.back()->GetRadius() >
             0) { // we can avoid this iterated check for kinetic projectiles even if they "discharge" on hit
-            Unit *un;
+            std::shared_ptr<Unit> un;
             for (un_iter ui = getUnitList().createIterator(); NULL != (un = (*ui)); ++ui) {
                 enum clsptr type = un->isUnit();
                 if (collideroids ||
@@ -37,7 +37,7 @@ void StarSystem::UpdateMissiles()
         dischargedMissiles.pop_back();
     }
 }
-void MissileEffect::ApplyDamage(Unit *smaller)
+void MissileEffect::ApplyDamage(std::shared_ptr<Unit> smaller)
 {
     QVector norm     = pos - smaller->Position();
     float   distance = norm.Magnitude() - smaller->rSize(); // no better check than the bounding sphere for now
@@ -92,7 +92,7 @@ void Missile::Kill(bool erase)
     Unit::Kill(erase);
 }
 void Missile::reactToCollision(
-    Unit *smaller, const QVector &biglocation, const Vector &bignormal, const QVector &smalllocation, const Vector &smallnormal, float dist)
+    std::shared_ptr<Unit> smaller, const QVector &biglocation, const Vector &bignormal, const QVector &smalllocation, const Vector &smallnormal, float dist)
 {
     static bool doesmissilebounce = XMLSupport::parse_bool(vs_config->getVariable("physics", "missile_bounce", "false"));
     if (doesmissilebounce)
@@ -107,13 +107,13 @@ void Missile::reactToCollision(
     }
 }
 
-Unit *getNearestTarget(Unit *me)
+std::shared_ptr<Unit> getNearestTarget(std::shared_ptr<Unit> me)
 {
     return NULL; // THIS FUNCTION IS TOO SLOW__AND ECM SHOULD WORK DIFFERENTLY ANYHOW...WILL SAVE FIXING IT FOR LATER
 
     QVector pos(me->Position());
-    Unit *  un       = NULL;
-    Unit *  targ     = NULL;
+    std::shared_ptr<Unit> un       = NULL;
+    std::shared_ptr<Unit> targ     = NULL;
     double  minrange = FLT_MAX;
     for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = (*i)); ++i) {
         if (un == me)
@@ -150,7 +150,7 @@ void Missile::UpdatePhysics2(const Transformation &trans,
                              bool                  ResolveLast,
                              UnitCollection *      uc)
 {
-    Unit *targ;
+    std::shared_ptr<Unit> targ;
     if ((targ = (Unit::Target()))) {
         had_target = true;
         if (targ->hull < 0) {
@@ -165,7 +165,7 @@ void Missile::UpdatePhysics2(const Transformation &trans,
                 targ->graphicOptions.missilelock = true;
                 un_iter i                        = targ->getSubUnits();
 
-                Unit *su;
+                std::shared_ptr<Unit> su;
                 for (; (su = *i) != NULL; ++i)
                     if (su->attackPreference() == pointdef) {
                         if (su->Target() == NULL) {

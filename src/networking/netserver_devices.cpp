@@ -126,7 +126,7 @@ void NetServer::sendCredits(ObjSerial serial, float creds)
     p.send(CMD_CREDITS, serial, netbuf.getData(), netbuf.getDataLength(), SENDRELIABLE, NULL, clt->tcp_sock, __FILE__, PSEUDO__LINE__(97));
 }
 
-void NetServer::addUnitCargoSnapshot(const Unit *un, NetBuffer &netbuf)
+void NetServer::addUnitCargoSnapshot(const std::shared_ptr<Unit> un, NetBuffer &netbuf)
 {
     unsigned int numCargo = un->numCargo();
     if (!numCargo)
@@ -153,7 +153,7 @@ void NetServer::sendCargoSnapshot(ObjSerial cltser, const UnitCollection &list)
         return;
     NetBuffer   netbuf;
     Packet      p2;
-    const Unit *un;
+    const std::shared_ptr<Unit> un;
     for (un_kiter iter = list.constIterator(); (un = *iter); ++iter) {
         if (!un->GetSerial() || un->GetSerial() == cltser)
             continue;
@@ -170,7 +170,7 @@ void NetServer::sendSaveData(
      *  until it is implemented. */
     NetBuffer netbuf;
     Packet    p2;
-    Unit *    un = _Universe->AccessCockpit(cp)->GetParent();
+    std::shared_ptr<Unit> un = _Universe->AccessCockpit(cp)->GetParent();
     if (!un)
         return;
     ClientPtr clt = this->getClientFromSerial(un->GetSerial());
@@ -201,7 +201,7 @@ void NetServer::sendMission(int cp, unsigned short packetType, string mission, i
 {
     Packet    p;
     NetBuffer netbuf;
-    Unit *    un = _Universe->AccessCockpit(cp)->GetParent();
+    std::shared_ptr<Unit> un = _Universe->AccessCockpit(cp)->GetParent();
     if (!un)
         return;
     ClientPtr clt = this->getClientFromSerial(un->GetSerial());
@@ -257,7 +257,7 @@ void NetServer::sendCustom(int cp, const string &command, const string &args, co
     Packet    p2;
     NetBuffer netbuf;
 
-    Unit *un = _Universe->AccessCockpit(cp)->GetParent();
+    std::shared_ptr<Unit> un = _Universe->AccessCockpit(cp)->GetParent();
     if (!un) {
         fprintf(stderr, "Attempt to sendCustom NULL player %d ; CMD %s %s ; ID %s\n", cp, command.c_str(), args.c_str(), id.c_str());
         return;
@@ -285,7 +285,7 @@ void NetServer::sendMessage(const string &from, const string &to, const string &
         sscanf(tostr + 1, "%d", &playerto);
         if (playerto != -1 && (unsigned int)playerto < _Universe->numPlayers()) {
             Cockpit *cp = _Universe->AccessCockpit(playerto);
-            Unit *   un = cp->GetParent();
+            std::shared_ptr<Unit> un = cp->GetParent();
             if (!un)
                 return;
             ClientPtr clt = this->getClientFromSerial(un->GetSerial());
@@ -312,7 +312,7 @@ void NetServer::sendMessage(const string &from, const string &to, const string &
     }
 }
 
-void NetServer::sendCommunication(Unit *from, Unit *to, const class CommunicationMessage *c)
+void NetServer::sendCommunication(std::shared_ptr<Unit> from, std::shared_ptr<Unit> to, const class CommunicationMessage *c)
 {
     NetBuffer netbuf;
     Client *  clt = this->getClientFromSerial(to->GetSerial()).get();
@@ -347,12 +347,12 @@ void NetServer::sendCommunication(Unit *from, Unit *to, const class Communicatio
 }
 
 // zonemgr.cpp
-extern void displayUnitInfo(Unit *un, const string callsign, const char *type);
+extern void displayUnitInfo(std::shared_ptr<Unit> un, const string callsign, const char *type);
 
 void NetServer::sendKill(ObjSerial serial, unsigned short zone)
 {
     Packet p;
-    Unit * un;
+    std::shared_ptr<Unit> un;
 
     // cerr<<"SENDING A KILL for serial "<<serial<<" in zone "<<zone<<endl;
     // Find the client in the udp & tcp client lists in order to set it out of the game (not delete it yet)
@@ -397,7 +397,7 @@ void NetServer::sendJumpFinal(ClientPtr clt, const string &server_ip, unsigned s
         logoutList.push_back(clt);
 }
 
-void NetServer::sendJump(Unit *un, Unit *dst, const string &dststr)
+void NetServer::sendJump(std::shared_ptr<Unit> un, std::shared_ptr<Unit> dst, const string &dststr)
 {
     ClientPtr clt = this->getClientFromSerial(un->GetSerial());
     if (!clt)
@@ -496,7 +496,7 @@ void NetServer::sendDockAuthorize(ObjSerial serial, ObjSerial utdw_serial, int d
         cerr << "Client " << serial << " for dock autorization is NULL." << endl;
         return;
     }
-    Unit *un = clt->game_unit.GetUnit();
+    std::shared_ptr<Unit> un = clt->game_unit.GetUnit();
     if (!un)
         return;
     // StarSystem * currentsys = un->getStarSystem();
@@ -524,7 +524,7 @@ void NetServer::sendDockDeny(ObjSerial serial, unsigned short zone)
 
 void NetServer::sendForcePosition(ClientPtr clt)
 {
-    Unit *un = clt->game_unit.GetUnit();
+    std::shared_ptr<Unit> un = clt->game_unit.GetUnit();
     if (!un)
         return;
     ClientState cs(un);
@@ -554,7 +554,7 @@ void NetServer::sendUnDock(ObjSerial serial, ObjSerial utdwserial, unsigned shor
         cerr << "Client " << serial << " for dock autorization is NULL." << endl;
         return;
     }
-    Unit *un = clt->game_unit.GetUnit();
+    std::shared_ptr<Unit> un = clt->game_unit.GetUnit();
     if (!un)
         return;
     clt->ingame = true;

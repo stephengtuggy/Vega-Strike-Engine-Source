@@ -85,11 +85,11 @@ class Music
 
   public:
     enum Playlist { NOLIST = -1, BATTLELIST = 0, PEACELIST, PANICLIST, VICTORYLIST, LOSSLIST, MAXLIST };
-    Music(Unit *parent = NULL);
+    Music(std::shared_ptr<Unit> parent = NULL);
     int  loopsleft;
     void Listen();
     ~Music();
-    void SetParent(Unit *parent);
+    void SetParent(std::shared_ptr<Unit> parent);
 
     void GotoSong(int whichlist, int whichsong, bool skip, int layer = -1);
 

@@ -6,11 +6,11 @@
 #include "warpto.h"
 #include "universe_util.h"
 #include <string>
-static void DockedScript(Unit *docker, Unit *base)
+static void DockedScript(std::shared_ptr<Unit> docker, std::shared_ptr<Unit> base)
 {
     static string script = vs_config->getVariable("AI", "DockedToScript", "");
     if (script.length() > 0) {
-        Unit *targ = docker->Target();
+        std::shared_ptr<Unit> targ = docker->Target();
         docker->GetComputerData().target.SetUnit(base);
         UniverseUtil::setScratchUnit(docker);
         CompileRunPython(script);
@@ -20,7 +20,7 @@ static void DockedScript(Unit *docker, Unit *base)
 }
 namespace Orders
 {
-DockingOps::DockingOps(Unit *unitToDockWith, Order *ai, bool physically_dock, bool keeptrying)
+DockingOps::DockingOps(std::shared_ptr<Unit> unitToDockWith, Order *ai, bool physically_dock, bool keeptrying)
     : MoveTo(QVector(0, 0, 1), false, 10, false), docking(unitToDockWith), state(GETCLEARENCE), oldstate(ai)
 {
     formerOwnerDoNotDereference = NULL;
@@ -31,7 +31,7 @@ DockingOps::DockingOps(Unit *unitToDockWith, Order *ai, bool physically_dock, bo
     static float temptimer      = XMLSupport::parse_float(vs_config->getVariable("physics", "docking_time", "10"));
     timer                       = temptimer;
 }
-void DockingOps::SetParent(Unit *par)
+void DockingOps::SetParent(std::shared_ptr<Unit> par)
 {
     MoveTo::SetParent(par);
     if (parent) {
@@ -41,7 +41,7 @@ void DockingOps::SetParent(Unit *par)
 }
 void DockingOps::Execute()
 {
-    Unit *utdw = docking.GetUnit();
+    std::shared_ptr<Unit> utdw = docking.GetUnit();
     if (parent == utdw || utdw == NULL) {
         RestoreOldAI();
         Destroy();
@@ -85,7 +85,7 @@ void DockingOps::Destroy()
             oldstate->Destroy();
         oldstate = NULL;
         if (formerOwnerDoNotDereference) {
-            parent->SetOwner((Unit *)formerOwnerDoNotDereference); // set owner will not deref
+            parent->SetOwner((std::shared_ptr<Unit> )formerOwnerDoNotDereference); // set owner will not deref
             formerOwnerDoNotDereference = NULL;
         }
     }
@@ -96,13 +96,13 @@ void DockingOps::RestoreOldAI()
     if (parent) {
         parent->aistate = oldstate; // that's me!
         if (formerOwnerDoNotDereference) {
-            parent->SetOwner((Unit *)formerOwnerDoNotDereference);
+            parent->SetOwner((std::shared_ptr<Unit> )formerOwnerDoNotDereference);
             formerOwnerDoNotDereference = NULL;
         }
         oldstate = NULL;
     }
 }
-int SelectDockPort(Unit *utdw, Unit *parent)
+int SelectDockPort(std::shared_ptr<Unit> utdw, std::shared_ptr<Unit> parent)
 {
     const vector<DockingPorts> &dp   = utdw->DockingPortLocations();
     float                       dist = FLT_MAX;
@@ -118,7 +118,7 @@ int SelectDockPort(Unit *utdw, Unit *parent)
         }
     return num;
 }
-bool DockingOps::RequestClearence(Unit *utdw)
+bool DockingOps::RequestClearence(std::shared_ptr<Unit> utdw)
 {
     if (physicallyDock && !utdw->RequestClearance(parent))
         return false;
@@ -127,7 +127,7 @@ bool DockingOps::RequestClearence(Unit *utdw)
         return false;
     return true;
 }
-QVector DockingOps::Movement(Unit *utdw)
+QVector DockingOps::Movement(std::shared_ptr<Unit> utdw)
 {
     const QVector loc(Transform(utdw->GetTransformation(), utdw->DockingPortLocations()[port].GetPosition().Cast()));
     SetDest(loc);
@@ -142,7 +142,7 @@ QVector DockingOps::Movement(Unit *utdw)
         WarpToP(parent, utdw, true);
     return loc;
 }
-bool DockingOps::DockToTarget(Unit *utdw)
+bool DockingOps::DockToTarget(std::shared_ptr<Unit> utdw)
 {
     if (utdw->DockingPortLocations()[port].IsOccupied()) {
         if (keeptrying) {
@@ -186,7 +186,7 @@ bool DockingOps::DockToTarget(Unit *utdw)
     }
     return false;
 }
-bool DockingOps::PerformDockingOperations(Unit *utdw)
+bool DockingOps::PerformDockingOperations(std::shared_ptr<Unit> utdw)
 {
     timer -= SIMULATION_ATOM;
     bool isplanet = utdw->isUnit() == PLANETPTR;
@@ -213,7 +213,7 @@ bool DockingOps::PerformDockingOperations(Unit *utdw)
     }
     return false;
 }
-bool DockingOps::Undock(Unit *utdw)
+bool DockingOps::Undock(std::shared_ptr<Unit> utdw)
 {
     // this is a good heuristic... find the location where you are.compare with center...then fly the fuck away
     QVector awaydir = parent->Position() - utdw->Position();

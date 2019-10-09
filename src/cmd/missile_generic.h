@@ -12,7 +12,7 @@ class MissileEffect
     void *  ownerDoNotDereference;
 
   public:
-    void ApplyDamage(Unit *);
+    void ApplyDamage(std::shared_ptr<Unit> );
     MissileEffect(const QVector &pos, float dam, float pdam, float radius, float radmult, void *owner) : pos(pos)
     {
         damage                      = dam;
@@ -103,7 +103,7 @@ class Missile : public Unit
 
   public:
     virtual void Kill(bool eraseFromSave = true);
-    virtual void reactToCollision(Unit *         smaller,
+    virtual void reactToCollision(std::shared_ptr<Unit> smaller,
                                   const QVector &biglocation,
                                   const Vector & bignormal,
                                   const QVector &smalllocation,

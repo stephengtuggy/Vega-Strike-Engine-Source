@@ -24,7 +24,7 @@ struct BeamDrawContext {
 static DecalQueue                      beamdecals;
 static vector<vector<BeamDrawContext>> beamdrawqueue;
 
-Beam::Beam(const Transformation &trans, const weapon_info &clne, void *own, Unit *firer, int sound)
+Beam::Beam(const Transformation &trans, const weapon_info &clne, void *own, std::shared_ptr<Unit> firer, int sound)
     : vlist(NULL), Col(clne.r, clne.g, clne.b, clne.a)
 {
     VSCONSTRUCT2('B')
@@ -55,9 +55,9 @@ Beam::~Beam()
     beamdecals.DelTexture(decal);
 }
 
-extern void AdjustMatrixToTrackTarget(Matrix &mat, const Vector &vel, Unit *target, float speed, bool lead, float cone);
+extern void AdjustMatrixToTrackTarget(Matrix &mat, const Vector &vel, std::shared_ptr<Unit> target, float speed, bool lead, float cone);
 
-void Beam::Draw(const Transformation &trans, const Matrix &m, Unit *targ, float tracking_cone)
+void Beam::Draw(const Transformation &trans, const Matrix &m, std::shared_ptr<Unit> targ, float tracking_cone)
 {
     // hope that the correct transformation is on teh stack
     if (curthick == 0)

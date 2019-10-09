@@ -11,7 +11,7 @@ void SaveNetUtil::GetSaveStrings(ClientPtr clt, string &savestr, string &xmlstr,
 {
     if (!clt)
         return;
-    Unit *un = clt->game_unit.GetUnit();
+    std::shared_ptr<Unit> un = clt->game_unit.GetUnit();
     if (!un)
         return;
     /*
@@ -33,7 +33,7 @@ void SaveNetUtil::GetSaveStrings(ClientPtr clt, string &savestr, string &xmlstr,
 void SaveNetUtil::GetSaveStrings(int numplayer, string &savestr, string &xmlstr, bool savevars)
 {
     Cockpit *cp;
-    Unit *   un;
+    std::shared_ptr<Unit> un;
     cp = _Universe->AccessCockpit(numplayer);
     if (cp) {
         un = cp->GetParent();

@@ -81,9 +81,9 @@ template <class UnitType> class GameUnit : public UnitType
     /// fils in corner_min,corner_max and radial_size
     /// returns -1 if unit cannot dock, otherwise returns which dock it can dock at
     UnitImages<void> &GetImageInformation();
-    bool              RequestClearance(Unit *dockingunit);
+    bool              RequestClearance(std::shared_ptr<Unit> dockingunit);
     /// Loads a user interface for the user to upgrade his ship
-    void UpgradeInterface(Unit *base);
+    void UpgradeInterface(std::shared_ptr<Unit> base);
     /// The name (type) of this unit shouldn't be public
     virtual void Cloak(bool cloak);
     /*
@@ -162,7 +162,7 @@ template <class UnitType> class GameUnit : public UnitType
      **** CUSTOMIZE/UPGRADE STUFF
      **************************************************************************************
      */
-    bool   UpgradeSubUnits(const Unit *up, int subunitoffset, bool touchme, bool downgrade, int &numave, double &percentage);
+    bool   UpgradeSubUnits(const std::shared_ptr<Unit> up, int subunitoffset, bool touchme, bool downgrade, int &numave, double &percentage);
     double Upgrade(const std::string &file, int mountoffset, int subunitoffset, bool force, bool loop_through_mounts);
     /*
      *******************************************

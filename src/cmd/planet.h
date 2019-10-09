@@ -46,7 +46,7 @@ class GamePlanet : public GameUnit<class Planet>
                BLENDFUNC                       blenddst,
                const std::vector<std::string> &dest,
                const QVector &                 orbitcent,
-               Unit *                          parent,
+               std::shared_ptr<Unit> parent,
                const GFXMaterial &             ourmat,
                const std::vector<GFXLightLocal> &,
                int    faction,
@@ -97,7 +97,7 @@ class GamePlanet : public GameUnit<class Planet>
     {
         return atmosphere;
     }
-    void reactToCollision(Unit *         smaller,
+    void reactToCollision(std::shared_ptr<Unit> smaller,
                           const QVector &biglocation,
                           const Vector & bignormal,
                           const QVector &smalllocation,

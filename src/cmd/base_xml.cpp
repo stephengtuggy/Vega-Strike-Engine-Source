@@ -47,7 +47,7 @@ void BaseInterface::Load(const char *filename, const char *time_of_day_hint, con
         inFile  = VSFileSystem::vs_open( full_filename.c_str(), "r" );
     }
     if (!inFile) {
-        Unit *baseun = this->baseun.GetUnit();
+        std::shared_ptr<Unit> baseun = this->baseun.GetUnit();
         if (baseun) {
             if (baseun->isUnit() == PLANETPTR) {
                 daynight_filename = string( "bases/planet_" )+time_of_day_hint+string( BASE_EXTENSION );
@@ -74,7 +74,7 @@ void BaseInterface::Load(const char *filename, const char *time_of_day_hint, con
     FILE *inFile = getFullFile(string("bases/") + filename, time_of_day_hint, faction);
     if (!inFile) {
         bool  planet = false;
-        Unit *baseun = this->baseun.GetUnit();
+        std::shared_ptr<Unit> baseun = this->baseun.GetUnit();
         if (baseun)
             planet = (baseun->isUnit() == PLANETPTR);
         string basestring("bases/unit");

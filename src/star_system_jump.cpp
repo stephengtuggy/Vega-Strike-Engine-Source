@@ -86,7 +86,7 @@ void GameStarSystem::DrawJumpStars()
     for (unsigned int kk = 0; kk < pendingjump.size(); ++kk) {
         int k = pendingjump[kk]->animation;
         if (k != -1) {
-            Unit *un = pendingjump[kk]->un.GetUnit();
+            std::shared_ptr<Unit> un = pendingjump[kk]->un.GetUnit();
             if (un) {
                 Vector p, q, r;
                 un->GetOrientation(p, q, r);
@@ -118,7 +118,7 @@ void GameStarSystem::DrawJumpStars()
         }
 }
 
-void GameStarSystem::DoJumpingComeSightAndSound(Unit *un)
+void GameStarSystem::DoJumpingComeSightAndSound(std::shared_ptr<Unit> un)
 {
     Vector p, q, r;
     un->GetOrientation(p, q, r);
@@ -126,7 +126,7 @@ void GameStarSystem::DoJumpingComeSightAndSound(Unit *un)
     VolatileJumpAnimations[myani].a->SetOrientation(p, q, r);
 }
 
-int GameStarSystem::DoJumpingLeaveSightAndSound(Unit *un)
+int GameStarSystem::DoJumpingLeaveSightAndSound(std::shared_ptr<Unit> un)
 {
     int    ani;
     Vector p, q, r;

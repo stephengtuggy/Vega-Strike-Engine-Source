@@ -8,11 +8,11 @@ class Unit;
 class UnitContainer
 {
   protected:
-    Unit *unit;
+    std::shared_ptr<Unit> unit;
 
   public:
     UnitContainer();
-    UnitContainer(Unit *);
+    UnitContainer(std::shared_ptr<Unit> );
     UnitContainer(const UnitContainer &un)
     {
         VSCONSTRUCT1('U')
@@ -24,11 +24,11 @@ class UnitContainer
         SetUnit(a.unit);
         return a;
     }
-    bool operator==(const Unit *oth) const
+    bool operator==(const std::shared_ptr<Unit> oth) const
     {
         return unit == oth;
     }
-    bool operator!=(const Unit *oth) const
+    bool operator!=(const std::shared_ptr<Unit> oth) const
     {
         return unit != oth;
     }
@@ -41,10 +41,10 @@ class UnitContainer
         return unit != oth.unit;
     }
     ~UnitContainer();
-    void  SetUnit(Unit *);
-    Unit *GetUnit();
+    void  SetUnit(std::shared_ptr<Unit> );
+    std::shared_ptr<Unit> GetUnit();
 
-    const Unit *GetConstUnit() const
+    const std::shared_ptr<Unit> GetConstUnit() const
     {
         return unit;
     }

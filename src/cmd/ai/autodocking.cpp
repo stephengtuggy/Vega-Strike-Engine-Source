@@ -16,7 +16,7 @@ namespace
 {
 
 // Find waypoints if we can travel through all of them.
-boost::optional<size_t> FindWaypoint(Unit *player, const std::vector<DockingPorts> &dockingPorts, size_t port)
+boost::optional<size_t> FindWaypoint(std::shared_ptr<Unit> player, const std::vector<DockingPorts> &dockingPorts, size_t port)
 {
     if (!dockingPorts[port].IsConnected())
         return port;
@@ -36,7 +36,7 @@ boost::optional<size_t> FindWaypoint(Unit *player, const std::vector<DockingPort
 }
 
 // Find suitable docking port and associated waypoints.
-Orders::AutoDocking::DockingPath FindDockingPort(Unit *player, Unit *station)
+Orders::AutoDocking::DockingPath FindDockingPort(std::shared_ptr<Unit> player, std::shared_ptr<Unit> station)
 {
     // FIXME: Prefer outside docking ports (because they are more safe to travel to)
     // FIXME: Ensure line-of-sight to first point
@@ -99,14 +99,14 @@ Orders::AutoDocking::DockingPath FindDockingPort(Unit *player, Unit *station)
 namespace Orders
 {
 
-AutoDocking::AutoDocking(Unit *destination) : Order(MOVEMENT | FACING, SLOCATION), state(&AutoDocking::InitialState), target(destination)
+AutoDocking::AutoDocking(std::shared_ptr<Unit> destination) : Order(MOVEMENT | FACING, SLOCATION), state(&AutoDocking::InitialState), target(destination)
 {
 }
 
 void AutoDocking::Execute()
 {
-    Unit *player  = GetParent();
-    Unit *station = target.GetUnit();
+    std::shared_ptr<Unit> player  = GetParent();
+    std::shared_ptr<Unit> station = target.GetUnit();
     // Exit if either the ship or the station has been destroyed
     if (player == NULL || station == NULL) {
         done = true;
@@ -115,7 +115,7 @@ void AutoDocking::Execute()
     }
 }
 
-bool AutoDocking::CanDock(Unit *player, Unit *station)
+bool AutoDocking::CanDock(std::shared_ptr<Unit> player, std::shared_ptr<Unit> station)
 {
     if (!station->IsCleared(player)) {
         return false;
@@ -133,13 +133,13 @@ bool AutoDocking::CanDock(Unit *player, Unit *station)
     return true;
 }
 
-void AutoDocking::EndState(Unit *player, Unit *station)
+void AutoDocking::EndState(std::shared_ptr<Unit> player, std::shared_ptr<Unit> station)
 {
     player->autopilotactive = false;
     done                    = true;
 }
 
-void AutoDocking::AbortState(Unit *player, Unit *station)
+void AutoDocking::AbortState(std::shared_ptr<Unit> player, std::shared_ptr<Unit> station)
 {
     EraseOrders();
     state = &AutoDocking::EndState;
@@ -149,7 +149,7 @@ void AutoDocking::AbortState(Unit *player, Unit *station)
     FlyByKeyboard::StopKey(kbdata, PRESS);
 }
 
-void AutoDocking::InitialState(Unit *player, Unit *station)
+void AutoDocking::InitialState(std::shared_ptr<Unit> player, std::shared_ptr<Unit> station)
 {
     if (CanDock(player, station)) {
         state = &AutoDocking::SelectionState;
@@ -158,7 +158,7 @@ void AutoDocking::InitialState(Unit *player, Unit *station)
     }
 }
 
-void AutoDocking::SelectionState(Unit *player, Unit *station)
+void AutoDocking::SelectionState(std::shared_ptr<Unit> player, std::shared_ptr<Unit> station)
 {
     EraseOrders();
 
@@ -176,7 +176,7 @@ void AutoDocking::SelectionState(Unit *player, Unit *station)
     state = &AutoDocking::ApproachState;
 }
 
-void AutoDocking::ApproachState(Unit *player, Unit *station)
+void AutoDocking::ApproachState(std::shared_ptr<Unit> player, std::shared_ptr<Unit> station)
 {
     assert(!dockingPath.empty());
 
@@ -192,7 +192,7 @@ void AutoDocking::ApproachState(Unit *player, Unit *station)
     }
 }
 
-void AutoDocking::DockingState(Unit *player, Unit *station)
+void AutoDocking::DockingState(std::shared_ptr<Unit> player, std::shared_ptr<Unit> station)
 {
     assert(!dockingPath.empty());
 
@@ -200,13 +200,13 @@ void AutoDocking::DockingState(Unit *player, Unit *station)
     state = &AutoDocking::DockedState;
 }
 
-void AutoDocking::DockedState(Unit *player, Unit *station)
+void AutoDocking::DockedState(std::shared_ptr<Unit> player, std::shared_ptr<Unit> station)
 {
     EraseOrders();
     state = &AutoDocking::UndockingState;
 }
 
-void AutoDocking::UndockingState(Unit *player, Unit *station)
+void AutoDocking::UndockingState(std::shared_ptr<Unit> player, std::shared_ptr<Unit> station)
 {
     assert(!dockingPath.empty());
 
@@ -223,7 +223,7 @@ void AutoDocking::UndockingState(Unit *player, Unit *station)
     }
 }
 
-void AutoDocking::DepartureState(Unit *player, Unit *station)
+void AutoDocking::DepartureState(std::shared_ptr<Unit> player, std::shared_ptr<Unit> station)
 {
     Order::Execute();
     if (Done()) {
@@ -239,7 +239,7 @@ void AutoDocking::EraseOrders()
     eraseType(MOVEMENT);
 }
 
-void AutoDocking::EnqueuePort(Unit *player, Unit *station, size_t port)
+void AutoDocking::EnqueuePort(std::shared_ptr<Unit> player, std::shared_ptr<Unit> station, size_t port)
 {
     // Set the coordinates for the docking port
     const float turningSpeed = 1;

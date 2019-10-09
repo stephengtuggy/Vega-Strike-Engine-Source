@@ -30,12 +30,12 @@ template <class CTSIZ, class CTACCURACY, class CTHUGE> class UnitHash3d
     UnitCollection   hb;
     UnitCollection * active_huge;
     UnitCollection * accum_huge;
-    std::set<Unit *> act_huge;
-    std::set<Unit *> acc_huge;
+    std::set<std::shared_ptr<Unit> > act_huge;
+    std::set<std::shared_ptr<Unit> > acc_huge;
     /// The hash table itself. Holds most units to be collided with
     UnitCollection table[COLLIDETABLESIZE][COLLIDETABLESIZE][COLLIDETABLESIZE];
     StarSystem *   activeStarSystem;
-    Unit *         debugUnit;
+    std::shared_ptr<Unit> debugUnit;
 
     /// hashes 3 values into the appropriate spot in the hash table
 
@@ -71,7 +71,7 @@ template <class CTSIZ, class CTACCURACY, class CTHUGE> class UnitHash3d
         act_huge.swap(acc_huge);
         acc_huge.clear();
     }
-    void AddHugeToActive(Unit *un)
+    void AddHugeToActive(std::shared_ptr<Unit> un)
     {
         if (acc_huge.find(un) == acc_huge.end()) {
             acc_huge.insert(un);
@@ -158,7 +158,7 @@ template <class CTSIZ, class CTACCURACY, class CTHUGE> class UnitHash3d
         return sizer;
     }
     /// Adds objectToPut into collide table with limits specified by target.
-    void Put(LineCollide *target, Unit *objectToPut)
+    void Put(LineCollide *target, std::shared_ptr<Unit> objectToPut)
     {
         int    x, y, z;
         double maxx = (ceil(target->Maxi.i / COLLIDETABLEACCURACY)) * COLLIDETABLEACCURACY;
@@ -194,12 +194,12 @@ template <class CTSIZ, class CTACCURACY, class CTHUGE> class UnitHash3d
         }
     }
 
-    static bool removeFromVector(UnitCollection &myvector, Unit *objectToKill)
+    static bool removeFromVector(UnitCollection &myvector, std::shared_ptr<Unit> objectToKill)
     {
         return (myvector.remove(objectToKill));
     }
 
-    bool Eradicate(Unit *objectToKill)
+    bool Eradicate(std::shared_ptr<Unit> objectToKill)
     {
         bool ret = removeFromVector(hugeobjects, objectToKill);
         for (unsigned int i = 0; i <= COLLIDETABLESIZE - 1; i++)
@@ -209,7 +209,7 @@ template <class CTSIZ, class CTACCURACY, class CTHUGE> class UnitHash3d
         return ret;
     }
     /// Removes objectToKill from collide table with span of Target
-    bool Remove(const LineCollide *target, Unit *objectToKill)
+    bool Remove(const LineCollide *target, std::shared_ptr<Unit> objectToKill)
     {
         bool   ret = false;
         int    x, y, z;
@@ -277,7 +277,7 @@ struct collideTrees {
         return rapidColliders[0] != NULL;
     }
 
-    csOPCODECollider *colTree(Unit *un, const Vector &othervelocity); // gets the appropriately scaled unit collide tree
+    csOPCODECollider *colTree(std::shared_ptr<Unit> un, const Vector &othervelocity); // gets the appropriately scaled unit collide tree
 
     // Not sure at the moment where we decide to collide to the shield ...since all we ever compare to is colTree in Collide()
     // Yet, this is used somewhere.

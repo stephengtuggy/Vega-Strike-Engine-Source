@@ -30,12 +30,12 @@ bool useAfterburnerToFollow()
     static bool useafterburner = XMLSupport::parse_bool(vs_config->getVariable("AI", "use_afterburner_to_follow", "true"));
     return useafterburner;
 }
-void AddOrd(Order *aisc, Unit *un, Order *ord)
+void AddOrd(Order *aisc, std::shared_ptr<Unit> un, Order *ord)
 {
     ord->SetParent(un);
     aisc->EnqueueOrder(ord);
 }
-void ReplaceOrd(Order *aisc, Unit *un, Order *ord)
+void ReplaceOrd(Order *aisc, std::shared_ptr<Unit> un, Order *ord)
 {
     ord->SetParent(un);
     aisc->ReplaceOrder(ord);
@@ -141,7 +141,7 @@ class EvadeLeftRightC : public FlyByWire
         Vector P = Vector(0, 0, 0), Q = Vector(0, 0, 0);
         parent->GetOrientation(P, Q, facing);
     }
-    virtual void SetParent(Unit *parent1)
+    virtual void SetParent(std::shared_ptr<Unit> parent1)
     {
         FlyByWire::SetParent(parent1);
         SetOppositeDir();
@@ -161,7 +161,7 @@ class EvadeLeftRightC : public FlyByWire
 
 // these can be used in the XML scripts if they are allowed to be called
 
-void AfterburnTurnTowards(Order *aisc, Unit *un)
+void AfterburnTurnTowards(Order *aisc, std::shared_ptr<Unit> un)
 {
     Vector vec(0, 0, 10000);
     bool   afterburn = useAfterburnerToFollow();
@@ -170,7 +170,7 @@ void AfterburnTurnTowards(Order *aisc, Unit *un)
     ord = (new Orders::FaceTarget(false, 3));
     AddOrd(aisc, un, ord);
 }
-void AfterburnTurnTowardsITTS(Order *aisc, Unit *un)
+void AfterburnTurnTowardsITTS(Order *aisc, std::shared_ptr<Unit> un)
 {
     Vector vec(0, 0, 10000);
 
@@ -181,7 +181,7 @@ void AfterburnTurnTowardsITTS(Order *aisc, Unit *un)
     AddOrd(aisc, un, ord);
 }
 
-void BarrelRoll(Order *aisc, Unit *un)
+void BarrelRoll(Order *aisc, std::shared_ptr<Unit> un)
 {
     FlyByWire *broll = new FlyByWire;
     AddOrd(aisc, un, broll);
@@ -203,7 +203,7 @@ void BarrelRoll(Order *aisc, Unit *un)
     broll->Afterburn(afterburn);
 }
 
-static void EvadeWavy(Order *aisc, Unit *un, bool updown, bool ab)
+static void EvadeWavy(Order *aisc, std::shared_ptr<Unit> un, bool updown, bool ab)
 {
     EvadeLeftRightC *broll = NULL;
     broll                  = new EvadeLeftRightC(updown);
@@ -212,19 +212,19 @@ static void EvadeWavy(Order *aisc, Unit *un, bool updown, bool ab)
     broll->MatchSpeed(Vector(0, 0, afterburn ? un->GetComputerData().max_ab_speed() : un->GetComputerData().max_speed()));
     broll->Afterburn(afterburn);
 }
-void AfterburnEvadeLeftRight(Order *aisc, Unit *un)
+void AfterburnEvadeLeftRight(Order *aisc, std::shared_ptr<Unit> un)
 {
     EvadeWavy(aisc, un, false, true);
 }
-void AfterburnEvadeUpDown(Order *aisc, Unit *un)
+void AfterburnEvadeUpDown(Order *aisc, std::shared_ptr<Unit> un)
 {
     EvadeWavy(aisc, un, true, true);
 }
-void EvadeLeftRight(Order *aisc, Unit *un)
+void EvadeLeftRight(Order *aisc, std::shared_ptr<Unit> un)
 {
     EvadeWavy(aisc, un, false, false);
 }
-void EvadeUpDown(Order *aisc, Unit *un)
+void EvadeUpDown(Order *aisc, std::shared_ptr<Unit> un)
 {
     EvadeWavy(aisc, un, true, false);
 }
@@ -242,7 +242,7 @@ class LoopAround : public Orders::FaceTargetITTS
     bool                        force_afterburn;
 
   public:
-    void SetParent(Unit *parent1)
+    void SetParent(std::shared_ptr<Unit> parent1)
     {
         FaceTargetITTS::SetParent(parent1);
         m.SetParent(parent1);
@@ -279,7 +279,7 @@ class LoopAround : public Orders::FaceTargetITTS
     }
     void Execute()
     {
-        Unit *targ = parent->Target();
+        std::shared_ptr<Unit> targ = parent->Target();
         if (targ) {
             Vector relloc    = parent->Position() - targ->Position();
             Vector r         = targ->cumulative_transformation_matrix.getR();
@@ -359,7 +359,7 @@ class LoopAroundAgro : public Orders::FaceTargetITTS
     }
     void Execute()
     {
-        Unit *targ = parent->Target();
+        std::shared_ptr<Unit> targ = parent->Target();
         if (targ) {
             Vector relloc    = parent->Position() - targ->Position();
             Vector r         = targ->cumulative_transformation_matrix.getR();
@@ -404,7 +404,7 @@ class FacePerpendicular : public Orders::FaceTargetITTS
     bool                        force_afterburn;
 
   public:
-    void SetParent(Unit *parent1)
+    void SetParent(std::shared_ptr<Unit> parent1)
     {
         FaceTargetITTS::SetParent(parent1);
         m.SetParent(parent1);
@@ -442,7 +442,7 @@ class FacePerpendicular : public Orders::FaceTargetITTS
     void Execute()
     {
         static float gun_range_pct = XMLSupport::parse_float(vs_config->getVariable("AI", "gun_range_percent_ok", ".66"));
-        Unit *       targ          = parent->Target();
+        std::shared_ptr<Unit> targ          = parent->Target();
         if (targ) {
             Vector relloc    = parent->Position() - targ->Position();
             Vector r         = targ->cumulative_transformation_matrix.getR();
@@ -481,88 +481,88 @@ class FacePerpendicular : public Orders::FaceTargetITTS
     }
 };
 } // namespace Orders
-void LoopAround(Order *aisc, Unit *un)
+void LoopAround(Order *aisc, std::shared_ptr<Unit> un)
 {
     Order *broll = new Orders::LoopAround(false, true, false, (int)(size_t)un);
     AddOrd(aisc, un, broll);
 }
-void AggressiveLoopAround(Order *aisc, Unit *un)
+void AggressiveLoopAround(Order *aisc, std::shared_ptr<Unit> un)
 {
     Order *broll = new Orders::LoopAroundAgro(true, true, false, (int)(size_t)un);
     AddOrd(aisc, un, broll);
 }
-void RollLeft(Order *aisc, Unit *un)
+void RollLeft(Order *aisc, std::shared_ptr<Unit> un)
 {
     if (un->aistate)
         AddOrd(un->aistate, un, new Orders::ExecuteFor(new Orders::MatchRoll(un->GetComputerData().max_roll_right, false), 1.0f));
 }
-void RollRight(Order *aisc, Unit *un)
+void RollRight(Order *aisc, std::shared_ptr<Unit> un)
 {
     if (un->aistate)
         AddOrd(un->aistate, un, new Orders::ExecuteFor(new Orders::MatchRoll(-un->GetComputerData().max_roll_left, false), 1.0f));
 }
-void RollLeftHard(Order *aisc, Unit *un)
+void RollLeftHard(Order *aisc, std::shared_ptr<Unit> un)
 {
     static float durvar = XMLSupport::parse_float(vs_config->getVariable("AI", "roll_order_duration", "5.0"));
     if (un->aistate)
         AddOrd(un->aistate, un, new Orders::ExecuteFor(new Orders::MatchRoll(un->GetComputerData().max_roll_right, false), durvar));
 }
-void RollRightHard(Order *aisc, Unit *un)
+void RollRightHard(Order *aisc, std::shared_ptr<Unit> un)
 {
     static float durvar = XMLSupport::parse_float(vs_config->getVariable("AI", "roll_order_duration", "5.0"));
     if (un->aistate)
         AddOrd(un->aistate, un, new Orders::ExecuteFor(new Orders::MatchRoll(-un->GetComputerData().max_roll_left, false), durvar));
 }
-void LoopAroundFast(Order *aisc, Unit *un)
+void LoopAroundFast(Order *aisc, std::shared_ptr<Unit> un)
 {
     Order *broll = new Orders::LoopAround(false, true, true, (int)(size_t)un);
     AddOrd(aisc, un, broll);
 }
 
-void FacePerpendicularFast(Order *aisc, Unit *un)
+void FacePerpendicularFast(Order *aisc, std::shared_ptr<Unit> un)
 {
     Order *broll = new Orders::FacePerpendicular(false, true, true, (int)(size_t)un);
     AddOrd(aisc, un, broll);
 }
-void FacePerpendicular(Order *aisc, Unit *un)
+void FacePerpendicular(Order *aisc, std::shared_ptr<Unit> un)
 {
     Order *broll = new Orders::FacePerpendicular(false, true, false, (int)(size_t)un);
     AddOrd(aisc, un, broll);
 }
-void FacePerpendicularSlow(Order *aisc, Unit *un)
+void FacePerpendicularSlow(Order *aisc, std::shared_ptr<Unit> un)
 {
     Order *broll = new Orders::FacePerpendicular(false, false, false, (int)(size_t)un);
     AddOrd(aisc, un, broll);
 }
 
-void RollFacePerpendicularFast(Order *aisc, Unit *un)
+void RollFacePerpendicularFast(Order *aisc, std::shared_ptr<Unit> un)
 {
     Order *broll = new Orders::FacePerpendicular(true, true, true, (int)(size_t)un);
     AddOrd(aisc, un, broll);
 }
-void RollFacePerpendicular(Order *aisc, Unit *un)
+void RollFacePerpendicular(Order *aisc, std::shared_ptr<Unit> un)
 {
     Order *broll = new Orders::FacePerpendicular(true, true, false, (int)(size_t)un);
     AddOrd(aisc, un, broll);
 }
-void RollFacePerpendicularSlow(Order *aisc, Unit *un)
+void RollFacePerpendicularSlow(Order *aisc, std::shared_ptr<Unit> un)
 {
     Order *broll = new Orders::FacePerpendicular(true, false, false, (int)(size_t)un);
     AddOrd(aisc, un, broll);
 }
 
-void AggressiveLoopAroundFast(Order *aisc, Unit *un)
+void AggressiveLoopAroundFast(Order *aisc, std::shared_ptr<Unit> un)
 {
     Order *broll = new Orders::LoopAroundAgro(true, true, true, (int)(size_t)un);
     AddOrd(aisc, un, broll);
 }
-void LoopAroundSlow(Order *aisc, Unit *un)
+void LoopAroundSlow(Order *aisc, std::shared_ptr<Unit> un)
 {
     Order *broll = new Orders::LoopAround(false, false, false, (int)(size_t)un);
     AddOrd(aisc, un, broll);
 }
 
-void SelfDestruct(Order *aisc, Unit *un)
+void SelfDestruct(Order *aisc, std::shared_ptr<Unit> un)
 {
     un->armor.frontrighttop    = -1;
     un->armor.backrighttop     = -1;
@@ -578,17 +578,17 @@ void SelfDestruct(Order *aisc, Unit *un)
     un->RemoveFromSystem(); // has no effect
 }
 
-void AggressiveLoopAroundSlow(Order *aisc, Unit *un)
+void AggressiveLoopAroundSlow(Order *aisc, std::shared_ptr<Unit> un)
 {
     Order *broll = new Orders::LoopAroundAgro(true, false, false, (int)(size_t)un);
     AddOrd(aisc, un, broll);
 }
 #if 0
-void Evade( Order *aisc, Unit *un )
+void Evade( Order *aisc, std::shared_ptr<Unit> un )
 {
     QVector v( un->Position() );
     QVector u( v );
-    Unit   *targ = un->Target();
+    std::shared_ptr<Unit> targ = un->Target();
     if (targ)
         u = targ->Position();
     Order  *ord  = new Orders::ChangeHeading( ( 200*(v-u) )+v, 3 );
@@ -602,17 +602,17 @@ void Evade( Order *aisc, Unit *un )
     AddOrd( aisc, un, ord );
 }
 #endif
-void MoveTo(Order *aisc, Unit *un)
+void MoveTo(Order *aisc, std::shared_ptr<Unit> un)
 {
     QVector Targ(un->Position());
-    Unit *  untarg = un->Target();
+    std::shared_ptr<Unit> untarg = un->Target();
     if (untarg)
         Targ = untarg->Position();
     Order *ord = new Orders::MoveTo(Targ, false, 3);
     AddOrd(aisc, un, ord);
 }
 
-void KickstopBase(Order *aisc, Unit *un, bool match)
+void KickstopBase(Order *aisc, std::shared_ptr<Unit> un, bool match)
 {
     Vector vec(0, 0, 0);
     if (match && un->Target())
@@ -622,12 +622,12 @@ void KickstopBase(Order *aisc, Unit *un, bool match)
     ord = (new Orders::FaceTargetITTS(false, 3));
     AddOrd(aisc, un, ord);
 }
-void Kickstop(Order *aisc, Unit *un)
+void Kickstop(Order *aisc, std::shared_ptr<Unit> un)
 {
     KickstopBase(aisc, un, false);
 }
 
-void CoastToStop(Order *aisc, Unit *un)
+void CoastToStop(Order *aisc, std::shared_ptr<Unit> un)
 {
     Vector vec(0, 0, 0);
     vec = un->GetVelocity();
@@ -640,7 +640,7 @@ void CoastToStop(Order *aisc, Unit *un)
     AddOrd(aisc, un, ord);
 }
 
-void DoNothing(Order *aisc, Unit *un)
+void DoNothing(Order *aisc, std::shared_ptr<Unit> un)
 {
     Vector vec(0, 0, 0);
     vec = un->GetVelocity();
@@ -649,12 +649,12 @@ void DoNothing(Order *aisc, Unit *un)
     AddOrd(aisc, un, ord);
 }
 
-void MatchVelocity(Order *aisc, Unit *un)
+void MatchVelocity(Order *aisc, std::shared_ptr<Unit> un)
 {
     KickstopBase(aisc, un, true);
 }
 
-static Vector VectorThrustHelper(Order *aisc, Unit *un, bool ab = false)
+static Vector VectorThrustHelper(Order *aisc, std::shared_ptr<Unit> un, bool ab = false)
 {
     Vector vec(0, 0, 0);
     Vector retval(0, 0, 0);
@@ -668,31 +668,31 @@ static Vector VectorThrustHelper(Order *aisc, Unit *un, bool ab = false)
     AddOrd(aisc, un, ord);
     return retval;
 }
-void VeerAway(Order *aisc, Unit *un)
+void VeerAway(Order *aisc, std::shared_ptr<Unit> un)
 {
     VectorThrustHelper(aisc, un);
     Order *ord = (new Orders::FaceTarget(false, 3));
     AddOrd(aisc, un, ord);
 }
-void VeerAwayITTS(Order *aisc, Unit *un)
+void VeerAwayITTS(Order *aisc, std::shared_ptr<Unit> un)
 {
     VectorThrustHelper(aisc, un);
     Order *ord = (new Orders::FaceTargetITTS(false, 3));
     AddOrd(aisc, un, ord);
 }
-void VeerAndVectorAway(Order *aisc, Unit *un)
+void VeerAndVectorAway(Order *aisc, std::shared_ptr<Unit> un)
 {
     Vector retval = VectorThrustHelper(aisc, un);
     Order *ord    = new Orders::ChangeHeading(retval, 3, 1);
     AddOrd(aisc, un, ord);
 }
-void AfterburnVeerAndVectorAway(Order *aisc, Unit *un)
+void AfterburnVeerAndVectorAway(Order *aisc, std::shared_ptr<Unit> un)
 {
     Vector retval = VectorThrustHelper(aisc, un, true);
     Order *ord    = new Orders::ChangeHeading(retval, 3, 1);
     AddOrd(aisc, un, ord);
 }
-void AfterburnVeerAndTurnAway(Order *aisc, Unit *un)
+void AfterburnVeerAndTurnAway(Order *aisc, std::shared_ptr<Unit> un)
 {
     Vector vec  = Vector(0, 0, 1);
     bool   ab   = true;
@@ -710,16 +710,16 @@ void AfterburnVeerAndTurnAway(Order *aisc, Unit *un)
     ord = new Orders::ChangeHeading(tpos + vec, 3, 1);
     AddOrd(aisc, un, ord);
 }
-static void SetupVAndTargetV(QVector &targetv, QVector &targetpos, Unit *un)
+static void SetupVAndTargetV(QVector &targetv, QVector &targetpos, std::shared_ptr<Unit> un)
 {
-    Unit *targ;
+    std::shared_ptr<Unit> targ;
     if ((targ = un->Target())) {
         targetv   = targ->GetVelocity().Cast();
         targetpos = targ->Position();
     }
 }
 
-void SheltonSlide(Order *aisc, Unit *un)
+void SheltonSlide(Order *aisc, std::shared_ptr<Unit> un)
 {
     QVector def(un->Position() + QVector(1, 0, 0));
     QVector targetv(def);
@@ -738,7 +738,7 @@ void SheltonSlide(Order *aisc, Unit *un)
     AddOrd(aisc, un, ord);
 }
 
-void AfterburnerSlide(Order *aisc, Unit *un)
+void AfterburnerSlide(Order *aisc, std::shared_ptr<Unit> un)
 {
     QVector def = un->Position() + QVector(1, 0, 0);
     QVector targetv(def);
@@ -758,7 +758,7 @@ void AfterburnerSlide(Order *aisc, Unit *un)
     ord = (new Orders::FaceTargetITTS(false, 3));
     AddOrd(aisc, un, ord);
 }
-void SkilledABSlide(Order *aisc, Unit *un)
+void SkilledABSlide(Order *aisc, std::shared_ptr<Unit> un)
 {
     QVector def = un->Position() + QVector(1, 0, 0);
     QVector targetv(def);
@@ -782,17 +782,17 @@ void SkilledABSlide(Order *aisc, Unit *un)
     ord = (new Orders::FaceTargetITTS(false, 3));
     AddOrd(aisc, un, ord);
 }
-void Stop(Order *aisc, Unit *un)
+void Stop(Order *aisc, std::shared_ptr<Unit> un)
 {
     Vector vec(0, 0, 0000);
     Order *ord = new Orders::MatchLinearVelocity(un->ClampVelocity(vec, false), true, false, false);
     AddOrd(aisc, un, ord); //<!-- should we fini? -->
 }
-void AfterburnTurnAway(Order *aisc, Unit *un)
+void AfterburnTurnAway(Order *aisc, std::shared_ptr<Unit> un)
 {
     QVector v(un->Position());
     QVector u(v);
-    Unit *  targ = un->Target();
+    std::shared_ptr<Unit> targ = un->Target();
     if (targ)
         u = targ->Position();
     bool   afterburn = useAfterburner() || useAfterburnerToRun();
@@ -801,11 +801,11 @@ void AfterburnTurnAway(Order *aisc, Unit *un)
     ord = new Orders::ChangeHeading((200 * (v - u)) + v, 3);
     AddOrd(aisc, un, ord);
 }
-void TurnAway(Order *aisc, Unit *un)
+void TurnAway(Order *aisc, std::shared_ptr<Unit> un)
 {
     QVector v(un->Position());
     QVector u(v);
-    Unit *  targ = un->Target();
+    std::shared_ptr<Unit> targ = un->Target();
     if (targ)
         u = targ->Position();
     bool   afterburn = false;
@@ -814,7 +814,7 @@ void TurnAway(Order *aisc, Unit *un)
     ord = new Orders::ChangeHeading((200 * (v - u)) + v, 3);
     AddOrd(aisc, un, ord);
 }
-void TurnTowards(Order *aisc, Unit *un)
+void TurnTowards(Order *aisc, std::shared_ptr<Unit> un)
 {
     Vector vec(0, 0, 10000);
     Order *ord = new Orders::MatchLinearVelocity(un->ClampVelocity(vec, false), true, false, false);
@@ -823,7 +823,7 @@ void TurnTowards(Order *aisc, Unit *un)
     ord = new Orders::FaceTarget(0, 3);
     AddOrd(aisc, un, ord);
 }
-void FlyStraight(Order *aisc, Unit *un)
+void FlyStraight(Order *aisc, std::shared_ptr<Unit> un)
 {
     Vector vec(0, 0, 10000);
     Order *ord = new Orders::MatchVelocity(un->ClampVelocity(vec, false), Vector(0, 0, 0), true, false, false);
@@ -831,7 +831,7 @@ void FlyStraight(Order *aisc, Unit *un)
     ord = new Orders::MatchAngularVelocity(Vector(0, 0, 0), 1, false);
     AddOrd(aisc, un, ord);
 }
-void FlyStraightAfterburner(Order *aisc, Unit *un)
+void FlyStraightAfterburner(Order *aisc, std::shared_ptr<Unit> un)
 {
     Vector vec(0, 0, 10000);
     bool   afterburn = useAfterburner();
@@ -843,7 +843,7 @@ void FlyStraightAfterburner(Order *aisc, Unit *un)
 
 // spiritplumber was here and added some orders, mostly for carriers and their spawn (eep, can carriers have kids?)
 
-void Takeoff(Order *aisc, Unit *un)
+void Takeoff(Order *aisc, std::shared_ptr<Unit> un)
 {
     Vector      vec(0, 0, 10000);
     static bool firsttime = true;
@@ -880,7 +880,7 @@ void Takeoff(Order *aisc, Unit *un)
     TurnTowards(aisc, un);
 }
 
-void TakeoffEveryZig(Order *aisc, Unit *un)
+void TakeoffEveryZig(Order *aisc, std::shared_ptr<Unit> un)
 {
     Vector vec(0, 0, 10000);
 
@@ -906,7 +906,7 @@ void TakeoffEveryZig(Order *aisc, Unit *un)
     un->SelectAllWeapon(false);
 }
 
-void CloakForScript(Order *aisc, Unit *un)
+void CloakForScript(Order *aisc, std::shared_ptr<Unit> un)
 {
     Vector vec(0, 0, 10000);
     Order *ord = new Orders::MatchLinearVelocity(un->ClampVelocity(vec, false), true, false, false);
@@ -916,7 +916,7 @@ void CloakForScript(Order *aisc, Unit *un)
     ord = new Orders::ExecuteFor(new CloakFor(1, 8), 32);
     AddOrd(aisc, un, ord);
 }
-void TurnTowardsITTS(Order *aisc, Unit *un)
+void TurnTowardsITTS(Order *aisc, std::shared_ptr<Unit> un)
 {
     Vector vec(0, 0, 10000);
     Order *ord = new Orders::MatchLinearVelocity(un->ClampVelocity(vec, false), true, false, false);
@@ -925,7 +925,7 @@ void TurnTowardsITTS(Order *aisc, Unit *un)
     AddOrd(aisc, un, ord);
 }
 
-void DropCargo(Order *aisc, Unit *un)
+void DropCargo(Order *aisc, std::shared_ptr<Unit> un)
 {
     if (un->numCargo() > 0) {
         int dropcount = un->numCargo();
@@ -940,7 +940,7 @@ void DropCargo(Order *aisc, Unit *un)
     }
 }
 
-void DropHalfCargo(Order *aisc, Unit *un)
+void DropHalfCargo(Order *aisc, std::shared_ptr<Unit> un)
 {
     if (un->numCargo() > 0) {
         int dropcount = (un->numCargo() / 2) + 1;
@@ -955,7 +955,7 @@ void DropHalfCargo(Order *aisc, Unit *un)
     }
 }
 
-void DropOneCargo(Order *aisc, Unit *un)
+void DropOneCargo(Order *aisc, std::shared_ptr<Unit> un)
 {
     if (un->numCargo() > 0) {
         un->EjectCargo(0);

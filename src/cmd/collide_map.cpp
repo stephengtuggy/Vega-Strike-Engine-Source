@@ -244,7 +244,7 @@ void CollideArray::checkSet()
             assert(*iter < *newiter);
 }
 
-Collidable::Collidable(Unit *un)
+Collidable::Collidable(std::shared_ptr<Unit> un)
 {
     radius = un->rSize();
     if (radius <= FLT_MIN || !FINITE(radius))
@@ -381,7 +381,7 @@ template <class T, bool canbebolt> class CollideChecker
         }
         return false;
     }
-    static bool ComputeMaxLookMinLook(Unit *               un,
+    static bool ComputeMaxLookMinLook(std::shared_ptr<Unit> un,
                                       CollideMap *         cm,
                                       CollideMap::iterator collider,
                                       CollideMap::iterator begin,
@@ -452,7 +452,7 @@ template <class T, bool canbebolt> class CollideChecker
     {
         return true;
     }
-    static bool doUpdateKey(Unit *un)
+    static bool doUpdateKey(std::shared_ptr<Unit> un)
     {
         return false;
     }
@@ -460,7 +460,7 @@ template <class T, bool canbebolt> class CollideChecker
     {
         return true;
     }
-    static bool endAfterCollide(Unit *un, unsigned int location_index)
+    static bool endAfterCollide(std::shared_ptr<Unit> un, unsigned int location_index)
     {
         return is_null(un->location[location_index]);
     }
@@ -484,13 +484,13 @@ template <class T, bool canbebolt> class CollideChecker
         tempz *= tempz;
         return (tempx + tempy + tempz) > radiussum * radiussum;
     }
-    static bool CheckCollision(Unit *a, const Collidable &aiter, Unit *b, const Collidable &biter)
+    static bool CheckCollision(std::shared_ptr<Unit> a, const Collidable &aiter, std::shared_ptr<Unit> b, const Collidable &biter)
     {
         if (!ApartPositive(aiter, biter))
             return a->Collide(b);
         return false;
     }
-    static bool CheckCollision(Bolt *a, const Collidable &aiter, Unit *b, const Collidable &biter)
+    static bool CheckCollision(Bolt *a, const Collidable &aiter, std::shared_ptr<Unit> b, const Collidable &biter)
     {
         if (!ApartNeg(aiter, biter)) {
             if (a->Collide(b)) {
@@ -504,7 +504,7 @@ template <class T, bool canbebolt> class CollideChecker
     {
         return true;
     }
-    static bool BoltType(Unit *a)
+    static bool BoltType(std::shared_ptr<Unit> a)
     {
         return false;
     }
@@ -513,7 +513,7 @@ template <class T, bool canbebolt> class CollideChecker
     {
         return false;
     }
-    static bool CheckCollision(Unit *un, const Collidable &aiter, Collidable::CollideRef b, const Collidable &biter)
+    static bool CheckCollision(std::shared_ptr<Unit> un, const Collidable &aiter, Collidable::CollideRef b, const Collidable &biter)
     {
         if (!ApartNeg(biter, aiter))
             return Bolt::CollideAnon(b, un);
@@ -530,7 +530,7 @@ bool CollideMap::CheckUnitCollisions(Bolt *bol, const Collidable &updated)
 {
     return CollideChecker<Bolt, false>::CheckCollisions(this, bol, updated, Unit::UNIT_ONLY);
 }
-bool CollideMap::CheckCollisions(Unit *un, const Collidable &updated)
+bool CollideMap::CheckCollisions(std::shared_ptr<Unit> un, const Collidable &updated)
 {
     // need to check beams
     if (un->activeStarSystem == NULL)
@@ -540,7 +540,7 @@ bool CollideMap::CheckCollisions(Unit *un, const Collidable &updated)
     return CollideChecker<Unit, true>::CheckCollisions(this, un, updated, Unit::UNIT_BOLT);
 }
 
-bool CollideMap::CheckUnitCollisions(Unit *un, const Collidable &updated)
+bool CollideMap::CheckUnitCollisions(std::shared_ptr<Unit> un, const Collidable &updated)
 {
     // need to check beams
     if (un->activeStarSystem == NULL)

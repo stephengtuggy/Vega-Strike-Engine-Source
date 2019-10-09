@@ -39,7 +39,7 @@ class Sensor;
 #include "cmd/images.h"
 #include "soundcontainer_generic.h"
 /**
- * The Cockpit Contains all displayable information about a particular Unit *
+ * The Cockpit Contains all displayable information about a particular std::shared_ptr<Unit> 
  * Gauges are used to indicate analog controls, and some diagital ones
  * The ones starting from KPS are digital with text readout
  */
@@ -186,7 +186,7 @@ class Cockpit
     }
 
     /// draws the target box around targetted unit
-    virtual float computeLockingSymbol(Unit *par)
+    virtual float computeLockingSymbol(std::shared_ptr<Unit> par)
     {
         return 1;
     }
@@ -215,7 +215,7 @@ class Cockpit
     }
 
     /// Draws gauges
-    virtual void DrawGauges(Unit *un)
+    virtual void DrawGauges(std::shared_ptr<Unit> un)
     {
     }
     float cockpit_time;
@@ -252,7 +252,7 @@ class Cockpit
     {
         return autopilot_time > 0;
     }
-    bool unitInAutoRegion(Unit *un);
+    bool unitInAutoRegion(std::shared_ptr<Unit> un);
 
     /// Sets the current viewstyle
     void SetView(const enum VIEWSTYLE tmp)
@@ -268,7 +268,7 @@ class Cockpit
     {
     }
     float       godliness;
-    virtual int Autopilot(Unit *target);
+    virtual int Autopilot(std::shared_ptr<Unit> target);
     void        RestoreGodliness();
 
     /// Restores the view from the IDentity Matrix needed to draw sprites
@@ -303,7 +303,7 @@ class Cockpit
 
     void RemoveUnit(unsigned int which = 0);
 
-    static std::string MakeBaseName(const Unit *base);
+    static std::string MakeBaseName(const std::shared_ptr<Unit> base);
 
     std::string GetUnitModifications()
     {
@@ -324,11 +324,11 @@ class Cockpit
 
     /// How far away chasecam and pan cam is
     float zoomfactor;
-    Cockpit(const char *file, Unit *parent, const std::string &pilotname);
+    Cockpit(const char *file, std::shared_ptr<Unit> parent, const std::string &pilotname);
     virtual ~Cockpit();
 
     /// Looks up a particular Gauge stat on target unit
-    virtual float LookupTargetStat(int stat, Unit *target)
+    virtual float LookupTargetStat(int stat, std::shared_ptr<Unit> target)
     {
         return 1;
     }
@@ -341,12 +341,12 @@ class Cockpit
     // unsigned int whichcockpit;//0 is the first player, 1 is the second and so forth
     class Flightgroup *fg;
     class StarSystem * activeStarSystem; // used for context switch in Universe
-    virtual void       SetParent(Unit *unit, const char *filename, const char *unitmodname, const QVector &startloc);
-    Unit *             GetParent()
+    virtual void       SetParent(std::shared_ptr<Unit> unit, const char *filename, const char *unitmodname, const QVector &startloc);
+    std::shared_ptr<Unit> GetParent()
     {
         return parent.GetUnit();
     }
-    Unit *GetSaveParent();
+    std::shared_ptr<Unit> GetSaveParent();
 
     /// Draws Cockpit then restores viewport
     virtual void Draw()
@@ -395,7 +395,7 @@ class Cockpit
     static void TurretControl(const KBData &, KBSTATE)
     {
     }
-    virtual void SetCommAnimation(Animation *ani, Unit *un)
+    virtual void SetCommAnimation(Animation *ani, std::shared_ptr<Unit> un)
     {
     }
     virtual void SetStaticAnimation()
@@ -460,7 +460,7 @@ class Cockpit
     {
         return false;
     }
-    virtual bool CheckCommAnimation(Unit *un)
+    virtual bool CheckCommAnimation(std::shared_ptr<Unit> un)
     {
         return false;
     }
@@ -471,13 +471,13 @@ class Cockpit
     virtual void OnPauseEnd()
     {
     }
-    virtual void OnDockEnd(Unit *, Unit *)
+    virtual void OnDockEnd(std::shared_ptr<Unit> , std::shared_ptr<Unit> )
     {
     }
-    virtual void OnJumpBegin(Unit *)
+    virtual void OnJumpBegin(std::shared_ptr<Unit> )
     {
     }
-    virtual void OnJumpEnd(Unit *)
+    virtual void OnJumpEnd(std::shared_ptr<Unit> )
     {
     }
 

@@ -14,7 +14,7 @@ class Terrain : public QuadTree
     float         mass;
     int           whichstage;
     char          draw;
-    void          ApplyForce(Unit *un, const Vector &norm, float distance);
+    void          ApplyForce(std::shared_ptr<Unit> un, const Vector &norm, float distance);
 
   public:
     Terrain(
@@ -25,8 +25,8 @@ class Terrain : public QuadTree
         TotalSizeZ = Z;
     }
     ~Terrain();
-    void        Collide(Unit *un, const Matrix &t);
-    void        Collide(Unit *un);
+    void        Collide(std::shared_ptr<Unit> un, const Matrix &t);
+    void        Collide(std::shared_ptr<Unit> un);
     void        Collide();
     void        SetTransformation(const Matrix &mat);
     static void CollideAll();

@@ -134,7 +134,7 @@ Nebula::Nebula(const char *unitfile, bool SubU, int faction, Flightgroup *fg, in
 }
 
 void Nebula::reactToCollision(
-    Unit *smaller, const QVector &biglocation, const Vector &bignormal, const QVector &smalllocation, const Vector &smallnormal, float dist)
+    std::shared_ptr<Unit> smaller, const QVector &biglocation, const Vector &bignormal, const QVector &smalllocation, const Vector &smallnormal, float dist)
 {
     if (fogme)
         SetNebula(this);

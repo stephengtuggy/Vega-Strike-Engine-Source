@@ -33,7 +33,7 @@ class Flightgroup
     vsUMap<std::string, std::string> ordermap;
     std::vector<class varInst *> *   orderlist;
     // removes a ship from the flightgroup below
-    void Decrement(Unit *trashed)
+    void Decrement(std::shared_ptr<Unit> trashed)
     {
         nr_ships--;
         nr_ships_left--;

@@ -34,7 +34,7 @@ class PlanetaryOrbit : public Order
 
   public:
     PlanetaryOrbit(
-        Unit *p, double velocity, double initpos, const QVector &x_axis, const QVector &y_axis, const QVector &Centre, Unit *target = NULL);
+        std::shared_ptr<Unit> p, double velocity, double initpos, const QVector &x_axis, const QVector &y_axis, const QVector &Centre, std::shared_ptr<Unit> target = NULL);
     ~PlanetaryOrbit();
     void Execute();
 };
@@ -70,7 +70,7 @@ class Planet : public Unit
            const string &        unitname,
            const vector<string> &dest,
            const QVector &       orbitcent,
-           Unit *                parent,
+           std::shared_ptr<Unit> parent,
            int                   faction,
            string                fullname,
            bool                  inside_out = false,
@@ -87,7 +87,7 @@ class Planet : public Unit
                     const string &        unitname,
                     const vector<string> &dest,
                     const QVector &       orbitcent,
-                    Unit *                parent,
+                    std::shared_ptr<Unit> parent,
                     int                   faction,
                     string                fullname,
                     bool                  inside_out,
@@ -140,14 +140,14 @@ class Planet : public Unit
     virtual void EnableLights()
     {
     }
-    void   AddSatellite(Unit *orbiter);
+    void   AddSatellite(std::shared_ptr<Unit> orbiter);
     void   endElement();
     string getCargoUnitName() const
     {
         return getFullname();
     }
     string              getHumanReadablePlanetType() const;
-    Unit *              beginElement(QVector                           x,
+    std::shared_ptr<Unit> beginElement(QVector                           x,
                                      QVector                           y,
                                      float                             vely,
                                      const Vector &                    rotvel,
@@ -198,7 +198,7 @@ class Planet : public Unit
     {
         return NULL;
     }
-    virtual void reactToCollision(Unit *         smaller,
+    virtual void reactToCollision(std::shared_ptr<Unit> smaller,
                                   const QVector &biglocation,
                                   const Vector & bignormal,
                                   const QVector &smalllocation,
@@ -219,11 +219,11 @@ class Planet : public Unit
         ~PlanetIterator()
         {
         }
-        void preinsert(Unit *unit)
+        void preinsert(std::shared_ptr<Unit> unit)
         {
             abort();
         }
-        void postinsert(Unit *unit)
+        void postinsert(std::shared_ptr<Unit> unit)
         {
             abort();
         }
@@ -231,7 +231,7 @@ class Planet : public Unit
         {
             abort();
         }
-        inline Unit *current()
+        inline std::shared_ptr<Unit> current()
         {
             if (!pos.isDone())
                 return *pos;
@@ -240,7 +240,7 @@ class Planet : public Unit
         void advance()
         {
             if (current() != NULL) {
-                Unit *cur = *pos;
+                std::shared_ptr<Unit> cur = *pos;
                 if (cur->isUnit() == PLANETPTR)
                     for (un_iter tmp(((Planet *)cur)->satellites.createIterator()); !tmp.isDone(); ++tmp)
                         localCollection.append((*tmp));
@@ -252,7 +252,7 @@ class Planet : public Unit
             advance();
             return *this;
         }
-        inline Unit *operator*()
+        inline std::shared_ptr<Unit> operator*()
         {
             return current();
         }

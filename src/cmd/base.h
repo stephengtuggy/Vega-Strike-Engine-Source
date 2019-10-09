@@ -397,7 +397,7 @@ class BaseInterface
     static void ActiveMouseOverWin(int x, int y);
     static void ProcessKeyboardBuffer();
     void        MouseOver(int x, int y);
-    BaseInterface(const char *basefile, Unit *base, Unit *un);
+    BaseInterface(const char *basefile, std::shared_ptr<Unit> base, std::shared_ptr<Unit> un);
     ~BaseInterface();
     void Draw();
 

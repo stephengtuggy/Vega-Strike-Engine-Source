@@ -33,7 +33,7 @@ class GameMissile : public GameUnit<Missile>
         Missile::Discharge();
         GameUnit<Missile>::Kill(erase);
     }
-    virtual void reactToCollision(Unit *         smaller,
+    virtual void reactToCollision(std::shared_ptr<Unit> smaller,
                                   const QVector &biglocation,
                                   const Vector & bignormal,
                                   const QVector &smalllocation,
@@ -56,7 +56,7 @@ class GameMissile : public GameUnit<Missile>
                                 bool                  ResolveLast,
                                 UnitCollection *      uc = NULL)
     {
-        Unit *targ;
+        std::shared_ptr<Unit> targ;
         if ((targ = (Unit::Target())))
             if (rand() / ((float)RAND_MAX) < ((float)UnitUtil::getECM(targ)) * SIMULATION_ATOM / 32768)
                 Target(NULL);

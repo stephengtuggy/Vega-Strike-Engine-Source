@@ -58,15 +58,15 @@ class Track
   protected:
     // Produced by Sensor::CreateTrack
     friend class Sensor;
-    Track(Unit *, const Unit *);
-    Track(Unit *, const Unit *, const Vector &);
-    Track(Unit *, const Unit *, const Vector &, float);
+    Track(std::shared_ptr<Unit> , const std::shared_ptr<Unit> );
+    Track(std::shared_ptr<Unit> , const std::shared_ptr<Unit> , const Vector &);
+    Track(std::shared_ptr<Unit> , const std::shared_ptr<Unit> , const Vector &, float);
 
     Type::Value IdentifyType() const;
 
   protected:
-    Unit *      player;
-    const Unit *target;
+    std::shared_ptr<Unit> player;
+    const std::shared_ptr<Unit> target;
     Vector      position;
     float       distance;
     Type::Value type;

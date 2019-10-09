@@ -80,7 +80,7 @@ extern Hashtable<std::string, StarSystem, 127> star_system_table;
 typedef vector<Client *>::iterator             VC;
 typedef vector<ObjSerial>::iterator            ObjI;
 
-extern const Unit * getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0);
+extern const std::shared_ptr<Unit> getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0);
 extern int          GetModeFromName(const char *); // 1=add, 2=mult, 0=neither.
 static const string LOAD_FAILED = "LOAD_FAILED";
 extern Cargo *      GetMasterPartList(const char *input_buffer);
@@ -106,7 +106,7 @@ bool              isLocalSerial(ObjSerial sernum)
     return ret;
 }
 
-Unit *getNetworkUnit(ObjSerial cserial)
+std::shared_ptr<Unit> getNetworkUnit(ObjSerial cserial)
 {
     for (unsigned int i = 0; i < _Universe->numPlayers(); i++)
         if (Network[i].getUnit()->GetSerial() == cserial)
@@ -388,7 +388,7 @@ int NetClient::checkMsg(Packet *outpacket)
 }
 
 #include "lowlevel/vsnet_err.h"
-extern void SwitchUnits2(Unit *un);
+extern void SwitchUnits2(std::shared_ptr<Unit> un);
 void        NetClient::Respawn(ObjSerial newserial)
 {
     unsigned int whichcp;
@@ -436,7 +436,7 @@ void        NetClient::Respawn(ObjSerial newserial)
         cp->fg->nr_ships++;
         cp->fg->nr_ships_left++;
     }
-    Unit *un = UnitFactory::createUnit(unkeyname.c_str(),
+    std::shared_ptr<Unit> un = UnitFactory::createUnit(unkeyname.c_str(),
                                        false,
                                        FactionUtil::GetFactionIndex(cp->savegame->GetPlayerFaction()),
                                        std::string(""),
@@ -479,7 +479,7 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
     static vector<Mount::STATUS> backupMountStatus;
 
     // Receive data
-    Unit *       un = NULL;
+    std::shared_ptr<Unit> un = NULL;
     unsigned int mount_num;
     ObjSerial    mis          = 0;
     ObjSerial    local_serial = 0;
@@ -812,10 +812,10 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
             un = UniverseUtil::GetUnitFromSerial(packet_serial);
             if (un) {
                 unsigned short targserial = netbuf.getSerial();
-                Unit *         target_un  = UniverseUtil::GetUnitFromSerial(targserial);
+                std::shared_ptr<Unit> target_un  = UniverseUtil::GetUnitFromSerial(targserial);
                 if (target_un)
                     COUT << "Confirmed targeting unit " << target_un->name << " (" << targserial << ")." << endl;
-                Unit *oldtarg = un->Target();
+                std::shared_ptr<Unit> oldtarg = un->Target();
                 if (oldtarg && oldtarg->GetSerial() == 0 && (target_un == NULL || target_un->GetSerial() == 0))
                     COUT << "Setting target from " << oldtarg->name << " to NULL." << endl;
                 // don't do anything
@@ -854,7 +854,7 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
                     break;
                 }
                 offset   = noffset;
-                Unit *un = UniverseUtil::GetUnitFromSerial(serial);
+                std::shared_ptr<Unit> un = UniverseUtil::GetUnitFromSerial(serial);
                 receiveUnitDamage(netbuf, un);
             }
             break;
@@ -939,7 +939,7 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
             break;
         }
         case CMD_SAVEACCOUNTS: {
-            Unit *un = this->game_unit.GetUnit();
+            std::shared_ptr<Unit> un = this->game_unit.GetUnit();
             if (un) {
                 int cpnum = _Universe->whichPlayerStarship(un);
                 if (cpnum >= 0 && this->lastsave.size() >= 2)
@@ -982,7 +982,7 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
                     // The jump has been allowed but we don't have the good system file
                     else {
                         // Here really do the jump function
-                        Unit *jumpun = UniverseUtil::GetUnitFromSerial(jumpserial);
+                        std::shared_ptr<Unit> jumpun = UniverseUtil::GetUnitFromSerial(jumpserial);
                         sts->JumpTo(un, jumpun, newsystem, true);
                         string                          sysfile(newsystem + ".system");
                         VsnetDownload::Client::NoteFile f(*this->clt_tcp_sock, sysfile, SystemFile);
@@ -999,7 +999,7 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
                     }
                 } else {
                     // If another player / unit is jumping force it
-                    Unit *jumpun = UniverseUtil::GetUnitFromSerial(jumpserial);
+                    std::shared_ptr<Unit> jumpun = UniverseUtil::GetUnitFromSerial(jumpserial);
                     sts->JumpTo(un, jumpun, newsystem, true);
                 }
             }
@@ -1008,9 +1008,9 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
             if (nostarsystem)
                 break;
             ObjSerial ser;
-            Unit *    mpl = UnitFactory::getMasterPartList();
+            std::shared_ptr<Unit> mpl = UnitFactory::getMasterPartList();
             while ((ser = netbuf.getSerial()) != 0) {
-                Unit *       un = UniverseUtil::GetUnitFromSerial(ser);
+                std::shared_ptr<Unit> un = UniverseUtil::GetUnitFromSerial(ser);
                 unsigned int i;
                 // Clear cargo... back to front to make it more efficient.
                 if (un) {
@@ -1091,8 +1091,8 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
         case CMD_COMM: {
             if (nostarsystem)
                 break;
-            Unit *from     = UniverseUtil::GetUnitFromSerial(packet_serial);
-            Unit *to       = game_unit.GetUnit();
+            std::shared_ptr<Unit> from     = UniverseUtil::GetUnitFromSerial(packet_serial);
+            std::shared_ptr<Unit> to       = game_unit.GetUnit();
             int   curstate = netbuf.getInt32();
             if (!from) {
                 COUT << "Received invalid comm message " << curstate << " from " << packet_serial << endl;
@@ -1143,9 +1143,9 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
             float       volume        = netbuf.getFloat();
             int         mountOffset   = ((int)netbuf.getInt32());
             int         subunitOffset = ((int)netbuf.getInt32());
-            Unit *      sender        = UniverseUtil::GetUnitFromSerial(packet_serial);
-            Unit *      buyer         = UniverseUtil::GetUnitFromSerial(buyer_ser);
-            Unit *      seller        = UniverseUtil::GetUnitFromSerial(seller_ser);
+            std::shared_ptr<Unit> sender        = UniverseUtil::GetUnitFromSerial(packet_serial);
+            std::shared_ptr<Unit> buyer         = UniverseUtil::GetUnitFromSerial(buyer_ser);
+            std::shared_ptr<Unit> seller        = UniverseUtil::GetUnitFromSerial(seller_ser);
             bool        missioncarg   = false;
 
             unsigned int cargIndex = 0;
@@ -1197,11 +1197,11 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
                     faction      = buyer->faction;
                     templateName = unitDir + ".template";
                 }
-                const Unit *unitCarg = getUnitFromUpgradeName(carg.GetContent(), faction);
+                const std::shared_ptr<Unit> unitCarg = getUnitFromUpgradeName(carg.GetContent(), faction);
                 if (!unitCarg)
                     break; // not an upgrade, and already did cargo transactions.
                 // Get the "limiter" for the upgrade.  Stats can't increase more than this.
-                const Unit *templateUnit = UnitConstCache::getCachedConst(StringIntKey(templateName, faction));
+                const std::shared_ptr<Unit> templateUnit = UnitConstCache::getCachedConst(StringIntKey(templateName, faction));
                 if (!templateUnit) {
                     templateUnit = UnitConstCache::setCachedConst(StringIntKey(templateName, faction),
                                                                   UnitFactory::createUnit(templateName.c_str(), true, faction));
@@ -1222,7 +1222,7 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
             }
             if (repair)
                 sender->RepairUpgradeCargo(&carg, seller, NULL);
-            Unit *player = game_unit.GetUnit();
+            std::shared_ptr<Unit> player = game_unit.GetUnit();
             if (player &&
                 ((buyer && buyer->isDocked(player)) || (seller && seller->isDocked(player)) || player == buyer || player == seller))
                 BaseUtil::refreshBaseComputerUI(&carg);
@@ -1398,7 +1398,7 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
             }
             cerr << "RECEIVED A DOCK AUTHORIZATION for unit " << p1.getSerial() << " to unit " << utdw_serial << " at docking port #"
                  << dockport << endl;
-            Unit *un2 = UniverseUtil::GetUnitFromSerial(p1.getSerial());
+            std::shared_ptr<Unit> un2 = UniverseUtil::GetUnitFromSerial(p1.getSerial());
             un->RequestClearance(un2);
             un2->ForceDock(un, dockport);
             break;
@@ -1409,7 +1409,7 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
             ObjSerial utdw_serial = netbuf.getSerial();
             cerr << "RECEIVED A UNDOCK ORDER for unit " << p1.getSerial() << " to unit " << utdw_serial << endl;
             un        = UniverseUtil::GetUnitFromSerial(utdw_serial);
-            Unit *un2 = UniverseUtil::GetUnitFromSerial(p1.getSerial());
+            std::shared_ptr<Unit> un2 = UniverseUtil::GetUnitFromSerial(p1.getSerial());
             un2->UnDock(un);
             break;
         }
@@ -1459,7 +1459,7 @@ SOCKETALT *NetClient::logout(bool leaveUDP)
     keeprun = 0;
     Packet p;
     if (clt_tcp_sock->valid() && clt_tcp_sock->get_fd() != -1) {
-        Unit *un = this->game_unit.GetUnit();
+        std::shared_ptr<Unit> un = this->game_unit.GetUnit();
         if (un) {
             p.send(CMD_LOGOUT, un->GetSerial(), (char *)NULL, 0, SENDRELIABLE, NULL, *this->clt_tcp_sock, __FILE__, PSEUDO__LINE__(1382));
             timeval tv = {10, 0};
@@ -1568,7 +1568,7 @@ bool NetClient::ClientsMap::remove(int x)
     // shared_ptr takes care of delete
 }
 
-Transformation NetClient::Interpolate(Unit *un, double addtime)
+Transformation NetClient::Interpolate(std::shared_ptr<Unit> un, double addtime)
 {
     if (!un)
         return Transformation();

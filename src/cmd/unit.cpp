@@ -113,7 +113,7 @@ template <class UnitType> unsigned int GameUnit<UnitType>::nummesh() const
     return (this->meshdata.size() - 1);
 }
 
-template <class UnitType> void GameUnit<UnitType>::UpgradeInterface(Unit *baseun)
+template <class UnitType> void GameUnit<UnitType>::UpgradeInterface(std::shared_ptr<Unit> baseun)
 {
     string basename = (::getCargoUnitName(baseun->getFullname().c_str()));
     if (baseun->isUnit() != PLANETPTR)
@@ -176,7 +176,7 @@ template <class UnitType> bool GameUnit<UnitType>::queryFrustum(double frustum[6
                                ))
             return true;
     }
-    const Unit *un;
+    const std::shared_ptr<Unit> un;
     for (un_fkiter iter = this->SubUnits.constFastIterator(); (un = *iter); ++iter)
         if (((GameUnit<UnitType> *)un)->queryFrustum(frustum))
             return true;
@@ -197,7 +197,7 @@ template <class UnitType> void GameUnit<UnitType>::UpdateHudMatrix(int whichcam)
         Transform(ctm, this->pImage->CockpitCenter.Cast()), this->GetWarpVelocity(), this->GetAngularVelocity(), this->GetAcceleration());
 }
 
-extern bool flickerDamage(Unit *un, float hullpercent);
+extern bool flickerDamage(std::shared_ptr<Unit> un, float hullpercent);
 extern int  cloakVal(int cloakint, int cloakminint, int cloakrateint, bool cloakglass); // short fix?
 
 template <class UnitType> void GameUnit<UnitType>::DrawNow(const Matrix &mato, float lod)
@@ -239,7 +239,7 @@ template <class UnitType> void GameUnit<UnitType>::DrawNow(const Matrix &mato, f
                // this->meshdata[i]->DrawNow(lod,false,mat,cloak);//cloakign and nebula
             this->meshdata[i]->Draw(lod, mat, d, cloak);
     }
-    Unit *un;
+    std::shared_ptr<Unit> un;
     for (un_iter iter = this->getSubUnits(); (un = *iter); ++iter) {
         Matrix temp;
         un->curr_physical_state.to_matrix(temp);
@@ -436,7 +436,7 @@ template <class UnitType> void GameUnit<UnitType>::Draw(const Transformation &pa
             }
         }
         {
-            Unit * un;
+            std::shared_ptr<Unit> un;
             double backup        = interpolation_blend_factor;
             int    cur_sim_frame = _Universe->activeStarSystem()->getCurrentSimFrame();
             for (un_iter iter = this->getSubUnits(); (un = *iter); ++iter) {

@@ -18,12 +18,12 @@
 #include "networking/zonemgr.h"
 #include "networking/netserver.h"
 
-Unit *UnitFactory::createUnit()
+std::shared_ptr<Unit> UnitFactory::createUnit()
 {
     return new Unit(0);
 }
 
-Unit *UnitFactory::createUnit(const char * filename,
+std::shared_ptr<Unit> UnitFactory::createUnit(const char * filename,
                               bool         SubUnit,
                               int          faction,
                               std::string  customizedUnit,
@@ -33,7 +33,7 @@ Unit *UnitFactory::createUnit(const char * filename,
                               ObjSerial    netcreate)
 {
     _Universe->netLock(true);
-    Unit *un = new Unit(filename, SubUnit, faction, customizedUnit, flightgroup, fg_subnumber, netxml);
+    std::shared_ptr<Unit> un = new Unit(filename, SubUnit, faction, customizedUnit, flightgroup, fg_subnumber, netxml);
     _Universe->netLock(false);
     if (netcreate)
         // Send a packet to clients in order to make them create this unit
@@ -51,13 +51,13 @@ Unit *UnitFactory::createUnit(const char * filename,
      */
     return un;
 }
-Unit *UnitFactory::createServerSideUnit(
+std::shared_ptr<Unit> UnitFactory::createServerSideUnit(
     const char *filename, bool SubUnit, int faction, std::string customizedUnit, Flightgroup *flightgroup, int fg_subnumber)
 {
     return new Unit(filename, SubUnit, faction, customizedUnit, flightgroup, fg_subnumber);
 }
 
-Unit *UnitFactory::createUnit(vector<Mesh *> &meshes, bool Subunit, int faction)
+std::shared_ptr<Unit> UnitFactory::createUnit(vector<Mesh *> &meshes, bool Subunit, int faction)
 {
     return new Unit(meshes, Subunit, faction);
 }
@@ -128,7 +128,7 @@ Planet *UnitFactory::createPlanet(QVector                           x,
                                   BLENDFUNC                         ds,
                                   const vector<string> &            dest,
                                   const QVector &                   orbitcent,
-                                  Unit *                            parent,
+                                  std::shared_ptr<Unit> parent,
                                   const GFXMaterial &               ourmat,
                                   const std::vector<GFXLightLocal> &ligh,
                                   int                               faction,
@@ -228,7 +228,7 @@ ContinuousTerrain *UnitFactory::createContinuousTerrain(const char *file, Vector
     return NULL;
 }
 
-void UnitFactory::broadcastUnit(Unit *unit, unsigned short zone)
+void UnitFactory::broadcastUnit(std::shared_ptr<Unit> unit, unsigned short zone)
 {
     if (!_Universe->netLocked() && unit->GetSerial())
         if (SERVER)

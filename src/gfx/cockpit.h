@@ -22,7 +22,7 @@ class NavigationSystem;
 using namespace XMLSupport; // DONT PUT THIS ABOVE HEADERS
 #define NUM_CAM CP_NUMVIEWS
 /**
- * The Cockpit Contains all displayable information about a particular Unit *
+ * The Cockpit Contains all displayable information about a particular std::shared_ptr<Unit> 
  * Gauges are used to indicate analog controls, and some diagital ones
  * The ones starting from KPS are digital with text readout
  */
@@ -135,7 +135,7 @@ class GameCockpit : public Cockpit
     /// Used to display the arrow pointing to the currently selected target.
     float        projection_limit_x, projection_limit_y;
     float        inv_screen_aspect_ratio; // Precomputed division 1 / g_game.aspect.
-    virtual void SetParent(Unit *unit, const char *filename, const char *unitmodname, const QVector &startloc);
+    virtual void SetParent(std::shared_ptr<Unit> unit, const char *filename, const char *unitmodname, const QVector &startloc);
     void         LoadXML(const char *file);
     void         LoadXML(VSFileSystem::VSFile &f);
     void         beginElement(const string &name, const AttributeList &attributes);
@@ -145,7 +145,7 @@ class GameCockpit : public Cockpit
     /// draws the navigation symbol around targetted location
     void DrawNavigationSymbol(const Vector &loc, const Vector &p, const Vector &q, float size);
     /// draws the target box around targetted unit
-    float computeLockingSymbol(Unit *par);
+    float computeLockingSymbol(std::shared_ptr<Unit> par);
     void  DrawTargetBox(const Radar::Sensor &);
     /// draws the target box around all units
     void DrawTargetBoxes(const Radar::Sensor &);
@@ -156,16 +156,16 @@ class GameCockpit : public Cockpit
     /// Draws all the tracks on the radar.
     void DrawRadar(const Radar::Sensor &);
     /// Draws target gauges
-    void DrawTargetGauges(Unit *target);
+    void DrawTargetGauges(std::shared_ptr<Unit> target);
     /// Draws unit gauges
-    void DrawGauges(Unit *un);
+    void DrawGauges(std::shared_ptr<Unit> un);
     /// Trigger scripted events
-    void             TriggerEvents(Unit *un);
+    void             TriggerEvents(std::shared_ptr<Unit> un);
     NavigationSystem ThisNav;
     // Draw the arrow pointing to the target.
-    void DrawArrowToTarget(const Radar::Sensor &, Unit *);
+    void DrawArrowToTarget(const Radar::Sensor &, std::shared_ptr<Unit> );
     void DrawArrowToTarget(const Radar::Sensor &, Vector LocalCoordinates);
-    void updateRadar(Unit *un);
+    void updateRadar(std::shared_ptr<Unit> un);
 
   public:
     std::string    textMessage;
@@ -180,15 +180,15 @@ class GameCockpit : public Cockpit
     static string  getsoundfile(string filename);
     void           InitStatic();
     void           Shake(float amt, int level /*0= shield 1=armor 2=hull*/);
-    int            Autopilot(Unit *target);
+    int            Autopilot(std::shared_ptr<Unit> target);
     /// Restores the view from the IDentity Matrix needed to draw sprites
     void RestoreViewPort();
-    GameCockpit(const char *file, Unit *parent, const std::string &pilotname);
+    GameCockpit(const char *file, std::shared_ptr<Unit> parent, const std::string &pilotname);
     ~GameCockpit();
     /// Looks up a particular Gauge stat on target unit
-    float LookupTargetStat(int stat, Unit *target);
+    float LookupTargetStat(int stat, std::shared_ptr<Unit> target);
     /// Looks up a particular Gauge stat on unit
-    float LookupUnitStat(int stat, Unit *target);
+    float LookupUnitStat(int stat, std::shared_ptr<Unit> target);
     /// Loads cockpit info...just as constructor
     void Init(const char *file);
     /// Draws Cockpit then restores viewport
@@ -214,7 +214,7 @@ class GameCockpit : public Cockpit
     {
         return soundfile;
     }
-    void SetCommAnimation(Animation *ani, Unit *un);
+    void SetCommAnimation(Animation *ani, std::shared_ptr<Unit> un);
     void SetStaticAnimation();
     /// Accesses the current navigationsystem
     NavigationSystem *AccessNavSystem()
@@ -240,10 +240,10 @@ class GameCockpit : public Cockpit
     virtual bool SetDrawNavSystem(bool);
     virtual bool CanDrawNavSystem();
     virtual bool DrawNavSystem();
-    virtual bool CheckCommAnimation(Unit *un);
+    virtual bool CheckCommAnimation(std::shared_ptr<Unit> un);
     virtual void visitSystem(std::string systemName);
     void         AutoLanding();
-    void         DoAutoLanding(Unit *, Unit *);
+    void         DoAutoLanding(std::shared_ptr<Unit> , std::shared_ptr<Unit> );
 
     virtual void SetInsidePanYawSpeed(float speed);
     virtual void SetInsidePanPitchSpeed(float speed);
@@ -253,10 +253,10 @@ class GameCockpit : public Cockpit
     void OnPauseBegin();
     void OnPauseEnd();
     // Ship has undocked from station
-    void OnDockEnd(Unit *station, Unit *unit);
+    void OnDockEnd(std::shared_ptr<Unit> station, std::shared_ptr<Unit> unit);
     // Ship is jumping
-    void OnJumpBegin(Unit *unit);
-    void OnJumpEnd(Unit *unit);
+    void OnJumpBegin(std::shared_ptr<Unit> unit);
+    void OnJumpEnd(std::shared_ptr<Unit> unit);
 
   protected:
     /// Override to use a specific kind of sound implementation

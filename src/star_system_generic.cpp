@@ -50,7 +50,7 @@ using namespace XMLSupport;
 vector<Vector>                   perplines;
 extern std::vector<unorigdest *> pendingjump;
 
-void TentativeJumpTo(StarSystem *ss, Unit *un, Unit *jumppoint, const std::string &system)
+void TentativeJumpTo(StarSystem *ss, std::shared_ptr<Unit> un, std::shared_ptr<Unit> jumppoint, const std::string &system)
 {
     for (unsigned int i = 0; i < pendingjump.size(); ++i)
         if (pendingjump[i]->un.GetUnit() == un)
@@ -222,7 +222,7 @@ string StarSystem::getName()
     return string(name);
 }
 
-void StarSystem::AddUnit(Unit *unit)
+void StarSystem::AddUnit(std::shared_ptr<Unit> unit)
 {
     if (stats.system_faction == FactionUtil::GetNeutralFaction())
         stats.CheckVitals(this);
@@ -241,7 +241,7 @@ void StarSystem::AddUnit(Unit *unit)
     stats.AddUnit(unit);
 }
 
-bool StarSystem::RemoveUnit(Unit *un)
+bool StarSystem::RemoveUnit(std::shared_ptr<Unit> un)
 {
     for (unsigned int locind = 0; locind < Unit::NUM_COLLIDE_MAPS; ++locind)
         if (!is_null(un->location[locind])) {
@@ -265,7 +265,7 @@ bool StarSystem::RemoveUnit(Unit *un)
 void StarSystem::ExecuteUnitAI()
 {
     try {
-        Unit *unit = NULL;
+        std::shared_ptr<Unit> unit = NULL;
         for (un_iter iter = getUnitList().createIterator(); (unit = *iter); ++iter) {
             unit->ExecuteAI();
             unit->ResetThreatLevel();
@@ -281,14 +281,14 @@ void StarSystem::ExecuteUnitAI()
     }
 }
 
-extern Unit *TheTopLevelUnit;
+extern std::shared_ptr<Unit> TheTopLevelUnit;
 // sorry boyz...I'm just a tourist with a frag nav console--could you tell me where I am?
-Unit *getTopLevelOwner()
+std::shared_ptr<Unit> getTopLevelOwner()
 {
     return (TheTopLevelUnit); // Now we return a pointer to a new game unit created in main(), outside of any lists
 }
 
-void CarSimUpdate(Unit *un, float height)
+void CarSimUpdate(std::shared_ptr<Unit> un, float height)
 {
     un->SetVelocity(Vector(un->GetVelocity().i, 0, un->GetVelocity().k));
     un->curr_physical_state.position = QVector(un->curr_physical_state.position.i, height, un->curr_physical_state.position.k);
@@ -349,7 +349,7 @@ void StarSystem::Statistics::CheckVitals(StarSystem *ss)
     for (; checkIter < counter && checkIter < sortedsize; ++checkIter) {
         Collidable *collide = &ss->collidemap[Unit::UNIT_ONLY]->sorted[checkIter];
         if (collide->radius > 0) {
-            Unit *un  = collide->ref.unit;
+            std::shared_ptr<Unit> un  = collide->ref.unit;
             float rel = UnitUtil::getRelationFromFaction(un, sysfac);
             if (FactionUtil::isCitizenInt(un->faction)) {
                 ++newcitizencount;
@@ -377,7 +377,7 @@ void StarSystem::Statistics::CheckVitals(StarSystem *ss)
     }
 }
 
-void StarSystem::Statistics::AddUnit(Unit *un)
+void StarSystem::Statistics::AddUnit(std::shared_ptr<Unit> un)
 {
     float rel = UnitUtil::getRelationFromFaction(un, system_faction);
     if (FactionUtil::isCitizenInt(un->faction)) {
@@ -405,7 +405,7 @@ void StarSystem::Statistics::AddUnit(Unit *un)
     }
 }
 
-void StarSystem::Statistics::RemoveUnit(Unit *un)
+void StarSystem::Statistics::RemoveUnit(std::shared_ptr<Unit> un)
 {
     float rel = UnitUtil::getRelationFromFaction(un, system_faction);
     if (FactionUtil::isCitizenInt(un->faction)) {
@@ -448,9 +448,9 @@ double       aggfire             = 0;
 int          numprocessed        = 0;
 double       targetpick          = 0;
 
-void StarSystem::RequestPhysics(Unit *un, unsigned int queue)
+void StarSystem::RequestPhysics(std::shared_ptr<Unit> un, unsigned int queue)
 {
-    Unit *  unit = NULL;
+    std::shared_ptr<Unit> unit = NULL;
     un_iter iter = this->physics_buffer[queue].createIterator();
     while ((unit = *iter) && *iter != un)
         ++iter;
@@ -486,7 +486,7 @@ void StarSystem::UpdateUnitPhysics(bool firstframe)
             // will wreak havoc with subunit interpolation. Luckily again, we only need
             // randomization on priority changes, so we're fine.
             try {
-                Unit *unit = NULL;
+                std::shared_ptr<Unit> unit = NULL;
                 for (un_iter iter = physics_buffer[current_sim_location].createIterator(); (unit = *iter); ++iter) {
                     int priority = UnitUtil::getPhysicsPriority(unit);
                     // Doing spreading here and only on priority changes, so as to make AI easier
@@ -538,7 +538,7 @@ void StarSystem::UpdateUnitPhysics(bool firstframe)
             collidemap[Unit::UNIT_BOLT]->flatten();
             if (Unit::NUM_COLLIDE_MAPS > 1)
                 collidemap[Unit::UNIT_ONLY]->flatten(*collidemap[Unit::UNIT_BOLT]);
-            Unit *unit;
+            std::shared_ptr<Unit> unit;
             for (un_iter iter = physics_buffer[current_sim_location].createIterator(); (unit = *iter);) {
                 int   priority = unit->sim_atom_multiplier;
                 float backup   = SIMULATION_ATOM;
@@ -560,7 +560,7 @@ void StarSystem::UpdateUnitPhysics(bool firstframe)
             theunitcounter = 0;
         }
     } else {
-        Unit *unit = NULL;
+        std::shared_ptr<Unit> unit = NULL;
         for (un_iter iter = getUnitList().createIterator(); (unit = *iter); ++iter) {
             unit->ExecuteAI();
             last_collisions.clear();
@@ -616,14 +616,14 @@ void ExecuteDirector()
     }
 }
 
-Unit *StarSystem::nextSignificantUnit()
+std::shared_ptr<Unit> StarSystem::nextSignificantUnit()
 {
     return (*sigIter);
 }
 
 void StarSystem::Update(float priority)
 {
-    Unit *unit;
+    std::shared_ptr<Unit> unit;
     bool  firstframe = true;
     // No time compression here
     float normal_simulation_atom = SIMULATION_ATOM;
@@ -757,14 +757,14 @@ bool PendingJumpsEmpty()
     return pendingjump.empty();
 }
 
-extern void SetShieldZero(Unit *);
+extern void SetShieldZero(std::shared_ptr<Unit> );
 
 void StarSystem::ProcessPendingJumps()
 {
     for (unsigned int kk = 0; kk < pendingjump.size(); ++kk) {
-        Unit *un = pendingjump[kk]->un.GetUnit();
+        std::shared_ptr<Unit> un = pendingjump[kk]->un.GetUnit();
         if (pendingjump[kk]->delay >= 0) {
-            Unit *jp = pendingjump[kk]->jumppoint.GetUnit();
+            std::shared_ptr<Unit> jp = pendingjump[kk]->jumppoint.GetUnit();
             if (un && jp) {
                 QVector delta = (jp->LocalPosition() - un->LocalPosition());
                 float   dist  = delta.Magnitude();
@@ -795,7 +795,7 @@ void StarSystem::ProcessPendingJumps()
         int playernum = _Universe->whichPlayerStarship(un);
         // In non-networking mode or in networking mode or a netplayer wants to jump and is ready or a non-player jump
         if (Network == NULL || playernum < 0 || (Network != NULL && playernum >= 0 && Network[playernum].readyToJump())) {
-            Unit *      un              = pendingjump[kk]->un.GetUnit();
+            std::shared_ptr<Unit> un              = pendingjump[kk]->un.GetUnit();
             StarSystem *savedStarSystem = _Universe->activeStarSystem();
             // Download client descriptions of the new zone (has to be blocking)
             if (Network != NULL)
@@ -847,14 +847,14 @@ double calc_blend_factor(double frac, int priority, unsigned int when_it_will_be
     }
 }
 
-void ActivateAnimation(Unit *jumppoint)
+void ActivateAnimation(std::shared_ptr<Unit> jumppoint)
 {
     jumppoint->graphicOptions.Animating = 1;
     for (un_iter i = jumppoint->getSubUnits(); !i.isDone(); ++i)
         ActivateAnimation(*i);
 }
 
-static bool isJumping(const vector<unorigdest *> &pending, Unit *un)
+static bool isJumping(const vector<unorigdest *> &pending, std::shared_ptr<Unit> un)
 {
     for (size_t i = 0; i < pending.size(); ++i)
         if (pending[i]->un == un)
@@ -881,7 +881,7 @@ QVector ComputeJumpPointArrival(QVector pos, std::string origin, std::string des
     return QVector(0, 0, 0);
 }
 
-bool StarSystem::JumpTo(Unit *un, Unit *jumppoint, const std::string &system, bool force, bool save_coordinates)
+bool StarSystem::JumpTo(std::shared_ptr<Unit> un, std::shared_ptr<Unit> jumppoint, const std::string &system, bool force, bool save_coordinates)
 {
     if ((un->DockedOrDocking() & (~Unit::DOCKING_UNITS)) != 0)
         return false;

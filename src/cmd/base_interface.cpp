@@ -278,7 +278,7 @@ bool BaseInterface::Room::BaseVSSprite::isPlaying() const
 
 void BaseInterface::Room::BaseShip::Draw(BaseInterface *base)
 {
-    Unit *un = base->caller.GetUnit();
+    std::shared_ptr<Unit> un = base->caller.GetUnit();
     if (un) {
         GFXHudMode(GFXFALSE);
         float        tmp          = g_game.fov;
@@ -1042,12 +1042,12 @@ BaseInterface::Room::Talk::Talk(const std::string &ind, const std::string &pytho
 #endif
 }
 
-double compute_light_dot(Unit *base, Unit *un)
+double compute_light_dot(std::shared_ptr<Unit> base, std::shared_ptr<Unit> un)
 {
     StarSystem *ss  = base->getStarSystem();
     double      ret = -1;
-    Unit *      st;
-    Unit *      base_owner = NULL;
+    std::shared_ptr<Unit> st;
+    std::shared_ptr<Unit> base_owner = NULL;
     if (ss) {
         _Universe->pushActiveStarSystem(ss);
         un_iter ui = ss->getUnitList().createIterator();
@@ -1066,7 +1066,7 @@ double compute_light_dot(Unit *base, Unit *un)
 #endif
                 } else {
                     un_iter ui   = ((Planet *)st)->satellites.createIterator();
-                    Unit *  ownz = NULL;
+                    std::shared_ptr<Unit> ownz = NULL;
                     for (; (ownz = *ui); ++ui)
                         if (ownz == base)
                             base_owner = st;
@@ -1082,7 +1082,7 @@ double compute_light_dot(Unit *base, Unit *un)
         return compute_light_dot(base_owner, un);
 }
 
-const char *compute_time_of_day(Unit *base, Unit *un)
+const char *compute_time_of_day(std::shared_ptr<Unit> base, std::shared_ptr<Unit> un)
 {
     if (!base || !un)
         return "day";
@@ -1096,7 +1096,7 @@ const char *compute_time_of_day(Unit *base, Unit *un)
 
 extern void ExecuteDirector();
 
-BaseInterface::BaseInterface(const char *basefile, Unit *base, Unit *un)
+BaseInterface::BaseInterface(const char *basefile, std::shared_ptr<Unit> base, std::shared_ptr<Unit> un)
     : curtext(vs_config->getColor("Base_Text_Color_Foreground", GFXColor(0, 1, 0, 1)),
               vs_config->getColor("Base_Text_Color_Background", GFXColor(0, 0, 0, 1))),
       othtext(vs_config->getColor("Fixer_Text_Color_Foreground", GFXColor(1, 1, .5, 1)),
@@ -1168,7 +1168,7 @@ void TerminateCurrentBase(void)
     }
 }
 
-void CurrentBaseUnitSet(Unit *un)
+void CurrentBaseUnitSet(std::shared_ptr<Unit> un)
 {
     if (BaseInterface::CurrentBase)
         BaseInterface::CurrentBase->caller.SetUnit(un);
@@ -1179,8 +1179,8 @@ void BaseInterface::Room::Comp::Click(BaseInterface *base, float x, float y, int
 {
     if (state == WS_MOUSE_UP) {
         Link::Click(base, x, y, button, state);
-        Unit *un     = base->caller.GetUnit();
-        Unit *baseun = base->baseun.GetUnit();
+        std::shared_ptr<Unit> un     = base->caller.GetUnit();
+        std::shared_ptr<Unit> baseun = base->baseun.GetUnit();
         if (un && baseun) {
             base->CallComp = true;
 #ifdef NEW_GUI
@@ -1199,7 +1199,7 @@ void BaseInterface::Terminate()
     if (midloop) {
         terminate_scheduled = true;
     } else {
-        Unit *un  = caller.GetUnit();
+        std::shared_ptr<Unit> un  = caller.GetUnit();
         int   cpt = UnitUtil::isPlayerStarship(un);
         if (un && cpt >= 0) {
             vector<string> vec;
@@ -1220,8 +1220,8 @@ void BaseInterface::Room::Launch::Click(BaseInterface *base, float x, float y, i
         Link::Click(base, x, y, button, state);
         static bool auto_undock_var = XMLSupport::parse_bool(vs_config->getVariable("physics", "AutomaticUnDock", "true"));
         bool        auto_undock     = auto_undock_var;
-        Unit *      bas             = base->baseun.GetUnit();
-        Unit *      playa           = base->caller.GetUnit();
+        std::shared_ptr<Unit> bas             = base->baseun.GetUnit();
+        std::shared_ptr<Unit> playa           = base->caller.GetUnit();
         if (Network != NULL && auto_undock && playa && bas) {
             cerr << "Sending an undock notification" << endl;
             int playernum = _Universe->whichPlayerStarship(playa);
@@ -1266,8 +1266,8 @@ void BaseInterface::Room::Eject::Click(BaseInterface *base, float x, float y, in
     if (state == WS_MOUSE_UP) {
         Link::Click(base, x, y, button, state);
         XMLSupport::parse_bool(vs_config->getVariable("physics", "AutomaticUnDock", "true"));
-        Unit *bas   = base->baseun.GetUnit();
-        Unit *playa = base->caller.GetUnit();
+        std::shared_ptr<Unit> bas   = base->baseun.GetUnit();
+        std::shared_ptr<Unit> playa = base->caller.GetUnit();
         if (playa && bas) {
             if (playa->name == "return_to_cockpit") {
                 playa->name   = "ejecting";
@@ -1473,8 +1473,8 @@ void BaseInterface::Draw()
     SetupViewport();
     EndGUIFrame(mousePointerStyle);
     glViewport(0, 0, g_game.x_resolution, g_game.y_resolution);
-    Unit *un   = caller.GetUnit();
-    Unit *base = baseun.GetUnit();
+    std::shared_ptr<Unit> un   = caller.GetUnit();
+    std::shared_ptr<Unit> base = baseun.GetUnit();
     if (un && (!base)) {
         VSFileSystem::vs_fprintf(stderr, "Error: Base NULL");
         mission->msgcenter->add("game", "all", "[Computer] Docking unit destroyed. Emergency launch initiated.");

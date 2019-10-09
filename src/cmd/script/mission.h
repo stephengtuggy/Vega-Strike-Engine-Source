@@ -446,8 +446,8 @@ class Mission
     struct Objective {
         float       completeness;
         std::string objective;
-        Unit *      getOwner();
-        void        setOwner(Unit *u)
+        std::shared_ptr<Unit> getOwner();
+        void        setOwner(std::shared_ptr<Unit> u)
         {
             Owner.SetUnit(u);
         }
@@ -471,7 +471,7 @@ class Mission
     static double   gametime;
     string          mission_name;
     void            terminateMission();
-    Unit *          call_unit_launch(class CreateFlightgroup *fg, int type /*clsptr type*/, const std::string &destinations);
+    std::shared_ptr<Unit> call_unit_launch(class CreateFlightgroup *fg, int type /*clsptr type*/, const std::string &destinations);
 
     Mission(const char *configfile, bool loadscripts = true);
     Mission(const char *filename, const std::string &pythonscript, bool loadscripts = true);
@@ -505,7 +505,7 @@ class Mission
     void DirectorInitgame();
     void DirectorEnd();
     void DirectorBenchmark();
-    void DirectorShipDestroyed(Unit *unit);
+    void DirectorShipDestroyed(std::shared_ptr<Unit> unit);
     void BriefingStart();
     // clobbers the cam view & renders btw 0,0, and 1,1
     class TextPlane *BriefingRender();
@@ -522,7 +522,7 @@ class Mission
     bool         runScript(missionNode *, const string &scriptname, unsigned int classid = 0);
     void         RunDirectorScript(const string &);
     unsigned int createClassInstance(string modulename);
-    void         setCurrentAIUnit(Unit *unit)
+    void         setCurrentAIUnit(std::shared_ptr<Unit> unit)
     {
         current_ai_unit = unit;
     }
@@ -548,7 +548,7 @@ class Mission
     easyDomNode *origin_node;
 
 #ifndef VS_MIS_SEL
-    Unit * current_ai_unit;
+    std::shared_ptr<Unit> current_ai_unit;
     Order *current_ai_order;
 
     int  debuglevel;
@@ -748,7 +748,7 @@ class Mission
 
     varInst *call_unit(missionNode *node, int mode);
     varInst *call_briefing(missionNode *node, int mode);
-    Unit *   getUnitObject(missionNode *node, int mode, varInst *ovi);
+    std::shared_ptr<Unit> getUnitObject(missionNode *node, int mode, varInst *ovi);
 
     // void call_unit_launch(missionNode *node,int mode,string name,string faction,string type,string ainame,int nr_ships,Vector &pos);
 
@@ -761,7 +761,7 @@ class Mission
     string   call_string_getstring(missionNode *node, int mode, varInst *ovi);
     string   getStringArgument(missionNode *node, int mode, int arg_nr);
 
-    void findNextEnemyTarget(Unit *my_unit);
+    void findNextEnemyTarget(std::shared_ptr<Unit> my_unit);
 
     varInst *doCall(missionNode *node, int mode, string module, string method);
     void     doCall_toxml(string module, varInst *ovi);
@@ -782,7 +782,7 @@ class Mission
     double  getFloatArg(missionNode *node, int mode, int arg_nr);
     int     getIntArg(missionNode *node, int mode, int arg_nr);
     bool    getBoolArg(missionNode *node, int mode, int arg_nr);
-    Unit *  getUnitArg(missionNode *node, int mode, int arg_nr);
+    std::shared_ptr<Unit> getUnitArg(missionNode *node, int mode, int arg_nr);
 #endif // VS_MIS_SEL
 };
 

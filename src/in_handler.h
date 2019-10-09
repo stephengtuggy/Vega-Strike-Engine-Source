@@ -33,9 +33,9 @@ class InputListener
     int *mousex, *mousey;
     KBSTATE (*keystate)[KEYMAP_SIZE];
 
-    Unit *parent;
+    std::shared_ptr<Unit> parent;
 
-    InputListener(Unit *parent)
+    InputListener(std::shared_ptr<Unit> parent)
     {
         this->parent = parent;
         // int a;

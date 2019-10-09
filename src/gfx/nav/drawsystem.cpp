@@ -207,7 +207,7 @@ void NavigationSystem::DrawSystem()
      *       UniverseUtil::IOmessage (0,"game","all",mystrcy);
      */
 
-    Unit *ThePlayer = (UniverseUtil::getPlayerX(UniverseUtil::getCurrentPlayer()));
+    std::shared_ptr<Unit> ThePlayer = (UniverseUtil::getPlayerX(UniverseUtil::getCurrentPlayer()));
 
     // Enlist the items and attributes
     //**********************************
@@ -354,7 +354,7 @@ void NavigationSystem::DrawSystem()
             tests_in_range = TestIfInRangeBlk(the_x, the_y, insert_size, mouse_x_current, mouse_y_current);
         else
             tests_in_range = TestIfInRangeRad(the_x, the_y, insert_size, mouse_x_current, mouse_y_current);
-        Unit *myunit = (*blah);
+        std::shared_ptr<Unit> myunit = (*blah);
 
         ++blah;
         DisplayOrientationLines(the_x, the_y, the_x_flat, the_y_flat, 1);

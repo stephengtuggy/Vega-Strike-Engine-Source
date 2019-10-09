@@ -139,7 +139,7 @@ bool NetServer::saveAccount(int i)
     // FileUtil::WriteSaveFiles( savestr, xmlstr, VSFileSystem::datadir+"/serversaves", cp->savegame->GetCallsign());
     // SEND THE BUFFERS TO ACCOUNT SERVER
     if (cp && acctserver && acct_con) {
-        Unit *    un = cp->GetParent();
+        std::shared_ptr<Unit> un = cp->GetParent();
         ClientPtr clt;
         if (un)
             clt = getClientFromSerial(un->GetSerial());

@@ -104,7 +104,7 @@ class NetClient
     ClientsMap Clients; // Clients in the same zone
 
     // This unit array has to be changed into a map too !!
-    // Unit *				Units[MAXOBJECTS];			// Server controlled units in the same zone
+    // std::shared_ptr<Unit> Units[MAXOBJECTS];			// Server controlled units in the same zone
     // a vector because always accessed by their IDs
 
     NetworkCommunication *NetComm;
@@ -132,9 +132,9 @@ class NetClient
     int  checkAcctMsg();
 
     void  receiveLocations(const Packet *packet);
-    void  receiveUnitDamage(NetBuffer &netbuf, Unit *un);
+    void  receiveUnitDamage(NetBuffer &netbuf, std::shared_ptr<Unit> un);
     void  receivePositions(unsigned int numUnits, unsigned int timestamp, NetBuffer &netbuf, double deltat);
-    Unit *enterClient(NetBuffer &netbuf, ObjSerial ser);
+    std::shared_ptr<Unit> enterClient(NetBuffer &netbuf, ObjSerial ser);
     void  removeClient(const Packet *packet);
 
   public:
@@ -185,11 +185,11 @@ class NetClient
     {
         return this->callsign;
     }
-    void setUnit(Unit *un)
+    void setUnit(std::shared_ptr<Unit> un)
     {
         game_unit.SetUnit(un);
     }
-    Unit *getUnit()
+    std::shared_ptr<Unit> getUnit()
     {
         return game_unit.GetUnit();
     }
@@ -224,7 +224,7 @@ class NetClient
         return this->ingame;
     }
 
-    Transformation Interpolate(Unit *un, double addtime);
+    Transformation Interpolate(std::shared_ptr<Unit> un, double addtime);
 
     // void	disable() { enabled=false;}
     // int		isEnabled() { return enabled; }
@@ -232,8 +232,8 @@ class NetClient
 
     /********************* Weapon stuff **********************/
     // Functions called when to give a firing order to the server (only for player units).
-    void scanRequest(Unit *target);
-    void targetRequest(Unit *target);
+    void scanRequest(std::shared_ptr<Unit> target);
+    void targetRequest(std::shared_ptr<Unit> target);
     void respawnRequest();
     void textMessage(const string &data);
     void fireRequest(ObjSerial serial, const vector<int> &mount_indicies, char mis);
@@ -246,7 +246,7 @@ class NetClient
     void      communicationRequest(const class CommunicationMessage &c, ObjSerial sendTo);
     void      downloadZoneInfo();
     void      AddObjects(NetBuffer &netbuf);
-    ClientPtr AddClientObject(Unit *un, ObjSerial cltserial = 0);
+    ClientPtr AddClientObject(std::shared_ptr<Unit> un, ObjSerial cltserial = 0);
 
     bool jumpRequest(string newsystem, ObjSerial jumpserial);
     bool readyToJump();
@@ -287,7 +287,7 @@ class NetClient
     NetClient &operator=(const NetClient &);
 };
 
-Unit *getNetworkUnit(ObjSerial cserial);
+std::shared_ptr<Unit> getNetworkUnit(ObjSerial cserial);
 bool  isLocalSerial(ObjSerial sernum);
 
 extern vector<ObjSerial> localSerials;

@@ -49,7 +49,7 @@ template <class UnitType> bool GameUnit<UnitType>::querySphereClickList(int mous
                                                    2 * err * this->meshdata[i]->rSize())
             return true;
     }
-    const Unit *su;
+    const std::shared_ptr<Unit> su;
     for (un_kiter ui = this->viewSubUnits(); (su = *ui); ++ui) {
         if (su->querySphereClickList(mouseX, mouseY, err, activeCam))
             return true;

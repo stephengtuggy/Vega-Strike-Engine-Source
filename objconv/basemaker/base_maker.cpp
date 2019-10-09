@@ -1472,7 +1472,7 @@ void Base::Room::BaseVSSprite::Draw(Base *base)
 void Base::Room::BaseShip::Draw(Base *base)
 {
     /*
-     *  Unit *un=base->caller.GetUnit();
+     *  std::shared_ptr<Unit> un=base->caller.GetUnit();
      *  if (un) {
      *       GFXHudMode (GFXFALSE);
      *       GFXEnable (DEPTHTEST);

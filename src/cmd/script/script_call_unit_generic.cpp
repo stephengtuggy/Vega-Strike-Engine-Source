@@ -64,11 +64,11 @@
 
 extern const vector<string> &ParseDestinations(const string &value);
 extern Unit &                GetUnitMasterPartList();
-extern bool                  PlanetHasLights(Unit *un);
+extern bool                  PlanetHasLights(std::shared_ptr<Unit> un);
 
 #if 0
-NEVER NEVER NEVER use Unit*to save a unit across frames
-extern Unit *player_unit;
+NEVER NEVER NEVER use std::shared_ptr<Unit> to save a unit across frames
+extern std::shared_ptr<Unit> player_unit;
 BAD BAD BAD
 
 Better:
@@ -78,7 +78,7 @@ Best:
 _Universe->AccessCockpit()->GetParent();
 #endif
 
-static Unit *getIthUnit(un_iter uiter, int i);
+static std::shared_ptr<Unit> getIthUnit(un_iter uiter, int i);
 
 varInst *Mission::call_unit(missionNode *node, int mode)
 {
@@ -96,7 +96,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
     if (method_id == CMT_UNIT_getUnit) {
         missionNode *nr_node = getArgument(node, mode, 0);
         int          unit_nr = doIntVar(nr_node, mode);
-        Unit *       my_unit = NULL;
+        std::shared_ptr<Unit> my_unit = NULL;
         if (mode == SCRIPT_RUN) {
             StarSystem *ssystem = _Universe->scriptStarSystem();
             un_iter     uiter   = ssystem->getUnitList().createIterator();
@@ -110,7 +110,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
         printVarInst(3, viret);
         return viret;
     } else if (method_id == CMT_UNIT_getPlayer) {
-        Unit *my_unit = NULL;
+        std::shared_ptr<Unit> my_unit = NULL;
         if (mode == SCRIPT_RUN)
             my_unit = _Universe->AccessCockpit()->GetParent();
         viret             = newVarInst(VI_TEMP);
@@ -122,11 +122,11 @@ varInst *Mission::call_unit(missionNode *node, int mode)
         return viret;
     } else if (method_id == CMT_UNIT_getPlayerX) {
         int   which   = getIntArg(node, mode, 0);
-        Unit *my_unit = NULL;
+        std::shared_ptr<Unit> my_unit = NULL;
         if (mode == SCRIPT_RUN) {
             int j = 0;
             for (unsigned int i = 0; i < _Universe->numPlayers(); ++i) {
-                Unit *un;
+                std::shared_ptr<Unit> un;
                 if (NULL != (un = _Universe->AccessCockpit(i)->GetParent())) {
                     if (j == which) {
                         my_unit = un;
@@ -172,7 +172,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             if (node->subnodes.size() > 10)
                 logo_alp = getStringArgument(node, mode, 10);
         }
-        Unit *my_unit = NULL;
+        std::shared_ptr<Unit> my_unit = NULL;
         if (mode == SCRIPT_RUN) {
             clsptr clstyp = UNITPTR;
             if (method_id == CMT_UNIT_launchJumppoint || method_id == CMT_UNIT_launchPlanet)
@@ -197,7 +197,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             VSFileSystem::vs_fprintf(stderr, "cunl%x", this);
             fflush(stderr);
 #endif
-            Unit *tmp = call_unit_launch(&cf, clstyp, destinations);
+            std::shared_ptr<Unit> tmp = call_unit_launch(&cf, clstyp, destinations);
             number_of_ships += nr_of_ships;
             if (!my_unit)
                 my_unit = tmp;
@@ -225,7 +225,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
         vireturn          = call_olist_new(node, mode);
         if (mode == SCRIPT_RUN) {
             Cargo *      ret = NULL;
-            Unit *       mpl = &GetUnitMasterPartList();
+            std::shared_ptr<Unit> mpl = &GetUnitMasterPartList();
             unsigned int max = mpl->numCargo();
             if (!category.empty()) {
                 size_t Begin, End;
@@ -280,7 +280,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
         return vireturn;
     } else {
         varInst *ovi     = getObjectArg(node, mode);
-        Unit *   my_unit = getUnitObject(node, mode, ovi);
+        std::shared_ptr<Unit> my_unit = getUnitObject(node, mode, ovi);
         debug(3, node, mode, "unit object: ");
         printVarInst(3, ovi);
         if (method_id == CMT_UNIT_getContainer) {
@@ -292,7 +292,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             viret->objectname = "unitContainer";
             viret->object     = cont;
         } else if (method_id == CMT_UNIT_getUnitFromContainer) {
-            Unit *ret = NULL;
+            std::shared_ptr<Unit> ret = NULL;
             if (mode == SCRIPT_RUN)
                 ret = ((UnitContainer *)my_unit)->GetUnit();
             viret             = newVarInst(VI_TEMP);
@@ -360,7 +360,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
                 viret->objectname = "olist";
             }
         } else if (method_id == CMT_UNIT_getTarget) {
-            Unit *res_unit = NULL;
+            std::shared_ptr<Unit> res_unit = NULL;
             if (mode == SCRIPT_RUN)
                 res_unit = my_unit->Target();
             viret             = newVarInst(VI_TEMP);
@@ -384,7 +384,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             viret       = newVarInst(VI_TEMP);
             viret->type = VAR_VOID;
         } else if (method_id == CMT_UNIT_getThreat) {
-            Unit *res_unit = NULL;
+            std::shared_ptr<Unit> res_unit = NULL;
             if (mode == SCRIPT_RUN)
                 res_unit = my_unit->Threat();
             viret             = newVarInst(VI_TEMP);
@@ -392,19 +392,19 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             viret->objectname = "unit";
             viret->object     = res_unit;
         } else if (method_id == CMT_UNIT_setTarget) {
-            Unit *other_unit = getUnitArg(node, mode, 1);
+            std::shared_ptr<Unit> other_unit = getUnitArg(node, mode, 1);
             if (mode == SCRIPT_RUN)
                 my_unit->Target(other_unit);
             viret       = newVarInst(VI_TEMP);
             viret->type = VAR_VOID;
         } else if (method_id == CMT_UNIT_equal) {
-            Unit *other_unit = getUnitArg(node, mode, 1);
+            std::shared_ptr<Unit> other_unit = getUnitArg(node, mode, 1);
             viret            = newVarInst(VI_TEMP);
             viret->type      = VAR_BOOL;
             viret->bool_val  = (my_unit == other_unit); // doesn't dereference anything
         } else if (method_id == CMT_UNIT_getDistance) {
             float dist = 0.0;
-            Unit *un   = getUnitArg(node, mode, 1);
+            std::shared_ptr<Unit> un   = getUnitArg(node, mode, 1);
             if (mode == SCRIPT_RUN)
                 dist = (my_unit->Position() - un->Position()).Magnitude() - my_unit->rSize() - un->rSize();
             viret            = newVarInst(VI_TEMP);
@@ -419,7 +419,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             viret->type      = VAR_FLOAT;
             viret->float_val = dist;
         } else if (method_id == CMT_UNIT_getAngle) {
-            Unit *other_unit = getUnitArg(node, mode, 1);
+            std::shared_ptr<Unit> other_unit = getUnitArg(node, mode, 1);
             float angle      = 0.0;
             if (mode == SCRIPT_RUN) {
                 Vector  p, q, r;
@@ -533,7 +533,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             viret->bool_val = res;
         } else if (method_id == CMT_UNIT_getRelation) {
             float res        = 0.0;
-            Unit *other_unit = getUnitArg(node, mode, 1);
+            std::shared_ptr<Unit> other_unit = getUnitArg(node, mode, 1);
             if (mode == SCRIPT_RUN)
                 res = my_unit->getRelation(other_unit);
             viret            = newVarInst(VI_TEMP);
@@ -610,7 +610,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
                 viret->objectname = "string";
             }
         } else if (method_id == CMT_UNIT_getFgLeader) {
-            Unit *ret_unit = NULL;
+            std::shared_ptr<Unit> ret_unit = NULL;
             if (mode == SCRIPT_RUN) {
                 ret_unit = (my_unit->getFlightgroup() != NULL) ? my_unit->getFlightgroup()->leader.GetUnit() : my_unit;
                 if (ret_unit == NULL)
@@ -621,7 +621,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             viret->objectname = "unit";
             viret->object     = (void *)ret_unit;
         } else if (method_id == CMT_UNIT_setFgLeader) {
-            Unit *un = getUnitArg(node, mode, 1);
+            std::shared_ptr<Unit> un = getUnitArg(node, mode, 1);
             if (mode == SCRIPT_RUN)
                 if (my_unit->getFlightgroup() != NULL)
                     my_unit->getFlightgroup()->leader.SetUnit(un);
@@ -652,7 +652,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             viret       = newVarInst(VI_TEMP);
             viret->type = VAR_VOID;
         } else if (method_id == CMT_UNIT_scannerNearestEnemy) {
-            Unit *ret_unit = NULL;
+            std::shared_ptr<Unit> ret_unit = NULL;
             if (mode == SCRIPT_RUN)
                 assert(0);
             viret             = newVarInst(VI_TEMP);
@@ -660,7 +660,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             viret->objectname = "unit";
             viret->object     = (void *)ret_unit;
         } else if (method_id == CMT_UNIT_scannerNearestFriend) {
-            Unit *ret_unit = NULL;
+            std::shared_ptr<Unit> ret_unit = NULL;
             if (mode == SCRIPT_RUN)
                 assert(0);
             viret             = newVarInst(VI_TEMP);
@@ -668,7 +668,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             viret->objectname = "unit";
             viret->object     = (void *)ret_unit;
         } else if (method_id == CMT_UNIT_scannerNearestShip) {
-            Unit *ret_unit = NULL;
+            std::shared_ptr<Unit> ret_unit = NULL;
             if (mode == SCRIPT_RUN)
                 assert(0);
             viret             = newVarInst(VI_TEMP);
@@ -676,7 +676,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             viret->objectname = "unit";
             viret->object     = (void *)ret_unit;
         } else if (method_id == CMT_UNIT_scannerLeader) {
-            Unit *ret_unit = NULL;
+            std::shared_ptr<Unit> ret_unit = NULL;
             if (mode == SCRIPT_RUN)
                 assert(0);
             viret             = newVarInst(VI_TEMP);
@@ -707,7 +707,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
         } else if (method_id == CMT_UNIT_getTurret) {
             missionNode *nr_node     = getArgument(node, mode, 1);
             int          unit_nr     = doIntVar(nr_node, mode);
-            Unit *       turret_unit = NULL;
+            std::shared_ptr<Unit> turret_unit = NULL;
             if (mode == SCRIPT_RUN) {
                 un_iter uiter = my_unit->getSubUnits();
                 turret_unit   = getIthUnit(uiter, unit_nr);
@@ -873,13 +873,13 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             viret       = newVarInst(VI_TEMP);
             viret->type = VAR_VOID;
         } else if (method_id == CMT_UNIT_frameOfReference) {
-            Unit *other_unit = getUnitArg(node, mode, 1);
+            std::shared_ptr<Unit> other_unit = getUnitArg(node, mode, 1);
             if (mode == SCRIPT_RUN)
                 my_unit->VelocityReference(other_unit);
             viret       = newVarInst(VI_TEMP);
             viret->type = VAR_VOID;
         } else if (method_id == CMT_UNIT_communicateTo) {
-            Unit *        other_unit = getUnitArg(node, mode, 1);
+            std::shared_ptr<Unit> other_unit = getUnitArg(node, mode, 1);
             float         mood       = getFloatArg(node, mode, 2);
             unsigned char sex        = 0;
             if (mode == SCRIPT_RUN) {
@@ -926,12 +926,12 @@ varInst *Mission::call_unit(missionNode *node, int mode)
 
 extern BLENDFUNC parse_alpha(const char *);
 
-Unit *Mission::call_unit_launch(CreateFlightgroup *fg, int type, const string &destinations)
+std::shared_ptr<Unit> Mission::call_unit_launch(CreateFlightgroup *fg, int type, const string &destinations)
 {
     int                   faction_nr = FactionUtil::GetFactionIndex(fg->fg->faction);
-    Unit **               units      = new Unit *[fg->nr_ships];
+    std::shared_ptr<Unit> *               units      = new std::shared_ptr<Unit> [fg->nr_ships];
     int                   u;
-    Unit *                par         = _Universe->AccessCockpit()->GetParent();
+    std::shared_ptr<Unit> par         = _Universe->AccessCockpit()->GetParent();
     CollideMap::iterator  metahint[2] = {_Universe->scriptStarSystem()->collidemap[Unit::UNIT_ONLY]->begin(),
                                         _Universe->scriptStarSystem()->collidemap[Unit::UNIT_BOLT]->begin()};
     CollideMap::iterator *hint        = metahint;
@@ -939,7 +939,7 @@ Unit *Mission::call_unit_launch(CreateFlightgroup *fg, int type, const string &d
         par->activeStarSystem == _Universe->scriptStarSystem())
         hint = par->location;
     for (u = 0; u < fg->nr_ships; u++) {
-        Unit *my_unit;
+        std::shared_ptr<Unit> my_unit;
         if (type == PLANETPTR) {
             float radius     = 1;
             char *tex        = strdup(fg->fg->type.c_str());
@@ -997,7 +997,7 @@ Unit *Mission::call_unit_launch(CreateFlightgroup *fg, int type, const string &d
         units[u] = my_unit;
     }
     float fg_radius = units[0]->rSize();
-    Unit *my_unit;
+    std::shared_ptr<Unit> my_unit;
     for (u = 0; u < fg->nr_ships; u++) {
         my_unit = units[u];
         QVector pox;
@@ -1024,12 +1024,12 @@ Unit *Mission::call_unit_launch(CreateFlightgroup *fg, int type, const string &d
     return my_unit;
 }
 
-void Mission::findNextEnemyTarget(Unit *my_unit)
+void Mission::findNextEnemyTarget(std::shared_ptr<Unit> my_unit)
 {
     StarSystem *ssystem = _Universe->scriptStarSystem();
     un_iter     uiter(ssystem->getUnitList().createIterator());
-    Unit *      unit;
-    Unit *      target_unit = NULL;
+    std::shared_ptr<Unit> unit;
+    std::shared_ptr<Unit> target_unit = NULL;
     for (; (unit = *uiter); ++uiter)
         if (my_unit->getRelation(unit) < 0.0) {
             target_unit = *uiter;
@@ -1039,9 +1039,9 @@ void Mission::findNextEnemyTarget(Unit *my_unit)
         my_unit->Target(target_unit);
 }
 
-static Unit *getIthUnit(un_iter uiter, int unit_nr)
+static std::shared_ptr<Unit> getIthUnit(un_iter uiter, int unit_nr)
 {
-    Unit *unit = NULL;
+    std::shared_ptr<Unit> unit = NULL;
     for (int i = 0; (unit = *uiter); ++uiter, ++i)
         if (i == unit_nr)
             return unit;

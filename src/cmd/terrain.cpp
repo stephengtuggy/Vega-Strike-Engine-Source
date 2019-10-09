@@ -34,7 +34,7 @@ void Terrain::SetTransformation(const Matrix &Mat)
     QuadTree::SetTransformation(Mat);
 }
 
-void Terrain::ApplyForce(Unit *un, const Vector &normal, float dist)
+void Terrain::ApplyForce(std::shared_ptr<Unit> un, const Vector &normal, float dist)
 {
     un->ApplyForce(normal * .4 * un->GetMass() * fabs(normal.Dot((un->GetVelocity() / SIMULATION_ATOM)) + fabs(dist) / (SIMULATION_ATOM)));
     un->ApplyDamage(un->Position().Cast() - normal * un->rSize(),
@@ -44,7 +44,7 @@ void Terrain::ApplyForce(Unit *un, const Vector &normal, float dist)
                     GFXColor(1, 1, 1, 1),
                     NULL);
 }
-void Terrain::Collide(Unit *un, const Matrix &t)
+void Terrain::Collide(std::shared_ptr<Unit> un, const Matrix &t)
 {
     Vector norm;
     if (un->isUnit() == BUILDINGPTR)
@@ -53,7 +53,7 @@ void Terrain::Collide(Unit *un, const Matrix &t)
     if (dist < 0)
         ApplyForce(un, norm, -dist);
 }
-void Terrain::Collide(Unit *un)
+void Terrain::Collide(std::shared_ptr<Unit> un)
 {
     Collide(un, transformation);
 }
@@ -76,7 +76,7 @@ void Terrain::EnableDraw()
 }
 void Terrain::Collide()
 {
-    Unit *unit;
+    std::shared_ptr<Unit> unit;
     for (un_iter iter = _Universe->activeStarSystem()->getUnitList().createIterator(); (unit = *iter) != NULL; ++iter)
         Collide(unit);
 }

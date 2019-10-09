@@ -71,11 +71,11 @@ extern std::string global_username;
 #define KEYDOWN(name, key) (name[key] & 0x80)
 
 static Texture *tmpcockpittexture;
-Unit **         fighters;
-Unit *          carrier  = NULL;
-Unit *          fighter  = NULL;
-Unit *          fighter2 = NULL;
-Unit *          midway   = NULL;
+std::shared_ptr<Unit> *         fighters;
+std::shared_ptr<Unit> carrier  = NULL;
+std::shared_ptr<Unit> fighter  = NULL;
+std::shared_ptr<Unit> fighter2 = NULL;
+std::shared_ptr<Unit> midway   = NULL;
 GFXBOOL         capture;
 GFXBOOL         quit      = GFXFALSE;
 bool            _Slew     = true;
@@ -87,7 +87,7 @@ int allexcept = FE_DIVBYZERO; //|FE_INVALID;//|FE_OVERFLOW|FE_UNDERFLOW;
 int allexcept = 0;
 #endif
 int                shiftup(int);
-string             getUnitNameAndFgNoBase(Unit *target);
+string             getUnitNameAndFgNoBase(std::shared_ptr<Unit> target);
 ContinuousTerrain *myterrain;
 int                numf     = 0;
 CoordinateSelect * locSel   = NULL;
@@ -193,7 +193,7 @@ void TextMessageCallback(unsigned int ch, unsigned int mod, bool release, int x,
             if (gcp->textMessage.length() != 0) {
                 std::string name = gcp->savegame->GetCallsign();
                 if (Network != NULL) {
-                    Unit *par = gcp->GetParent();
+                    std::shared_ptr<Unit> par = gcp->GetParent();
                     if (0 && par)
                         name = getUnitNameAndFgNoBase(par);
                     Network[textmessager].textMessage(gcp->textMessage);
@@ -446,7 +446,7 @@ void Inside(const KBData &, KBSTATE newState)
         string cockpit = "disabled-cockpit.cpt";
         if (_Universe->AccessCockpit()->GetParent())
             cockpit = _Universe->AccessCockpit()->GetParent()->getCockpit();
-        Unit *u = NULL; //= NULL just to shut off a warning about its possibly being used uninitialized --chuck_starchaser
+        std::shared_ptr<Unit> u = NULL; //= NULL just to shut off a warning about its possibly being used uninitialized --chuck_starchaser
         if ((_Universe->AccessCockpit()->GetParent() != NULL) && (_Universe->AccessCockpit()->GetParent()->name == "return_to_cockpit") &&
             (_Universe->AccessCockpit()->GetParent()->owner != NULL) &&
             (u = findUnitInStarsystem(_Universe->AccessCockpit()->GetParent()->owner)))
@@ -764,7 +764,7 @@ void createObjects(std::vector<std::string> &   fighter0name,
 
     int numf = mission->number_of_ships;
 
-    fighters       = new Unit *[numf];
+    fighters       = new std::shared_ptr<Unit> [numf];
     int *tmptarget = new int[numf];
 
     GFXEnable(TEXTURE0);
@@ -827,7 +827,7 @@ void createObjects(std::vector<std::string> &   fighter0name,
                         vector<std::string> *dat = &cp->savegame->getMissionStringData("jump_from");
                         if (dat->size()) {
                             std::string srcsys = (*dat)[0];
-                            Unit *      grav;
+                            std::shared_ptr<Unit> grav;
                             for (un_iter ui = cp->activeStarSystem->gravitationalUnits().createIterator(); (grav = *ui) != NULL; ++ui) {
                                 size_t siz = grav->GetDestinations().size();
                                 for (unsigned int i = 0; i < siz; ++i)
@@ -943,7 +943,7 @@ void createObjects(std::vector<std::string> &   fighter0name,
 
 void AddUnitToSystem(const SavedUnits *su)
 {
-    Unit *un = NULL;
+    std::shared_ptr<Unit> un = NULL;
     switch (su->type) {
     case ENHANCEMENTPTR:
         un = UnitFactory::createEnhancement(su->filename.get().c_str(), FactionUtil::GetFactionIndex(su->faction), string(""));

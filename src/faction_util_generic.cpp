@@ -37,7 +37,7 @@ static int GetFactionLookup(const char *factionname)
     return 0;
 }
 
-Unit *FactionUtil::GetContraband(int faction)
+std::shared_ptr<Unit> FactionUtil::GetContraband(int faction)
 {
     return factions[faction]->contraband.get();
 }
@@ -79,7 +79,7 @@ static bool isPlayerFaction(const int MyFaction)
 {
     unsigned int numplayers = _Universe->numPlayers();
     for (unsigned int i = 0; i < numplayers; ++i) {
-        Unit *un = _Universe->AccessCockpit(i)->GetParent();
+        std::shared_ptr<Unit> un = _Universe->AccessCockpit(i)->GetParent();
         if (un)
             if (un->faction == MyFaction)
                 return true;

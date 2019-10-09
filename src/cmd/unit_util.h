@@ -7,63 +7,63 @@ using std::string;
 
 namespace UnitUtil
 {
-void          setMissionRelevant(Unit *my_unit);
-void          unsetMissionRelevant(Unit *my_unit);
-string        getFactionName(const Unit *my_unit);
-int           getFactionIndex(const Unit *my_unit);
-void          setFactionIndex(Unit *my_unit, int factionname);
-void          RecomputeUnitUpgrades(Unit *my_unit);
-void          setFactionName(Unit *my_unit, string factionname);
-float         getFactionRelation(const Unit *my_unit, const Unit *their_unit);
-float         getRelationToFaction(const Unit *my_unit, int other_faction);
-float         getRelationFromFaction(const Unit *their_unit, int my_faction);
-string        getName(const Unit *my_unit);
-void          setName(Unit *my_unit, string name);
-void          SetHull(Unit *my_unit, float hull);
-string        getFlightgroupName(const Unit *my_unit);
-const string &getFlightgroupNameCR(const Unit *my_unit);
-Unit *        getFlightgroupLeader(Unit *my_unit);
-void          orbit(Unit *my_unit, Unit *orbitee, float speed, QVector R, QVector S, QVector center);
-bool          setFlightgroupLeader(Unit *my_unit, Unit *un);
-string        getFgDirective(const Unit *my_unit);
-bool          setFgDirective(Unit *my_unit, string inp);
-int           getPhysicsPriority(Unit *un);
-int           getFgSubnumber(const Unit *my_unit);
-int           removeCargo(Unit *my_unit, string s, int quantity, bool erasezero);
-bool          repair(Unit *my_unit);
-int           removeWeapon(Unit *my_unit, string weapon, int mountoffset, bool loop_through_mounts); // -1 tells no weapon removed
-float         upgrade(Unit *my_unit, string file, int mountoffset, int subunitoffset, bool force, bool loop_through_mounts);
-int           addCargo(Unit *my_unit, Cargo carg);
-int           forceAddCargo(Unit *my_unit, Cargo carg);
-bool          incrementCargo(Unit *my_unit, float percentagechange, int quantity);
-bool          decrementCargo(Unit *my_unit, float percentagechange);
-float         getDistance(const Unit *my_unit, const Unit *un);
-float         getSignificantDistance(const Unit *un, const Unit *sig);
-int           hasCargo(const Unit *my_unit, std::string mycarg);
-Cargo         GetCargoIndex(const Unit *my_unit, int index);
-Cargo         GetCargo(const Unit *my_unit, std::string cargname);
-string        getUnitSystemFile(const Unit *my_unit);
-float         getCredits(const Unit *my_unit);
-void          addCredits(const Unit *my_unit, float credits);
-bool          isSignificant(const Unit *my_unit);
-bool          isCloseEnoughToDock(const Unit *my_unit, const Unit *un);
-bool          isCapitalShip(const Unit *my_unit);
-bool          isDockableUnit(const Unit *my_unit);
-bool          isAsteroid(const Unit *my_unit);
-bool          isSun(const Unit *my_unit);
-void          switchFg(Unit *my_unit, string arg);
-int           communicateTo(Unit *my_unit, Unit *other_unit, float mood);
-bool          commAnimation(Unit *my_unit, string anim);
-bool          JumpTo(Unit *unit, string system);
-int           isPlayerStarship(const Unit *un);
-void          setECM(Unit *un, int NewECM); // short fix
-int           getECM(const Unit *un);       // short fix
-void          setSpeed(Unit *un, float speed);
-Unit *        owner(const Unit *un);
-float         maxSpeed(const Unit *un);
-float         maxAfterburnerSpeed(const Unit *un);
-void          performDockingOperations(Unit *un, Unit *unitToDockWith, int actuallyDockP);
-float         PercentOperational(Unit *un, string, string category, bool countHullAndArmorAsFull);
+void          setMissionRelevant(std::shared_ptr<Unit> my_unit);
+void          unsetMissionRelevant(std::shared_ptr<Unit> my_unit);
+string        getFactionName(const std::shared_ptr<Unit> my_unit);
+int           getFactionIndex(const std::shared_ptr<Unit> my_unit);
+void          setFactionIndex(std::shared_ptr<Unit> my_unit, int factionname);
+void          RecomputeUnitUpgrades(std::shared_ptr<Unit> my_unit);
+void          setFactionName(std::shared_ptr<Unit> my_unit, string factionname);
+float         getFactionRelation(const std::shared_ptr<Unit> my_unit, const std::shared_ptr<Unit> their_unit);
+float         getRelationToFaction(const std::shared_ptr<Unit> my_unit, int other_faction);
+float         getRelationFromFaction(const std::shared_ptr<Unit> their_unit, int my_faction);
+string        getName(const std::shared_ptr<Unit> my_unit);
+void          setName(std::shared_ptr<Unit> my_unit, string name);
+void          SetHull(std::shared_ptr<Unit> my_unit, float hull);
+string        getFlightgroupName(const std::shared_ptr<Unit> my_unit);
+const string &getFlightgroupNameCR(const std::shared_ptr<Unit> my_unit);
+std::shared_ptr<Unit> getFlightgroupLeader(std::shared_ptr<Unit> my_unit);
+void          orbit(std::shared_ptr<Unit> my_unit, std::shared_ptr<Unit> orbitee, float speed, QVector R, QVector S, QVector center);
+bool          setFlightgroupLeader(std::shared_ptr<Unit> my_unit, std::shared_ptr<Unit> un);
+string        getFgDirective(const std::shared_ptr<Unit> my_unit);
+bool          setFgDirective(std::shared_ptr<Unit> my_unit, string inp);
+int           getPhysicsPriority(std::shared_ptr<Unit> un);
+int           getFgSubnumber(const std::shared_ptr<Unit> my_unit);
+int           removeCargo(std::shared_ptr<Unit> my_unit, string s, int quantity, bool erasezero);
+bool          repair(std::shared_ptr<Unit> my_unit);
+int           removeWeapon(std::shared_ptr<Unit> my_unit, string weapon, int mountoffset, bool loop_through_mounts); // -1 tells no weapon removed
+float         upgrade(std::shared_ptr<Unit> my_unit, string file, int mountoffset, int subunitoffset, bool force, bool loop_through_mounts);
+int           addCargo(std::shared_ptr<Unit> my_unit, Cargo carg);
+int           forceAddCargo(std::shared_ptr<Unit> my_unit, Cargo carg);
+bool          incrementCargo(std::shared_ptr<Unit> my_unit, float percentagechange, int quantity);
+bool          decrementCargo(std::shared_ptr<Unit> my_unit, float percentagechange);
+float         getDistance(const std::shared_ptr<Unit> my_unit, const std::shared_ptr<Unit> un);
+float         getSignificantDistance(const std::shared_ptr<Unit> un, const std::shared_ptr<Unit> sig);
+int           hasCargo(const std::shared_ptr<Unit> my_unit, std::string mycarg);
+Cargo         GetCargoIndex(const std::shared_ptr<Unit> my_unit, int index);
+Cargo         GetCargo(const std::shared_ptr<Unit> my_unit, std::string cargname);
+string        getUnitSystemFile(const std::shared_ptr<Unit> my_unit);
+float         getCredits(const std::shared_ptr<Unit> my_unit);
+void          addCredits(const std::shared_ptr<Unit> my_unit, float credits);
+bool          isSignificant(const std::shared_ptr<Unit> my_unit);
+bool          isCloseEnoughToDock(const std::shared_ptr<Unit> my_unit, const std::shared_ptr<Unit> un);
+bool          isCapitalShip(const std::shared_ptr<Unit> my_unit);
+bool          isDockableUnit(const std::shared_ptr<Unit> my_unit);
+bool          isAsteroid(const std::shared_ptr<Unit> my_unit);
+bool          isSun(const std::shared_ptr<Unit> my_unit);
+void          switchFg(std::shared_ptr<Unit> my_unit, string arg);
+int           communicateTo(std::shared_ptr<Unit> my_unit, std::shared_ptr<Unit> other_unit, float mood);
+bool          commAnimation(std::shared_ptr<Unit> my_unit, string anim);
+bool          JumpTo(std::shared_ptr<Unit> unit, string system);
+int           isPlayerStarship(const std::shared_ptr<Unit> un);
+void          setECM(std::shared_ptr<Unit> un, int NewECM); // short fix
+int           getECM(const std::shared_ptr<Unit> un);       // short fix
+void          setSpeed(std::shared_ptr<Unit> un, float speed);
+std::shared_ptr<Unit> owner(const std::shared_ptr<Unit> un);
+float         maxSpeed(const std::shared_ptr<Unit> un);
+float         maxAfterburnerSpeed(const std::shared_ptr<Unit> un);
+void          performDockingOperations(std::shared_ptr<Unit> un, std::shared_ptr<Unit> unitToDockWith, int actuallyDockP);
+float         PercentOperational(std::shared_ptr<Unit> un, string, string category, bool countHullAndArmorAsFull);
 } // namespace UnitUtil
 
 #endif

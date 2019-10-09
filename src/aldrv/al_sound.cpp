@@ -731,7 +731,7 @@ bool starSystemOK()
     if (!_Universe || !_Universe->AccessCockpit(0))
         return true; // No Universe yet, so game is loading.
 
-    Unit *playa = _Universe->AccessCockpit(0)->GetParent();
+    std::shared_ptr<Unit> playa = _Universe->AccessCockpit(0)->GetParent();
     if (!playa)
         return false;
     return playa->getStarSystem() == _Universe->activeStarSystem();

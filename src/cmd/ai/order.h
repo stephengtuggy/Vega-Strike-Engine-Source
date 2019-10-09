@@ -47,7 +47,7 @@ class Order
   protected:
     virtual ~Order();
     /// The unit this order is attached to
-    Unit *parent;
+    std::shared_ptr<Unit> parent;
     /// The bit code (from ORDERTYPES) that this order is (for parallel execution)
     unsigned int type;
 
@@ -74,7 +74,7 @@ class Order
     {
         /*not implemented see fire.cpp*/
     }
-    virtual bool PursueTarget(Unit *, bool isleader)
+    virtual bool PursueTarget(std::shared_ptr<Unit> , bool isleader)
     {
         return false;
     }
@@ -108,11 +108,11 @@ class Order
     /// Erases all orders that bitwise OR with that type
     void eraseType(unsigned int type);
     /// Attaches a group of targets to this order (used for strategery-type games)
-    bool AttachOrder(Unit *targets);
+    bool AttachOrder(std::shared_ptr<Unit> targets);
     /// Attaches a navigation point to this order
     bool AttachOrder(QVector target);
     /// Attaches a group (form up) to this order
-    bool AttachSelfOrder(Unit *targets);
+    bool AttachSelfOrder(std::shared_ptr<Unit> targets);
     /// Enqueues another order that will be executed (in parallel perhaps) when next void Execute() is called
     Order *EnqueueOrder(Order *ord);
     /// Replaces the first order of that type in the order queue
@@ -130,11 +130,11 @@ class Order
         return subtype;
     }
     /// Sets the parent of this Unit.  Any virtual functions must call this one
-    virtual void SetParent(Unit *parent1)
+    virtual void SetParent(std::shared_ptr<Unit> parent1)
     {
         parent = parent1;
     }
-    Unit *GetParent() const
+    std::shared_ptr<Unit> GetParent() const
     {
         return parent;
     }
@@ -155,7 +155,7 @@ class Order
     {
         return NULL;
     }
-    virtual void AdjustRelationTo(Unit *un, float factor);
+    virtual void AdjustRelationTo(std::shared_ptr<Unit> un, float factor);
 
     virtual std::string getOrderDescription()
     {
@@ -235,7 +235,7 @@ class ExecuteFor : public Order
 class Join : public Order
 {
   public:
-    Join(Unit *parent, Order *firstOrder, Order *secondOrder);
+    Join(std::shared_ptr<Unit> parent, Order *firstOrder, Order *secondOrder);
     void Execute();
 
   private:
@@ -247,7 +247,7 @@ class Join : public Order
 class Sequence : public Order
 {
   public:
-    Sequence(Unit *parent, Order *order, unsigned int excludeTypes);
+    Sequence(std::shared_ptr<Unit> parent, Order *order, unsigned int excludeTypes);
     void Execute();
 
   private:

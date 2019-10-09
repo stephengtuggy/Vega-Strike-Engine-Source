@@ -115,7 +115,7 @@ Order *Order::ReplaceOrder(Order *ord)
     return this;
 }
 
-bool Order::AttachOrder(Unit *targets1)
+bool Order::AttachOrder(std::shared_ptr<Unit> targets1)
 {
     if (!(subtype & STARGET)) {
         if (subtype & SSELF)
@@ -127,7 +127,7 @@ bool Order::AttachOrder(Unit *targets1)
     return true;
 }
 
-bool Order::AttachSelfOrder(Unit *targets1)
+bool Order::AttachSelfOrder(std::shared_ptr<Unit> targets1)
 {
     if (!(subtype & SSELF))
         return false;
@@ -254,7 +254,7 @@ void ExecuteFor::Execute()
         child->Execute();
 }
 
-Join::Join(Unit *parent, Order *first, Order *second)
+Join::Join(std::shared_ptr<Unit> parent, Order *first, Order *second)
     : Order(first->getType() | second->getType(), first->getSubType()), first(first), second(second)
 {
     assert((first->getType() & second->getType()) == 0);
@@ -275,7 +275,7 @@ void Join::Execute()
     }
 }
 
-Sequence::Sequence(Unit *parent, Order *order, unsigned int excludeTypes)
+Sequence::Sequence(std::shared_ptr<Unit> parent, Order *order, unsigned int excludeTypes)
     : Order(order->getType() | excludeTypes, order->getSubType()), order(order)
 {
     SetParent(parent);

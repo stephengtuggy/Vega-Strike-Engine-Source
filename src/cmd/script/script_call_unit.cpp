@@ -6,7 +6,7 @@
 #include "gfx/animation.h"
 #include "cmd/planet.h"
 
-bool PlanetHasLights(Unit *un)
+bool PlanetHasLights(std::shared_ptr<Unit> un)
 {
     return ((GamePlanet *)un)->hasLights();
 }

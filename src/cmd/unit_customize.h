@@ -20,10 +20,10 @@
 #endif
 extern int GetModeFromName(const char *);
 
-extern Unit *CreateGameTurret(std::string tur, int faction);
+extern std::shared_ptr<Unit> CreateGameTurret(std::string tur, int faction);
 
 template <class UnitType>
-bool GameUnit<UnitType>::UpgradeSubUnits(const Unit *up, int subunitoffset, bool touchme, bool downgrade, int &numave, double &percentage)
+bool GameUnit<UnitType>::UpgradeSubUnits(const std::shared_ptr<Unit> up, int subunitoffset, bool touchme, bool downgrade, int &numave, double &percentage)
 {
     bool bl = this->UpgradeSubUnitsWithFactory(up, subunitoffset, touchme, downgrade, numave, percentage, &CreateGameTurret);
     if (!up->SubUnits.empty())

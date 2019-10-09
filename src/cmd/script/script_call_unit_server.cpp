@@ -6,7 +6,7 @@ void AddAnimation(Cockpit *cp, std::string anim)
 {
 }
 
-bool PlanetHasLights(Unit *un)
+bool PlanetHasLights(std::shared_ptr<Unit> un)
 {
     return ((Planet *)un)->hasLights();
 }

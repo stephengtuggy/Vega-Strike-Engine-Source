@@ -9,7 +9,7 @@
 
 using namespace XMLSupport;
 extern double interpolation_blend_factor;
-extern bool   AdjustMatrix(Matrix &mat, const Vector &velocity, Unit *target, float speed, bool lead, float cone);
+extern bool   AdjustMatrix(Matrix &mat, const Vector &velocity, std::shared_ptr<Unit> target, float speed, bool lead, float cone);
 
 inline static float mysqr(float a)
 {
@@ -50,7 +50,7 @@ void ScaleByAlpha(GFXColorVertex &vert, float alpha)
     }
 }
 
-void Beam::Init(const Transformation &trans, const weapon_info &cln, void *own, Unit *firer)
+void Beam::Init(const Transformation &trans, const weapon_info &cln, void *own, std::shared_ptr<Unit> firer)
 {
     // Matrix m;
     CollideInfo.object.b = NULL;
@@ -269,12 +269,12 @@ void Beam::RemoveFromSystem(bool eradicate)
 
 void Beam::UpdatePhysics(const Transformation &trans,
                          const Matrix &        m,
-                         Unit *                targ,
+                         std::shared_ptr<Unit> targ,
                          float                 tracking_cone,
-                         Unit *                targetToCollideWith,
+                         std::shared_ptr<Unit> targetToCollideWith,
                          float                 HeatSink,
-                         Unit *                firer,
-                         Unit *                superunit)
+                         std::shared_ptr<Unit> firer,
+                         std::shared_ptr<Unit> superunit)
 {
     curlength += SIMULATION_ATOM * speed;
     if (curlength < 0)
@@ -348,7 +348,7 @@ void Beam::UpdatePhysics(const Transformation &trans,
 
 extern Cargo *GetMasterPartList(const char *);
 
-bool Beam::Collide(Unit *target, Unit *firer, Unit *superunit)
+bool Beam::Collide(std::shared_ptr<Unit> target, std::shared_ptr<Unit> firer, std::shared_ptr<Unit> superunit)
 {
     if (this == NULL || target == NULL) {
         VSFileSystem::vs_fprintf(stderr, "Recovering from nonfatal beam error when beam inactive\n");
@@ -411,7 +411,7 @@ bool Beam::Collide(Unit *target, Unit *firer, Unit *superunit)
             direction.Normalize();
         }
     }
-    Unit *colidee;
+    std::shared_ptr<Unit> colidee;
     if ((colidee = target->rayCollide(center, end, normal, distance))) {
         if (!(scoop && (tractor || repulsor))) {
             this->curlength = distance;
@@ -464,7 +464,7 @@ bool Beam::Collide(Unit *target, Unit *firer, Unit *superunit)
                 ors_m = c_ors_m, trs_m = c_trs_m, ofs = c_o;
             if ((fi || target->isTractorable(Unit::tractorIn)) &&
                 ((center - target->Position()).Magnitude() < (ors_m * owner_rsize + trs_m * target->rSize() + ofs))) {
-                Unit *un = superunit;
+                std::shared_ptr<Unit> un = superunit;
                 if (target->faction == upgradesfaction || owner_rsize * nbig > target->rSize()) {
                     // we have our man!
                     // lets add our cargo to him
@@ -509,7 +509,7 @@ bool Beam::Collide(Unit *target, Unit *firer, Unit *superunit)
                                     AUDCreateSoundWAV(vs_config->getVariable("unitaudio", "player_tractor_cargo", "tractor_onboard.wav"));
                                 AUDPlay(tractor_onboard, QVector(0, 0, 0), Vector(0, 0, 0), 1);
                             } else {
-                                Unit *tmp = _Universe->AccessCockpit()->GetParent();
+                                std::shared_ptr<Unit> tmp = _Universe->AccessCockpit()->GetParent();
                                 if (tmp && tmp->owner == un) {
                                     // Subunit of player (a turret)
                                     static int tractor_onboard_fromturret = AUDCreateSoundWAV(

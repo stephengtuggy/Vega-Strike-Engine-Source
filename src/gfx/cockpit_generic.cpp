@@ -110,14 +110,14 @@ void Cockpit::Init(const char *file, bool isDisabled)
     LoadXML(f);
     f.Close();
 }
-Unit *Cockpit::GetSaveParent()
+std::shared_ptr<Unit> Cockpit::GetSaveParent()
 {
-    Unit *un = parentturret.GetUnit();
+    std::shared_ptr<Unit> un = parentturret.GetUnit();
     if (!un)
         un = parent.GetUnit();
     return un;
 }
-void Cockpit::SetParent(Unit *unit, const char *filename, const char *unitmodname, const QVector &pos)
+void Cockpit::SetParent(std::shared_ptr<Unit> unit, const char *filename, const char *unitmodname, const QVector &pos)
 {
     if (unit->getFlightgroup() != NULL)
         fg = unit->getFlightgroup();
@@ -170,11 +170,11 @@ void Cockpit::InitStatic()
     radar_time   = 0;
     cockpit_time = 0;
 }
-bool Cockpit::unitInAutoRegion(Unit *un)
+bool Cockpit::unitInAutoRegion(std::shared_ptr<Unit> un)
 {
     static float autopilot_term_distance =
         XMLSupport::parse_float(vs_config->getVariable("physics", "auto_pilot_termination_distance", "6000"));
-    Unit *targ = autopilot_target.GetUnit();
+    std::shared_ptr<Unit> targ = autopilot_target.GetUnit();
     if (targ)
         return UnitUtil::getSignificantDistance(un, targ) < autopilot_term_distance * 2.5; // if both guys just auto'd in.
     else
@@ -185,7 +185,7 @@ static float getInitialZoomFactor()
     static float inizoom = XMLSupport::parse_float(vs_config->getVariable("graphics", "inital_zoom_factor", "2.25"));
     return inizoom;
 }
-Cockpit::Cockpit(const char *file, Unit *parent, const std::string &pilot_name)
+Cockpit::Cockpit(const char *file, std::shared_ptr<Unit> parent, const std::string &pilot_name)
     : view(CP_FRONT),
       parent(parent),
       cockpit_offset(0),
@@ -282,9 +282,9 @@ void Cockpit::recreate(const std::string &pilot_name)
     savegame->SetCallsign(pilot_name);
     Init("");
 }
-static void FaceTarget(Unit *un)
+static void FaceTarget(std::shared_ptr<Unit> un)
 {
-    Unit *targ = un->Target();
+    std::shared_ptr<Unit> targ = un->Target();
     if (targ) {
         QVector dir(targ->Position() - un->Position());
         dir.Normalize();
@@ -295,11 +295,11 @@ static void FaceTarget(Unit *un)
         un->SetOrientation(qq, dir);
     }
 }
-int Cockpit::Autopilot(Unit *target)
+int Cockpit::Autopilot(std::shared_ptr<Unit> target)
 {
     int retauto = 0;
     if (target) {
-        Unit *un = NULL;
+        std::shared_ptr<Unit> un = NULL;
         if ((un = GetParent())) {
             if ((retauto = un->AutoPilotTo(un, false))) {
                 // can he even start to autopilot
@@ -333,8 +333,8 @@ int Cockpit::Autopilot(Unit *target)
     return retauto;
 }
 
-extern void SwitchUnits2(Unit *nw);
-void        SwitchUnits(Unit *ol, Unit *nw)
+extern void SwitchUnits2(std::shared_ptr<Unit> nw);
+void        SwitchUnits(std::shared_ptr<Unit> ol, std::shared_ptr<Unit> nw)
 {
     bool pointingtool = false;
     for (unsigned int i = 0; i < _Universe->numPlayers(); ++i)
@@ -343,7 +343,7 @@ void        SwitchUnits(Unit *ol, Unit *nw)
                 pointingtool = true;
         }
     if (ol && (!pointingtool)) {
-        Unit *oltarg = ol->Target();
+        std::shared_ptr<Unit> oltarg = ol->Target();
         if (oltarg)
             if (ol->getRelation(oltarg) >= 0)
                 ol->Target(NULL);
@@ -353,7 +353,7 @@ void        SwitchUnits(Unit *ol, Unit *nw)
     }
     SwitchUnits2(nw);
 }
-static void SwitchUnitsTurret(Unit *ol, Unit *nw)
+static void SwitchUnitsTurret(std::shared_ptr<Unit> ol, std::shared_ptr<Unit> nw)
 {
     static bool FlyStraightInTurret = XMLSupport::parse_bool(vs_config->getVariable("physics", "ai_pilot_when_in_turret", "true"));
     if (FlyStraightInTurret) {
@@ -364,10 +364,10 @@ static void SwitchUnitsTurret(Unit *ol, Unit *nw)
     }
 }
 
-Unit *GetFinalTurret(Unit *baseTurret)
+std::shared_ptr<Unit> GetFinalTurret(std::shared_ptr<Unit> baseTurret)
 {
-    Unit *un = baseTurret;
-    Unit *tur;
+    std::shared_ptr<Unit> un = baseTurret;
+    std::shared_ptr<Unit> tur;
     for (un_iter uj = un->getSubUnits(); (tur = *uj); ++uj) {
         SwitchUnits(NULL, tur);
         un = GetFinalTurret(tur);
@@ -381,9 +381,9 @@ void Cockpit::UpdAutoPilot()
         autopilot_time -= SIMULATION_ATOM;
         if (autopilot_time <= 0) {
             autopilot_time = 0;
-            Unit *par      = GetParent();
+            std::shared_ptr<Unit> par      = GetParent();
             if (par) {
-                Unit *autoun = autopilot_target.GetUnit();
+                std::shared_ptr<Unit> autoun = autopilot_target.GetUnit();
                 autopilot_target.SetUnit(NULL);
                 if (autoun)
                     par->AutoPilotTo(autoun, false);
@@ -393,7 +393,7 @@ void Cockpit::UpdAutoPilot()
 }
 
 extern void  DoCockpitKeys();
-static float dockingdistance(Unit *port, Unit *un)
+static float dockingdistance(std::shared_ptr<Unit> port, std::shared_ptr<Unit> un)
 {
     vector<DockingPorts>::const_iterator i   = port->GetImageInformation().dockingports.begin();
     vector<DockingPorts>::const_iterator end = port->GetImageInformation().dockingports.end();
@@ -441,9 +441,9 @@ void Cockpit::updateAttackers()
         partial_number_of_attackers = 0;
         too_many_attackers          = max_attackers > 0 && (too_many_attackers || number_of_attackers > max_attackers);
     }
-    Unit *un;
+    std::shared_ptr<Unit> un;
     if (attack_iterator.isDone() == false && (un = *attack_iterator) != NULL) {
-        Unit *targ  = un->Target();
+        std::shared_ptr<Unit> targ  = un->Target();
         float speed = 0, range = 0, mmrange = 0;
         if (parent == targ && targ != NULL) {
             un->getAverageGunSpeed(speed, range, mmrange);
@@ -510,7 +510,7 @@ bool Cockpit::Update()
     if (jumpok > 5)
         jumpok = 0;
     UpdAutoPilot();
-    Unit *par = GetParent();
+    std::shared_ptr<Unit> par = GetParent();
     if (par != NULL) {
         static float minEnergyForShieldDownpower =
             XMLSupport::parse_float(vs_config->getVariable("physics", "shield_energy_downpower", "-.125"));
@@ -532,7 +532,7 @@ bool Cockpit::Update()
     if (turretcontrol.size() > _Universe->CurrentCockpit()) {
         if (turretcontrol[_Universe->CurrentCockpit()]) {
             turretcontrol[_Universe->CurrentCockpit()] = 0;
-            Unit *par                                  = GetParent();
+            std::shared_ptr<Unit> par                                  = GetParent();
             // this being here, it will require poking the turret from the undock script
             if (par) {
                 if (par->name == "return_to_cockpit") {
@@ -541,7 +541,7 @@ bool Cockpit::Update()
                     // this warps back to the parent unit if we're eject-docking. in this position it also causes badness upon loading a
                     // game.
 
-                    Unit *temp = findUnitInStarsystem(par->owner);
+                    std::shared_ptr<Unit> temp = findUnitInStarsystem(par->owner);
                     if (temp) {
                         SwitchUnits(NULL, temp);
                         this->SetParent(temp,
@@ -560,7 +560,7 @@ bool Cockpit::Update()
                 bool       tmpgot = false;
                 if (parentturret.GetUnit() == NULL) {
                     tmpgot = true;
-                    Unit *un;
+                    std::shared_ptr<Unit> un;
                     for (un_iter ui = par->getSubUnits(); (un = *ui);) {
                         if (_Universe->isPlayerStarship(un)) {
                             ++ui;
@@ -573,7 +573,7 @@ bool Cockpit::Update()
                                 tmp = true;
                                 SwitchUnitsTurret(par, un);
                                 parentturret.SetUnit(par);
-                                Unit *finalunit = GetFinalTurret(un);
+                                std::shared_ptr<Unit> finalunit = GetFinalTurret(un);
                                 this->SetParent(
                                     finalunit, GetUnitFileName().c_str(), this->unitmodname.c_str(), savegame->GetPlayerLocation());
                                 break;
@@ -585,7 +585,7 @@ bool Cockpit::Update()
                 if (tmp == false) {
                     if (tmpgot)
                         index = 0;
-                    Unit *un = parentturret.GetUnit();
+                    std::shared_ptr<Unit> un = parentturret.GetUnit();
                     if (un && (!_Universe->isPlayerStarship(un))) {
                         SetParent(un, GetUnitFileName().c_str(), this->unitmodname.c_str(), savegame->GetPlayerLocation());
                         SwitchUnits(NULL, un);
@@ -599,7 +599,7 @@ bool Cockpit::Update()
     }
     static bool autoclear = XMLSupport::parse_bool(vs_config->getVariable("AI", "autodock", "false"));
     if (autoclear && par) {
-        Unit *targ = par->Target();
+        std::shared_ptr<Unit> targ = par->Target();
         if (targ) {
             static float autopilot_term_distance =
                 XMLSupport::parse_float(vs_config->getVariable("physics", "auto_pilot_termination_distance", "6000"));
@@ -633,7 +633,7 @@ bool Cockpit::Update()
             // switch_nonowned_units = true;
             // static bool switch_to_fac=XMLSupport::parse_bool(vs_config->getVariable("AI","switch_to_whole_faction","true"));
 
-            Unit *un;
+            std::shared_ptr<Unit> un;
             bool  found = false;
             int   i     = 0;
             for (un_iter ui = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = *ui); ++ui)
@@ -648,7 +648,7 @@ bool Cockpit::Update()
                         (un->name != "eject") && (un->name != "Pilot") && (un->isUnit() != MISSILEPTR)) {
                         found = true;
                         ++index;
-                        Unit *k       = GetParent();
+                        std::shared_ptr<Unit> k       = GetParent();
                         bool  proceed = true;
                         if (k)
                             if (k->name == "eject" || k->name == "Pilot" || k->name == "return_to_cockpit")
@@ -694,7 +694,7 @@ bool Cockpit::Update()
         ejecting = false;
         // going_to_dock_screen=true; // NO, clear this only after we've UNDOCKED that way we know we don't have issues.
 
-        Unit *un = GetParent();
+        std::shared_ptr<Unit> un = GetParent();
         if (un) {
             if (going_to_dock_screen == false)
                 un->EjectCargo((unsigned int)-1);
@@ -785,7 +785,7 @@ bool Cockpit::Update()
                         fg->nr_ships++;
                         fg->nr_ships_left++;
                     }
-                    Unit *un = UnitFactory::createUnit(GetUnitFileName().c_str(), false, this->unitfaction, unitmodname, fg, fgsnumber);
+                    std::shared_ptr<Unit> un = UnitFactory::createUnit(GetUnitFileName().c_str(), false, this->unitfaction, unitmodname, fg, fgsnumber);
                     un->SetCurPosition(UniverseUtil::SafeEntrancePoint(savegame->GetPlayerLocation()));
                     ss->AddUnit(un);
 
@@ -925,7 +925,7 @@ void Cockpit::RemoveUnit(unsigned int which)
         unitbasename.erase(unitbasename.begin() + which);
 }
 
-string Cockpit::MakeBaseName(const Unit *base)
+string Cockpit::MakeBaseName(const std::shared_ptr<Unit> base)
 {
     string name;
     if (base != NULL) {

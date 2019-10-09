@@ -106,11 +106,11 @@ void Mission::ConstructMission(const char *configfile, const std::string &script
     }
 #endif
 }
-Unit *Mission::Objective::getOwner()
+std::shared_ptr<Unit> Mission::Objective::getOwner()
 {
-    Unit *Nawl = NULL;
+    std::shared_ptr<Unit> Nawl = NULL;
     if (Owner != Nawl) {
-        Unit *ret = Owner.GetUnit();
+        std::shared_ptr<Unit> ret = Owner.GetUnit();
         if (ret == NULL)
             objective = ""; // unit died
         return ret;

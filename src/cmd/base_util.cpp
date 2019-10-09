@@ -627,14 +627,14 @@ int GetNumRoom()
 }
 bool BuyShip(std::string name, bool my_fleet, bool force_base_inventory)
 {
-    Unit *base = BaseInterface::CurrentBase->baseun.GetUnit();
-    Unit *un   = BaseInterface::CurrentBase->caller.GetUnit();
+    std::shared_ptr<Unit> base = BaseInterface::CurrentBase->baseun.GetUnit();
+    std::shared_ptr<Unit> un   = BaseInterface::CurrentBase->caller.GetUnit();
     return ::buyShip(base, un, name, my_fleet, force_base_inventory, NULL);
 }
 bool SellShip(std::string name)
 {
-    Unit *base = BaseInterface::CurrentBase->baseun.GetUnit();
-    Unit *un   = BaseInterface::CurrentBase->caller.GetUnit();
+    std::shared_ptr<Unit> base = BaseInterface::CurrentBase->baseun.GetUnit();
+    std::shared_ptr<Unit> un   = BaseInterface::CurrentBase->caller.GetUnit();
     return ::sellShip(base, un, name, NULL);
 }
 
@@ -717,7 +717,7 @@ void LoadBaseInterface(string name)
     LoadBaseInterfaceAtDock(name, UniverseUtil::getPlayer(), UniverseUtil::getPlayer());
 }
 
-void LoadBaseInterfaceAtDock(string name, Unit *dockat, Unit *dockee)
+void LoadBaseInterfaceAtDock(string name, std::shared_ptr<Unit> dockat, std::shared_ptr<Unit> dockee)
 {
     if (BaseInterface::CurrentBase)
         BaseInterface::CurrentBase->Terminate();
