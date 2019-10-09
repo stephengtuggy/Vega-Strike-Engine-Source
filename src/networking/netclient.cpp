@@ -402,7 +402,7 @@ void        NetClient::Respawn(ObjSerial newserial)
     QVector        pos(0, 0, 0);
     bool           setplayerXloc;
     string         mysystem;
-    Cockpit *      cp = _Universe->AccessCockpit(whichcp);
+    std::shared_ptr<Cockpit> cp = _Universe->AccessCockpit(whichcp);
     vector<string> packedInfo;
 
     static float initialzoom = XMLSupport::parse_float(vs_config->getVariable("graphics", "inital_zoom_factor", "2.25"));
@@ -485,7 +485,7 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
     ObjSerial             local_serial = 0;
     if (this->game_unit.GetUnit() != NULL)
         local_serial = this->game_unit.GetUnit()->GetSerial();
-    Cockpit *cp;
+    std::shared_ptr<Cockpit> cp;
 
     Packet    p1;
     AddressIP ipadr;
@@ -738,7 +738,7 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
                     if ((*i).status == Mount::ACTIVE)
                         (*i).status = Mount::INACTIVE;
                 }
-                Cockpit *ps = _Universe->isPlayerStarship(un);
+                std::shared_ptr<Cockpit> ps = _Universe->isPlayerStarship(un);
                 for (j = 0; j < mount_num; ++j) {
                     int mnt = netbuf.getInt32();
                     if (mnt >= 0 && size_t(mnt) < un->mounts.size()) {

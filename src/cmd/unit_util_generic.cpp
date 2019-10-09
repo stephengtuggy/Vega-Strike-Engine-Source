@@ -87,7 +87,7 @@ int getPhysicsPriority(std::shared_ptr<Unit> un)
     float        cpdist   = FLT_MAX;
     float        tooclose = 0;
     unsigned int np       = _Universe->numPlayers();
-    Cockpit *    cockpit  = _Universe->AccessCockpit();
+    std::shared_ptr<Cockpit> cockpit  = _Universe->AccessCockpit();
     static float fixed_system_orbit_priorities =
         XMLSupport::parse_float(vs_config->getVariable("physics", "fixed_system_priority_velocity_cutoff", "50"));
     static const int SYSTEM_INSTALLATION_PRIORITY =
@@ -374,7 +374,7 @@ float getCredits(const std::shared_ptr<Unit> my_unit)
 {
     if (!my_unit)
         return 0;
-    Cockpit *tmp;
+    std::shared_ptr<Cockpit> tmp;
     float    viret = 0;
     if ((tmp = _Universe->isPlayerStarship(my_unit)))
         viret = tmp->credits;
@@ -385,7 +385,7 @@ void addCredits(const std::shared_ptr<Unit> my_unit, float credits)
 {
     if (!my_unit)
         return;
-    Cockpit *tmp;
+    std::shared_ptr<Cockpit> tmp;
     if ((tmp = _Universe->isPlayerStarship(my_unit))) {
         tmp->credits += credits;
         if (SERVER)

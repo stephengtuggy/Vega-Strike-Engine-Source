@@ -1743,7 +1743,7 @@ string Unit::WriteUnitString()
 void UpdateMasterPartList(std::shared_ptr<Unit> ret)
 {
     for (unsigned int i = 0; i < _Universe->numPlayers(); ++i) {
-        Cockpit *                 cp              = _Universe->AccessCockpit(i);
+        std::shared_ptr<Cockpit> cp              = _Universe->AccessCockpit(i);
         std::vector<std::string> *addedcargoname  = &cp->savegame->getMissionStringData("master_part_list_content");
         std::vector<std::string> *addedcargocat   = &cp->savegame->getMissionStringData("master_part_list_category");
         std::vector<std::string> *addedcargovol   = &cp->savegame->getMissionStringData("master_part_list_volume");

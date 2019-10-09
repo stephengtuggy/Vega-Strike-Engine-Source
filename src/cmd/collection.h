@@ -60,10 +60,10 @@ class UnitCollection
         void moveBefore(UnitCollection &);
 
         /* Insert unit before current unit */
-        void preinsert(class std::shared_ptr<Unit>);
+        void preinsert(std::shared_ptr<Unit>);
 
         /* Insert unit after current unit */
-        void postinsert(class std::shared_ptr<Unit> unit);
+        void postinsert(std::shared_ptr<Unit> unit);
 
         /* increment to next valid unit (may iterate many times) */
         void advance();
@@ -100,7 +100,7 @@ class UnitCollection
         UnitCollection *col;
 
         // Current position in the list
-        std::list<class std::shared_ptr<Unit>>::iterator it;
+        std::list<std::shared_ptr<Unit>>::iterator it;
     };
 
     /* This class is to be used when no changes to the list are made
@@ -143,7 +143,7 @@ class UnitCollection
       protected:
         friend class UnitCollection;
         const UnitCollection *                                 col;
-        std::list<class std::shared_ptr<Unit>>::const_iterator it;
+        std::list<std::shared_ptr<Unit>>::const_iterator it;
     };
 
     /* backwards compatibility only.  Typedefs suck. dont use them. */
@@ -190,7 +190,7 @@ class UnitCollection
     void prepend(UnitIterator *);
 
     /* Add a unit or iterator to the back of the list. */
-    void append(class std::shared_ptr<Unit>);
+    void append(std::shared_ptr<Unit>);
     void append(UnitIterator *);
 
     /* This is how iterators insert units. Always inserts before iterator */
@@ -200,7 +200,7 @@ class UnitCollection
      * No code uses this function as of 0.5 release */
     void clear();
 
-    bool contains(const class std::shared_ptr<Unit>) const;
+    bool contains(const std::shared_ptr<Unit>) const;
 
     /* We only erase the unit from the list under the following conditions:
      * 1. if we have less than 4 iterators being held
@@ -211,11 +211,11 @@ class UnitCollection
      * The reason for this is so we can be scalable to 20,000+ units and
      * modifications to the list by multiple held iterators dont bog us down
      */
-    void erase(std::list<class std::shared_ptr<Unit>>::iterator &);
+    void erase(std::list<std::shared_ptr<Unit>>::iterator &);
 
     /* traverse list and remove first (only) matching Unit.
      * Do not use in fast-path code */
-    bool remove(const class std::shared_ptr<Unit>);
+    bool remove(const std::shared_ptr<Unit>);
 
     /* Returns number of non-null units in list */
     inline const int size() const
@@ -270,10 +270,10 @@ class UnitCollection
     /* This is a list of positions in the collection that are pointing to
      * NULL units, positions that should be removed from the collection
      * but couldn't because another iterator was referencing it. */
-    std::vector<std::list<class std::shared_ptr<Unit>>::iterator> removedIters;
+    std::vector<std::list<std::shared_ptr<Unit>>::iterator> removedIters;
 
     /* Main collection */
-    std::list<class std::shared_ptr<Unit>> u;
+    std::list<std::shared_ptr<Unit>> u;
 };
 
 /* Typedefs.   We really should not use them but we're lazy */

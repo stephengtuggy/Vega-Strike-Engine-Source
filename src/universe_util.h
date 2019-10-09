@@ -58,7 +58,7 @@ class PythonUnitIter : public un_iter
     {
         UnitIterator::remove();
     }
-    inline class std::shared_ptr<Unit> next()
+    inline std::shared_ptr<Unit> next()
     {
         advance();
         return current();

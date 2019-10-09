@@ -284,7 +284,7 @@ void NetServer::sendMessage(const string &from, const string &to, const string &
         int playerto = -1;
         sscanf(tostr + 1, "%d", &playerto);
         if (playerto != -1 && (unsigned int)playerto < _Universe->numPlayers()) {
-            Cockpit *             cp = _Universe->AccessCockpit(playerto);
+            std::shared_ptr<Cockpit> cp = _Universe->AccessCockpit(playerto);
             std::shared_ptr<Unit> un = cp->GetParent();
             if (!un)
                 return;
@@ -460,7 +460,7 @@ void NetServer::sendJump(std::shared_ptr<Unit> un, std::shared_ptr<Unit> dst, co
      *     // And remove the player from its old starsystem and set it out of game
      *     //this->removeClient( clt );
      *     // Have to set new starsystem here
-     *     Cockpit * cp = _Universe->isPlayerStarship( clt->game_unit.GetUnit());
+     *     std::shared_ptr<Cockpit> cp = _Universe->isPlayerStarship( clt->game_unit.GetUnit());
      *     cp->savegame->SetStarSystem( clt->jumpfile);
      *     StarSystem* sts = GetLoadedStarSystem( clt->jumpfile.c_str());
      *     unsigned short zoneid = _Universe->StarSystemIndex( sts);

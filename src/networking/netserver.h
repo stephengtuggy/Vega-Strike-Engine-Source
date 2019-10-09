@@ -139,14 +139,14 @@ class NetServer
     ClientPtr addNewClient(SOCKETALT &sock); // Adds a new client to listen for.
     void      sendLoginError(ClientPtr clt);
     void      sendLoginAlready(ClientPtr clt);
-    void      sendLoginAccept(ClientPtr clt, Cockpit *cp);
+    void      sendLoginAccept(ClientPtr clt, std::shared_ptr<Cockpit> cp);
     // returns false if unwilling to load star system
     void sendLoginUnavailable(ClientPtr clt);
 
     // loadCockpit will fail if a cockpit already exists when client state is CONNECTED.
-    Cockpit * loadCockpit(ClientPtr clt);
-    bool      loadFromSavegame(ClientPtr clt, Cockpit *cp);
-    bool      loadFromNewGame(ClientPtr clt, Cockpit *cp, string shipname);
+    std::shared_ptr<Cockpit> loadCockpit(ClientPtr clt);
+    bool      loadFromSavegame(ClientPtr clt, std::shared_ptr<Cockpit> cp);
+    bool      loadFromNewGame(ClientPtr clt, std::shared_ptr<Cockpit> cp, string shipname);
     ClientPtr getClientFromSerial(ObjSerial serial);
 
   public:

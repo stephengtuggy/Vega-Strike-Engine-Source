@@ -69,13 +69,13 @@ class Beam
     void SetOrientation(const Vector &p, const Vector &q, const Vector &r);
     void UpdatePhysics(const Transformation &,
                        const Matrix &,
-                       class std::shared_ptr<Unit> target,
+                       std::shared_ptr<Unit> target,
                        float                       trackingcone,
                        std::shared_ptr<Unit>       targetToCollideWith /*prevent AI friendly fire--speed up app*/,
                        float                       HeatSink,
                        std::shared_ptr<Unit>       firer,
                        std::shared_ptr<Unit>       superunit);
-    void Draw(const Transformation &, const Matrix &, class std::shared_ptr<Unit> target, float trackingcone);
+    void Draw(const Transformation &, const Matrix &, std::shared_ptr<Unit> target, float trackingcone);
     void Destabilize()
     {
         impact = UNSTABLE;
@@ -88,7 +88,7 @@ class Beam
     {
         return curthick == 0 && refiretime > refire;
     }
-    bool        Collide(class std::shared_ptr<Unit> target, std::shared_ptr<Unit> firer, std::shared_ptr<Unit> superunit /*for cargo*/);
+    bool        Collide(std::shared_ptr<Unit> target, std::shared_ptr<Unit> firer, std::shared_ptr<Unit> superunit /*for cargo*/);
     static void ProcessDrawQueue();
 };
 #endif

@@ -15,7 +15,7 @@ void SaveNetUtil::GetSaveStrings(ClientPtr clt, string &savestr, string &xmlstr,
     if (!un)
         return;
     /*
-     *  Cockpit * cp = _Universe->isPlayerStarship( un);
+     *  std::shared_ptr<Cockpit> cp = _Universe->isPlayerStarship( un);
      *  const QVector POS( un->curr_physical_state.position);
      *  if (cp) {
      *       // Only get the player data, the dynamic universe part is separated
@@ -32,7 +32,7 @@ void SaveNetUtil::GetSaveStrings(ClientPtr clt, string &savestr, string &xmlstr,
 
 void SaveNetUtil::GetSaveStrings(int numplayer, string &savestr, string &xmlstr, bool savevars)
 {
-    Cockpit *             cp;
+    std::shared_ptr<Cockpit> cp;
     std::shared_ptr<Unit> un;
     cp = _Universe->AccessCockpit(numplayer);
     if (cp) {

@@ -36,9 +36,9 @@ void                 Universe::clearAllSystems()
     script_system = NULL;
 }
 
-Cockpit *Universe::createCockpit(std::string player)
+std::shared_ptr<Cockpit> Universe::createCockpit(std::string player)
 {
-    Cockpit *cp = new Cockpit("", NULL, player);
+    std::shared_ptr<Cockpit> cp = new Cockpit("", NULL, player);
     cockpit.push_back(cp);
     return cp;
 }
@@ -97,12 +97,12 @@ std::shared_ptr<Unit> DockToSavedBases(int playernum, QVector &safevec)
     return (closestUnit && closestUnit->isDocked(plr)) ? closestUnit : NULL;
 }
 
-Cockpit *Universe::isPlayerStarship(const std::shared_ptr<Unit> doNotDereference)
+std::shared_ptr<Cockpit> Universe::isPlayerStarship(const std::shared_ptr<Unit> doNotDereference)
 {
     using std::vector;
     if (!doNotDereference)
         return NULL;
-    for (std::vector<Cockpit *>::iterator iter = cockpit.begin(); iter < cockpit.end(); iter++)
+    for (std::vector<std::shared_ptr<Cockpit> >::iterator iter = cockpit.begin(); iter < cockpit.end(); iter++)
         if (doNotDereference == (*(iter))->GetParent())
             return *(iter);
     return NULL;
@@ -127,7 +127,7 @@ void Universe::SetActiveCockpit(int i)
     current_cockpit = i;
 }
 
-void Universe::SetActiveCockpit(Cockpit *cp)
+void Universe::SetActiveCockpit(std::shared_ptr<Cockpit> cp)
 {
     for (unsigned int i = 0; i < cockpit.size(); i++)
         if (cockpit[i] == cp) {

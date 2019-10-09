@@ -34,8 +34,8 @@
 #ifdef CONTAINER_DEBUG
 #include "hashtable.h"
 class Unit;
-void CheckUnit(class std::shared_ptr<Unit>);
-void UncheckUnit(class std::shared_ptr<Unit> un);
+void CheckUnit(std::shared_ptr<Unit>);
+void UncheckUnit(std::shared_ptr<Unit> un);
 #endif
 #include "vegastrike.h"
 #include "vs_globals.h"
@@ -510,7 +510,7 @@ class Unit
     const std::string &getCockpit() const;
 
     // Shouldn't do anything here - but needed by Python
-    class Cockpit *GetVelocityDifficultyMult(float &) const;
+    std::shared_ptr<Cockpit> GetVelocityDifficultyMult(float &) const;
 
     // the star system I'm in
     StarSystem *activeStarSystem;

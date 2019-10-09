@@ -3,7 +3,7 @@
 #include "comm_ai.h"
 #include "event_xml.h"
 // all unified AI's should inherit from FireAt, so they can choose targets together.
-bool                  RequestClearence(class std::shared_ptr<Unit> parent, class std::shared_ptr<Unit> targ, unsigned char sex);
+bool                  RequestClearence(std::shared_ptr<Unit> parent, class std::shared_ptr<Unit> targ, unsigned char sex);
 std::shared_ptr<Unit> getAtmospheric(std::shared_ptr<Unit> targ);
 namespace Orders
 {

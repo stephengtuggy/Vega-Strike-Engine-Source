@@ -108,7 +108,7 @@ void NetServer::addClient(ClientPtr clt)
     if (player == -1)
         return;
     cerr << "ADDING Player number " << player << endl;
-    Cockpit *    cp    = _Universe->AccessCockpit(player);
+    std::shared_ptr<Cockpit> cp    = _Universe->AccessCockpit(player);
     unsigned int oldcp = _Universe->CurrentCockpit();
     _Universe->SetActiveCockpit(cp);
     string starsys = cp->savegame->GetStarSystem();
@@ -609,7 +609,7 @@ void NetServer::posUpdate(ClientPtr clt)
     // un->curr_physical_state.position = clt->prediction->InterpolatePosition( un, 0);
     clt->last_packet = cs;
     // deltatime has already been updated when the packet was received
-    Cockpit *cp = _Universe->isPlayerStarship(un);
+    std::shared_ptr<Cockpit> cp = _Universe->isPlayerStarship(un);
     if (cp)
         cp->savegame->SetPlayerLocation(un->curr_physical_state.position);
     else if (debugPos)
@@ -688,7 +688,7 @@ void NetServer::logout(ClientPtr clt)
         un->Kill(true, true);
     if (clt->loginstate >= Client::LOGGEDIN) {
         for (unsigned int i = 0; i < _Universe->numPlayers(); i++) {
-            Cockpit *cp = _Universe->AccessCockpit(i);
+            std::shared_ptr<Cockpit> cp = _Universe->AccessCockpit(i);
             if (cp->savegame && cp->savegame->GetCallsign() == callsign) {
                 cp->savegame->SetCallsign("");
                 unused_players.push(i);

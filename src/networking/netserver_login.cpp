@@ -68,7 +68,7 @@ bool NetServer::loginAccept(const string &_inetbuf, ClientPtr clt, int newacct, 
     // Get the save parts in a string array
     clt->savegame.push_back(savestr);
     clt->savegame.push_back(xmlstr);
-    Cockpit *cp = loadCockpit(clt);
+    std::shared_ptr<Cockpit> cp = loadCockpit(clt);
     /*
      *  if (_Universe->star_system.size()) {
      *  std::string system = _Universe->star_system[0]->getFileName();
@@ -101,7 +101,7 @@ bool NetServer::loginAccept(const string &_inetbuf, ClientPtr clt, int newacct, 
     }
     return true;
 }
-void NetServer::sendLoginAccept(ClientPtr clt, Cockpit *cp)
+void NetServer::sendLoginAccept(ClientPtr clt, std::shared_ptr<Cockpit> cp)
 {
     COUT << "enter " << __PRETTY_FUNCTION__ << endl;
     // Verify that client already has a character
@@ -211,7 +211,7 @@ void NetServer::chooseShip(ClientPtr clt, Packet &p)
         return;
     }
     string   fighter = ships[selection];
-    Cockpit *cp      = loadCockpit(clt);
+    std::shared_ptr<Cockpit> cp      = loadCockpit(clt);
     if (cp)
         if (loadFromNewGame(clt, cp, fighter))
             sendLoginAccept(clt, cp);
@@ -229,7 +229,7 @@ void NetServer::localLogin(ClientPtr clt, Packet &p)
         return;
     }
     for (unsigned int i = 0; i < _Universe->numPlayers(); i++) {
-        Cockpit *cp = _Universe->AccessCockpit(i);
+        std::shared_ptr<Cockpit> cp = _Universe->AccessCockpit(i);
         if (cp->savegame && cp->savegame->GetCallsign() == clt->callsign) {
             COUT << "Cannot login player " << clt->callsign << ": already exists on this server!";
             sendLoginAlready(clt);
@@ -254,9 +254,9 @@ void NetServer::localLogin(ClientPtr clt, Packet &p)
             PSEUDO__LINE__(202));
 }
 
-Cockpit *NetServer::loadCockpit(ClientPtr clt)
+std::shared_ptr<Cockpit> NetServer::loadCockpit(ClientPtr clt)
 {
-    Cockpit *cp = NULL;
+    std::shared_ptr<Cockpit> cp = NULL;
     for (unsigned int i = 1; i < _Universe->numPlayers(); i++) {
         cp = _Universe->AccessCockpit(i);
         if (cp->savegame->GetCallsign() == clt->callsign) {
@@ -286,7 +286,7 @@ Cockpit *NetServer::loadCockpit(ClientPtr clt)
     return cp;
 }
 
-bool NetServer::loadFromNewGame(ClientPtr clt, Cockpit *cp, string fighter)
+bool NetServer::loadFromNewGame(ClientPtr clt, std::shared_ptr<Cockpit> cp, string fighter)
 {
     ObjSerial cltserial       = getUniqueSerial();
     string    PLAYER_SHIPNAME = fighter;
@@ -362,7 +362,7 @@ bool NetServer::loadFromNewGame(ClientPtr clt, Cockpit *cp, string fighter)
     return true;
 }
 
-bool NetServer::loadFromSavegame(ClientPtr clt, Cockpit *cp)
+bool NetServer::loadFromSavegame(ClientPtr clt, std::shared_ptr<Cockpit> cp)
 {
     ObjSerial      cltserial = getUniqueSerial();
     QVector        tmpvec(0, 0, 0);

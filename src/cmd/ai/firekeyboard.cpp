@@ -1984,7 +1984,7 @@ void FireKeyboard::Execute()
     // i think this ejects the pilot? yep it does
     if (f().eject == PRESS) {
         f().eject   = DOWN;
-        Cockpit *cp = NULL;
+        std::shared_ptr<Cockpit> cp = NULL;
         if ((parent->name != "eject") && (parent->name != "Pilot") && (cp = _Universe->isPlayerStarship(parent)))
             cp->Eject();
     }
@@ -1992,7 +1992,7 @@ void FireKeyboard::Execute()
     if (f().ejectdock == PRESS) {
         f().ejectdock              = DOWN;
         std::shared_ptr<Unit> utdw = parent;
-        Cockpit *             cp   = NULL; // check if docking ports exist, no docking ports = no need to ejectdock so don't do anything
+        std::shared_ptr<Cockpit> cp   = NULL; // check if docking ports exist, no docking ports = no need to ejectdock so don't do anything
         if ((SelectDockPort(utdw, parent) > -1) && (cp = _Universe->isPlayerStarship(parent)))
             cp->EjectDock(); // use specialized ejectdock in the future
     }

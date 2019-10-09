@@ -672,7 +672,7 @@ bool NetActionConfirm::finalizeJoinGame(int launchShip)
         NetClient::CleanUp();
         return false;
     }
-    Cockpit *             cp     = NULL;
+    std::shared_ptr<Cockpit> cp     = NULL;
     std::shared_ptr<Unit> playun = NULL;
     if (_Universe)
         cp = _Universe->AccessCockpit(player);

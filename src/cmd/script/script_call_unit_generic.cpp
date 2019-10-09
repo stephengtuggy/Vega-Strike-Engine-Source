@@ -544,7 +544,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             viret->type      = VAR_FLOAT;
             viret->float_val = 0;
             if (mode == SCRIPT_RUN) {
-                Cockpit *tmp;
+                std::shared_ptr<Cockpit> tmp;
                 if ((tmp = _Universe->isPlayerStarship(my_unit)))
                     viret->float_val = tmp->credits;
             }
@@ -553,7 +553,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             missionNode *nr_node = getArgument(node, mode, 1);
             float        credits = doFloatVar(nr_node, mode);
             if (mode == SCRIPT_RUN) {
-                Cockpit *tmp;
+                std::shared_ptr<Cockpit> tmp;
                 if ((tmp = _Universe->isPlayerStarship(my_unit)))
                     tmp->credits += credits;
             }
@@ -838,7 +838,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             void *      my_obj = NULL;
             magic_num          = getStringArgument(node, mode, 1);
             if (mode == SCRIPT_RUN) {
-                Cockpit *tmp;
+                std::shared_ptr<Cockpit> tmp;
                 if ((tmp = _Universe->isPlayerStarship(my_unit)))
                     my_obj = (void *)&tmp->savegame->getMissionData(magic_num);
             }
@@ -883,7 +883,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             float                 mood       = getFloatArg(node, mode, 2);
             unsigned char         sex        = 0;
             if (mode == SCRIPT_RUN) {
-                Cockpit *tmp;
+                std::shared_ptr<Cockpit> tmp;
                 if ((tmp = _Universe->isPlayerStarship(my_unit))) {
                     Animation *ani = other_unit->pilot->getCommFace(other_unit, mood, sex);
                     if (NULL != ani)
@@ -896,7 +896,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
         } else if (method_id == CMT_UNIT_commAnimation) {
             string anim = getStringArgument(node, mode, 1);
             if (mode == SCRIPT_RUN) {
-                Cockpit *tmp;
+                std::shared_ptr<Cockpit> tmp;
                 if ((tmp = _Universe->isPlayerStarship(my_unit))) {
                 }
             }

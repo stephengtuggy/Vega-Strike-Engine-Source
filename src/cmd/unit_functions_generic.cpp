@@ -93,7 +93,7 @@ void SetShieldZero(std::shared_ptr<Unit> un)
 }
 
 // un scored a faction kill
-void ScoreKill(Cockpit *cp, std::shared_ptr<Unit> un, std::shared_ptr<Unit> killedUnit)
+void ScoreKill(std::shared_ptr<Cockpit> cp, std::shared_ptr<Unit> un, std::shared_ptr<Unit> killedUnit)
 {
     if (un->isUnit() != UNITPTR || killedUnit->isUnit() != UNITPTR)
         return;
@@ -149,7 +149,7 @@ void ScoreKill(Cockpit *cp, std::shared_ptr<Unit> un, std::shared_ptr<Unit> kill
 // From unit_physics.cpp
 signed char ComputeAutoGuarantee(std::shared_ptr<Unit> un)
 {
-    Cockpit *    cp;
+    std::shared_ptr<Cockpit> cp;
     unsigned int cpnum = 0;
     if ((cp = _Universe->isPlayerStarship(un)))
         cpnum = cp - _Universe->AccessCockpit(0);

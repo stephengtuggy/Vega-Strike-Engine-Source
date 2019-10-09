@@ -35,7 +35,7 @@ int communicateTo(std::shared_ptr<Unit> my_unit, std::shared_ptr<Unit> other_uni
     if (!my_unit)
         return 0;
     unsigned char sex = 0;
-    Cockpit *     tmp;
+    std::shared_ptr<Cockpit> tmp;
     if ((tmp = _Universe->isPlayerStarship(my_unit))) {
         if (other_unit) {
             Animation *ani = other_unit->pilot->getCommFace(other_unit, mood, sex);
@@ -49,7 +49,7 @@ bool commAnimation(std::shared_ptr<Unit> my_unit, string anim)
 {
     if (!my_unit)
         return false;
-    Cockpit *tmp;
+    std::shared_ptr<Cockpit> tmp;
     if ((tmp = _Universe->isPlayerStarship(my_unit))) {
         static Hashtable<std::string, Animation, 63> AniHashTable;
         Animation *                                  vid = AniHashTable.Get(anim);

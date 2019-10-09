@@ -21,7 +21,7 @@
 #include "options.h"
 
 extern unsigned int          AddAnimation(const QVector &pos, const float size, bool mvolatile, const std::string &name, float percentgrow);
-extern void                  RespawnNow(Cockpit *cp);
+extern void                  RespawnNow(std::shared_ptr<Cockpit> cp);
 extern void                  TerminateCurrentBase(void);
 extern void                  SetStarSystemLoading(bool value);
 extern bool                  GetStarSystemLoading();
@@ -136,7 +136,7 @@ void addParticle(QVector loc, Vector velocity, Vector color, float size)
 
 void loadGame(const string &savename)
 {
-    Cockpit *             cockpit = _Universe->AccessCockpit();
+    std::shared_ptr<Cockpit> cockpit = _Universe->AccessCockpit();
     std::shared_ptr<Unit> player  = cockpit->GetParent();
     UniverseUtil::setCurrentSaveGame(savename);
     if (player) {

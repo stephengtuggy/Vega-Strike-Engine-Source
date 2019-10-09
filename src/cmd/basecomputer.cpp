@@ -234,7 +234,7 @@ extern void CurrentBaseUnitSet(std::shared_ptr<Unit> un);
 extern string MakeUnitXMLPretty(std::string, std::shared_ptr<Unit>);
 extern float  totalShieldEnergyCapacitance(const Shield &shield);
 // For Options menu.
-extern void RespawnNow(Cockpit *cockpit);
+extern void RespawnNow(std::shared_ptr<Cockpit> cockpit);
 
 // headers for functions used internally
 // add to text a nicely-formated description of the unit and its subunits
@@ -2438,7 +2438,7 @@ bool BaseComputer::isTransactionOK(const Cargo &originalItem, TransactionType tr
     std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
     if (!playerUnit)
         return false;
-    Cockpit *cockpit = _Universe->isPlayerStarship(playerUnit);
+    std::shared_ptr<Cockpit> cockpit = _Universe->isPlayerStarship(playerUnit);
     if (!cockpit)
         return false;
     // Need to fix item so there is only one for cost calculations.
@@ -3997,7 +3997,7 @@ bool BaseComputer::fixUpgrade(const EventCommandId &command, Control *control)
     std::shared_ptr<Unit> baseUnit   = m_base.GetUnit();
     if (baseUnit && playerUnit && item) {
         float *  credits = NULL;
-        Cockpit *cp      = _Universe->isPlayerStarship(playerUnit);
+        std::shared_ptr<Cockpit> cp      = _Universe->isPlayerStarship(playerUnit);
         if (cp)
             credits = &(cp->credits);
         if (playerUnit->RepairUpgradeCargo(item, baseUnit, credits))
@@ -4019,7 +4019,7 @@ bool BaseComputer::changeToShipDealerMode(const EventCommandId &command, Control
 }
 
 // Create a Cargo for the specified starship.
-Cargo CreateCargoForOwnerStarship(const Cockpit *cockpit, const std::shared_ptr<Unit> base, int i)
+Cargo CreateCargoForOwnerStarship(const std::shared_ptr<Cockpit> cockpit, const std::shared_ptr<Unit> base, int i)
 {
     Cargo cargo;
     cargo.quantity = 1;
@@ -4061,7 +4061,7 @@ Cargo CreateCargoForOwnerStarship(const Cockpit *cockpit, const std::shared_ptr<
 }
 
 // Create a Cargo for an owned starship from the name.
-Cargo CreateCargoForOwnerStarshipName(const Cockpit *cockpit, const std::shared_ptr<Unit> base, std::string name, int &index)
+Cargo CreateCargoForOwnerStarshipName(const std::shared_ptr<Cockpit> cockpit, const std::shared_ptr<Unit> base, std::string name, int &index)
 {
     for (size_t i = 1, n = cockpit->GetNumUnits(); i < n; ++i) {
         if (cockpit->GetUnitFileName(i) == name) {
@@ -4073,7 +4073,7 @@ Cargo CreateCargoForOwnerStarshipName(const Cockpit *cockpit, const std::shared_
     return Cargo();
 }
 
-void SwapInNewShipName(Cockpit *cockpit, std::shared_ptr<Unit> base, const std::string &newFileName, int swappingShipsIndex)
+void SwapInNewShipName(std::shared_ptr<Cockpit> cockpit, std::shared_ptr<Unit> base, const std::string &newFileName, int swappingShipsIndex)
 {
     std::shared_ptr<Unit> parent = cockpit->GetParent();
     if (parent) {
@@ -4409,7 +4409,7 @@ void BaseComputer::loadShipDealerControls(void)
     loadMasterList(m_base.GetUnit(), filtervec, std::vector<std::string>(), true, m_transList1);
 
     // Add in the starships owned by this player.
-    Cockpit *cockpit = _Universe->AccessCockpit();
+    std::shared_ptr<Cockpit> cockpit = _Universe->AccessCockpit();
     for (size_t i = 1, n = cockpit->GetNumUnits(); i < n; ++i) {
         CargoColor cargoColor;
         cargoColor.cargo = CreateCargoForOwnerStarship(cockpit, m_base.GetUnit(), i);
@@ -4430,7 +4430,7 @@ void BaseComputer::loadShipDealerControls(void)
 
 bool sellShip(std::shared_ptr<Unit> baseUnit, std::shared_ptr<Unit> playerUnit, std::string shipname, BaseComputer *bcomputer)
 {
-    Cockpit *    cockpit   = _Universe->isPlayerStarship(playerUnit);
+    std::shared_ptr<Cockpit> cockpit   = _Universe->isPlayerStarship(playerUnit);
     unsigned int tempInt   = 1;
     Cargo *      shipCargo = baseUnit->GetCargo(shipname, tempInt);
     if (shipCargo == NULL)
@@ -4469,7 +4469,7 @@ bool BaseComputer::sellShip(const EventCommandId &command, Control *control)
     std::shared_ptr<Unit> playerUnit = m_player.GetUnit();
     std::shared_ptr<Unit> baseUnit   = m_base.GetUnit();
     Cargo *               item       = selectedItem();
-    Cockpit *             cockpit    = _Universe->isPlayerStarship(playerUnit);
+    std::shared_ptr<Cockpit> cockpit    = _Universe->isPlayerStarship(playerUnit);
     if (!(playerUnit && baseUnit && item && cockpit))
         return true;
     return ::sellShip(baseUnit, playerUnit, item->content, this);
@@ -4498,7 +4498,7 @@ bool buyShip(std::shared_ptr<Unit> baseUnit,
             swappingShipsIndex = -1;
         }
     } else {
-        Cockpit *cockpit = _Universe->AccessCockpit();
+        std::shared_ptr<Cockpit> cockpit = _Universe->AccessCockpit();
         for (size_t i = 1, n = cockpit->GetNumUnits(); i < n; ++i)
             if (cockpit->GetUnitFileName(i) == content)
                 return false;
@@ -5957,7 +5957,7 @@ bool BaseComputer::actionConfirmedSaveGame()
         } else {
             fp.Close();
             if (tmp.length() > 0) {
-                Cockpit *cockpit = player ? _Universe->isPlayerStarship(player) : 0;
+                std::shared_ptr<Cockpit> cockpit = player ? _Universe->isPlayerStarship(player) : 0;
                 if (player && cockpit) {
                     UniverseUtil::setCurrentSaveGame(tmp);
                     WriteSaveGame(cockpit, false);
@@ -5988,7 +5988,7 @@ bool BaseComputer::actionSaveGame(const EventCommandId &command, Control *contro
             ok = false;
     }
     if (player && ok) {
-        Cockpit *cockpit = _Universe->isPlayerStarship(player);
+        std::shared_ptr<Cockpit> cockpit = _Universe->isPlayerStarship(player);
         if (cockpit) {
             VSFileSystem::VSFile  fp;
             VSFileSystem::VSError err = fp.OpenReadOnly(tmp, SaveFile);
@@ -6018,7 +6018,7 @@ bool BaseComputer::actionConfirmedLoadGame()
     if (desc) {
         std::string tmp = desc->text();
         if (tmp.length() > 0) {
-            Cockpit *cockpit = player ? _Universe->isPlayerStarship(player) : 0;
+            std::shared_ptr<Cockpit> cockpit = player ? _Universe->isPlayerStarship(player) : 0;
             if (player && cockpit) {
                 UniverseUtil::showSplashScreen("");
                 UniverseUtil::showSplashMessage("Loading saved game.");
@@ -6055,7 +6055,7 @@ bool BaseComputer::actionLoadGame(const EventCommandId &command, Control *contro
         std::string tmp = desc->text();
         if (tmp.length() > 0) {
             if (player) {
-                Cockpit *cockpit = _Universe->isPlayerStarship(player);
+                std::shared_ptr<Cockpit> cockpit = _Universe->isPlayerStarship(player);
                 if (cockpit) {
                     LoadSaveQuitConfirm *saver = new LoadSaveQuitConfirm(this, "Load", "Are you sure that you want to load this game?");
                     saver->init();

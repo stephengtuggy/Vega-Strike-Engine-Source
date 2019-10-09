@@ -41,7 +41,7 @@ class GameUniverse : public Universe
   protected:
     /// The users cockpit
     // unsigned int current_cockpit;
-    // std::vector <Cockpit *> cockpit;
+    // std::vector <std::shared_ptr<Cockpit> > cockpit;
     /// a generic camera facing the HUD
     Camera hud_camera;
     /// init proc
@@ -78,8 +78,8 @@ class GameUniverse : public Universe
     }
     /// Accessor to cockpit
     // unsigned int CurrentCockpit(){return current_cockpit;}
-    // Cockpit *AccessCockpit() {return cockpit[current_cockpit];}
-    // Cockpit *AccessCockpit (int i) {return cockpit[i];}
+    // std::shared_ptr<Cockpit> AccessCockpit() {return cockpit[current_cockpit];}
+    // std::shared_ptr<Cockpit> AccessCockpit (int i) {return cockpit[i];}
     /// Wrapper function for Star System
     Camera *AccessCamera(int num)
     {

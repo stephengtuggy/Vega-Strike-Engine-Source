@@ -301,7 +301,7 @@ void CopySavedShips(std::string filename, int player_num, const std::vector<std:
     }
 }
 
-void WriteSaveGame(Cockpit *cp, bool auto_save)
+void WriteSaveGame(std::shared_ptr<Cockpit> cp, bool auto_save)
 {
     int player_num = 0;
     for (unsigned int kk = 0; kk < _Universe->numPlayers(); ++kk)

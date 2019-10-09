@@ -206,7 +206,7 @@ void FlyByKeyboard::Execute(bool resetangvelocity)
     }
     bool enteredautopilot = false;
     if (SSCK.realauto) {
-        Cockpit *cp = _Universe->isPlayerStarship(parent);
+        std::shared_ptr<Cockpit> cp = _Universe->isPlayerStarship(parent);
         if (cp)
             cp->Autopilot(parent->Target());
         enteredautopilot = true;

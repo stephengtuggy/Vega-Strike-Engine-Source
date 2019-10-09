@@ -724,7 +724,7 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
             char        redirectcommand[2] = {ACCT_LOGIN, '\0'};
             std::string redirect(redirectcommand);
             for (unsigned int i = 0; i < _Universe->numPlayers(); i++) {
-                Cockpit *cp = _Universe->AccessCockpit(i);
+                std::shared_ptr<Cockpit> cp = _Universe->AccessCockpit(i);
                 if (cp->savegame && cp->savegame->GetCallsign() == user) {
                     COUT << "Cannot login player " << user << ": already exists on this server!";
                     sendLoginAlready(clt);
@@ -890,7 +890,7 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
                 zonemgr->removeClient(clt);
                 if (oldun)
                     oldun->Kill(true, true);
-                Cockpit *cp = loadCockpit(clt); // Should find existing cp.
+                std::shared_ptr<Cockpit> cp = loadCockpit(clt); // Should find existing cp.
                 loadFromSavegame(clt, cp);
                 // actually cp not used
                 this->addClient(clt);
@@ -910,7 +910,7 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
         int cpnum = _Universe->whichPlayerStarship(player);
         if (cpnum == -1)
             break;
-        Cockpit *cp = _Universe->AccessCockpit(cpnum);
+        std::shared_ptr<Cockpit> cp = _Universe->AccessCockpit(cpnum);
         {
             const std::shared_ptr<Unit> un;
             for (un_kiter ui = player->getStarSystem()->getUnitList().constIterator(); (un = *ui); ++ui)
@@ -1043,7 +1043,7 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
         cerr << "ATTEMPTING TO JUMP, BUT JUMP UNIMPLEMENTED" << endl;
         bool      found = false;
         NetBuffer netbuf2;
-        Cockpit * cp;
+        std::shared_ptr<Cockpit> cp;
         un = clt->game_unit.GetUnit();
         if (un == NULL) {
             COUT << "ERROR --> Received a jump request from non-existing UNIT" << endl;
@@ -1158,7 +1158,7 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
         int                   mountOffset   = ((int)netbuf.getInt32());
         int                   subunitOffset = ((int)netbuf.getInt32());
         std::shared_ptr<Unit> sender        = clt->game_unit.GetUnit();
-        Cockpit *             sender_cpt    = _Universe->isPlayerStarship(sender);
+        std::shared_ptr<Cockpit> sender_cpt    = _Universe->isPlayerStarship(sender);
         if (!sender || !sender->getStarSystem() || !sender_cpt)
             break;
         zone                            = sender->getStarSystem()->GetZone();
@@ -1188,8 +1188,8 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
             else
                 seller = NULL;
         }
-        Cockpit *buyer_cpt  = _Universe->isPlayerStarship(buyer);
-        Cockpit *seller_cpt = _Universe->isPlayerStarship(seller);
+        std::shared_ptr<Cockpit> buyer_cpt  = _Universe->isPlayerStarship(buyer);
+        std::shared_ptr<Cockpit> seller_cpt = _Universe->isPlayerStarship(seller);
 
         bool   sellerEmpty = false;
         Cargo *cargptr     = NULL;

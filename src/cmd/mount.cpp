@@ -359,7 +359,7 @@ bool Mount::PhysicsAlignedFire(std::shared_ptr<Unit> caller,
         static bool   use_separate_sound    = XMLSupport::parse_bool(vs_config->getVariable("audio", "high_quality_weapon", "true"));
         static bool   ai_use_separate_sound = XMLSupport::parse_bool(vs_config->getVariable("audio", "ai_high_quality_weapon", "false"));
         static bool   ai_sound              = XMLSupport::parse_bool(vs_config->getVariable("audio", "ai_sound", "true"));
-        Cockpit *     cp;
+        std::shared_ptr<Cockpit> cp;
         bool          ips            = ((cp = _Universe->isPlayerStarshipVoid(owner)) != NULL);
         double        distancesqr    = (tmp.position - AUDListenerLocation()).MagnitudeSquared();
         static double maxdistancesqr = XMLSupport::parse_float(vs_config->getVariable("audio", "max_range_to_hear_weapon_fire", "100000")) *

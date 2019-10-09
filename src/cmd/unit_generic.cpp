@@ -490,8 +490,8 @@ void Unit::reactToCollision(std::shared_ptr<Unit> smalle,
         // this should eventually be replaced by instead figuring out where
         // the point of collision should have occurred, and moving the vessels to the
         // actual collision location before applying forces
-        Cockpit *thcp                        = _Universe->isPlayerStarship(this);
-        Cockpit *smcp                        = _Universe->isPlayerStarship(smalle);
+        std::shared_ptr<Cockpit> thcp                        = _Universe->isPlayerStarship(this);
+        std::shared_ptr<Cockpit> smcp                        = _Universe->isPlayerStarship(smalle);
         bool     isnotplayerorhasbeenmintime = true;
         // Need to incorporate normals of colliding polygons somehow, without overiding directions of travel.
         // We'll use the point object approximation for the magnitude of damage, and then apply the force along the appropriate normals
@@ -1373,7 +1373,7 @@ StarSystem *Unit::getStarSystem()
     if (activeStarSystem) {
         return activeStarSystem;
     } else {
-        Cockpit *cp = _Universe->isPlayerStarship(this);
+        std::shared_ptr<Cockpit> cp = _Universe->isPlayerStarship(this);
         if (cp)
             if (cp->activeStarSystem)
                 return cp->activeStarSystem;
@@ -1386,7 +1386,7 @@ const StarSystem *Unit::getStarSystem() const
     if (activeStarSystem) {
         return activeStarSystem;
     } else {
-        Cockpit *cp = _Universe->isPlayerStarship(this);
+        std::shared_ptr<Cockpit> cp = _Universe->isPlayerStarship(this);
         if (cp)
             if (cp->activeStarSystem)
                 return cp->activeStarSystem;
@@ -2259,7 +2259,7 @@ void Unit::UpdatePhysics(const Transformation &trans,
             Velocity.k = -VELOCITY_MAX;
     }
     float    difficulty;
-    Cockpit *player_cockpit = GetVelocityDifficultyMult(difficulty);
+    std::shared_ptr<Cockpit> player_cockpit = GetVelocityDifficultyMult(difficulty);
 
     this->UpdatePhysics2(trans, old_physical_state, net_accel, difficulty, transmat, cum_vel, lastframe, uc);
     if (EXTRA_CARGO_SPACE_DRAG > 0) {
@@ -2437,7 +2437,7 @@ void Unit::UpdatePhysics(const Transformation &trans,
         static bool direct     = XMLSupport::parse_bool(vs_config->getVariable("physics", "direct_interstellar_journey", "true"));
         bool        jumpDirect = false;
         if (direct) {
-            Cockpit *cp = _Universe->isPlayerStarship(this);
+            std::shared_ptr<Cockpit> cp = _Universe->isPlayerStarship(this);
             if (NULL != cp) {
                 std::string sys = cp->GetNavSelectedSystem();
                 if (!sys.empty()) {
@@ -2712,7 +2712,7 @@ void Unit::UpdatePhysics2(const Transformation &trans,
                           bool                  lastframe,
                           UnitCollection *      uc)
 {
-    Cockpit *cp = _Universe->isPlayerStarship(this);
+    std::shared_ptr<Cockpit> cp = _Universe->isPlayerStarship(this);
     // Only in non-networking OR networking && is a player OR SERVER && not a player
     if ((Network == NULL && !SERVER) || (Network != NULL && cp && !SERVER) || (SERVER))
         if (AngularVelocity.i || AngularVelocity.j || AngularVelocity.k)
@@ -2972,7 +2972,7 @@ bool Unit::AutoPilotToErrorMessage(const std::shared_ptr<Unit> target,
         }
         if (!nowhere)
             SetCurPosition(sep);
-        Cockpit *cp;
+        std::shared_ptr<Cockpit> cp;
         if ((cp = _Universe->isPlayerStarship(this)) != NULL) {
             std::string followermessage;
             if (getFlightgroup() != NULL) {
@@ -3002,7 +3002,7 @@ bool Unit::AutoPilotToErrorMessage(const std::shared_ptr<Unit> target,
 }
 
 extern void ActivateAnimation(std::shared_ptr<Unit> jp);
-void        TurnJumpOKLightOn(std::shared_ptr<Unit> un, Cockpit *cp)
+void        TurnJumpOKLightOn(std::shared_ptr<Unit> un, std::shared_ptr<Cockpit> cp)
 {
     if (cp) {
         if (un->GetWarpEnergy() >= un->GetJumpStatus().energy)
@@ -3045,7 +3045,7 @@ bool Unit::jumpReactToCollision(std::shared_ptr<Unit> smalle)
                                  : (NULL != _Universe->isPlayerStarship(this)) ? graphicOptions.InWarp && nojumpinSPEC : false;
     // only allow big with small
     if (!GetDestinations().empty()) {
-        Cockpit *cp = _Universe->isPlayerStarship(smalle);
+        std::shared_ptr<Cockpit> cp = _Universe->isPlayerStarship(smalle);
         if (!SPEC_interference || pImage->forcejump)
             TurnJumpOKLightOn(smalle, cp);
         else
@@ -3072,7 +3072,7 @@ bool Unit::jumpReactToCollision(std::shared_ptr<Unit> smalle)
         return true;
     }
     if (!smalle->GetDestinations().empty()) {
-        Cockpit *cp = _Universe->isPlayerStarship(this);
+        std::shared_ptr<Cockpit> cp = _Universe->isPlayerStarship(this);
         if (!SPEC_interference || smalle->pImage->forcejump)
             TurnJumpOKLightOn(this, cp);
         else
@@ -3096,10 +3096,10 @@ bool Unit::jumpReactToCollision(std::shared_ptr<Unit> smalle)
     return false;
 }
 
-Cockpit *Unit::GetVelocityDifficultyMult(float &difficulty) const
+std::shared_ptr<Cockpit> Unit::GetVelocityDifficultyMult(float &difficulty) const
 {
     difficulty              = 1;
-    Cockpit *player_cockpit = _Universe->isPlayerStarship(this);
+    std::shared_ptr<Cockpit> player_cockpit = _Universe->isPlayerStarship(this);
     if ((player_cockpit) == NULL) {
         static float exp = XMLSupport::parse_float(vs_config->getVariable("physics", "difficulty_speed_exponent", ".2"));
         difficulty       = pow(g_game.difficulty, exp);
@@ -3951,7 +3951,7 @@ float Unit::ApplyLocalDamage(
     const Vector &pnt, const Vector &normal, float amt, std::shared_ptr<Unit> affectedUnit, const GFXColor &color, float phasedamage)
 {
     static float nebshields = XMLSupport::parse_float(vs_config->getVariable("physics", "nebula_shield_recharge", ".5"));
-    Cockpit *    cpt;
+    std::shared_ptr<Cockpit> cpt;
     if ((cpt = _Universe->isPlayerStarship(this)) != NULL) {
         if (color.a != 2) {
             static bool apply_difficulty_enemy_damage =
@@ -4033,7 +4033,7 @@ float Unit::ApplyLocalDamage(
 void Unit::ApplyNetDamage(Vector &pnt, Vector &normal, float amt, float ppercentage, float spercentage, GFXColor &color)
 {
     static float nebshields = XMLSupport::parse_float(vs_config->getVariable("physics", "nebula_shield_recharge", ".5"));
-    Cockpit *    cpt;
+    std::shared_ptr<Cockpit> cpt;
     if ((cpt = _Universe->isPlayerStarship(this)) != NULL) {
     }
     if (GetNebula() == NULL || nebshields > 0) {
@@ -4067,7 +4067,7 @@ std::shared_ptr<Unit> findUnitInStarsystem(const void *unitDoNotDereference)
     return NULL;
 }
 
-extern void ScoreKill(Cockpit *cp, std::shared_ptr<Unit> killer, std::shared_ptr<Unit> killedUnit);
+extern void ScoreKill(std::shared_ptr<Cockpit> cp, std::shared_ptr<Unit> killer, std::shared_ptr<Unit> killedUnit);
 // Changed order of things -> Vectors and ApplyLocalDamage are computed before Cockpit thing now
 void AllUnitsCloseAndEngage(std::shared_ptr<Unit>, int faction);
 void Unit::ApplyDamage(const Vector &        pnt,
@@ -4078,7 +4078,7 @@ void Unit::ApplyDamage(const Vector &        pnt,
                        void *                ownerDoNotDereference,
                        float                 phasedamage)
 {
-    Cockpit *cp          = _Universe->isPlayerStarshipVoid(ownerDoNotDereference);
+    std::shared_ptr<Cockpit> cp          = _Universe->isPlayerStarshipVoid(ownerDoNotDereference);
     float    hullpercent = GetHullPercent();
     // Only on client side
     bool   mykilled = hull < 0;
@@ -7590,7 +7590,7 @@ vector<CargoColor> &Unit::FilterUpgradeList(vector<CargoColor> &mylist)
 {
     static bool filtercargoprice = XMLSupport::parse_bool(vs_config->getVariable("cargo", "filter_expensive_cargo", "false"));
     if (filtercargoprice) {
-        Cockpit *cp = _Universe->isPlayerStarship(this);
+        std::shared_ptr<Cockpit> cp = _Universe->isPlayerStarship(this);
         if (cp) {
             for (unsigned int i = 0; i < mylist.size(); ++i)
                 if (mylist[i].cargo.price > cp->credits) {
@@ -7644,7 +7644,7 @@ void Unit::EjectCargo(unsigned int index)
     // if (index==((unsigned int)-1)) { is ejecting normally
     // if (index==((unsigned int)-2)) { is ejecting for eject-dock
 
-    Cockpit *cp = NULL;
+    std::shared_ptr<Cockpit> cp = NULL;
     if (index == (UINT_MAX - 1)) {
         int pilotnum = _Universe->CurrentCockpit();
         // this calls the unit's existence, by the way.
@@ -8480,7 +8480,7 @@ bool Unit::TransferUnitToSystem(StarSystem *Current)
         this->Target(NULL);
         Current->AddUnit(this);
 
-        Cockpit *an_active_cockpit = _Universe->isPlayerStarship(this);
+        std::shared_ptr<Cockpit> an_active_cockpit = _Universe->isPlayerStarship(this);
         if (an_active_cockpit != NULL) {
             an_active_cockpit->activeStarSystem = Current;
             an_active_cockpit->visitSystem(Current->getFileName());

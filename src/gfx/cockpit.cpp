@@ -1871,7 +1871,7 @@ bool GameCockpit::DrawNavSystem()
     return ret;
 }
 
-void RespawnNow(Cockpit *cp)
+void RespawnNow(std::shared_ptr<Cockpit> cp)
 {
     while (respawnunit.size() <= _Universe->numPlayers())
         respawnunit.push_back(0);
@@ -2896,7 +2896,7 @@ string GameCockpit::getsoundfile(string sound)
         return "";
 }
 
-void SetStartupView(Cockpit *);
+void SetStartupView(std::shared_ptr<Cockpit> );
 
 void GameCockpit::UpdAutoPilot()
 {
@@ -3072,7 +3072,7 @@ void GameCockpit::RestoreViewPort()
     _Universe->AccessCamera()->RestoreViewPort(0, 0);
 }
 
-static void FaceCamTarget(Cockpit *cp, int cam, std::shared_ptr<Unit> un)
+static void FaceCamTarget(std::shared_ptr<Cockpit> cp, int cam, std::shared_ptr<Unit> un)
 {
     QVector diff = un->Position() - cp->AccessCamera()->GetPosition();
     diff.Normalize();

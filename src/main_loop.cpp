@@ -785,7 +785,7 @@ void createObjects(std::vector<std::string> &   fighter0name,
         strcpy(fightername, fullname.c_str());
         string   ainame    = fg->ainame;
         float    fg_radius = 0.0;
-        Cockpit *cp        = NULL;
+        std::shared_ptr<Cockpit> cp        = NULL;
         for (int s = 0; s < fg->nr_ships; s++) {
             if (a >= mission->number_of_ships) {
                 a -= 22;
@@ -854,7 +854,7 @@ void createObjects(std::vector<std::string> &   fighter0name,
                         fighter0mods.push_back("");
                     }
                 }
-                Cockpit *backupcp = _Universe->AccessCockpit();
+                std::shared_ptr<Cockpit> backupcp = _Universe->AccessCockpit();
                 if (squadnum < (int)fighter0name.size()) {
                     _Universe->pushActiveStarSystem(_Universe->AccessCockpit(squadnum)->activeStarSystem);
                     _Universe->SetActiveCockpit(_Universe->AccessCockpit(squadnum));

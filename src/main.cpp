@@ -504,7 +504,7 @@ void bootstrap_first_loop()
     }
 }
 
-void SetStartupView(Cockpit *cp)
+void SetStartupView(std::shared_ptr<Cockpit> cp)
 {
     cp->SetView(game_options.startup_cockpit_view == "view_target"
                     ? CP_TARGET
@@ -587,7 +587,7 @@ void bootstrap_main_loop()
         vector<std::string>::iterator it, jt;
         unsigned int                  k = 0;
         for (k = 0, it = playername.begin(), jt = playerpasswd.begin(); k < (unsigned int)_Universe->numPlayers(); k++, it++, jt++) {
-            Cockpit *cp = _Universe->AccessCockpit(k);
+            std::shared_ptr<Cockpit> cp = _Universe->AccessCockpit(k);
             SetStartupView(cp);
             bool        setplayerXloc = false;
             std::string psu;

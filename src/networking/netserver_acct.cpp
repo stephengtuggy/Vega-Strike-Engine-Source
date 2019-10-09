@@ -134,7 +134,7 @@ bool NetServer::saveAccount(int i)
 {
     string xmlstr, savestr;
     // unsigned int xmllen, savelen, nxmllen, nsavelen;
-    Cockpit *cp = _Universe->AccessCockpit(i);
+    std::shared_ptr<Cockpit> cp = _Universe->AccessCockpit(i);
     // Write the save and xml unit
     // FileUtil::WriteSaveFiles( savestr, xmlstr, VSFileSystem::datadir+"/serversaves", cp->savegame->GetCallsign());
     // SEND THE BUFFERS TO ACCOUNT SERVER

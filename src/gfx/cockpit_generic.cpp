@@ -40,12 +40,12 @@ vector<int> turretcontrol;
 
 void Cockpit::beginElement(void *userData, const XML_Char *name, const XML_Char **atts)
 {
-    ((Cockpit *)userData)->beginElement(name, AttributeList(atts));
+    ((std::shared_ptr<Cockpit> )userData)->beginElement(name, AttributeList(atts));
 }
 
 void Cockpit::endElement(void *userData, const XML_Char *name)
 {
-    ((Cockpit *)userData)->endElement(name);
+    ((std::shared_ptr<Cockpit> )userData)->endElement(name);
 }
 
 float Unit::computeLockingPercent()
@@ -250,7 +250,7 @@ Cockpit::Cockpit(const char *file, std::shared_ptr<Unit> parent, const std::stri
  *  static vector <int> switchunit;
  *  static vector <int> turretcontrol;
  *  static vector <int> suicide;
- *  void RespawnNow (Cockpit * cp) {
+ *  void RespawnNow (std::shared_ptr<Cockpit> cp) {
  *  while (respawnunit.size()<=_Universe->numPlayers())
  *   respawnunit.push_back(0);
  *  for (unsigned int i=0;i<_Universe->numPlayers();i++) {
@@ -814,7 +814,7 @@ bool Cockpit::Update()
     return false;
 }
 
-void visitSystemHelp(Cockpit *cp, string systemname, float num)
+void visitSystemHelp(std::shared_ptr<Cockpit> cp, string systemname, float num)
 {
     string         key(string("visited_") + systemname);
     vector<float> *v = &cp->savegame->getMissionData(key);

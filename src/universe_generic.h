@@ -53,7 +53,7 @@ class Universe
     std::unique_ptr<GalaxyXML::Galaxy> galaxy;
     /// The users cockpit
     unsigned int           current_cockpit;
-    std::vector<Cockpit *> cockpit;
+    std::vector<std::shared_ptr<Cockpit> > cockpit;
     /// a generic camera facing the HUD
     // Camera hud_camera;
     /// init proc
@@ -81,19 +81,19 @@ class Universe
     {
         return is_server;
     }
-    Cockpit *isPlayerStarship(const std::shared_ptr<Unit> fighter);
-    Cockpit *isPlayerStarshipVoid(const void *pointercompare)
+    std::shared_ptr<Cockpit> isPlayerStarship(const std::shared_ptr<Unit> fighter);
+    std::shared_ptr<Cockpit> isPlayerStarshipVoid(const void *pointercompare)
     {
         // void *newp = const_cast<void *>(pointercompare);
         // return this->isPlayerStarship(reinterpret_cast<std::shared_ptr<Unit> >(newp));
         return isPlayerStarship((const std::shared_ptr<Unit>)pointercompare);
     }
     int      whichPlayerStarship(const std::shared_ptr<Unit> fighter);
-    Cockpit *AccessCockpit()
+    std::shared_ptr<Cockpit> AccessCockpit()
     {
         return cockpit[current_cockpit];
     }
-    Cockpit *AccessCockpit(int i)
+    std::shared_ptr<Cockpit> AccessCockpit(int i)
     {
         return cockpit[i];
     }
@@ -120,7 +120,7 @@ class Universe
     {
     }
     void         SetActiveCockpit(int whichcockpit);
-    void         SetActiveCockpit(Cockpit *which);
+    void         SetActiveCockpit(std::shared_ptr<Cockpit> which);
     virtual void WriteSaveGame(bool auto_save)
     {
     }
@@ -136,7 +136,7 @@ class Universe
     {
     }
     // virtual unsigned int CurrentCockpit(){return 0;}
-    Cockpit *createCockpit(std::string player);
+    std::shared_ptr<Cockpit> createCockpit(std::string player);
 
     void                            getJumpPath(const std::string &from, const std::string &to, std::vector<std::string> &path) const;
     const std::vector<std::string> &getAdjacentStarSystems(const std::string &ss) const;
@@ -165,7 +165,7 @@ class Universe
     }
     void clearAllSystems();
     // void SetActiveCockpit (int whichcockpit);
-    // void SetActiveCockpit (Cockpit * which);
+    // void SetActiveCockpit (std::shared_ptr<Cockpit> which);
     StarSystem *getActiveStarSystem(unsigned int size)
     {
         return size >= active_star_system.size() ? NULL : active_star_system[size];
@@ -219,12 +219,12 @@ class Universe
      */
     /// Accessor to cockpit
     // unsigned int CurrentCockpit(){return current_cockpit;}
-    // Cockpit *AccessCockpit() {return cockpit[current_cockpit];}
+    // std::shared_ptr<Cockpit> AccessCockpit() {return cockpit[current_cockpit];}
     unsigned int numPlayers()
     {
         return cockpit.size();
     }
-    // Cockpit *AccessCockpit (int i) {return cockpit[i];}
+    // std::shared_ptr<Cockpit> AccessCockpit (int i) {return cockpit[i];}
     /// Wrapper function for Star System
     /*
      *  Camera *AccessCamera(int num) {

@@ -926,7 +926,7 @@ void ZoneMgr::displayNPCs()
         ZoneInfo *  zi = &((*iter).second);
         StarSystem *ss = zi->star_system;
         for (unsigned int i = 0; i < _Universe->numPlayers(); ++i) {
-            Cockpit *cp = _Universe->AccessCockpit(i);
+            std::shared_ptr<Cockpit> cp = _Universe->AccessCockpit(i);
             if (cp->activeStarSystem != ss)
                 continue;
             char name[15];

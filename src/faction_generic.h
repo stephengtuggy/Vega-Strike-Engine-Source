@@ -110,7 +110,7 @@ int                             numnums(const char *str);
 /// returns the index of the faction with that name
 // int GetFaction (const char *factionname);
 int                         GetNumAnimation(int faction);
-class std::shared_ptr<Unit> GetContraband(int faction);
+std::shared_ptr<Unit> GetContraband(int faction);
 
 const char *GetFaction(int faction);
 

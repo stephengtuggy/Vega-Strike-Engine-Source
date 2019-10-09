@@ -133,7 +133,7 @@ class SaveGame
                        const std::set<std::string> &select_data_filter = std::set<std::string>());
     void LoadSavedMissions();
 };
-void               WriteSaveGame(class Cockpit *cp, bool auto_save);
+void               WriteSaveGame(std::shared_ptr<Cockpit> cp, bool auto_save);
 const std::string &GetCurrentSaveGame();
 std::string        SetCurrentSaveGame(std::string newname);
 const std::string &GetSaveDir();

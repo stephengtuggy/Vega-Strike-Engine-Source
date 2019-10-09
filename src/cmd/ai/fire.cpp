@@ -619,7 +619,7 @@ bool FireAt::ShouldFire(std::shared_ptr<Unit> targ, bool &missilelock)
     bool retval = ((dist < firewhen) && ((angle > fangle) || (temp && (angle > temp)) || (missilelock && (angle > 0)))) && !isjumppoint;
     if (retval) {
         if (Cockpit::tooManyAttackers()) {
-            Cockpit *player = _Universe->isPlayerStarship(targ);
+            std::shared_ptr<Cockpit> player = _Universe->isPlayerStarship(targ);
             if (player) {
                 static int max_attackers = XMLSupport::parse_int(vs_config->getVariable("AI", "max_player_attackers", "0"));
                 int        attackers     = player->number_of_attackers;
