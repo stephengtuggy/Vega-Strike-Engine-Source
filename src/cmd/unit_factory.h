@@ -48,20 +48,20 @@ class UnitFactory
     static std::shared_ptr<Unit> createUnit();
 
     static std::shared_ptr<Unit> createUnit(const char * filename,
-                            bool         SubUnit,
-                            int          faction,
-                            std::string  customizedUnit = string(""),
-                            Flightgroup *flightgroup    = NULL,
-                            int          fg_subnumber   = 0,
-                            string *     netxml         = NULL,
-                            ObjSerial    netcreate      = 0);
+                                            bool         SubUnit,
+                                            int          faction,
+                                            std::string  customizedUnit = string(""),
+                                            Flightgroup *flightgroup    = NULL,
+                                            int          fg_subnumber   = 0,
+                                            string *     netxml         = NULL,
+                                            ObjSerial    netcreate      = 0);
 
     static std::shared_ptr<Unit> createServerSideUnit(const char * filename,
-                                      bool         SubUnit,
-                                      int          faction,
-                                      std::string  customizedUnit = string(""),
-                                      Flightgroup *flightgroup    = NULL,
-                                      int          fg_subnumber   = 0);
+                                                      bool         SubUnit,
+                                                      int          faction,
+                                                      std::string  customizedUnit = string(""),
+                                                      Flightgroup *flightgroup    = NULL,
+                                                      int          fg_subnumber   = 0);
 
     static std::shared_ptr<Unit> createUnit(std::vector<Mesh *> &meshes, bool Subunit, int faction);
 
@@ -95,7 +95,7 @@ class UnitFactory
                                 BLENDFUNC                         blenddst,
                                 const vector<string> &            dest,
                                 const QVector &                   orbitcent,
-                                std::shared_ptr<Unit> parent,
+                                std::shared_ptr<Unit>             parent,
                                 const GFXMaterial &               ourmat,
                                 const std::vector<GFXLightLocal> &ligh,
                                 int                               faction,
@@ -129,19 +129,19 @@ class UnitFactory
     static ContinuousTerrain *createContinuousTerrain(const char *file, Vector scale, float position, Matrix &t);
 
     // Function used to put in a NetBuffer the necessary info to create the unit so that it can be send over network
-    static void  addUnitBuffer(NetBuffer &        netbuf,
-                               const string &     filename,
-                               const string &     name,
-                               const string &     fullname,
-                               bool               SubUnit,
-                               int                faction,
-                               std::string        customizedUnit,
-                               const ClientState &curr_state,
-                               Flightgroup *      flightgroup,
-                               int                fg_subnumber,
-                               string *           netxml,
-                               ObjSerial          netcreate);
-    static void  addUnitBuffer(NetBuffer &netbuf, const std::shared_ptr<Unit> un, string *netxml = NULL);
+    static void                  addUnitBuffer(NetBuffer &        netbuf,
+                                               const string &     filename,
+                                               const string &     name,
+                                               const string &     fullname,
+                                               bool               SubUnit,
+                                               int                faction,
+                                               std::string        customizedUnit,
+                                               const ClientState &curr_state,
+                                               Flightgroup *      flightgroup,
+                                               int                fg_subnumber,
+                                               string *           netxml,
+                                               ObjSerial          netcreate);
+    static void                  addUnitBuffer(NetBuffer &netbuf, const std::shared_ptr<Unit> un, string *netxml = NULL);
     static std::shared_ptr<Unit> parseUnitBuffer(NetBuffer &netbuf);
 
     static void addPlanetBuffer(NetBuffer &                       netbuf,
@@ -157,7 +157,7 @@ class UnitFactory
                                 BLENDFUNC                         ds,
                                 const vector<string> &            dest,
                                 const QVector &                   orbitcent,
-                                std::shared_ptr<Unit> parent,
+                                std::shared_ptr<Unit>             parent,
                                 const GFXMaterial &               ourmat,
                                 const std::vector<GFXLightLocal> &ligh,
                                 int                               faction,

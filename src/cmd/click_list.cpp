@@ -75,8 +75,8 @@ UnitCollection *ClickList::requestIterator(int minX, int minY, int maxX, int max
 
 UnitCollection *ClickList::requestIterator(int mouseX, int mouseY)
 {
-    perplines          = vector<Vector>();
-    UnitCollection *uc = new UnitCollection();
+    perplines                = vector<Vector>();
+    UnitCollection *      uc = new UnitCollection();
     std::shared_ptr<Unit> un;
     for (un_iter myParent = parentIter->createIterator(), UAye = uc->createIterator(); (un = *myParent) != NULL; ++myParent)
         if (queryShip(mouseX, mouseY, un))
@@ -99,12 +99,12 @@ std::shared_ptr<Unit> ClickList::requestShip(int mouseX, int mouseY)
                 equalCheck = false;
         delete lastCollection;
     }
-    float minDistance = 1e+10;
-    float tmpdis;
+    float                 minDistance = 1e+10;
+    float                 tmpdis;
     std::shared_ptr<Unit> targetUnit = NULL;
     if (equalCheck && lastSelected) {
         // the person clicked the same place and wishes to cycle through units from front to back
-        float morethan = lastSelected->getMinDis(_Universe->AccessCamera()->GetPosition()); // parent system for access cam
+        float                 morethan = lastSelected->getMinDis(_Universe->AccessCamera()->GetPosition()); // parent system for access cam
         std::shared_ptr<Unit> un;
         for (un_iter UAye = uc->createIterator(); (un = *UAye) != NULL; ++UAye) {
             tmpdis = un->getMinDis(_Universe->AccessCamera()->GetPosition()); // parent_system? FIXME (for access cam

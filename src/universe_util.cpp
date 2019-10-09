@@ -136,7 +136,7 @@ void addParticle(QVector loc, Vector velocity, Vector color, float size)
 
 void loadGame(const string &savename)
 {
-    Cockpit *cockpit = _Universe->AccessCockpit();
+    Cockpit *             cockpit = _Universe->AccessCockpit();
     std::shared_ptr<Unit> player  = cockpit->GetParent();
     UniverseUtil::setCurrentSaveGame(savename);
     if (player) {

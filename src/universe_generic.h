@@ -86,7 +86,7 @@ class Universe
     {
         // void *newp = const_cast<void *>(pointercompare);
         // return this->isPlayerStarship(reinterpret_cast<std::shared_ptr<Unit> >(newp));
-        return isPlayerStarship((const std::shared_ptr<Unit> )pointercompare);
+        return isPlayerStarship((const std::shared_ptr<Unit>)pointercompare);
     }
     int      whichPlayerStarship(const std::shared_ptr<Unit> fighter);
     Cockpit *AccessCockpit()

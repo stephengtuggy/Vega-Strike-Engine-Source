@@ -33,8 +33,13 @@ class PlanetaryOrbit : public Order
     std::vector<int> lights;
 
   public:
-    PlanetaryOrbit(
-        std::shared_ptr<Unit> p, double velocity, double initpos, const QVector &x_axis, const QVector &y_axis, const QVector &Centre, std::shared_ptr<Unit> target = NULL);
+    PlanetaryOrbit(std::shared_ptr<Unit> p,
+                   double                velocity,
+                   double                initpos,
+                   const QVector &       x_axis,
+                   const QVector &       y_axis,
+                   const QVector &       Centre,
+                   std::shared_ptr<Unit> target = NULL);
     ~PlanetaryOrbit();
     void Execute();
 };
@@ -146,29 +151,29 @@ class Planet : public Unit
     {
         return getFullname();
     }
-    string              getHumanReadablePlanetType() const;
+    string                getHumanReadablePlanetType() const;
     std::shared_ptr<Unit> beginElement(QVector                           x,
-                                     QVector                           y,
-                                     float                             vely,
-                                     const Vector &                    rotvel,
-                                     float                             pos,
-                                     float                             gravity,
-                                     float                             radius,
-                                     const string &                    filename,
-                                     const string &                    technique,
-                                     const string &                    unitname,
-                                     BLENDFUNC                         blendsrc,
-                                     BLENDFUNC                         blenddst,
-                                     const vector<string> &            dest,
-                                     int                               level,
-                                     const GFXMaterial &               ourmat,
-                                     const std::vector<GFXLightLocal> &ligh,
-                                     bool                              isunit,
-                                     int                               faction,
-                                     string                            fullname,
-                                     bool                              inside_out);
-    Planet *            GetTopPlanet(int level);
-    virtual enum clsptr isUnit() const
+                                       QVector                           y,
+                                       float                             vely,
+                                       const Vector &                    rotvel,
+                                       float                             pos,
+                                       float                             gravity,
+                                       float                             radius,
+                                       const string &                    filename,
+                                       const string &                    technique,
+                                       const string &                    unitname,
+                                       BLENDFUNC                         blendsrc,
+                                       BLENDFUNC                         blenddst,
+                                       const vector<string> &            dest,
+                                       int                               level,
+                                       const GFXMaterial &               ourmat,
+                                       const std::vector<GFXLightLocal> &ligh,
+                                       bool                              isunit,
+                                       int                               faction,
+                                       string                            fullname,
+                                       bool                              inside_out);
+    Planet *              GetTopPlanet(int level);
+    virtual enum clsptr   isUnit() const
     {
         return PLANETPTR;
     }
@@ -199,11 +204,11 @@ class Planet : public Unit
         return NULL;
     }
     virtual void reactToCollision(std::shared_ptr<Unit> smaller,
-                                  const QVector &biglocation,
-                                  const Vector & bignormal,
-                                  const QVector &smalllocation,
-                                  const Vector & smallnormal,
-                                  float          dist)
+                                  const QVector &       biglocation,
+                                  const Vector &        bignormal,
+                                  const QVector &       smalllocation,
+                                  const Vector &        smallnormal,
+                                  float                 dist)
     {
         this->Unit::reactToCollision(smaller, biglocation, bignormal, smalllocation, smallnormal, dist);
     }

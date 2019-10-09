@@ -215,9 +215,9 @@ void NetClient::AddObjects(NetBuffer &netbuf)
 
             break;
         }
-        offset            = noffset; // to make sure we aren't at end of truncated buf
+        offset                        = noffset; // to make sure we aren't at end of truncated buf
         std::shared_ptr<Unit> newunit = NULL;
-        ObjSerial serial  = 0;
+        ObjSerial             serial  = 0;
         switch (subcmd) {
         case ZoneMgr::AddClient:
             serial = netbuf.getSerial();
@@ -230,22 +230,22 @@ void NetClient::AddObjects(NetBuffer &netbuf)
             // enteredSerials.insert(newunit->GetSerial());
             break;
         case ZoneMgr::AddNebula:
-            newunit = (std::shared_ptr<Unit> )UnitFactory::parseNebulaBuffer(netbuf);
+            newunit = (std::shared_ptr<Unit>)UnitFactory::parseNebulaBuffer(netbuf);
             AddClientObject(newunit);
             // enteredSerials.insert(newunit->GetSerial());
             break;
         case ZoneMgr::AddPlanet:
-            newunit = (std::shared_ptr<Unit> )UnitFactory::parsePlanetBuffer(netbuf);
+            newunit = (std::shared_ptr<Unit>)UnitFactory::parsePlanetBuffer(netbuf);
             AddClientObject(newunit);
             // enteredSerials.insert(newunit->GetSerial());
             break;
         case ZoneMgr::AddAsteroid:
-            newunit = (std::shared_ptr<Unit> )UnitFactory::parseAsteroidBuffer(netbuf);
+            newunit = (std::shared_ptr<Unit>)UnitFactory::parseAsteroidBuffer(netbuf);
             AddClientObject(newunit);
             // enteredSerials.insert(newunit->GetSerial());
             break;
         case ZoneMgr::AddMissile:
-            newunit = (std::shared_ptr<Unit> )UnitFactory::parseMissileBuffer(netbuf);
+            newunit = (std::shared_ptr<Unit>)UnitFactory::parseMissileBuffer(netbuf);
             AddClientObject(newunit);
             // enteredSerials.insert(newunit->GetSerial());
             break;
@@ -329,7 +329,7 @@ void NetClient::sendPosition(const ClientState *cs)
     netbuf.addClientState((*cs));
     if (netversion > 4960)
         netbuf.addChar(cs->getSpecMult() > 1.0 ? 1 : 0);
-    static bool aim_assist = XMLSupport::parse_bool(vs_config->getVariable("network", "aim_assist", "true"));
+    static bool           aim_assist = XMLSupport::parse_bool(vs_config->getVariable("network", "aim_assist", "true"));
     std::shared_ptr<Unit> targ;
     if ((targ = un->Target()) != NULL && aim_assist && un->Target()->GetSerial() != 0 /*networked unit*/) {
         if (un->InRange(targ) && !targ->graphicOptions.InWarp && !un->graphicOptions.InWarp) {
@@ -363,10 +363,10 @@ void NetClient::receivePositions(unsigned int numUnits, unsigned int int_ts, Net
         unsigned int i = 0, j = 0, k = 0;
         int          offset = netbuf.getOffset();
         while ((i + j + k) < numUnits) {
-            ObjSerial     sernum = 0;
-            unsigned char cmd;
-            bool          localplayer = false;
-            ClientPtr     clt;
+            ObjSerial             sernum = 0;
+            unsigned char         cmd;
+            bool                  localplayer = false;
+            ClientPtr             clt;
             std::shared_ptr<Unit> un = NULL;
 
             // Get the ZoneMgr::SnapshotSubCommand from buffer
@@ -611,7 +611,7 @@ void NetClient::receiveUnitDamage(NetBuffer &netbuf, std::shared_ptr<Unit> un)
 
 void NetClient::inGame()
 {
-    NetBuffer netbuf;
+    NetBuffer             netbuf;
     std::shared_ptr<Unit> un = this->game_unit.GetUnit();
     if (!un)
         cout << "Trying to ingame dead unit";

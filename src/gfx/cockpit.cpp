@@ -237,7 +237,8 @@ inline void DrawOneTargetBox(const QVector &Loc,
         if (lock_percent < 0)
             lock_percent = 0;
         // eallySwitch=XMLSupport::parse_bool(vs_config->getVariable("graphics","hud","switchToTargetModeOnKey","true"));
-        static float diamondthick = XMLSupport::parse_float(vs_config->getVariable("graphics", "hud", "DiamondLineThickness", "1")); // 1.05;
+        static float diamondthick =
+            XMLSupport::parse_float(vs_config->getVariable("graphics", "hud", "DiamondLineThickness", "1")); // 1.05;
         glLineWidth(diamondthick);
         static bool  center = XMLSupport::parse_bool(vs_config->getVariable("graphics", "hud", "LockCenterCrosshair", "false"));
         static float absmin = XMLSupport::parse_float(vs_config->getVariable("graphics", "hud", "min_lock_box_size", ".001"));
@@ -370,7 +371,8 @@ inline void DrawOneTargetBox(const QVector &Loc,
     GFXDisable(SMOOTH);
 }
 
-inline void DrawDockingBoxes(std::shared_ptr<Unit> un, const std::shared_ptr<Unit> target, const Vector &CamP, const Vector &CamQ, const Vector &CamR)
+inline void
+DrawDockingBoxes(std::shared_ptr<Unit> un, const std::shared_ptr<Unit> target, const Vector &CamP, const Vector &CamQ, const Vector &CamR)
 {
     if (target->IsCleared(un)) {
         GFXBlendMode(SRCALPHA, INVSRCALPHA);
@@ -423,7 +425,7 @@ void GameCockpit::DrawTargetBoxes(const Radar::Sensor &sensor)
     GFXBlendMode(SRCALPHA, INVSRCALPHA);
     GFXDisable(LIGHTING);
     const std::shared_ptr<Unit> target;
-    std::shared_ptr<Unit> player = sensor.GetPlayer();
+    std::shared_ptr<Unit>       player = sensor.GetPlayer();
     assert(player);
     for (un_kiter uiter = unitlist->constIterator(); (target = *uiter) != NULL; ++uiter) {
         if (target != player) {
@@ -663,8 +665,8 @@ void GameCockpit::DrawTurretTargetBoxes(const Radar::Sensor &sensor)
     static VertexBuilder<> verts;
 
     // This avoids rendering the same target box more than once
-    std::shared_ptr<Unit> subunit;
-    std::set<std::shared_ptr<Unit> > drawn_targets;
+    std::shared_ptr<Unit>           subunit;
+    std::set<std::shared_ptr<Unit>> drawn_targets;
     for (un_iter iter = sensor.GetPlayer()->getSubUnits(); (subunit = *iter) != NULL; ++iter) {
         if (!subunit)
             return;
@@ -967,14 +969,14 @@ float GameCockpit::LookupTargetStat(int stat, std::shared_ptr<Unit> target)
 
 float GameCockpit::LookupUnitStat(int stat, std::shared_ptr<Unit> target)
 {
-    static float game_speed        = XMLSupport::parse_float(vs_config->getVariable("physics", "game_speed", "1"));
-    static bool  display_in_meters = XMLSupport::parse_bool(vs_config->getVariable("physics", "display_in_meters", "true"));
-    static bool  lie               = XMLSupport::parse_bool(vs_config->getVariable("physics", "game_speed_lying", "true"));
-    static float fpsval            = 0;
-    const float  fpsmax            = 1;
-    static float numtimes          = fpsmax;
-    float        armordat[8]; // short fix
-    int          armori;
+    static float          game_speed        = XMLSupport::parse_float(vs_config->getVariable("physics", "game_speed", "1"));
+    static bool           display_in_meters = XMLSupport::parse_bool(vs_config->getVariable("physics", "display_in_meters", "true"));
+    static bool           lie               = XMLSupport::parse_bool(vs_config->getVariable("physics", "game_speed_lying", "true"));
+    static float          fpsval            = 0;
+    const float           fpsmax            = 1;
+    static float          numtimes          = fpsmax;
+    float                 armordat[8]; // short fix
+    int                   armori;
     std::shared_ptr<Unit> tmpunit;
     if (shield8) {
         switch (stat) {
@@ -1900,7 +1902,7 @@ void SuicideKey(const KBData &, KBSTATE k)
     if (k == PRESS) {
         int newtime = time(NULL);
         if (newtime - orig > 8 || orig == 0) {
-            orig     = newtime;
+            orig                     = newtime;
             std::shared_ptr<Unit> un = NULL;
             if ((un = _Universe->AccessCockpit()->GetParent())) {
                 float armor[8]; // short fix
@@ -2156,8 +2158,8 @@ static void DrawHeadingMarker(const Vector &p, const Vector &q, const Vector &po
 static void DrawHeadingMarker(Cockpit &cp, const GFXColor &col)
 {
     const std::shared_ptr<Unit> u     = cp.GetParent();
-    const Camera *cam   = cp.AccessCamera();
-    bool          drawv = true;
+    const Camera *              cam   = cp.AccessCamera();
+    bool                        drawv = true;
 
     // heading direction (unit fwd direction)
     Vector d = u->GetTransformation().getR();
@@ -2309,7 +2311,7 @@ void GameCockpit::Draw()
                 QVector delta = dest - cur;
                 if (delta.i != 0 || dest.j != 0 || dest.k != 0) {
                     delta.Normalize();
-                    std::shared_ptr<Unit> par                   = GetParent();
+                    std::shared_ptr<Unit> par   = GetParent();
                     delta                       = delta * howFarToJump() * 1.01 - (par ? (par->Position()) : QVector(0, 0, 0));
                     destination_system_location = delta.Cast();
                     Vector       P, Q, R;
@@ -2475,9 +2477,9 @@ void GameCockpit::Draw()
     GFXDisable(DEPTHWRITE);
 
     std::shared_ptr<Unit> un;
-    float       crosscenx = 0, crossceny = 0;
-    static bool crosshairs_on_chasecam = parse_bool(vs_config->getVariable("graphics", "hud", "crosshairs_on_chasecam", "false"));
-    static bool crosshairs_on_padlock  = parse_bool(vs_config->getVariable("graphics", "hud", "crosshairs_on_padlock", "false"));
+    float                 crosscenx = 0, crossceny = 0;
+    static bool           crosshairs_on_chasecam = parse_bool(vs_config->getVariable("graphics", "hud", "crosshairs_on_chasecam", "false"));
+    static bool           crosshairs_on_padlock  = parse_bool(vs_config->getVariable("graphics", "hud", "crosshairs_on_padlock", "false"));
     if ((view == CP_FRONT) || (view == CP_CHASE && crosshairs_on_chasecam) ||
         ((view == CP_VIEWTARGET || view == CP_PANINSIDE) && crosshairs_on_padlock)) {
         if (Panel.size() > 0 && Panel.front() && screenshotkey == false) {
@@ -2621,8 +2623,8 @@ void GameCockpit::Draw()
             //////////////////// DISPLAY CURRENT POSITION ////////////////////
             static bool debug_position = XMLSupport::parse_bool(vs_config->getVariable("graphics", "hud", "debug_position", "false"));
             if (debug_position) {
-                TextPlane tp;
-                char      str[400]; // don't make the sprintf format too big... :-P
+                TextPlane             tp;
+                char                  str[400]; // don't make the sprintf format too big... :-P
                 std::shared_ptr<Unit> you = parent.GetUnit();
                 if (you) {
                     sprintf(str,
@@ -2933,8 +2935,8 @@ void GameCockpit::UpdAutoPilot()
                 AccessCamera(CP_FIXED)->myPhysics.SetAngularVelocity(Vector(0, 0, 0));
                 SetStartupView(this);
             }
-            autopilot_time = 0;
-            std::shared_ptr<Unit> par      = GetParent();
+            autopilot_time            = 0;
+            std::shared_ptr<Unit> par = GetParent();
             if (par) {
                 std::shared_ptr<Unit> autoun = autopilot_target.GetUnit();
                 autopilot_target.SetUnit(NULL);

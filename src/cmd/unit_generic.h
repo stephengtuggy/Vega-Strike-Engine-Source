@@ -34,7 +34,7 @@
 #ifdef CONTAINER_DEBUG
 #include "hashtable.h"
 class Unit;
-void CheckUnit(class std::shared_ptr<Unit> );
+void CheckUnit(class std::shared_ptr<Unit>);
 void UncheckUnit(class std::shared_ptr<Unit> un);
 #endif
 #include "vegastrike.h"
@@ -184,7 +184,7 @@ class Mount
                             signed char           autotrack,
                             float                 trackingcone,
                             CollideMap::iterator  hint[]);
-    bool NextMountCloser(Mount *nextmount, std::shared_ptr<Unit> );
+    bool NextMountCloser(Mount *nextmount, std::shared_ptr<Unit>);
     bool Fire(std::shared_ptr<Unit> firer, void *owner, bool Missile = false, bool collide_only_with_target = false);
     bool IsEmpty() const
     {
@@ -324,15 +324,22 @@ class Unit
      */
 
     // Uses mmm... stuff not desired here ?
-    bool         UpgradeSubUnitsWithFactory(const std::shared_ptr<Unit> up,
-                                            int         subunitoffset,
-                                            bool        touchme,
-                                            bool        downgrade,
-                                            int &       numave,
-                                            double &    percentage,
-                                            std::shared_ptr<Unit> (*createupgradesubunit)(std::string s, int faction));
-    virtual bool UpgradeSubUnits(const std::shared_ptr<Unit> up, int subunitoffset, bool touchme, bool downgrade, int &numave, double &percentage);
-    bool UpgradeMounts(const std::shared_ptr<Unit> up, int subunitoffset, bool touchme, bool downgrade, int &numave, const std::shared_ptr<Unit> templ, double &percentage);
+    bool UpgradeSubUnitsWithFactory(const std::shared_ptr<Unit> up,
+                                    int                         subunitoffset,
+                                    bool                        touchme,
+                                    bool                        downgrade,
+                                    int &                       numave,
+                                    double &                    percentage,
+                                    std::shared_ptr<Unit> (*createupgradesubunit)(std::string s, int faction));
+    virtual bool
+         UpgradeSubUnits(const std::shared_ptr<Unit> up, int subunitoffset, bool touchme, bool downgrade, int &numave, double &percentage);
+    bool UpgradeMounts(const std::shared_ptr<Unit> up,
+                       int                         subunitoffset,
+                       bool                        touchme,
+                       bool                        downgrade,
+                       int &                       numave,
+                       const std::shared_ptr<Unit> templ,
+                       double &                    percentage);
     // the turrets and spinning parts fun fun stuff
     UnitCollection SubUnits;
 
@@ -379,16 +386,16 @@ class Unit
     void setFaceCamera();
     bool UpAndDownGrade(const std::shared_ptr<Unit> up,
                         const std::shared_ptr<Unit> templ,
-                        int         mountoffset,
-                        int         subunitoffset,
-                        bool        touchme,
-                        bool        downgrade,
-                        int         additive,
-                        bool        forcetransaction,
-                        double &    percentage,
+                        int                         mountoffset,
+                        int                         subunitoffset,
+                        bool                        touchme,
+                        bool                        downgrade,
+                        int                         additive,
+                        bool                        forcetransaction,
+                        double &                    percentage,
                         const std::shared_ptr<Unit> downgrade_min,
-                        bool        force_change_on_nothing,
-                        bool        gen_downgrade_list);
+                        bool                        force_change_on_nothing,
+                        bool                        gen_downgrade_list);
     void ImportPartList(const std::string &category, float price, float pricedev, float quantity, float quantdev);
     int  GetNumMounts() const
     {
@@ -402,45 +409,45 @@ class Unit
     }
 
     bool canUpgrade(const std::shared_ptr<Unit> upgrador,
-                    int         mountoffset,
-                    int         subunitoffset,
-                    int         additive,
-                    bool        force,
-                    double &    percentage,
+                    int                         mountoffset,
+                    int                         subunitoffset,
+                    int                         additive,
+                    bool                        force,
+                    double &                    percentage,
                     const std::shared_ptr<Unit> templ                   = NULL,
-                    bool        force_change_on_nothing = false,
-                    bool        gen_downgrade_list      = true);
+                    bool                        force_change_on_nothing = false,
+                    bool                        gen_downgrade_list      = true);
     bool Upgrade(const std::shared_ptr<Unit> upgrador,
-                 int         mountoffset,
-                 int         subunitoffset,
-                 int         additive,
-                 bool        force,
-                 double &    percentage,
+                 int                         mountoffset,
+                 int                         subunitoffset,
+                 int                         additive,
+                 bool                        force,
+                 double &                    percentage,
                  const std::shared_ptr<Unit> templ                   = NULL,
-                 bool        force_change_on_nothing = false,
-                 bool        gen_downgrade_list      = true);
+                 bool                        force_change_on_nothing = false,
+                 bool                        gen_downgrade_list      = true);
     int  RepairCost(); // returns how many things need to be repaired--if nothing is damaged it will return 1 for labor.  doesn't assume any
                        // given cost on such thigns.
     int RepairUpgrade(); // returns how many things were repaired
     // returns percentOperational,maxPercentOperational,and whether mount is damaged (1 is damaged, 0 is fine, -1 is invalid mount)
-    bool           RepairUpgradeCargo(Cargo *item,
+    bool           RepairUpgradeCargo(Cargo *               item,
                                       std::shared_ptr<Unit> baseUnit,
-                                      float *credits); // item must not be NULL but baseUnit/credits are only used for pricing.
+                                      float *               credits); // item must not be NULL but baseUnit/credits are only used for pricing.
     Vector         MountPercentOperational(int whichmount);
     bool           ReduceToTemplate();
     virtual double Upgrade(const std::string &file, int mountoffset, int subunitoffset, bool force, bool loop_through_mounts);
     bool           canDowngrade(const std::shared_ptr<Unit> downgradeor,
-                                int         mountoffset,
-                                int         subunitoffset,
-                                double &    percentage,
+                                int                         mountoffset,
+                                int                         subunitoffset,
+                                double &                    percentage,
                                 const std::shared_ptr<Unit> downgradelimit,
-                                bool        gen_downgrade_list = true);
+                                bool                        gen_downgrade_list = true);
     bool           Downgrade(const std::shared_ptr<Unit> downgradeor,
-                             int         mountoffset,
-                             int         subunitoffset,
-                             double &    percentage,
+                             int                         mountoffset,
+                             int                         subunitoffset,
+                             double &                    percentage,
                              const std::shared_ptr<Unit> downgradelimit,
-                             bool        gen_downgrade_list = true);
+                             bool                        gen_downgrade_list = true);
 
   protected:
     // Mount may access unit
@@ -766,7 +773,10 @@ class Unit
     virtual float ExplosionRadius();
 
   public:
-    bool AutoPilotToErrorMessage(const std::shared_ptr<Unit> un, bool automaticenergyrealloc, std::string &failuremessage, int recursive_level = 2);
+    bool AutoPilotToErrorMessage(const std::shared_ptr<Unit> un,
+                                 bool                        automaticenergyrealloc,
+                                 std::string &               failuremessage,
+                                 int                         recursive_level = 2);
     bool AutoPilotTo(std::shared_ptr<Unit> un, bool automaticenergyrealloc);
     // The owner of this unit. This may not collide with owner or units owned by owner. Do not dereference (may be dead pointer)
     void *owner; // void ensures that it won't be referenced by accident
@@ -999,14 +1009,14 @@ class Unit
     // convenient shortcut to applying torques with vector and position
     void ApplyLocalTorque(const Vector &torque);
     // Applies damage to the local area given by pnt
-    float
-    ApplyLocalDamage(const Vector &pnt, const Vector &normal, float amt, std::shared_ptr<Unit> affectedSubUnit, const GFXColor &, float phasedamage = 0);
+    float ApplyLocalDamage(
+        const Vector &pnt, const Vector &normal, float amt, std::shared_ptr<Unit> affectedSubUnit, const GFXColor &, float phasedamage = 0);
     // Applies damage from network data
     void ApplyNetDamage(Vector &pnt, Vector &normal, float amt, float ppercentage, float spercentage, GFXColor &color);
     // Applies damage to the pre-transformed area of the ship
-    void ApplyDamage(const Vector &pnt,
-                     const Vector &normal,
-                     float         amt,
+    void ApplyDamage(const Vector &        pnt,
+                     const Vector &        normal,
+                     float                 amt,
                      std::shared_ptr<Unit> affectedSubUnit,
                      const GFXColor &,
                      void *ownerDoNotDereference,
@@ -1239,12 +1249,12 @@ class Unit
         double mm;
         return InRange(target, mm, cone, cap, true);
     }
-    bool        InRange(const std::shared_ptr<Unit> target, double &mm, bool cone, bool cap, bool lock) const;
-    std::shared_ptr<Unit> Target();
+    bool                        InRange(const std::shared_ptr<Unit> target, double &mm, bool cone, bool cap, bool lock) const;
+    std::shared_ptr<Unit>       Target();
     const std::shared_ptr<Unit> Target() const;
-    std::shared_ptr<Unit> VelocityReference();
+    std::shared_ptr<Unit>       VelocityReference();
     const std::shared_ptr<Unit> VelocityReference() const;
-    std::shared_ptr<Unit> Threat();
+    std::shared_ptr<Unit>       Threat();
     // Uses Universe stuff so only in Unit class
     void VelocityReference(std::shared_ptr<Unit> targ);
     void TargetTurret(std::shared_ptr<Unit> targ);
@@ -1287,13 +1297,13 @@ class Unit
 
   public:
     static std::shared_ptr<Unit> makeMasterPartList();
-    bool         CanAddCargo(const Cargo &carg) const;
-    void         AddCargo(const Cargo &carg, bool sort = true);
-    int          RemoveCargo(unsigned int i, int quantity, bool eraseZero = true);
-    float        PriceCargo(const std::string &s);
-    Cargo &      GetCargo(unsigned int i);
-    const Cargo &GetCargo(unsigned int i) const;
-    void         GetSortedCargoCat(const std::string &category, size_t &catbegin, size_t &catend);
+    bool                         CanAddCargo(const Cargo &carg) const;
+    void                         AddCargo(const Cargo &carg, bool sort = true);
+    int                          RemoveCargo(unsigned int i, int quantity, bool eraseZero = true);
+    float                        PriceCargo(const std::string &s);
+    Cargo &                      GetCargo(unsigned int i);
+    const Cargo &                GetCargo(unsigned int i) const;
+    void                         GetSortedCargoCat(const std::string &category, size_t &catbegin, size_t &catend);
     // below function returns NULL if not found
     Cargo *      GetCargo(const std::string &s, unsigned int &i);
     const Cargo *GetCargo(const std::string &s, unsigned int &i) const;
@@ -1412,18 +1422,18 @@ class Unit
     }
 
     bool         InsideCollideTree(std::shared_ptr<Unit> smaller,
-                                   QVector &bigpos,
-                                   Vector & bigNormal,
-                                   QVector &smallpos,
-                                   Vector & smallNormal,
-                                   bool     bigasteroid   = false,
-                                   bool     smallasteroid = false);
+                                   QVector &             bigpos,
+                                   Vector &              bigNormal,
+                                   QVector &             smallpos,
+                                   Vector &              smallNormal,
+                                   bool                  bigasteroid   = false,
+                                   bool                  smallasteroid = false);
     virtual void reactToCollision(std::shared_ptr<Unit> smaller,
-                                  const QVector &biglocation,
-                                  const Vector & bignormal,
-                                  const QVector &smalllocation,
-                                  const Vector & smallnormal,
-                                  float          dist);
+                                  const QVector &       biglocation,
+                                  const Vector &        bignormal,
+                                  const QVector &       smalllocation,
+                                  const Vector &        smallnormal,
+                                  float                 dist);
     // returns true if jump possible even if not taken
     // Uses Universe thing
     bool jumpReactToCollision(std::shared_ptr<Unit> smaller);
@@ -1586,19 +1596,19 @@ std::shared_ptr<Unit> findUnitInStarsystem(const void *unitDoNotDereference);
 
 // Holds temporary values for inter-function XML communication Saves deprecated restr info
 struct Unit::XML {
-    float                    randomstartframe;
-    float                    randomstartseconds;
-    std::vector<Mount *>     mountz;
-    std::vector<Mesh *>      meshes;
-    std::vector<std::string> meshes_str;
-    Mesh *                   shieldmesh;
-    Mesh *                   rapidmesh;
-    std::string              shieldmesh_str;
-    std::string              rapidmesh_str;
-    void *                   data;
-    std::vector<std::shared_ptr<Unit> >      units;
-    int                      unitlevel;
-    bool                     hasColTree;
+    float                              randomstartframe;
+    float                              randomstartseconds;
+    std::vector<Mount *>               mountz;
+    std::vector<Mesh *>                meshes;
+    std::vector<std::string>           meshes_str;
+    Mesh *                             shieldmesh;
+    Mesh *                             rapidmesh;
+    std::string                        shieldmesh_str;
+    std::string                        rapidmesh_str;
+    void *                             data;
+    std::vector<std::shared_ptr<Unit>> units;
+    int                                unitlevel;
+    bool                               hasColTree;
     enum restr { YRESTR = 1, PRESTR = 2, RRESTR = 4 };
     const char *unitModifications;
     char        yprrestricted;
@@ -1659,7 +1669,7 @@ class MeshAnimation
     bool         infiniteLoop;
     unsigned int loopCount;
 
-    string uniqueUnitName;
+    string                uniqueUnitName;
     std::shared_ptr<Unit> unitDst;
 
   public:
@@ -1667,7 +1677,7 @@ class MeshAnimation
 
     static unsigned int unitCount;
 
-    static std::map<string, std::shared_ptr<Unit> > Units;
+    static std::map<string, std::shared_ptr<Unit>> Units;
 
     MeshAnimation(std::shared_ptr<Unit> _unitDst);
 

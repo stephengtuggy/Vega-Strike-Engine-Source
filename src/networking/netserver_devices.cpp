@@ -151,8 +151,8 @@ void NetServer::sendCargoSnapshot(ObjSerial cltser, const UnitCollection &list)
     ClientPtr clt = this->getClientFromSerial(cltser);
     if (!clt)
         return;
-    NetBuffer   netbuf;
-    Packet      p2;
+    NetBuffer                   netbuf;
+    Packet                      p2;
     const std::shared_ptr<Unit> un;
     for (un_kiter iter = list.constIterator(); (un = *iter); ++iter) {
         if (!un->GetSerial() || un->GetSerial() == cltser)
@@ -168,8 +168,8 @@ void NetServer::sendSaveData(
 {
     /* Note to self: This function will do absolutely nothing
      *  until it is implemented. */
-    NetBuffer netbuf;
-    Packet    p2;
+    NetBuffer             netbuf;
+    Packet                p2;
     std::shared_ptr<Unit> un = _Universe->AccessCockpit(cp)->GetParent();
     if (!un)
         return;
@@ -199,8 +199,8 @@ void NetServer::sendSaveData(
 
 void NetServer::sendMission(int cp, unsigned short packetType, string mission, int pos)
 {
-    Packet    p;
-    NetBuffer netbuf;
+    Packet                p;
+    NetBuffer             netbuf;
     std::shared_ptr<Unit> un = _Universe->AccessCockpit(cp)->GetParent();
     if (!un)
         return;
@@ -284,7 +284,7 @@ void NetServer::sendMessage(const string &from, const string &to, const string &
         int playerto = -1;
         sscanf(tostr + 1, "%d", &playerto);
         if (playerto != -1 && (unsigned int)playerto < _Universe->numPlayers()) {
-            Cockpit *cp = _Universe->AccessCockpit(playerto);
+            Cockpit *             cp = _Universe->AccessCockpit(playerto);
             std::shared_ptr<Unit> un = cp->GetParent();
             if (!un)
                 return;
@@ -351,7 +351,7 @@ extern void displayUnitInfo(std::shared_ptr<Unit> un, const string callsign, con
 
 void NetServer::sendKill(ObjSerial serial, unsigned short zone)
 {
-    Packet p;
+    Packet                p;
     std::shared_ptr<Unit> un;
 
     // cerr<<"SENDING A KILL for serial "<<serial<<" in zone "<<zone<<endl;

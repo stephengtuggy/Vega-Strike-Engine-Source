@@ -131,8 +131,8 @@ void Bolt::UpdatePhysics(StarSystem *ss)
 
 bool Bolt::Collide(std::shared_ptr<Unit> target)
 {
-    Vector normal;
-    float  distance;
+    Vector                normal;
+    float                 distance;
     std::shared_ptr<Unit> affectedSubUnit;
     if ((affectedSubUnit = target->rayCollide(prev_position, cur_position, normal, distance))) {
         // ignore return

@@ -441,7 +441,7 @@ class FacePerpendicular : public Orders::FaceTargetITTS
     }
     void Execute()
     {
-        static float gun_range_pct = XMLSupport::parse_float(vs_config->getVariable("AI", "gun_range_percent_ok", ".66"));
+        static float          gun_range_pct = XMLSupport::parse_float(vs_config->getVariable("AI", "gun_range_percent_ok", ".66"));
         std::shared_ptr<Unit> targ          = parent->Target();
         if (targ) {
             Vector relloc    = parent->Position() - targ->Position();
@@ -604,7 +604,7 @@ void Evade( Order *aisc, std::shared_ptr<Unit> un )
 #endif
 void MoveTo(Order *aisc, std::shared_ptr<Unit> un)
 {
-    QVector Targ(un->Position());
+    QVector               Targ(un->Position());
     std::shared_ptr<Unit> untarg = un->Target();
     if (untarg)
         Targ = untarg->Position();
@@ -790,8 +790,8 @@ void Stop(Order *aisc, std::shared_ptr<Unit> un)
 }
 void AfterburnTurnAway(Order *aisc, std::shared_ptr<Unit> un)
 {
-    QVector v(un->Position());
-    QVector u(v);
+    QVector               v(un->Position());
+    QVector               u(v);
     std::shared_ptr<Unit> targ = un->Target();
     if (targ)
         u = targ->Position();
@@ -803,8 +803,8 @@ void AfterburnTurnAway(Order *aisc, std::shared_ptr<Unit> un)
 }
 void TurnAway(Order *aisc, std::shared_ptr<Unit> un)
 {
-    QVector v(un->Position());
-    QVector u(v);
+    QVector               v(un->Position());
+    QVector               u(v);
     std::shared_ptr<Unit> targ = un->Target();
     if (targ)
         u = targ->Position();

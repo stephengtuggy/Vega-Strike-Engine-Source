@@ -138,7 +138,10 @@ static bool beamCheckCollision(QVector pos, float len, const Collidable &un)
     return (un.GetPosition() - pos).MagnitudeSquared() <= len * len + 2 * len * un.radius + un.radius * un.radius;
 }
 
-void Beam::CollideHuge(const LineCollide &lc, std::shared_ptr<Unit> targetToCollideWith, std::shared_ptr<Unit> firer, std::shared_ptr<Unit> superunit)
+void Beam::CollideHuge(const LineCollide &   lc,
+                       std::shared_ptr<Unit> targetToCollideWith,
+                       std::shared_ptr<Unit> firer,
+                       std::shared_ptr<Unit> superunit)
 {
     QVector x0 = center;
     QVector v  = direction * curlength;

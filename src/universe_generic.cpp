@@ -45,7 +45,7 @@ Cockpit *Universe::createCockpit(std::string player)
 
 std::shared_ptr<Unit> DockToSavedBases(int playernum, QVector &safevec)
 {
-    string str = game_options.startDockedTo;
+    string                str = game_options.startDockedTo;
     std::shared_ptr<Unit> plr = _Universe->AccessCockpit(playernum)->GetParent();
     if (!plr || !plr->getStarSystem()) {
         safevec = QVector(0, 0, 0);
@@ -55,10 +55,10 @@ std::shared_ptr<Unit> DockToSavedBases(int playernum, QVector &safevec)
     if (strs.size())
         str = strs[0];
     std::shared_ptr<Unit> closestUnit = NULL;
-    float   lastdist    = 0;
-    float   dist        = 0;
+    float                 lastdist    = 0;
+    float                 dist        = 0;
     std::shared_ptr<Unit> un;
-    QVector dock_position(plr->curr_physical_state.position);
+    QVector               dock_position(plr->curr_physical_state.position);
     for (un_iter iter = plr->getStarSystem()->getUnitList().createIterator(); (un = *iter); ++iter)
         if (un->name == str || un->getFullname() == str) {
             dist = UnitUtil::getSignificantDistance(plr, un);

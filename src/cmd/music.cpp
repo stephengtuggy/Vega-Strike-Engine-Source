@@ -48,7 +48,7 @@ static void print_check_err(int errorcode, const char *str)
 #ifndef _WIN32
     if (errorcode) {
         static char const unknown_error[16] = "Unknown error"; // added by chuck_starchaser to get rid of warning
-        char const *err = strerror(errorcode);
+        char const *      err               = strerror(errorcode);
         if (!err)
             err = unknown_error;
         fprintf(stderr, "ERROR IN PTHREAD FUNCTION %s: %s (%d)\n", str, err, errorcode);
@@ -356,7 +356,7 @@ void Music::Listen()
                 }
                 music_loading = false;
                 music_loaded  = false; // once the loading thread sees this, it will try to grab a lock and wait.
-                // The lock will only be achieved once the next song is put in the queue.
+                                       // The lock will only be achieved once the next song is put in the queue.
 
 #ifdef HAVE_AL
                 if (music_load_info->success && music_load_info->wave) {

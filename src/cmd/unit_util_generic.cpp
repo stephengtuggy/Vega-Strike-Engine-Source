@@ -21,11 +21,11 @@
 #endif
 const std::shared_ptr<Unit> makeTemplateUpgrade(string name, int faction);                            // for percentoperational
 const std::shared_ptr<Unit> getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0); // for percentoperational
-extern const char *DamagedCategory;                                                   // for percentoperational
-extern bool        isWeapon(std::string name);                                        // for percentoperational
+extern const char *         DamagedCategory;                                                          // for percentoperational
+extern bool                 isWeapon(std::string name);                                               // for percentoperational
 using std::string;
 extern std::shared_ptr<Unit> getTopLevelOwner();
-static bool  nameIsAsteroid(std::string name)
+static bool                  nameIsAsteroid(std::string name)
 {
     if (name.length() < 8)
         return false;
@@ -123,9 +123,9 @@ int getPhysicsPriority(std::shared_ptr<Unit> un)
             QVector relpos = un->Position() - cam->GetPosition();
             double  dist   = relpos.Magnitude() - rad;
             if (dist < cpdist) {
-                cpdist                     = dist;
+                cpdist                                     = dist;
                 std::shared_ptr<Unit> parent               = _Universe->AccessCockpit(i)->GetParent();
-                float lowest_priority_time = SIM_QUEUE_SIZE * SIMULATION_ATOM;
+                float                 lowest_priority_time = SIM_QUEUE_SIZE * SIMULATION_ATOM;
                 if (relpos.Dot(relvel) >= 0)
                     // No need to be wary if they're getting away
                     tooclose = 2 * (un->radial_size + (parent ? parent->radial_size : 0)) + relvel.Magnitude() * lowest_priority_time;
@@ -174,12 +174,12 @@ int getPhysicsPriority(std::shared_ptr<Unit> un)
         newfactor               = mymax(DYNAMIC_THROTTLE_MINFACTOR, mymin(DYNAMIC_THROTTLE_MAXFACTOR, newfactor));
         DYNAMIC_THROTTLE_FACTOR = (newfactor * GetElapsedTime() + DYNAMIC_THROTTLE_FACTOR) / (1.0 + GetElapsedTime());
     }
-    const float PLAYERTHREAT_DISTANCE_FACTOR = _PLAYERTHREAT_DISTANCE_FACTOR * DYNAMIC_THROTTLE_FACTOR;
-    const float THREAT_DISTANCE_FACTOR       = _THREAT_DISTANCE_FACTOR * DYNAMIC_THROTTLE_FACTOR;
+    const float           PLAYERTHREAT_DISTANCE_FACTOR = _PLAYERTHREAT_DISTANCE_FACTOR * DYNAMIC_THROTTLE_FACTOR;
+    const float           THREAT_DISTANCE_FACTOR       = _THREAT_DISTANCE_FACTOR * DYNAMIC_THROTTLE_FACTOR;
     std::shared_ptr<Unit> parent                       = cockpit->GetParent();
-    float       gun_range                    = 0;
-    float       missile_range                = 0;
-    float       dist                         = cpdist;
+    float                 gun_range                    = 0;
+    float                 missile_range                = 0;
+    float                 dist                         = cpdist;
     if (parent) {
         float speed = 0;
         parent->getAverageGunSpeed(speed, gun_range, missile_range);
@@ -415,7 +415,7 @@ std::shared_ptr<Unit> getFlightgroupLeader(std::shared_ptr<Unit> my_unit)
 {
     if (!my_unit)
         return 0;
-    class Flightgroup *fg       = my_unit->getFlightgroup();
+    class Flightgroup *   fg       = my_unit->getFlightgroup();
     std::shared_ptr<Unit> ret_unit = fg ? fg->leader.GetUnit() : my_unit;
     if (!ret_unit)
         ret_unit = 0;

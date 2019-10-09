@@ -9,7 +9,7 @@ Briefing::Ship::Ship(const char *filename, int faction, const Vector &position)
 {
     VSCONSTRUCT2('s')
     std::shared_ptr<Unit> tmp = UnitFactory::createUnit(filename, true, faction);
-    meshdata  = tmp->StealMeshes();
+    meshdata                  = tmp->StealMeshes();
     tmp->Kill();
     cloak = 1;
     SetPosition(position);

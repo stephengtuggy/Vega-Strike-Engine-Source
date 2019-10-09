@@ -103,9 +103,9 @@ void SphereMesh::InitSphere(float              radius,
     oldmesh = this->orig;
     numlods = numspheres;
     meshHashTable.Put(hash_name, oldmesh);
-    radialSize = radius; // MAKE SURE FRUSTUM CLIPPING IS DONE CORRECTLY!!!!!
-    mn         = Vector(-radialSize, -radialSize, -radialSize);
-    mx         = Vector(radialSize, radialSize, radialSize);
+    radialSize                   = radius; // MAKE SURE FRUSTUM CLIPPING IS DONE CORRECTLY!!!!!
+    mn                           = Vector(-radialSize, -radialSize, -radialSize);
+    mx                           = Vector(radialSize, radialSize, radialSize);
     vector<MeshDrawContext> *odq = NULL;
     for (int l = 0; l < numspheres; l++) {
         draw_queue = new vector<MeshDrawContext>[NUM_ZBUF_SEQ + 1];

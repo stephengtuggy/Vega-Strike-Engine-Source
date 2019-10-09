@@ -210,7 +210,7 @@ static int stoi(const string &inp, int def = 0)
     return def;
 }
 
-extern bool CheckAccessory(std::shared_ptr<Unit> );
+extern bool CheckAccessory(std::shared_ptr<Unit>);
 
 extern int parseMountSizes(const char *str);
 
@@ -353,7 +353,8 @@ static vector<SubUnitStruct> GetSubUnits(const std::string &subunits)
     return ret;
 }
 
-static void AddSubUnits(std::shared_ptr<Unit> thus, Unit::XML &xml, const std::string &subunits, int faction, const std::string &modification)
+static void
+AddSubUnits(std::shared_ptr<Unit> thus, Unit::XML &xml, const std::string &subunits, int faction, const std::string &modification)
 {
     if (SERVER || Network) {
         // Semihack: Keep loading if thus is already a subunit...
@@ -1548,7 +1549,7 @@ string Unit::WriteUnitString()
                     // subunits
                     vector<SubUnitStruct> subunits = GetSubUnits(unit["Sub_Units"]);
                     if (subunits.size()) {
-                        unsigned int k = 0;
+                        unsigned int          k = 0;
                         std::shared_ptr<Unit> subun;
                         for (; k < subunits.size(); ++k)
                             subunits[k].filename = "destroyed_blank";
@@ -1780,7 +1781,7 @@ std::shared_ptr<Unit> Unit::makeMasterPartList()
     CSVTable *         table = loadCSVTableList(mpl, VSFileSystem::UnknownFile, false);
 
     std::shared_ptr<Unit> ret = new Unit();
-    ret->name = "master_part_list";
+    ret->name                 = "master_part_list";
     if (table) {
         vsUMap<std::string, int>::const_iterator it;
         for (it = table->rows.begin(); it != table->rows.end(); ++it) {

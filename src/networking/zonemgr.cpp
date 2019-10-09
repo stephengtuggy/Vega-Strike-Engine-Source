@@ -309,9 +309,9 @@ StarSystem *ZoneMgr::addClient(ClientPtr cltw, string starsys, unsigned short &n
 // Remove a client from its zone
 void ZoneMgr::removeClient(ClientPtr clt)
 {
-    StarSystem *sts;
+    StarSystem *          sts;
     std::shared_ptr<Unit> un      = clt->game_unit.GetUnit();
-    int         zonenum = -1;
+    int                   zonenum = -1;
     /*
      *  if (un && un->activeStarSystem)
      *       zonenum = un->activeStarSystem->GetZone();
@@ -368,7 +368,7 @@ void ZoneMgr::removeClient(ClientPtr clt)
 // Broadcast a packet to a client's zone clients
 void ZoneMgr::broadcast(ClientPtr fromcltw, Packet *pckt, bool isTcp, unsigned short minver, unsigned short maxver)
 {
-    ClientPtr fromclt(fromcltw);
+    ClientPtr             fromclt(fromcltw);
     std::shared_ptr<Unit> un = fromclt->game_unit.GetUnit();
     if (!un || !un->getStarSystem()) {
         cerr << "Trying to broadcast information with dead client unit" << pckt->getCommand() << endl;
@@ -381,7 +381,7 @@ void ZoneMgr::broadcast(ClientPtr fromcltw, Packet *pckt, bool isTcp, unsigned s
         return;
     }
     for (LI i = lst->begin(); i != lst->end(); i++) {
-        ClientPtr clt(*i);
+        ClientPtr             clt(*i);
         std::shared_ptr<Unit> un2 = clt->game_unit.GetUnit();
         // Broadcast to other clients
         if ((isTcp || clt->ingame) && clt->netversion >= minver && clt->netversion <= maxver &&
@@ -434,7 +434,7 @@ void ZoneMgr::broadcastNoSelf(int zone, ObjSerial serial, Packet *pckt, bool isT
     if (lst == NULL)
         return;
     for (LI i = lst->begin(); i != lst->end(); i++) {
-        ClientPtr clt(*i);
+        ClientPtr             clt(*i);
         std::shared_ptr<Unit> broadcastTo = clt->game_unit.GetUnit();
         // Broadcast to all clients including the one who did a request
         if ((isTcp || clt->ingame) && ((!broadcastTo) || broadcastTo->GetSerial() != serial)) {
@@ -456,7 +456,7 @@ void ZoneMgr::broadcastNoSelf(int zone, ObjSerial serial, Packet *pckt, bool isT
 // NETFIXME: Should this be always TCP?
 void ZoneMgr::broadcastSample(int zone, ObjSerial serial, Packet *pckt, float frequency)
 {
-    ClientList *lst = GetZone(zone);
+    ClientList *          lst = GetZone(zone);
     std::shared_ptr<Unit> un;
     if (lst == NULL)
         return;
@@ -481,7 +481,7 @@ void ZoneMgr::broadcastSample(int zone, ObjSerial serial, Packet *pckt, float fr
 // Always TCP.
 void ZoneMgr::broadcastText(int zone, ObjSerial serial, Packet *pckt, float frequency)
 {
-    ClientList *lst = GetZone(zone);
+    ClientList *          lst = GetZone(zone);
     std::shared_ptr<Unit> un;
     if (lst == NULL)
         return;

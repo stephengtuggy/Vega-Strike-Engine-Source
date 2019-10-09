@@ -141,9 +141,9 @@ template <class UnitType> void GameUnit<UnitType>::Thrust(const Vector &amt1, bo
                 AUDStopPlaying(playerengine);
         }
     } else if (afterburn || !must_afterburn_to_buzz) {
-        static float buzzingtime     = XMLSupport::parse_float(vs_config->getVariable("audio", "buzzing_time", "5"));
-        static float buzzingdistance = XMLSupport::parse_float(vs_config->getVariable("audio", "buzzing_distance", "5"));
-        static float lastbuzz        = getNewTime();
+        static float          buzzingtime     = XMLSupport::parse_float(vs_config->getVariable("audio", "buzzing_time", "5"));
+        static float          buzzingdistance = XMLSupport::parse_float(vs_config->getVariable("audio", "buzzing_distance", "5"));
+        static float          lastbuzz        = getNewTime();
         std::shared_ptr<Unit> playa           = _Universe->AccessCockpit()->GetParent();
         if (playa) {
             if (UnitUtil::getDistance(this, playa) < buzzingdistance && playa->owner != this && this->owner != playa &&

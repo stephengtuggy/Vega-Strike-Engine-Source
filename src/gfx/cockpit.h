@@ -22,7 +22,7 @@ class NavigationSystem;
 using namespace XMLSupport; // DONT PUT THIS ABOVE HEADERS
 #define NUM_CAM CP_NUMVIEWS
 /**
- * The Cockpit Contains all displayable information about a particular std::shared_ptr<Unit> 
+ * The Cockpit Contains all displayable information about a particular std::shared_ptr<Unit>
  * Gauges are used to indicate analog controls, and some diagital ones
  * The ones starting from KPS are digital with text readout
  */
@@ -163,7 +163,7 @@ class GameCockpit : public Cockpit
     void             TriggerEvents(std::shared_ptr<Unit> un);
     NavigationSystem ThisNav;
     // Draw the arrow pointing to the target.
-    void DrawArrowToTarget(const Radar::Sensor &, std::shared_ptr<Unit> );
+    void DrawArrowToTarget(const Radar::Sensor &, std::shared_ptr<Unit>);
     void DrawArrowToTarget(const Radar::Sensor &, Vector LocalCoordinates);
     void updateRadar(std::shared_ptr<Unit> un);
 
@@ -243,7 +243,7 @@ class GameCockpit : public Cockpit
     virtual bool CheckCommAnimation(std::shared_ptr<Unit> un);
     virtual void visitSystem(std::string systemName);
     void         AutoLanding();
-    void         DoAutoLanding(std::shared_ptr<Unit> , std::shared_ptr<Unit> );
+    void         DoAutoLanding(std::shared_ptr<Unit>, std::shared_ptr<Unit>);
 
     virtual void SetInsidePanYawSpeed(float speed);
     virtual void SetInsidePanPitchSpeed(float speed);

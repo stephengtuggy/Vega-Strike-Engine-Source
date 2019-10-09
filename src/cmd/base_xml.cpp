@@ -73,7 +73,7 @@ void BaseInterface::Load(const char *filename, const char *time_of_day_hint, con
 #else
     FILE *inFile = getFullFile(string("bases/") + filename, time_of_day_hint, faction);
     if (!inFile) {
-        bool  planet = false;
+        bool                  planet = false;
         std::shared_ptr<Unit> baseun = this->baseun.GetUnit();
         if (baseun)
             planet = (baseun->isUnit() == PLANETPTR);

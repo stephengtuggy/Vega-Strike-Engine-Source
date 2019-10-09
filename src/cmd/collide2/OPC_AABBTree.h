@@ -95,18 +95,18 @@ inline_ udword GetNodeSize() const
     return SIZEOFOBJECT;
 }
 
-protected
-    : /* Tree-independent data */ /* Following data always belong to the BV-tree, regardless of what the tree actually contains.*/ /* Whatever
-                                                                                                                                      happens
-                                                                                                                                      we
-                                                                                                                                      need
-                                                                                                                                      the
-                                                                                                                                      two
-                                                                                                                                      children
-                                                                                                                                      and
-                                                                                                                                      the
-                                                                                                                                      enclosing
-                                                                                                                                      volume.*/
+protected:                                                                                                  /* Tree-independent data */
+           /* Following data always belong to the BV-tree, regardless of what the tree actually contains.*/ /* Whatever
+                                                                                                               happens
+                                                                                                               we
+                                                                                                               need
+                                                                                                               the
+                                                                                                               two
+                                                                                                               children
+                                                                                                               and
+                                                                                                               the
+                                                                                                               enclosing
+                                                                                                               volume.*/
 volume    mBV;  /* Global bounding-volume enclosing all the node-related primitives */
 uintptr_t mPos; /* "Positive" child */
 uintptr_t mNeg; /* "Negative" child */

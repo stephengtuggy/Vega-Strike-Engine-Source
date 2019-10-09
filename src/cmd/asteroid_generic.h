@@ -13,11 +13,11 @@ class Asteroid : public Unit
         return (ASTEROIDPTR);
     }
     virtual void reactToCollision(std::shared_ptr<Unit> smaller,
-                                  const QVector &biglocation,
-                                  const Vector & bignormal,
-                                  const QVector &smalllocation,
-                                  const Vector & smallnormal,
-                                  float          dist);
+                                  const QVector &       biglocation,
+                                  const Vector &        bignormal,
+                                  const QVector &       smalllocation,
+                                  const Vector &        smallnormal,
+                                  float                 dist);
 
   protected:
     /** Constructor that can only be called by the UnitFactory.

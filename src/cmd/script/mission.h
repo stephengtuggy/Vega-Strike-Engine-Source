@@ -444,10 +444,10 @@ class Mission
     MISSION_AUTO player_autopilot;
     MISSION_AUTO global_autopilot;
     struct Objective {
-        float       completeness;
-        std::string objective;
+        float                 completeness;
+        std::string           objective;
         std::shared_ptr<Unit> getOwner();
-        void        setOwner(std::shared_ptr<Unit> u)
+        void                  setOwner(std::shared_ptr<Unit> u)
         {
             Owner.SetUnit(u);
         }
@@ -467,10 +467,10 @@ class Mission
     {
         unpickleData = dat;
     }
-    class Briefing *briefing;
-    static double   gametime;
-    string          mission_name;
-    void            terminateMission();
+    class Briefing *      briefing;
+    static double         gametime;
+    string                mission_name;
+    void                  terminateMission();
     std::shared_ptr<Unit> call_unit_launch(class CreateFlightgroup *fg, int type /*clsptr type*/, const std::string &destinations);
 
     Mission(const char *configfile, bool loadscripts = true);
@@ -549,7 +549,7 @@ class Mission
 
 #ifndef VS_MIS_SEL
     std::shared_ptr<Unit> current_ai_unit;
-    Order *current_ai_order;
+    Order *               current_ai_order;
 
     int  debuglevel;
     bool start_game;
@@ -746,8 +746,8 @@ class Mission
 
     varInst *getObjectArg(missionNode *node, int mode);
 
-    varInst *call_unit(missionNode *node, int mode);
-    varInst *call_briefing(missionNode *node, int mode);
+    varInst *             call_unit(missionNode *node, int mode);
+    varInst *             call_briefing(missionNode *node, int mode);
     std::shared_ptr<Unit> getUnitObject(missionNode *node, int mode, varInst *ovi);
 
     // void call_unit_launch(missionNode *node,int mode,string name,string faction,string type,string ainame,int nr_ships,Vector &pos);
@@ -778,10 +778,10 @@ class Mission
     varInst *call_order(missionNode *node, int mode);
     Order *  getOrderObject(missionNode *node, int mode, varInst *ovi);
 
-    QVector getVec3Arg(missionNode *node, int mode, int arg_nr);
-    double  getFloatArg(missionNode *node, int mode, int arg_nr);
-    int     getIntArg(missionNode *node, int mode, int arg_nr);
-    bool    getBoolArg(missionNode *node, int mode, int arg_nr);
+    QVector               getVec3Arg(missionNode *node, int mode, int arg_nr);
+    double                getFloatArg(missionNode *node, int mode, int arg_nr);
+    int                   getIntArg(missionNode *node, int mode, int arg_nr);
+    bool                  getBoolArg(missionNode *node, int mode, int arg_nr);
     std::shared_ptr<Unit> getUnitArg(missionNode *node, int mode, int arg_nr);
 #endif // VS_MIS_SEL
 };

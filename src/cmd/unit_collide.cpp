@@ -143,8 +143,13 @@ bool Unit::Inside(const QVector &target, const float radius, Vector &normal, flo
     return false;
 }
 
-bool Unit::InsideCollideTree(
-    std::shared_ptr<Unit> smaller, QVector &bigpos, Vector &bigNormal, QVector &smallpos, Vector &smallNormal, bool bigasteroid, bool smallasteroid)
+bool Unit::InsideCollideTree(std::shared_ptr<Unit> smaller,
+                             QVector &             bigpos,
+                             Vector &              bigNormal,
+                             QVector &             smallpos,
+                             Vector &              smallNormal,
+                             bool                  bigasteroid,
+                             bool                  smallasteroid)
 {
     if (smaller->colTrees == NULL || this->colTrees == NULL)
         return false;
@@ -249,8 +254,8 @@ bool Unit::Collide(std::shared_ptr<Unit> target)
         return false;
     if (targetisUnit == ASTEROIDPTR && thisisUnit == ASTEROIDPTR)
         return false;
-    std::multimap<std::shared_ptr<Unit> , std::shared_ptr<Unit> > *last_collisions = &_Universe->activeStarSystem()->last_collisions;
-    last_collisions->insert(std::pair<std::shared_ptr<Unit> , std::shared_ptr<Unit> >(this, target));
+    std::multimap<std::shared_ptr<Unit>, std::shared_ptr<Unit>> *last_collisions = &_Universe->activeStarSystem()->last_collisions;
+    last_collisions->insert(std::pair<std::shared_ptr<Unit>, std::shared_ptr<Unit>>(this, target));
     // unit v unit? use point sampling?
     if ((this->DockedOrDocking() & (DOCKED_INSIDE | DOCKED)) || (target->DockedOrDocking() & (DOCKED_INSIDE | DOCKED)))
         return false;
@@ -334,7 +339,7 @@ float globQuerySphere(QVector start, QVector end, QVector pos, float radius)
 std::shared_ptr<Unit> Unit::rayCollide(const QVector &start, const QVector &end, Vector &norm, float &distance)
 {
     std::shared_ptr<Unit> tmp;
-    float rad = this->rSize();
+    float                 rad = this->rSize();
     if ((!SubUnits.empty()) && graphicOptions.RecurseIntoSubUnitsOnCollision)
         if ((tmp = *SubUnits.fastIterator()))
             rad += tmp->rSize();

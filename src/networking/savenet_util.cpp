@@ -32,7 +32,7 @@ void SaveNetUtil::GetSaveStrings(ClientPtr clt, string &savestr, string &xmlstr,
 
 void SaveNetUtil::GetSaveStrings(int numplayer, string &savestr, string &xmlstr, bool savevars)
 {
-    Cockpit *cp;
+    Cockpit *             cp;
     std::shared_ptr<Unit> un;
     cp = _Universe->AccessCockpit(numplayer);
     if (cp) {

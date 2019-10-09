@@ -148,7 +148,7 @@ void NetServer::recvMsg_udp()
         ClientPtr tmp;
         bool      found = false;
         for (LI i = allClients.begin(); i != allClients.end(); i++) {
-            tmp        = (*i);
+            tmp                        = (*i);
             std::shared_ptr<Unit> myun = tmp->game_unit.GetUnit();
             // NETFIXME: Cheat: We have to check the address and port of the sender to make sure it matches that of our client socket.
             if (myun && myun->GetSerial() == nserial) {

@@ -260,8 +260,8 @@ void Mesh::beginElement(MeshXML *xml, const string &name, const AttributeList &a
     AttributeList::const_iterator iter;
     float                         flotsize = 1;
     MeshXML::Names                elem     = (MeshXML::Names)MeshXML::element_map.lookup(name);
-    MeshXML::Names top;     // FIXME If state stack is empty, top is used uninitialized !!!
-    top = MeshXML::UNKNOWN; // FIXME this line temporarily added by chuck_starchaser
+    MeshXML::Names                top; // FIXME If state stack is empty, top is used uninitialized !!!
+    top = MeshXML::UNKNOWN;            // FIXME this line temporarily added by chuck_starchaser
     if (xml->state_stack.size() > 0)
         top = *xml->state_stack.rbegin();
     xml->state_stack.push_back(elem);
@@ -840,10 +840,10 @@ void Mesh::beginElement(MeshXML *xml, const string &name, const AttributeList &a
         // assert (xml->load_stage==4);
         xml->load_stage   = 5;
         xml->vertex_state = 0;
-        unsigned int typ;          // FIXME Not all cases below initialize typ
-        float rot, siz, offset;    // FIXME Not all cases below initialize rot, siz or offset
-        typ = 0;                   // FIXME this line temporarily added by chuck_starchaser
-        rot = siz = offset = 0.0f; // FIXME this line temporarily added by chuck_starchaser
+        unsigned int typ;              // FIXME Not all cases below initialize typ
+        float        rot, siz, offset; // FIXME Not all cases below initialize rot, siz or offset
+        typ = 0;                       // FIXME this line temporarily added by chuck_starchaser
+        rot = siz = offset = 0.0f;     // FIXME this line temporarily added by chuck_starchaser
         for (iter = attributes.begin(); iter != attributes.end(); iter++) {
             switch (MeshXML::attribute_map.lookup((*iter).name)) {
             case MeshXML::UNKNOWN:

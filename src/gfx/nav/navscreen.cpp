@@ -128,8 +128,8 @@ void NavigationSystem::Setup()
     system_multi_dimensional    = 1;
     galaxy_multi_dimensional    = 1;
 
-    zshiftmultiplier = 2.5;  // shrink the output
-    item_zscalefactor = 1.0; // camera distance prespective multiplier for affecting item sizes
+    zshiftmultiplier        = 2.5; // shrink the output
+    item_zscalefactor       = 1.0; // camera distance prespective multiplier for affecting item sizes
     system_item_scale       = 1.0;
     mouse_previous_state[0] = 0; // could have used a loop, but this way the system uses immediate instead of R type.
     mouse_previous_state[1] = 0;
@@ -645,10 +645,10 @@ void          NavigationSystem::DrawShip()
 
     navdrawlist factionlist(0, screenoccupation, factioncolours);
 
-    float  deltax  = screenskipby4[1] - screenskipby4[0];
-    float  originx = screenskipby4[0]; // left
-    float  originy = screenskipby4[3]; // top
-    string writethis;
+    float                 deltax  = screenskipby4[1] - screenskipby4[0];
+    float                 originx = screenskipby4[0]; // left
+    float                 originy = screenskipby4[3]; // top
+    string                writethis;
     std::shared_ptr<Unit> par;
     if ((par = _Universe->AccessCockpit()->GetParent()))
         writethis = MakeUnitXMLPretty(par->WriteUnitString(), par);

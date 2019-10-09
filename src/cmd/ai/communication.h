@@ -70,13 +70,19 @@ class CommunicationMessage
     unsigned char    sex; // which sound should play
     int              prevstate;
     int              curstate;
-    int edgenum; // useful for server validation, -1 = did not move via an edge.
-    UnitContainer sender;
+    int              edgenum; // useful for server validation, -1 = did not move via an edge.
+    UnitContainer    sender;
     CommunicationMessage(std::shared_ptr<Unit> send, std::shared_ptr<Unit> recv, std::vector<class Animation *> *ani, unsigned char sex);
-    CommunicationMessage(std::shared_ptr<Unit> send, std::shared_ptr<Unit> recv, int curstate, std::vector<class Animation *> *ani, unsigned char sex);
-    CommunicationMessage(std::shared_ptr<Unit> send, std::shared_ptr<Unit> recv, int prevvstate, int curstate, std::vector<class Animation *> *ani, unsigned char sex);
-    CommunicationMessage(std::shared_ptr<Unit> send,
-                         std::shared_ptr<Unit> recv,
+    CommunicationMessage(
+        std::shared_ptr<Unit> send, std::shared_ptr<Unit> recv, int curstate, std::vector<class Animation *> *ani, unsigned char sex);
+    CommunicationMessage(std::shared_ptr<Unit>           send,
+                         std::shared_ptr<Unit>           recv,
+                         int                             prevvstate,
+                         int                             curstate,
+                         std::vector<class Animation *> *ani,
+                         unsigned char                   sex);
+    CommunicationMessage(std::shared_ptr<Unit>           send,
+                         std::shared_ptr<Unit>           recv,
                          const CommunicationMessage &    prevsvtate,
                          int                             curstate,
                          std::vector<class Animation *> *ani,

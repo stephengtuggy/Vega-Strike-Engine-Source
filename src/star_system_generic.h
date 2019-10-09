@@ -138,7 +138,7 @@ class StarSystem
     std::vector<class MissileEffect *> dischargedMissiles;
     unsigned int                       zone; // short fix
   public:
-    std::multimap<std::shared_ptr<Unit> , std::shared_ptr<Unit> > last_collisions;
+    std::multimap<std::shared_ptr<Unit>, std::shared_ptr<Unit>> last_collisions;
     // short fix
     void SetZone(unsigned int zonenum)
     {
@@ -234,9 +234,9 @@ class StarSystem
     bool         RemoveUnit(std::shared_ptr<Unit> unit);
     bool         JumpTo(std::shared_ptr<Unit> unit,
                         std::shared_ptr<Unit> jumppoint,
-                        const std::string &system,
-                        bool               force            = false,
-                        bool               save_coordinates = false /*for intersystem transit the long way*/);
+                        const std::string &   system,
+                        bool                  force            = false,
+                        bool                  save_coordinates = false /*for intersystem transit the long way*/);
     static void  ProcessPendingJumps();
     virtual void VolitalizeJumpAnimation(const int ani)
     {

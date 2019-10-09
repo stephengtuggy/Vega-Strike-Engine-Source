@@ -32,8 +32,12 @@ void Asteroid::Init(float difficulty)
     RecursiveSetSchedule(this);
 }
 
-void Asteroid::reactToCollision(
-    std::shared_ptr<Unit> smaller, const QVector &biglocation, const Vector &bignormal, const QVector &smalllocation, const Vector &smallnormal, float dist)
+void Asteroid::reactToCollision(std::shared_ptr<Unit> smaller,
+                                const QVector &       biglocation,
+                                const Vector &        bignormal,
+                                const QVector &       smalllocation,
+                                const Vector &        smallnormal,
+                                float                 dist)
 {
     switch (smaller->isUnit()) {
     case ASTEROIDPTR:

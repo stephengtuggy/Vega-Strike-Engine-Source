@@ -33,7 +33,8 @@ navdrawnode::navdrawnode(int type_, float size_, float x_, float y_, navdrawnode
     source   = NULL;
 }
 
-navdrawnode::navdrawnode(int type_, float size_, float x_, float y_, std::shared_ptr<Unit> source_, navdrawnode *nextitem_) // new node into list
+navdrawnode::navdrawnode(
+    int type_, float size_, float x_, float y_, std::shared_ptr<Unit> source_, navdrawnode *nextitem_) // new node into list
 {
     type     = type_;
     size     = size_;
@@ -121,13 +122,13 @@ void navdrawlist::rotate() // take the head and stick it in the back
 
 string getUnitNameAndFgNoBase(std::shared_ptr<Unit> target);
 void   drawdescription(std::shared_ptr<Unit> source,
-                       float              x_,
-                       float              y_,
-                       float              size_x,
-                       float              size_y,
-                       bool               ignore_occupied_areas,
-                       navscreenoccupied *screenoccupation,
-                       const GFXColor &   col) // take the head and stick it in the back
+                       float                 x_,
+                       float                 y_,
+                       float                 size_x,
+                       float                 size_y,
+                       bool                  ignore_occupied_areas,
+                       navscreenoccupied *   screenoccupation,
+                       const GFXColor &      col) // take the head and stick it in the back
 {
     if (source == NULL)
         return;
@@ -195,16 +196,16 @@ static GFXColor getUnitTypeColor(std::string name, bool text, GFXColor def, floa
     return col;
 }
 
-void drawlistitem(int                type,
-                  float              size,
-                  float              x,
-                  float              y,
+void drawlistitem(int                   type,
+                  float                 size,
+                  float                 x,
+                  float                 y,
                   std::shared_ptr<Unit> source,
-                  navscreenoccupied *screenoccupation,
-                  bool               inmouserange,
-                  bool               currentistail,
-                  float              unselectedalpha,
-                  GFXColor *         factioncolours)
+                  navscreenoccupied *   screenoccupation,
+                  bool                  inmouserange,
+                  bool                  currentistail,
+                  float                 unselectedalpha,
+                  GFXColor *            factioncolours)
 {
     float relation = 0.0;
 

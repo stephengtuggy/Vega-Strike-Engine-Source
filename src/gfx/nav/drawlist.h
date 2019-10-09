@@ -19,7 +19,7 @@ class navdrawnode
     float x;
     float y;
 
-    navdrawnode *nextitem;
+    navdrawnode *         nextitem;
     std::shared_ptr<Unit> source;
 
     navdrawnode();
@@ -28,13 +28,13 @@ class navdrawnode
 };
 
 void drawdescription(std::shared_ptr<Unit> source,
-                     float              x,
-                     float              y,
-                     float              size_x,
-                     float              size_y,
-                     bool               ignore_occupied_areas,
-                     navscreenoccupied *screenoccupation,
-                     const GFXColor &   col);
+                     float                 x,
+                     float                 y,
+                     float                 size_x,
+                     float                 size_y,
+                     bool                  ignore_occupied_areas,
+                     navscreenoccupied *   screenoccupation,
+                     const GFXColor &      col);
 void drawdescription(string             text,
                      float              x,
                      float              y,
@@ -44,16 +44,16 @@ void drawdescription(string             text,
                      navscreenoccupied *screenoccupation,
                      const GFXColor &   col);
 
-void drawlistitem(int                type,
-                  float              size,
-                  float              x,
-                  float              y,
+void drawlistitem(int                   type,
+                  float                 size,
+                  float                 x,
+                  float                 y,
                   std::shared_ptr<Unit> source,
-                  navscreenoccupied *screenoccupation,
-                  bool               inmouserange,
-                  bool               currentistail,
-                  float              unselectedalpha,
-                  GFXColor *         factioncolours);
+                  navscreenoccupied *   screenoccupation,
+                  bool                  inmouserange,
+                  bool                  currentistail,
+                  float                 unselectedalpha,
+                  GFXColor *            factioncolours);
 
 class navdrawlist // not really a list... it inserts at head, and reads head first. like a stack, but it isnt popping. its just going
                   // through it, and whiping.
@@ -73,13 +73,13 @@ class navdrawlist // not really a list... it inserts at head, and reads head fir
     // 10 sectors across, divided into 32 sections top/down.
 
   public:
-    void  insert(int type, float size, float x, float y);
-    void  insert(int type, float size, float x, float y, std::shared_ptr<Unit> source);
-    void  wipe();
-    void  rotate();
-    void  draw();
-    int   get_n_contents();
-    float unselectedalpha;
+    void                  insert(int type, float size, float x, float y);
+    void                  insert(int type, float size, float x, float y, std::shared_ptr<Unit> source);
+    void                  wipe();
+    void                  rotate();
+    void                  draw();
+    int                   get_n_contents();
+    float                 unselectedalpha;
     std::shared_ptr<Unit> gettailunit();
     navdrawlist(bool mouse, navscreenoccupied *screenoccupation, GFXColor *factioncolours);
     ~navdrawlist();

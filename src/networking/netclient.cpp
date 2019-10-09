@@ -81,10 +81,10 @@ typedef vector<Client *>::iterator             VC;
 typedef vector<ObjSerial>::iterator            ObjI;
 
 extern const std::shared_ptr<Unit> getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0);
-extern int          GetModeFromName(const char *); // 1=add, 2=mult, 0=neither.
-static const string LOAD_FAILED = "LOAD_FAILED";
-extern Cargo *      GetMasterPartList(const char *input_buffer);
-extern bool         isWeapon(std::string name);
+extern int                         GetModeFromName(const char *); // 1=add, 2=mult, 0=neither.
+static const string                LOAD_FAILED = "LOAD_FAILED";
+extern Cargo *                     GetMasterPartList(const char *input_buffer);
+extern bool                        isWeapon(std::string name);
 
 /*
  ************************************************************
@@ -437,13 +437,13 @@ void        NetClient::Respawn(ObjSerial newserial)
         cp->fg->nr_ships_left++;
     }
     std::shared_ptr<Unit> un = UnitFactory::createUnit(unkeyname.c_str(),
-                                       false,
-                                       FactionUtil::GetFactionIndex(cp->savegame->GetPlayerFaction()),
-                                       std::string(""),
-                                       cp->fg,
-                                       fgsnumber,
-                                       &lastsave[1],
-                                       newserial);
+                                                       false,
+                                                       FactionUtil::GetFactionIndex(cp->savegame->GetPlayerFaction()),
+                                                       std::string(""),
+                                                       cp->fg,
+                                                       fgsnumber,
+                                                       &lastsave[1],
+                                                       newserial);
     un->SetSerial(newserial);
     // fighters[a]->faction = FactionUtil::GetFactionIndex( cp->savegame->GetPlayerFaction());
     cp->SetParent(un, unkeyname.c_str(), "", pos);
@@ -480,9 +480,9 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
 
     // Receive data
     std::shared_ptr<Unit> un = NULL;
-    unsigned int mount_num;
-    ObjSerial    mis          = 0;
-    ObjSerial    local_serial = 0;
+    unsigned int          mount_num;
+    ObjSerial             mis          = 0;
+    ObjSerial             local_serial = 0;
     if (this->game_unit.GetUnit() != NULL)
         local_serial = this->game_unit.GetUnit()->GetSerial();
     Cockpit *cp;
@@ -811,7 +811,7 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
                 break;
             un = UniverseUtil::GetUnitFromSerial(packet_serial);
             if (un) {
-                unsigned short targserial = netbuf.getSerial();
+                unsigned short        targserial = netbuf.getSerial();
                 std::shared_ptr<Unit> target_un  = UniverseUtil::GetUnitFromSerial(targserial);
                 if (target_un)
                     COUT << "Confirmed targeting unit " << target_un->name << " (" << targserial << ")." << endl;
@@ -853,7 +853,7 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
                          << std::dec << std::endl;
                     break;
                 }
-                offset   = noffset;
+                offset                   = noffset;
                 std::shared_ptr<Unit> un = UniverseUtil::GetUnitFromSerial(serial);
                 receiveUnitDamage(netbuf, un);
             }
@@ -1007,11 +1007,11 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
         case CMD_SNAPCARGO: {
             if (nostarsystem)
                 break;
-            ObjSerial ser;
+            ObjSerial             ser;
             std::shared_ptr<Unit> mpl = UnitFactory::getMasterPartList();
             while ((ser = netbuf.getSerial()) != 0) {
                 std::shared_ptr<Unit> un = UniverseUtil::GetUnitFromSerial(ser);
-                unsigned int i;
+                unsigned int          i;
                 // Clear cargo... back to front to make it more efficient.
                 if (un) {
                     i = un->numCargo();
@@ -1093,7 +1093,7 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
                 break;
             std::shared_ptr<Unit> from     = UniverseUtil::GetUnitFromSerial(packet_serial);
             std::shared_ptr<Unit> to       = game_unit.GetUnit();
-            int   curstate = netbuf.getInt32();
+            int                   curstate = netbuf.getInt32();
             if (!from) {
                 COUT << "Received invalid comm message " << curstate << " from " << packet_serial << endl;
                 break;
@@ -1134,19 +1134,19 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
         case CMD_CARGOUPGRADE: {
             if (nostarsystem)
                 break;
-            ObjSerial   buyer_ser     = netbuf.getSerial();
-            ObjSerial   seller_ser    = netbuf.getSerial();
-            int         quantity      = netbuf.getInt32();
-            std::string cargoName     = netbuf.getString();
-            float       price         = netbuf.getFloat();
-            float       mass          = netbuf.getFloat();
-            float       volume        = netbuf.getFloat();
-            int         mountOffset   = ((int)netbuf.getInt32());
-            int         subunitOffset = ((int)netbuf.getInt32());
+            ObjSerial             buyer_ser     = netbuf.getSerial();
+            ObjSerial             seller_ser    = netbuf.getSerial();
+            int                   quantity      = netbuf.getInt32();
+            std::string           cargoName     = netbuf.getString();
+            float                 price         = netbuf.getFloat();
+            float                 mass          = netbuf.getFloat();
+            float                 volume        = netbuf.getFloat();
+            int                   mountOffset   = ((int)netbuf.getInt32());
+            int                   subunitOffset = ((int)netbuf.getInt32());
             std::shared_ptr<Unit> sender        = UniverseUtil::GetUnitFromSerial(packet_serial);
             std::shared_ptr<Unit> buyer         = UniverseUtil::GetUnitFromSerial(buyer_ser);
             std::shared_ptr<Unit> seller        = UniverseUtil::GetUnitFromSerial(seller_ser);
-            bool        missioncarg   = false;
+            bool                  missioncarg   = false;
 
             unsigned int cargIndex = 0;
             Cargo *      cargptr   = NULL;
@@ -1408,7 +1408,7 @@ int         NetClient::recvMsg(Packet *outpacket, timeval *timeout)
                 break;
             ObjSerial utdw_serial = netbuf.getSerial();
             cerr << "RECEIVED A UNDOCK ORDER for unit " << p1.getSerial() << " to unit " << utdw_serial << endl;
-            un        = UniverseUtil::GetUnitFromSerial(utdw_serial);
+            un                        = UniverseUtil::GetUnitFromSerial(utdw_serial);
             std::shared_ptr<Unit> un2 = UniverseUtil::GetUnitFromSerial(p1.getSerial());
             un2->UnDock(un);
             break;

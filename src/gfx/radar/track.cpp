@@ -17,7 +17,8 @@ Track::Track(std::shared_ptr<Unit> player, const std::shared_ptr<Unit> target) :
     type     = IdentifyType();
 }
 
-Track::Track(std::shared_ptr<Unit> player, const std::shared_ptr<Unit> target, const Vector &position) : player(player), target(target), position(position)
+Track::Track(std::shared_ptr<Unit> player, const std::shared_ptr<Unit> target, const Vector &position)
+    : player(player), target(target), position(position)
 {
     distance = UnitUtil::getDistance(player, target);
     type     = IdentifyType();

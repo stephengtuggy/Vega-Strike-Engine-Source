@@ -39,7 +39,7 @@
 #endif
 
 static float *mview = NULL;
-static int bogus_int; // added by chuck_starchaser to squash ignored returns warnings.
+static int    bogus_int; // added by chuck_starchaser to squash ignored returns warnings.
 
 VSSprite::VSSprite(const char *file, enum FILTER texturefilter, GFXBOOL force)
 {

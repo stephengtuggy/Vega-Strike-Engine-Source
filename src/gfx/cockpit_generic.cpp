@@ -380,8 +380,8 @@ void Cockpit::UpdAutoPilot()
     if (autopilot_time != 0) {
         autopilot_time -= SIMULATION_ATOM;
         if (autopilot_time <= 0) {
-            autopilot_time = 0;
-            std::shared_ptr<Unit> par      = GetParent();
+            autopilot_time            = 0;
+            std::shared_ptr<Unit> par = GetParent();
             if (par) {
                 std::shared_ptr<Unit> autoun = autopilot_target.GetUnit();
                 autopilot_target.SetUnit(NULL);
@@ -444,7 +444,7 @@ void Cockpit::updateAttackers()
     std::shared_ptr<Unit> un;
     if (attack_iterator.isDone() == false && (un = *attack_iterator) != NULL) {
         std::shared_ptr<Unit> targ  = un->Target();
-        float speed = 0, range = 0, mmrange = 0;
+        float                 speed = 0, range = 0, mmrange = 0;
         if (parent == targ && targ != NULL) {
             un->getAverageGunSpeed(speed, range, mmrange);
             float dist = UnitUtil::getDistance(targ, un);
@@ -532,7 +532,7 @@ bool Cockpit::Update()
     if (turretcontrol.size() > _Universe->CurrentCockpit()) {
         if (turretcontrol[_Universe->CurrentCockpit()]) {
             turretcontrol[_Universe->CurrentCockpit()] = 0;
-            std::shared_ptr<Unit> par                                  = GetParent();
+            std::shared_ptr<Unit> par                  = GetParent();
             // this being here, it will require poking the turret from the undock script
             if (par) {
                 if (par->name == "return_to_cockpit") {
@@ -634,8 +634,8 @@ bool Cockpit::Update()
             // static bool switch_to_fac=XMLSupport::parse_bool(vs_config->getVariable("AI","switch_to_whole_faction","true"));
 
             std::shared_ptr<Unit> un;
-            bool  found = false;
-            int   i     = 0;
+            bool                  found = false;
+            int                   i     = 0;
             for (un_iter ui = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = *ui); ++ui)
                 if (un->faction == this->unitfaction) {
                     // this switches units UNLESS we're an ejected pilot. Instead, if we are an ejected
@@ -649,7 +649,7 @@ bool Cockpit::Update()
                         found = true;
                         ++index;
                         std::shared_ptr<Unit> k       = GetParent();
-                        bool  proceed = true;
+                        bool                  proceed = true;
                         if (k)
                             if (k->name == "eject" || k->name == "Pilot" || k->name == "return_to_cockpit")
                                 proceed = false;
@@ -785,7 +785,8 @@ bool Cockpit::Update()
                         fg->nr_ships++;
                         fg->nr_ships_left++;
                     }
-                    std::shared_ptr<Unit> un = UnitFactory::createUnit(GetUnitFileName().c_str(), false, this->unitfaction, unitmodname, fg, fgsnumber);
+                    std::shared_ptr<Unit> un =
+                        UnitFactory::createUnit(GetUnitFileName().c_str(), false, this->unitfaction, unitmodname, fg, fgsnumber);
                     un->SetCurPosition(UniverseUtil::SafeEntrancePoint(savegame->GetPlayerLocation()));
                     ss->AddUnit(un);
 

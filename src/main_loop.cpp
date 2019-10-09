@@ -70,17 +70,17 @@ extern vs_options game_options;
 extern std::string global_username;
 #define KEYDOWN(name, key) (name[key] & 0x80)
 
-static Texture *tmpcockpittexture;
-std::shared_ptr<Unit> *         fighters;
-std::shared_ptr<Unit> carrier  = NULL;
-std::shared_ptr<Unit> fighter  = NULL;
-std::shared_ptr<Unit> fighter2 = NULL;
-std::shared_ptr<Unit> midway   = NULL;
-GFXBOOL         capture;
-GFXBOOL         quit      = GFXFALSE;
-bool            _Slew     = true;
-bool            QuitAllow = false;
-extern bool     cleanexit;
+static Texture *       tmpcockpittexture;
+std::shared_ptr<Unit> *fighters;
+std::shared_ptr<Unit>  carrier  = NULL;
+std::shared_ptr<Unit>  fighter  = NULL;
+std::shared_ptr<Unit>  fighter2 = NULL;
+std::shared_ptr<Unit>  midway   = NULL;
+GFXBOOL                capture;
+GFXBOOL                quit      = GFXFALSE;
+bool                   _Slew     = true;
+bool                   QuitAllow = false;
+extern bool            cleanexit;
 #ifndef _WIN32
 int allexcept = FE_DIVBYZERO; //|FE_INVALID;//|FE_OVERFLOW|FE_UNDERFLOW;
 #else
@@ -764,7 +764,7 @@ void createObjects(std::vector<std::string> &   fighter0name,
 
     int numf = mission->number_of_ships;
 
-    fighters       = new std::shared_ptr<Unit> [numf];
+    fighters       = new std::shared_ptr<Unit>[numf];
     int *tmptarget = new int[numf];
 
     GFXEnable(TEXTURE0);
@@ -826,7 +826,7 @@ void createObjects(std::vector<std::string> &   fighter0name,
                             pox = UniverseUtil::SafeEntrancePoint(savedloc[squadnum]);
                         vector<std::string> *dat = &cp->savegame->getMissionStringData("jump_from");
                         if (dat->size()) {
-                            std::string srcsys = (*dat)[0];
+                            std::string           srcsys = (*dat)[0];
                             std::shared_ptr<Unit> grav;
                             for (un_iter ui = cp->activeStarSystem->gravitationalUnits().createIterator(); (grav = *ui) != NULL; ++ui) {
                                 size_t siz = grav->GetDestinations().size();

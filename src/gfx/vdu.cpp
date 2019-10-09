@@ -626,7 +626,8 @@ static void DrawShield(float    fs,
 }
 
 /*
-static void DrawShieldArmor( std::shared_ptr<Unit> parent, const float StartArmor[8], float x, float y, float w, float h, bool invertfrontback )
+static void DrawShieldArmor( std::shared_ptr<Unit> parent, const float StartArmor[8], float x, float y, float w, float h, bool
+invertfrontback )
 {
     static bool drawVSarmor = XMLSupport::parse_bool( vs_config->getVariable( "graphics", "drawVSarmor", "true" ) );
     float fs = parent->FShieldData();
@@ -1644,7 +1645,8 @@ void VDU::SetViewingStyle(VIEWSTYLE vs)
     viewStyle = vs;
 }
 
-void VDU::DrawStarSystemAgain(float x, float y, float w, float h, VIEWSTYLE viewStyle, std::shared_ptr<Unit> parent, std::shared_ptr<Unit> target)
+void VDU::DrawStarSystemAgain(
+    float x, float y, float w, float h, VIEWSTYLE viewStyle, std::shared_ptr<Unit> parent, std::shared_ptr<Unit> target)
 {
     GFXEnable(DEPTHTEST);
     GFXEnable(DEPTHWRITE);

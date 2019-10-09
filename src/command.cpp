@@ -776,8 +776,8 @@ coms *commandI::findCommand(const char *comm, int &sock_in)
 // then tries to execute the member function.
 // If one is not found, it will call commandI::dummy() .
 //{{{ Main execute entrace, all input comes in here, this sends it to the menusystem, then in the return at the very last line executes the
-//fexecute function which actually parses and finds commands, if the menusystem allows. This way the menusystem can manipulate user input,
-//ie insert command names into the input to make it go to any function.
+// fexecute function which actually parses and finds commands, if the menusystem allows. This way the menusystem can manipulate user input,
+// ie insert command names into the input to make it go to any function.
 bool commandI::execute(string *incommand, bool isDown, int sock_in)
 {
     int socket = sock_in;

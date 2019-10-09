@@ -193,8 +193,8 @@ class NewButton : public Control
     // State for painting a cycling border.
     GFXColor m_currentCycleColor; // The current color of the cycling border.
     int      m_currentCycle;      // The "step" in the cycle we are currently painting.
-    int m_cycleStepCount;         // Number of steps from one color to the other (1/2 cycle).
-    int m_cycleDirection;         // 1 or -1 depending on which color we are heading toward.
+    int      m_cycleStepCount;    // Number of steps from one color to the other (1/2 cycle).
+    int      m_cycleDirection;    // 1 or -1 depending on which color we are heading toward.
     GFXColor m_cycleColorDelta;   // Change in each color for one cycle.
     double   m_lastStepTime;      // Last time we changed steps.
 };

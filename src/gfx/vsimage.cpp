@@ -562,11 +562,11 @@ unsigned char *VSImage::ReadBMP()
                            // be untrue...
             if (img_file2 && img_file2->Valid())
                 mode = _24BITRGBA;
-            int ncomp = ((mode == _24BIT) ? 3 : 4);
+            int          ncomp   = ((mode == _24BIT) ? 3 : 4);
             unsigned int cstride = ((sizeof(unsigned char) * 3 * this->sizeX) + 3) & ~3; // BMP rows must be aligned to 32 bits
             unsigned int astride = ((sizeof(unsigned char) * this->sizeX) + 3) & ~3;     // BMP rows must be aligned to 32 bits
-            unsigned int stride = (sizeof(unsigned char) * ncomp * this->sizeX);
-            data                = (unsigned char *)malloc(stride * this->sizeY);
+            unsigned int stride  = (sizeof(unsigned char) * ncomp * this->sizeX);
+            data                 = (unsigned char *)malloc(stride * this->sizeY);
             if (data == NULL)
                 return NULL;
             if (mode != _24BIT) {

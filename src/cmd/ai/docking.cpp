@@ -85,7 +85,7 @@ void DockingOps::Destroy()
             oldstate->Destroy();
         oldstate = NULL;
         if (formerOwnerDoNotDereference) {
-            parent->SetOwner((std::shared_ptr<Unit> )formerOwnerDoNotDereference); // set owner will not deref
+            parent->SetOwner((std::shared_ptr<Unit>)formerOwnerDoNotDereference); // set owner will not deref
             formerOwnerDoNotDereference = NULL;
         }
     }
@@ -96,7 +96,7 @@ void DockingOps::RestoreOldAI()
     if (parent) {
         parent->aistate = oldstate; // that's me!
         if (formerOwnerDoNotDereference) {
-            parent->SetOwner((std::shared_ptr<Unit> )formerOwnerDoNotDereference);
+            parent->SetOwner((std::shared_ptr<Unit>)formerOwnerDoNotDereference);
             formerOwnerDoNotDereference = NULL;
         }
         oldstate = NULL;

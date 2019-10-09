@@ -194,9 +194,9 @@ const EnumMap       element_map(element_names, 3);
 const EnumMap       attribute_map(attribute_names, 3);
 } // namespace Unit
 
-int globaltab           = 0; // go go kludge master!
-int globalfileout       = 0; // go go gadget kludge!
-int globallasttab       = 0; // go go uber kludge!
+int   globaltab         = 0; // go go kludge master!
+int   globalfileout     = 0; // go go gadget kludge!
+int   globallasttab     = 0; // go go uber kludge!
 float globalmassrescale = 1; // go go... ok, at this point, it's obvious I'm not trying
 
 void UnitBeginElement(const string &name, const AttributeList &attributes, XML *xml)

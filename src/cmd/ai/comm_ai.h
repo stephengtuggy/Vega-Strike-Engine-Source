@@ -27,10 +27,10 @@ class CommunicatingAI : public Order
         return mood;
     }
     std::shared_ptr<Unit> GetRandomUnit(float PlayerProbability, float TargetProbability);
-    void  RandomInitiateCommunication(float PlayerProbability, float TargetProbability);
-    void  TerminateContrabandSearch(bool foundcontraband);
-    void  InitiateContrabandSearch(float PlayerProbability, float TargetProbability);
-    void  UpdateContrabandSearch();
+    void                  RandomInitiateCommunication(float PlayerProbability, float TargetProbability);
+    void                  TerminateContrabandSearch(bool foundcontraband);
+    void                  InitiateContrabandSearch(float PlayerProbability, float TargetProbability);
+    void                  UpdateContrabandSearch();
     CommunicatingAI(int   ttype,
                     int   stype,
                     float mood               = 0,
@@ -41,7 +41,7 @@ class CommunicatingAI : public Order
     virtual void ProcessCommMessage(class CommunicationMessage &c);
     virtual void AdjustRelationTo(std::shared_ptr<Unit> un, float factor);
     virtual ~CommunicatingAI();
-    virtual int selectCommunicationMessage(class CommunicationMessage &c, std::shared_ptr<Unit> );
+    virtual int selectCommunicationMessage(class CommunicationMessage &c, std::shared_ptr<Unit>);
     virtual int selectCommunicationMessageMood(CommunicationMessage &c, float mood);
 };
 

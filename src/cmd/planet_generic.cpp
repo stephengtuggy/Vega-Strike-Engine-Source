@@ -30,8 +30,13 @@ string getCargoUnitName(const char *textname)
     return retval;
 }
 
-PlanetaryOrbit::PlanetaryOrbit(
-    std::shared_ptr<Unit> p, double velocity, double initpos, const QVector &x_axis, const QVector &y_axis, const QVector &centre, std::shared_ptr<Unit> targetunit)
+PlanetaryOrbit::PlanetaryOrbit(std::shared_ptr<Unit> p,
+                               double                velocity,
+                               double                initpos,
+                               const QVector &       x_axis,
+                               const QVector &       y_axis,
+                               const QVector &       centre,
+                               std::shared_ptr<Unit> targetunit)
     : Order(MOVEMENT, 0), velocity(velocity), theta(initpos), inittheta(initpos), x_size(x_axis), y_size(y_axis), current_orbit_frame(0)
 {
     for (unsigned int t = 0; t < NUM_ORBIT_AVERAGE; ++t)
@@ -282,25 +287,25 @@ extern float        ScaleJumpRadius(float);
 extern Flightgroup *getStaticBaseFlightgroup(int faction);
 
 std::shared_ptr<Unit> Planet::beginElement(QVector                      x,
-                           QVector                      y,
-                           float                        vely,
-                           const Vector &               rotvel,
-                           float                        pos,
-                           float                        gravity,
-                           float                        radius,
-                           const string &               filename,
-                           const string &               technique,
-                           const string &               unitname,
-                           BLENDFUNC                    blendSrc,
-                           BLENDFUNC                    blendDst,
-                           const vector<string> &       dest,
-                           int                          level,
-                           const GFXMaterial &          ourmat,
-                           const vector<GFXLightLocal> &ligh,
-                           bool                         isunit,
-                           int                          faction,
-                           string                       fullname,
-                           bool                         inside_out)
+                                           QVector                      y,
+                                           float                        vely,
+                                           const Vector &               rotvel,
+                                           float                        pos,
+                                           float                        gravity,
+                                           float                        radius,
+                                           const string &               filename,
+                                           const string &               technique,
+                                           const string &               unitname,
+                                           BLENDFUNC                    blendSrc,
+                                           BLENDFUNC                    blendDst,
+                                           const vector<string> &       dest,
+                                           int                          level,
+                                           const GFXMaterial &          ourmat,
+                                           const vector<GFXLightLocal> &ligh,
+                                           bool                         isunit,
+                                           int                          faction,
+                                           string                       fullname,
+                                           bool                         inside_out)
 {
     // this function is OBSOLETE
     std::shared_ptr<Unit> un = NULL;
@@ -335,7 +340,7 @@ std::shared_ptr<Unit> Planet::beginElement(QVector                      x,
     } else {
         if (isunit == true) {
             std::shared_ptr<Unit> sat_unit = NULL;
-            Flightgroup *fg       = getStaticBaseFlightgroup(faction);
+            Flightgroup *         fg       = getStaticBaseFlightgroup(faction);
             satellites.prepend(sat_unit = UnitFactory::createUnit(filename.c_str(), false, faction, "", fg, fg->nr_ships - 1));
             sat_unit->setFullname(fullname);
             un = sat_unit;
@@ -556,7 +561,7 @@ Planet::~Planet()
 
 void Planet::Kill(bool erasefromsave)
 {
-    un_iter iter;
+    un_iter               iter;
     std::shared_ptr<Unit> tmp;
     for (iter = satellites.createIterator(); (tmp = *iter); ++iter)
         tmp->SetAI(new Order);

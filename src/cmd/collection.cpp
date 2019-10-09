@@ -84,7 +84,7 @@ void UnitCollection::UnitIterator::preinsert(std::shared_ptr<Unit> unit)
 
 void UnitCollection::UnitIterator::postinsert(std::shared_ptr<Unit> unit)
 {
-    list<std::shared_ptr<Unit> >::iterator tmp = it;
+    list<std::shared_ptr<Unit>>::iterator tmp = it;
     if (col && unit && it != col->u.end()) {
         ++tmp;
         col->insert(tmp, unit);
@@ -192,7 +192,7 @@ UnitCollection::UnitCollection()
 
 UnitCollection::UnitCollection(const UnitCollection &uc)
 {
-    list<std::shared_ptr<Unit> >::const_iterator in = uc.u.begin();
+    list<std::shared_ptr<Unit>>::const_iterator in = uc.u.begin();
     while (in != uc.u.end()) {
         append(*in);
         ++in;
@@ -202,7 +202,7 @@ UnitCollection::UnitCollection(const UnitCollection &uc)
 void UnitCollection::insert_unique(std::shared_ptr<Unit> unit)
 {
     if (unit) {
-        for (list<std::shared_ptr<Unit> >::iterator it = u.begin(); it != u.end(); ++it)
+        for (list<std::shared_ptr<Unit>>::iterator it = u.begin(); it != u.end(); ++it)
             if (*it == unit)
                 return;
         unit->Ref();
@@ -223,7 +223,7 @@ void UnitCollection::prepend(UnitIterator *it)
     std::shared_ptr<Unit> tmp = NULL;
     if (!it)
         return;
-    list<std::shared_ptr<Unit> >::iterator tmpI = u.begin();
+    list<std::shared_ptr<Unit>>::iterator tmpI = u.begin();
     while ((tmp = **it)) {
         tmp->Ref();
         u.insert(tmpI, tmp);
@@ -252,7 +252,7 @@ void UnitCollection::append(UnitIterator *it)
     }
 }
 
-void UnitCollection::insert(list<std::shared_ptr<Unit> >::iterator &temp, std::shared_ptr<Unit> unit)
+void UnitCollection::insert(list<std::shared_ptr<Unit>>::iterator &temp, std::shared_ptr<Unit> unit)
 {
     if (unit) {
         unit->Ref();
@@ -268,7 +268,7 @@ void UnitCollection::clear()
         return;
     }
 
-    for (list<std::shared_ptr<Unit> >::iterator it = u.begin(); it != u.end(); ++it) {
+    for (list<std::shared_ptr<Unit>>::iterator it = u.begin(); it != u.end(); ++it) {
         (*it)->UnRef();
         (*it) = NULL;
     }
@@ -277,7 +277,7 @@ void UnitCollection::clear()
 
 void UnitCollection::destr()
 {
-    for (list<std::shared_ptr<Unit> >::iterator it = u.begin(); it != u.end(); ++it)
+    for (list<std::shared_ptr<Unit>>::iterator it = u.begin(); it != u.end(); ++it)
         if (*it) {
             (*it)->UnRef();
             (*it) = NULL;
@@ -290,13 +290,13 @@ bool UnitCollection::contains(const std::shared_ptr<Unit> unit) const
 {
     if (u.empty() || !unit)
         return false;
-    for (list<std::shared_ptr<Unit> >::const_iterator it = u.begin(); it != u.end(); ++it)
+    for (list<std::shared_ptr<Unit>>::const_iterator it = u.begin(); it != u.end(); ++it)
         if ((*it) == unit && !(*it)->Killed())
             return true;
     return false;
 }
 
-inline void UnitCollection::erase(list<std::shared_ptr<Unit> >::iterator &it2)
+inline void UnitCollection::erase(list<std::shared_ptr<Unit>>::iterator &it2)
 {
     if (!(*it2)) {
         ++it2;
@@ -334,7 +334,7 @@ bool UnitCollection::remove(const std::shared_ptr<Unit> unit)
 {
     if (u.empty() || !unit)
         return false;
-    for (list<std::shared_ptr<Unit> >::iterator it = u.begin(); it != u.end(); ++it) {
+    for (list<std::shared_ptr<Unit>>::iterator it = u.begin(); it != u.end(); ++it) {
         if ((*it) == unit) {
             erase(it);
             return (true);
@@ -346,7 +346,7 @@ bool UnitCollection::remove(const std::shared_ptr<Unit> unit)
 const UnitCollection &UnitCollection::operator=(const UnitCollection &uc)
 {
     destr();
-    list<std::shared_ptr<Unit> >::const_iterator in = uc.u.begin();
+    list<std::shared_ptr<Unit>>::const_iterator in = uc.u.begin();
     while (in != uc.u.end()) {
         append(*in);
         ++in;

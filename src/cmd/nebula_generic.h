@@ -34,11 +34,11 @@ class Nebula : public Unit
         return NEBULAPTR;
     }
     virtual void reactToCollision(std::shared_ptr<Unit> smaller,
-                                  const QVector &biglocation,
-                                  const Vector & bignormal,
-                                  const QVector &smalllocation,
-                                  const Vector & smallnormal,
-                                  float          dist);
+                                  const QVector &       biglocation,
+                                  const Vector &        bignormal,
+                                  const QVector &       smalllocation,
+                                  const Vector &        smallnormal,
+                                  float                 dist);
 
   protected:
     /// constructor only to be called by UnitFactory

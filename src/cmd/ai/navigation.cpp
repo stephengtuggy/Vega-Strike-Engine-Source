@@ -424,7 +424,10 @@ FaceTarget::~FaceTarget()
     fflush(stderr);
 #endif
 }
-extern float CalculateNearestWarpUnit(const std::shared_ptr<Unit> thus, float minmultiplier, std::shared_ptr<Unit> *nearest_unit, bool negative_spec_units);
+extern float CalculateNearestWarpUnit(const std::shared_ptr<Unit> thus,
+                                      float                       minmultiplier,
+                                      std::shared_ptr<Unit> *     nearest_unit,
+                                      bool                        negative_spec_units);
 AutoLongHaul::AutoLongHaul(bool fini, int accuracy) : ChangeHeading(QVector(0, 0, 1), accuracy), finish(fini)
 {
     type                = FACING | MOVEMENT;
@@ -530,14 +533,14 @@ void AutoLongHaul::Execute()
     QVector destination          = target->isSubUnit() ? target->Position() : target->LocalPosition(); // get destination
     QVector destinationdirection = (destination - myposition);                                         // find vector from us to destination
     double  destinationdistance  = destinationdirection.Magnitude();
-    destinationdirection = destinationdirection * (1. / destinationdistance); // this is a direction, so it is normalize
+    destinationdirection         = destinationdirection * (1. / destinationdistance); // this is a direction, so it is normalize
 
     StraightToTarget = true; // free to fly
 
     if ((parent->graphicOptions.WarpFieldStrength < enough_warp_for_cruise) && (parent->graphicOptions.RampCounter == 0)) {
         // face target unless warp ramping is done and warp is less than some intolerable ammt
         std::shared_ptr<Unit> obstacle = NULL;
-        float maxmultiplier =
+        float                 maxmultiplier =
             CalculateNearestWarpUnit(parent, FLT_MAX, &obstacle, compensate_for_interdiction); // find the unit affecting our spec
         bool currently_inside_landing_zone = false;
         if (obstacle)
@@ -549,10 +552,10 @@ void AutoLongHaul::Execute()
         if (obstacle != NULL && obstacle != target) {
             // if it exists and is not our destination
             QVector obstacledirection = (obstacle->LocalPosition() - myposition); // find vector from us to obstacle
-            double obstacledistance = obstacledirection.Magnitude();
+            double  obstacledistance  = obstacledirection.Magnitude();
 
             obstacledirection = obstacledirection * (1. / obstacledistance); // normalize the obstacle direction as well
-            float angle = obstacledirection.Dot(destinationdirection);
+            float angle       = obstacledirection.Dot(destinationdirection);
             if ((obstacledistance - obstacle->rSize() < destinationdistance - target->rSize()) && (angle > warp_behind_angle)) {
                 StraightToTarget = false;
                 // if our obstacle is closer than obj and the obstacle is not behind us

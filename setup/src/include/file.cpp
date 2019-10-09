@@ -236,8 +236,8 @@ void Modconfig(int setting, char *name, char *group)
     FILE *rp, *wp; // read and write
     char  line[MAX_READ + 1], write[MAX_READ + 1], mid[MAX_READ + 1];
     char *p, *parm, *n_parm, *start_write, *end_write;
-    int commenting = 0; // 0 if scanning, 1 if adding comments, 2 if removing comments
-    int skip;
+    int   commenting = 0; // 0 if scanning, 1 if adding comments, 2 if removing comments
+    int   skip;
     if (useGameConfig() || (rp = fopen(CONFIG.config_file, "r")) == NULL) {
         if ((rp = fopen(mangle_config(CONFIG.config_file).c_str(), "r")) == NULL) {
             fprintf(stderr, "Unable to read from %s\n", CONFIG_FILE);
@@ -265,7 +265,7 @@ void Modconfig(int setting, char *name, char *group)
         end_write = xml_chomp_comment(parm); // Gets the end of the comment block
                                              // parm is everything inside <!-- -->, start_write and end_write
                                              // is everything else (excluding <!-- -->
-        strncpy(mid, parm, MAX_READ); // Mid is used to keep the data inside the comments in memory
+        strncpy(mid, parm, MAX_READ);        // Mid is used to keep the data inside the comments in memory
         mid[strlen(parm)] = '\0';
         n_parm            = next_parm(parm);
         // if (parm[0] == '#' && parm[1] == '#') { fprintf(wp, "%s\n", write); continue; }   We no longer use double # for comments

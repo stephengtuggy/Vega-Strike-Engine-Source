@@ -274,13 +274,13 @@ void PaintText::drawLines(size_t start, size_t count) const
 // This will not accept exponential format, just num-plus-decimal.
 // The argument is optional, but must be ended with a format char.
 // Examples:  #b2.35#, #b#.  #b is not allowed.
-static void parseFormatFloat(const std::string &     str,           // String.
-                             const string::size_type startPos,      // First character to examine.
-                             const string::size_type endPos,        // One past last char to consider.
-                             bool *                  formatSuccess, // OUT: True = It worked.
-                             float *resultValue,                    // OUT: Parsed value.  If no value, not changed.
-                             string::size_type *resultPos,          // OUT: One past last format char.
-                             const char optionalTerminator = '\0'   // Another terminator besides DT_FORMAT_CHAR
+static void parseFormatFloat(const std::string &     str,                      // String.
+                             const string::size_type startPos,                 // First character to examine.
+                             const string::size_type endPos,                   // One past last char to consider.
+                             bool *                  formatSuccess,            // OUT: True = It worked.
+                             float *                 resultValue,              // OUT: Parsed value.  If no value, not changed.
+                             string::size_type *     resultPos,                // OUT: One past last format char.
+                             const char              optionalTerminator = '\0' // Another terminator besides DT_FORMAT_CHAR
 )
 {
     *formatSuccess = false;
@@ -343,7 +343,7 @@ static void parseFormatColor(const string &          str,           // String.
 
 // Parse a format string in a PaintText string.
 // The first character should be the one *after* the initial format char.
-void PaintText::parseFormat(string::size_type startPos,   // Location of beginning of string to examine.
+void PaintText::parseFormat(string::size_type  startPos,  // Location of beginning of string to examine.
                             string::size_type *resultPos, // OUT: Ptr to string past the format string.
                             bool *             endLine    // OUT: True = Done with current line.
 )
@@ -469,17 +469,17 @@ static bool isWordBreak(char c)
 }
 
 // Parse one line of text, create fragments, end line when overflow width.
-void PaintText::parseFragmentsWithCharBreak(TextLine &line,              // Line descriptor.
-                                            string::size_type startPos,  // Location of beginning of string to examine.
-                                            string::size_type endPos,    // Location of one past the last character to examine.
-                                            float maxWidth,              // Can't go beyond this width.
-                                            bool ellipsis,               // True = if line doesn't fit, append ellipsis.
+void PaintText::parseFragmentsWithCharBreak(TextLine &         line,     // Line descriptor.
+                                            string::size_type  startPos, // Location of beginning of string to examine.
+                                            string::size_type  endPos,   // Location of one past the last character to examine.
+                                            float              maxWidth, // Can't go beyond this width.
+                                            bool               ellipsis, // True = if line doesn't fit, append ellipsis.
                                             string::size_type *resultPos // OUT: Ptr to string past the format string.
 )
 {
-    string::size_type curPos = startPos; // Beginning of current part of the string we are working on.
-    double curWidth = maxWidth;          // The width left to work with.
-    bool forceEndLine = false;           // True = end-of-line through format.  False = char width.
+    string::size_type curPos       = startPos; // Beginning of current part of the string we are working on.
+    double            curWidth     = maxWidth; // The width left to work with.
+    bool              forceEndLine = false;    // True = end-of-line through format.  False = char width.
     while (curPos < endPos) {
         // Is there a format char left in this string?
         const string::size_type formatPos = m_text.find(DT_FORMAT_CHAR, curPos);
@@ -583,18 +583,18 @@ void PaintText::parseFragmentsWithCharBreak(TextLine &line,              // Line
 }
 
 // Parse one line of text, create fragments, end line on word break when width overflows.
-void PaintText::parseFragmentsWithWordBreak(TextLine &line,              // Line descriptor.
-                                            string::size_type startPos,  // Location of beginning of string to examine.
-                                            float maxWidth,              // Can't go beyond this width.
+void PaintText::parseFragmentsWithWordBreak(TextLine &         line,     // Line descriptor.
+                                            string::size_type  startPos, // Location of beginning of string to examine.
+                                            float              maxWidth, // Can't go beyond this width.
                                             string::size_type *resultPos // OUT: Ptr to string past the format string.
 )
 {
-    string::size_type curPos = startPos;              // Beginning of current part of the string we are working on.
-    double                  curWidth = maxWidth;      // The width left to work with.
-    const string::size_type endPos   = m_text.size(); // One past the end of the string.
-    bool forceEndLine = false;                        // True = end-of-line through format.  False = char width.
-    LayoutState origLayout = m_layout;                // The original layout state before we start the line.
-    string::size_type wordBreakPos = endPos;          // Previous word break location in text.
+    string::size_type       curPos       = startPos;      // Beginning of current part of the string we are working on.
+    double                  curWidth     = maxWidth;      // The width left to work with.
+    const string::size_type endPos       = m_text.size(); // One past the end of the string.
+    bool                    forceEndLine = false;         // True = end-of-line through format.  False = char width.
+    LayoutState             origLayout   = m_layout;      // The original layout state before we start the line.
+    string::size_type       wordBreakPos = endPos;        // Previous word break location in text.
     // In this loop we just measure the width.  We find the end of the current line in m_text,
     // then call parseFragmentsWithCharBreak once we know how far to go.
     while (curPos < endPos) {
@@ -725,7 +725,7 @@ void PaintText::calcLayout(void)
 
             // Get the first line of chars, including the length.
             string::size_type endNextLinePos = 0;
-            m_layout.currentLineSpacing = BOGUS_LINE_SPACING; // Line spacing for this line only. Bogus value.
+            m_layout.currentLineSpacing      = BOGUS_LINE_SPACING; // Line spacing for this line only. Bogus value.
             parseFragmentsWithWordBreak(*currentLine, nextLinePos, maxLineWidth, &endNextLinePos);
             if (m_layout.currentLineSpacing == BOGUS_LINE_SPACING) {
                 // We found no format command for current line spacing.  Use permanent spacing.

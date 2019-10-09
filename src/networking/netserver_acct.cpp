@@ -140,7 +140,7 @@ bool NetServer::saveAccount(int i)
     // SEND THE BUFFERS TO ACCOUNT SERVER
     if (cp && acctserver && acct_con) {
         std::shared_ptr<Unit> un = cp->GetParent();
-        ClientPtr clt;
+        ClientPtr             clt;
         if (un)
             clt = getClientFromSerial(un->GetSerial());
         if (!clt || !un) {

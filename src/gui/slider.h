@@ -89,20 +89,20 @@ class Slider : public Control
 
     // VARIABLES
   protected:
-    int m_minValue;                 // The minimum value in the scrolling range.
-    int m_maxValue;                 // The maximum value in the scrolling range.
-    float m_thumbLength;            // The size of the thumb relative to height/width of slider.
+    int      m_minValue;            // The minimum value in the scrolling range.
+    int      m_maxValue;            // The maximum value in the scrolling range.
+    float    m_thumbLength;         // The size of the thumb relative to height/width of slider.
     float    m_originalThumbLength; // Original setting for thumb length.
     int      m_pageSize;            // The number of units in a "page".
     GFXColor m_thumbColor;          // Color to paint the thumb.
     GFXColor m_thumbOutlineColor;   // Color of outline for thumb.
 
-    int        m_position;        // The current position.
-    bool       m_vertical;        // True = Vertical, false = horizontal.
-    MouseState m_mouseState;      // Which state we are in while the mouse button is pressed.
-    float      m_buttonDownMouse; // Location where the mouse button was pressed down.
-    int m_buttonDownPosition;     // Position of slider when mouse button was pressed down.
-    Rect m_thumbRect;             // Remembered position of the thumb.
+    int        m_position;           // The current position.
+    bool       m_vertical;           // True = Vertical, false = horizontal.
+    MouseState m_mouseState;         // Which state we are in while the mouse button is pressed.
+    float      m_buttonDownMouse;    // Location where the mouse button was pressed down.
+    int        m_buttonDownPosition; // Position of slider when mouse button was pressed down.
+    Rect       m_thumbRect;          // Remembered position of the thumb.
 };
 
 #endif //__SLIDER_H__

@@ -123,8 +123,8 @@ void FireAt::SignalChosenTarget()
 // temporary way of choosing
 struct TargetAndRange {
     std::shared_ptr<Unit> t;
-    float range;
-    float relation;
+    float                 range;
+    float                 relation;
     TargetAndRange(std::shared_ptr<Unit> tt, float r, float rel)
     {
         t              = tt;
@@ -135,7 +135,7 @@ struct TargetAndRange {
 
 struct RangeSortedTurrets {
     std::shared_ptr<Unit> tur;
-    float gunrange;
+    float                 gunrange;
     RangeSortedTurrets(std::shared_ptr<Unit> t, float r)
     {
         tur      = t;
@@ -150,7 +150,7 @@ struct RangeSortedTurrets {
 struct TurretBin {
     float                      maxrange;
     vector<RangeSortedTurrets> turret;
-    vector<TargetAndRange> listOfTargets[2]; // we have the over (and eq) 16 crowd and the under 16
+    vector<TargetAndRange>     listOfTargets[2]; // we have the over (and eq) 16 crowd and the under 16
     TurretBin()
     {
         maxrange = 0;
@@ -210,7 +210,7 @@ void AssignTBin(std::shared_ptr<Unit> su, vector<TurretBin> &tbin)
     grange = FLT_MAX;
     su->getAverageGunSpeed(gspeed, grange, mrange);
     {
-        float ggspeed, ggrange, mmrange;
+        float                 ggspeed, ggrange, mmrange;
         std::shared_ptr<Unit> ssu;
         for (un_iter i = su->getSubUnits(); (ssu = *i) != NULL; ++i) {
             ssu->getAverageGunSpeed(ggspeed, ggrange, mmrange);
@@ -227,13 +227,14 @@ void AssignTBin(std::shared_ptr<Unit> su, vector<TurretBin> &tbin)
     tbin[bnum].turret.push_back(RangeSortedTurrets(su, grange));
 }
 
-float Priority(std::shared_ptr<Unit> me, std::shared_ptr<Unit> targ, float gunrange, float rangetotarget, float relationship, char *rolepriority)
+float Priority(
+    std::shared_ptr<Unit> me, std::shared_ptr<Unit> targ, float gunrange, float rangetotarget, float relationship, char *rolepriority)
 {
     if (relationship >= 0)
         return -1;
     if (targ->GetHull() < 0)
         return -1;
-    *rolepriority = ROLES::getPriority(me->attackPreference())[targ->unitRole()]; // number btw 0 and 31 higher better
+    *rolepriority        = ROLES::getPriority(me->attackPreference())[targ->unitRole()]; // number btw 0 and 31 higher better
     char invrolepriority = 31 - *rolepriority;
     if (invrolepriority <= 0)
         return -1;
@@ -266,7 +267,7 @@ float Priority(std::shared_ptr<Unit> me, std::shared_ptr<Unit> targ, float gunra
     static float threat_weight   = XMLSupport::parse_float(vs_config->getVariable("AI", "Targetting", "ThreatWeight", ".5"));
     float        threat_priority = (me->Threat() == targ) ? threat_weight : 0;
     threat_priority += (targ->Target() == me) ? threat_weight : 0;
-    float role_priority01 = ((float)*rolepriority) / 31.;
+    float role_priority01  = ((float)*rolepriority) / 31.;
     float range_priority01 = .5 * gunrange / rangetotarget; // number between 0 and 1 for most ships 1 is best
     return range_priority01 * role_priority01 + inertial_priority + threat_priority;
 }
@@ -297,8 +298,8 @@ template <class T, size_t n> class StaticTuple
 
 template <size_t numTuple> class ChooseTargetClass
 {
-    std::shared_ptr<Unit> parent;
-    std::shared_ptr<Unit> parentparent;
+    std::shared_ptr<Unit>        parent;
+    std::shared_ptr<Unit>        parentparent;
     vector<TurretBin> *          tbin;
     StaticTuple<float, numTuple> maxinnerrangeless;
     StaticTuple<float, numTuple> maxinnerrangemore;
@@ -318,7 +319,7 @@ template <size_t numTuple> class ChooseTargetClass
     {
     }
     void init(FireAt *                            fireat,
-              std::shared_ptr<Unit> un,
+              std::shared_ptr<Unit>               un,
               float                               gunrange,
               vector<TurretBin> *                 tbin,
               const StaticTuple<float, numTuple> &innermaxrange,
@@ -343,10 +344,10 @@ template <size_t numTuple> class ChooseTargetClass
         reachedMore           = false;
         reachedLess           = false;
         this->priority        = -1;
-        this->rolepriority = 31;
-        this->gunrange     = gunrange;
-        this->numtargets   = 0;
-        this->maxtargets   = maxtargets;
+        this->rolepriority    = 31;
+        this->gunrange        = gunrange;
+        this->numtargets      = 0;
+        this->maxtargets      = maxtargets;
     }
     bool acquire(std::shared_ptr<Unit> un, float distance)
     {
@@ -424,7 +425,7 @@ void FireAt::ChooseTargets(int numtargs, bool force)
 {
     float gunspeed, gunrange, missilerange;
     parent->getAverageGunSpeed(gunspeed, gunrange, missilerange);
-    static float targettimer = UniverseUtil::GetGameTime(); // timer used to determine passage of physics frames
+    static float targettimer     = UniverseUtil::GetGameTime(); // timer used to determine passage of physics frames
     static float mintimetoswitch = XMLSupport::parse_float(vs_config->getVariable("AI", "Targetting", "MinTimeToSwitchTargets", "3"));
     static float minnulltimetoswitch =
         XMLSupport::parse_float(vs_config->getVariable("AI", "Targetting", "MinNullTimeToSwitchTargets", "5"));
@@ -445,7 +446,7 @@ void FireAt::ChooseTargets(int numtargs, bool force)
         return; // don't switch if switching too soon
 
     std::shared_ptr<Unit> curtarg = parent->Target();
-    int   hastarg = (curtarg == NULL) ? 0 : 1;
+    int                   hastarg = (curtarg == NULL) ? 0 : 1;
     // Following code exists to limit the number of craft polling for a target in a given frame - this is an expensive operation, and needs
     // to be spread out, or there will be pauses.
     static float simatom = XMLSupport::parse_float(vs_config->getVariable("general", "simulation_atom", "0.1"));
@@ -466,7 +467,7 @@ void FireAt::ChooseTargets(int numtargs, bool force)
     if (!(pollindex[hastarg] % ((prevpollindex[hastarg] / numpollers[hastarg]) +
                                 1))) // spread out, in modulo fashion, the possibility of changing one's target. Use previous physics frame
                                      // count of craft to estimate current number of craft
-        numpolled[hastarg]++; // if a more likely candidate, we're going to search for a target.
+        numpolled[hastarg]++;        // if a more likely candidate, we're going to search for a target.
     else
         return; // skipped to achieve better fairness - see comment on modulo distribution above
     if (curtarg)
@@ -483,9 +484,9 @@ void FireAt::ChooseTargets(int numtargs, bool force)
     }
     // not   allowed to switch targets
     numprocessed++;
-    vector<TurretBin> tbin;
+    vector<TurretBin>     tbin;
     std::shared_ptr<Unit> su    = NULL;
-    un_iter           subun = parent->getSubUnits();
+    un_iter               subun = parent->getSubUnits();
     for (; (su = *subun) != NULL; ++subun) {
         static unsigned int inert          = ROLES::getRole("INERT");
         static unsigned int pointdef       = ROLES::getRole("POINTDEF");
@@ -648,7 +649,7 @@ FireAt::~FireAt()
 
 unsigned int FireBitmask(std::shared_ptr<Unit> parent, bool shouldfire, bool firemissile)
 {
-    unsigned int firebitm = ROLES::EVERYTHING_ELSE;
+    unsigned int          firebitm = ROLES::EVERYTHING_ELSE;
     std::shared_ptr<Unit> un       = parent->Target();
     if (un) {
         firebitm = (1 << un->unitRole());

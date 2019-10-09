@@ -39,6 +39,9 @@ class Pilot
         return comm_face;
     }
     float GetEffectiveRelationship(const std::shared_ptr<Unit> parent, const std::shared_ptr<Unit> target) const;
-    float adjustSpecificRelationship(std::shared_ptr<Unit> parent, void *aggressor, float value, int guessedFaction /*pass in neutral otherwise*/);
+    float adjustSpecificRelationship(std::shared_ptr<Unit> parent,
+                                     void *                aggressor,
+                                     float                 value,
+                                     int                   guessedFaction /*pass in neutral otherwise*/);
     void  DoHit(std::shared_ptr<Unit> parent, void *aggressor, int guessedFaction /*pass in neutral otherwise*/);
 };

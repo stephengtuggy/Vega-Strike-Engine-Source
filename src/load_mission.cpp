@@ -256,7 +256,7 @@ void LoadMission(const char *nission_name, const std::string &script, bool loadF
     char                                  fightername[1024];
     vector<Flightgroup *>::const_iterator siter;
     vector<Flightgroup *>                 fg = active_missions.back()->flightgroups;
-    std::shared_ptr<Unit> fighter;
+    std::shared_ptr<Unit>                 fighter;
     if (Network != NULL) {
         for (siter = fg.begin(); siter != fg.end(); siter++) {
             Flightgroup *fg       = *siter;

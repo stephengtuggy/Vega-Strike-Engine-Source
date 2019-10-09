@@ -74,7 +74,7 @@ class Order
     {
         /*not implemented see fire.cpp*/
     }
-    virtual bool PursueTarget(std::shared_ptr<Unit> , bool isleader)
+    virtual bool PursueTarget(std::shared_ptr<Unit>, bool isleader)
     {
         return false;
     }

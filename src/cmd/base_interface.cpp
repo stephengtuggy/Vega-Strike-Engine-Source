@@ -806,7 +806,7 @@ void BaseInterface::MouseOver(int xbeforecalc, int ybeforecalc)
 {
     float x, y;
     CalculateRealXAndY(xbeforecalc, ybeforecalc, &x, &y);
-    int         i       = rooms[curroom]->MouseOver(this, x, y); // FIXME Whatever this is, it shouldn't be named just "i"; & possibly should be size_t
+    int i = rooms[curroom]->MouseOver(this, x, y); // FIXME Whatever this is, it shouldn't be named just "i"; & possibly should be size_t
     Room::Link *link    = 0;
     Room::Link *hotlink = 0;
     if (i >= 0)
@@ -840,8 +840,8 @@ void BaseInterface::MouseOver(int xbeforecalc, int ybeforecalc)
         float cx, cy;
         float dist_cur2link;
         for (i = 0; i < static_cast<int>(rooms[curroom]->links.size()); i++) {
-            cx = (rooms[curroom]->links[i]->x + (rooms[curroom]->links[i]->wid / 2)); // get the x center of the location
-            cy = (rooms[curroom]->links[i]->y + (rooms[curroom]->links[i]->hei / 2)); // get the y center of the location
+            cx            = (rooms[curroom]->links[i]->x + (rooms[curroom]->links[i]->wid / 2)); // get the x center of the location
+            cy            = (rooms[curroom]->links[i]->y + (rooms[curroom]->links[i]->hei / 2)); // get the y center of the location
             dist_cur2link = sqrt(pow((cx - x), 2) + pow((cy - y), 2));
             if (dist_cur2link < defined_distance)
                 rooms[curroom]->links[i]->alpha = (1 - (dist_cur2link / defined_distance));
@@ -1044,8 +1044,8 @@ BaseInterface::Room::Talk::Talk(const std::string &ind, const std::string &pytho
 
 double compute_light_dot(std::shared_ptr<Unit> base, std::shared_ptr<Unit> un)
 {
-    StarSystem *ss  = base->getStarSystem();
-    double      ret = -1;
+    StarSystem *          ss  = base->getStarSystem();
+    double                ret = -1;
     std::shared_ptr<Unit> st;
     std::shared_ptr<Unit> base_owner = NULL;
     if (ss) {
@@ -1065,7 +1065,7 @@ double compute_light_dot(std::shared_ptr<Unit> base, std::shared_ptr<Unit> un)
                     }
 #endif
                 } else {
-                    un_iter ui   = ((Planet *)st)->satellites.createIterator();
+                    un_iter               ui   = ((Planet *)st)->satellites.createIterator();
                     std::shared_ptr<Unit> ownz = NULL;
                     for (; (ownz = *ui); ++ui)
                         if (ownz == base)
@@ -1200,7 +1200,7 @@ void BaseInterface::Terminate()
         terminate_scheduled = true;
     } else {
         std::shared_ptr<Unit> un  = caller.GetUnit();
-        int   cpt = UnitUtil::isPlayerStarship(un);
+        int                   cpt = UnitUtil::isPlayerStarship(un);
         if (un && cpt >= 0) {
             vector<string> vec;
             vec.push_back(string());
@@ -1218,8 +1218,8 @@ void BaseInterface::Room::Launch::Click(BaseInterface *base, float x, float y, i
 {
     if (state == WS_MOUSE_UP) {
         Link::Click(base, x, y, button, state);
-        static bool auto_undock_var = XMLSupport::parse_bool(vs_config->getVariable("physics", "AutomaticUnDock", "true"));
-        bool        auto_undock     = auto_undock_var;
+        static bool           auto_undock_var = XMLSupport::parse_bool(vs_config->getVariable("physics", "AutomaticUnDock", "true"));
+        bool                  auto_undock     = auto_undock_var;
         std::shared_ptr<Unit> bas             = base->baseun.GetUnit();
         std::shared_ptr<Unit> playa           = base->caller.GetUnit();
         if (Network != NULL && auto_undock && playa && bas) {

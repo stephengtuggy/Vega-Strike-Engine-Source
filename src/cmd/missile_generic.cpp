@@ -91,8 +91,12 @@ void Missile::Kill(bool erase)
     Discharge();
     Unit::Kill(erase);
 }
-void Missile::reactToCollision(
-    std::shared_ptr<Unit> smaller, const QVector &biglocation, const Vector &bignormal, const QVector &smalllocation, const Vector &smallnormal, float dist)
+void Missile::reactToCollision(std::shared_ptr<Unit> smaller,
+                               const QVector &       biglocation,
+                               const Vector &        bignormal,
+                               const QVector &       smalllocation,
+                               const Vector &        smallnormal,
+                               float                 dist)
 {
     static bool doesmissilebounce = XMLSupport::parse_bool(vs_config->getVariable("physics", "missile_bounce", "false"));
     if (doesmissilebounce)
@@ -111,10 +115,10 @@ std::shared_ptr<Unit> getNearestTarget(std::shared_ptr<Unit> me)
 {
     return NULL; // THIS FUNCTION IS TOO SLOW__AND ECM SHOULD WORK DIFFERENTLY ANYHOW...WILL SAVE FIXING IT FOR LATER
 
-    QVector pos(me->Position());
+    QVector               pos(me->Position());
     std::shared_ptr<Unit> un       = NULL;
     std::shared_ptr<Unit> targ     = NULL;
-    double  minrange = FLT_MAX;
+    double                minrange = FLT_MAX;
     for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = (*i)); ++i) {
         if (un == me)
             continue;

@@ -20,7 +20,8 @@ class Prediction
   public:
     Prediction();
     virtual ~Prediction();
-    virtual void InitInterpolation(std::shared_ptr<Unit> un, const ClientState &last_packet_state, double elapsed_since_last_packet, double deltatime);
+    virtual void
+    InitInterpolation(std::shared_ptr<Unit> un, const ClientState &last_packet_state, double elapsed_since_last_packet, double deltatime);
 
     // Interpolate between current received position and predicted position at time 0+deltatime
     // On the first call, deltatime is the lag value between client and server
@@ -33,8 +34,9 @@ class Prediction
 class NullPrediction : public Prediction
 {
   public:
-    virtual void    InitInterpolation(std::shared_ptr<Unit> un, const ClientState &last_packet_state, double elapsed_since_last_packet, double deltatime);
-    virtual QVector InterpolatePosition(std::shared_ptr<Unit> un, double deltatime) const;
+    virtual void
+                       InitInterpolation(std::shared_ptr<Unit> un, const ClientState &last_packet_state, double elapsed_since_last_packet, double deltatime);
+    virtual QVector    InterpolatePosition(std::shared_ptr<Unit> un, double deltatime) const;
     virtual Quaternion InterpolateOrientation(std::shared_ptr<Unit> un, double deltatime) const;
 };
 
@@ -52,8 +54,9 @@ class CubicSplinePrediction : virtual public Prediction
     CubicSpline interpolation_spline;
 
   public:
-    virtual void    InitInterpolation(std::shared_ptr<Unit> un, const ClientState &last_packet_state, double elapsed_since_last_packet, double deltatime);
-    virtual QVector InterpolatePosition(std::shared_ptr<Unit> un, double deltatime) const;
+    virtual void
+                       InitInterpolation(std::shared_ptr<Unit> un, const ClientState &last_packet_state, double elapsed_since_last_packet, double deltatime);
+    virtual QVector    InterpolatePosition(std::shared_ptr<Unit> un, double deltatime) const;
     virtual Quaternion InterpolateOrientation(std::shared_ptr<Unit> un, double deltatime) const;
 };
 

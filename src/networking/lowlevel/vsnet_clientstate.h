@@ -78,8 +78,8 @@ class ClientState
     {
         return this->SPECWarpMultiplier;
     }
-    // NO longer supported--wasn't indicative of actual aggregated accel		Vector		getAcceleration() const { retu //rn if you change this,
-    // change setAcceleration too, and all consturctor this->accel;}
+    // NO longer supported--wasn't indicative of actual aggregated accel		Vector		getAcceleration() const { retu //rn if you change
+    // this, change setAcceleration too, and all consturctor this->accel;}
     void setAcceleration(Vector acc)
     {
     }

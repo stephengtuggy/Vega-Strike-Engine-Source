@@ -18,8 +18,8 @@ unsigned char      getRole(const std::string &role);
 const std::string &getRole(unsigned char role);
 
 // returns the getRoles or'd together
-unsigned int readBitmask(const std::string &s);
-unsigned int getCapitalRoles();
+unsigned int       readBitmask(const std::string &s);
+unsigned int       getCapitalRoles();
 const std::string &getRoleEvents(unsigned char ourrole, unsigned char theirs); // get AI ervent associated with this
 } // namespace ROLES
 #endif

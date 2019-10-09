@@ -27,18 +27,18 @@ struct weapon_info {
         SPECIALMISSILE      = 0x800,
         AUTOTRACKING        = 0x1000
     } size;
-    Vector      offset;
-    int         role_bits;
-    int         sound;
-    float       r, g, b, a;
-    float       Speed, PulseSpeed, RadialSpeed, Range, Radius, Length;
-    float       Damage, PhaseDamage, Stability, Longrange, LockTime;
-    float       EnergyRate, volume;
-    float       Refire() const;
-    bool        isMissile() const;
-    float       TextureStretch;
-    std::string file;
-    std::string weapon_name;
+    Vector              offset;
+    int                 role_bits;
+    int                 sound;
+    float               r, g, b, a;
+    float               Speed, PulseSpeed, RadialSpeed, Range, Radius, Length;
+    float               Damage, PhaseDamage, Stability, Longrange, LockTime;
+    float               EnergyRate, volume;
+    float               Refire() const;
+    bool                isMissile() const;
+    float               TextureStretch;
+    std::string         file;
+    std::string         weapon_name;
     mutable class Mesh *gun;  // requres nonconst to add to orig drawing queue when drawing
     mutable class Mesh *gun1; // requres nonconst to add to orig drawing queue when drawing
     void                init()

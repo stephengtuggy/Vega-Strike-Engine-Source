@@ -18,7 +18,10 @@ Prediction::~Prediction()
 {
 }
 
-void Prediction::InitInterpolation(std::shared_ptr<Unit> un, const ClientState &last_packet_state, double elapsed_since_last_packet, double deltatime)
+void Prediction::InitInterpolation(std::shared_ptr<Unit> un,
+                                   const ClientState &   last_packet_state,
+                                   double                elapsed_since_last_packet,
+                                   double                deltatime)
 {
     // This function is to call after the state have been updated (which should be after receiving a SNAPSHOT)
 
@@ -74,7 +77,10 @@ Transformation Prediction::Interpolate(std::shared_ptr<Unit> un, double deltatim
  ************************************************************************************
  */
 
-void NullPrediction::InitInterpolation(std::shared_ptr<Unit> un, const ClientState &last_packet_state, double elapsed_since_last_packet, double deltatime)
+void NullPrediction::InitInterpolation(std::shared_ptr<Unit> un,
+                                       const ClientState &   last_packet_state,
+                                       double                elapsed_since_last_packet,
+                                       double                deltatime)
 {
 }
 
@@ -129,9 +135,9 @@ Transformation LinearPrediction::Interpolate(std::shared_ptr<Unit> un, double de
  */
 
 void CubicSplinePrediction::InitInterpolation(std::shared_ptr<Unit> un,
-                                              const ClientState &last_packet_state,
-                                              double             elapsed_since_last_packet,
-                                              double             deltatime)
+                                              const ClientState &   last_packet_state,
+                                              double                elapsed_since_last_packet,
+                                              double                deltatime)
 {
     Prediction::InitInterpolation(un, last_packet_state, elapsed_since_last_packet, deltatime);
 

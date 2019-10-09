@@ -68,7 +68,7 @@ class VSRandom
     unsigned int mt[NN_CONSTANT]; /* the array for the state vector  */
 #undef NN_CONSTANT
     unsigned int mti; /* mti==N+1 means mt[N] is not initialized */
-    /* initializes mt[N] with a seed */
+                      /* initializes mt[N] with a seed */
   public:
     VSRandom(unsigned int s) : mti(N() + 1)
     {

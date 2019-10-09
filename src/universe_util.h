@@ -100,7 +100,7 @@ std::shared_ptr<Unit> getUnitByName(std::string name);
 /// This function gets a unit given an unreferenceable pointer to it - much faster if finder is provided
 std::shared_ptr<Unit> getUnitByPtr(void *ptr, std::shared_ptr<Unit> finder = 0, bool allowslowness = true);
 std::shared_ptr<Unit> getScratchUnit();
-void  setScratchUnit(std::shared_ptr<Unit> );
+void                  setScratchUnit(std::shared_ptr<Unit>);
 
 void    precacheUnit(std::string name, std::string faction);
 QVector getScratchVector();
@@ -110,16 +110,16 @@ void    cacheAnimation(std::string anim);
 
 /// this function launches a wormhole or a jump point.
 std::shared_ptr<Unit> launchJumppoint(std::string name_string,
-                            std::string faction_string,
-                            std::string type_string,
-                            std::string unittype_string,
-                            std::string ai_string,
-                            int         nr_of_ships,
-                            int         nr_of_waves,
-                            QVector     pos,
-                            std::string squadlogo,
-                            std::string destinations);
-std::string vsConfig(std::string category, std::string option, std::string def);
+                                      std::string faction_string,
+                                      std::string type_string,
+                                      std::string unittype_string,
+                                      std::string ai_string,
+                                      int         nr_of_ships,
+                                      int         nr_of_waves,
+                                      QVector     pos,
+                                      std::string squadlogo,
+                                      std::string destinations);
+std::string           vsConfig(std::string category, std::string option, std::string def);
 
 /// this function launches a normal fighter  the name is the flightgroup name, the type is the ship type, the faction is who it belongs to,
 /// the unittype is usually "unit" unless you want to make asteroids or nebulae or jump points or planets.  the aistring is either a python
@@ -127,14 +127,14 @@ std::string vsConfig(std::string category, std::string option, std::string def);
 /// reinforcements... the position is a tuple (x,y,z) where they appear and the squadlogo is a squadron image...you can leave this the empty
 /// string '' for the default squadron logo.
 std::shared_ptr<Unit> launch(std::string name_string,
-             std::string type_string,
-             std::string faction_string,
-             std::string unittype,
-             std::string ai_string,
-             int         nr_of_ships,
-             int         nr_of_waves,
-             QVector     pos,
-             std::string sqadlogo);
+                             std::string type_string,
+                             std::string faction_string,
+                             std::string unittype,
+                             std::string ai_string,
+                             int         nr_of_ships,
+                             int         nr_of_waves,
+                             QVector     pos,
+                             std::string sqadlogo);
 
 /// this gets a random cargo type (useful for cargo missions) from either any category if category is '' or else from a specific category
 /// 'Contraband'  comes to mind!
@@ -264,7 +264,7 @@ std::shared_ptr<Unit> getPlayer();
 
 /// this gets a player number (if in splitscreen mode)
 std::shared_ptr<Unit> getPlayerX(int which);
-unsigned int getCurrentPlayer();
+unsigned int          getCurrentPlayer();
 
 /// this gets the number of active players
 int getNumPlayers();
@@ -337,15 +337,15 @@ void cacheAnimation(std::string anim);
 
 /// this function launches a wormhole or ajump point.
 std::shared_ptr<Unit> launchJumppoint(std::string name_string,
-                      std::string faction_string,
-                      std::string type_string,
-                      std::string unittype_string,
-                      std::string ai_string,
-                      int         nr_of_ships,
-                      int         nr_of_waves,
-                      QVector     pos,
-                      std::string squadlogo,
-                      std::string destinations);
+                                      std::string faction_string,
+                                      std::string type_string,
+                                      std::string unittype_string,
+                                      std::string ai_string,
+                                      int         nr_of_ships,
+                                      int         nr_of_waves,
+                                      QVector     pos,
+                                      std::string squadlogo,
+                                      std::string destinations);
 
 /// this function launches a normal fighter  the name is the flightgroup name, the type is the ship type, the faction is who it belongs to,
 /// the unittype is usually "unit" unless you want to make asteroids or nebulae or jump points or planets.  the aistring is either a python
@@ -353,14 +353,14 @@ std::shared_ptr<Unit> launchJumppoint(std::string name_string,
 /// reinforcements... the position is a tuple (x,y,z) where they appear and the squadlogo is a squadron image...you can leave this the empty
 /// string '' for the default squadron logo.
 std::shared_ptr<Unit> launch(std::string name_string,
-             std::string type_string,
-             std::string faction_string,
-             std::string unittype,
-             std::string ai_string,
-             int         nr_of_ships,
-             int         nr_of_waves,
-             QVector     pos,
-             std::string sqadlogo);
+                             std::string type_string,
+                             std::string faction_string,
+                             std::string unittype,
+                             std::string ai_string,
+                             int         nr_of_ships,
+                             int         nr_of_waves,
+                             QVector     pos,
+                             std::string sqadlogo);
 
 /// this gets a random cargo type (useful for cargo missions) from either any category if category is '' or else from a specific category
 /// 'Contraband'  comes to mind!
@@ -399,8 +399,8 @@ std::shared_ptr<Unit> getPlayer();
 
 /// this gets a player number (if in splitscreen mode)
 std::shared_ptr<Unit> getPlayerX(int which);
-void         StopAllSounds(void);
-unsigned int getCurrentPlayer();
+void                  StopAllSounds(void);
+unsigned int          getCurrentPlayer();
 
 /// this gets the number of active players
 int          getNumPlayers();

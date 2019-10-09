@@ -64,7 +64,8 @@ class VDU : public VSSprite
     /// Draws the sprite representing the current starship. Returns proper location and size for future use (with weaps and damage display)
     void DrawTargetSpr(VSSprite *s, float percent, float &x, float &y, float &w, float &h);
     /// draws the target camera
-    void DrawStarSystemAgain(float x, float y, float w, float h, VIEWSTYLE viewStyle, std::shared_ptr<Unit> parent, std::shared_ptr<Unit> target);
+    void DrawStarSystemAgain(
+        float x, float y, float w, float h, VIEWSTYLE viewStyle, std::shared_ptr<Unit> parent, std::shared_ptr<Unit> target);
 
   public:
     void ReceivedTargetData()
@@ -98,12 +99,12 @@ class VDU : public VSSprite
     /// Draws the entire VDU, all data, etc
     void Draw(GameCockpit *parentcp, std::shared_ptr<Unit> parent, const GFXColor &c);
     /// Changes the mode of the current VDU to another legal mode
-    void  SwitchMode(std::shared_ptr<Unit> parent);
-    void  SetViewingStyle(VIEWSTYLE vm);
-    void  Scroll(int howmuch);
-    bool  SetCommAnimation(Animation *ani, std::shared_ptr<Unit> unit, bool force);
+    void                  SwitchMode(std::shared_ptr<Unit> parent);
+    void                  SetViewingStyle(VIEWSTYLE vm);
+    void                  Scroll(int howmuch);
+    bool                  SetCommAnimation(Animation *ani, std::shared_ptr<Unit> unit, bool force);
     std::shared_ptr<Unit> GetCommunicating();
-    bool  CheckCommAnimation(std::shared_ptr<Unit> un) const; // returns true if unit is talkin or uninterruptable going on
+    bool                  CheckCommAnimation(std::shared_ptr<Unit> un) const; // returns true if unit is talkin or uninterruptable going on
 };
 
 int parse_vdu_type(const char *s);

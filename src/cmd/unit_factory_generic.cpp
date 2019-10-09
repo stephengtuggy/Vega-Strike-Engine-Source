@@ -117,7 +117,7 @@ void UnitFactory::addPlanetBuffer(NetBuffer &                       netbuf,
                                   BLENDFUNC                         ds,
                                   const vector<string> &            dest,
                                   const QVector &                   orbitcent,
-                                  std::shared_ptr<Unit> parent,
+                                  std::shared_ptr<Unit>             parent,
                                   const GFXMaterial &               ourmat,
                                   const std::vector<GFXLightLocal> &ligh,
                                   int                               faction,
@@ -178,9 +178,9 @@ Planet *UnitFactory::parsePlanetBuffer(NetBuffer &netbuf)
         memcpy(ctmp, tmp.c_str(), tmp.length());
         dest.push_back(ctmp);
     }
-    const QVector orbitcent(netbuf.getQVector());
+    const QVector         orbitcent(netbuf.getQVector());
     std::shared_ptr<Unit> un  = UniverseUtil::GetUnitFromSerial(netbuf.getSerial());
-    GFXMaterial   mat = netbuf.getGFXMaterial();
+    GFXMaterial           mat = netbuf.getGFXMaterial();
 
     vector<GFXLightLocal> lights;
     unsigned short        nblight = netbuf.getShort();
@@ -304,7 +304,7 @@ void UnitFactory::addMissileBuffer(NetBuffer &netbuf, const Missile *mis)
                      mis->getFullname(),
                      mis->faction,
                      "" /* modifications */,
-                     ClientState(static_cast<const std::shared_ptr<Unit> >(mis)),
+                     ClientState(static_cast<const std::shared_ptr<Unit>>(mis)),
                      mis->damage,
                      mis->phasedamage,
                      mis->time,

@@ -37,10 +37,10 @@ class Sensor
     Sensor(std::shared_ptr<Unit> player);
 
     std::shared_ptr<Unit> GetPlayer() const;
-    float GetCloseRange() const;
-    float GetMaxRange() const;
-    float GetMaxCone() const;
-    float GetLockCone() const;
+    float                 GetCloseRange() const;
+    float                 GetMaxRange() const;
+    float                 GetMaxCone() const;
+    float                 GetLockCone() const;
     // Does the sensor support the Identify Friend or Foe capability?
     bool UseFriendFoe() const;
     // Can the sensor distinguish ships from planets?
@@ -48,8 +48,8 @@ class Sensor
     // Can the sensor detect harmful ships
     bool UseThreatAssessment() const;
 
-    Track CreateTrack(const std::shared_ptr<Unit> ) const;
-    Track CreateTrack(const std::shared_ptr<Unit> , const Vector &) const;
+    Track CreateTrack(const std::shared_ptr<Unit>) const;
+    Track CreateTrack(const std::shared_ptr<Unit>, const Vector &) const;
 
     // I am tracking target
     bool IsTracking(const Track &) const;
@@ -63,7 +63,7 @@ class Sensor
     GFXColor GetColor(const Track &) const;
 
   protected:
-    std::shared_ptr<Unit> player;
+    std::shared_ptr<Unit>   player;
     float                   closeRange;
     mutable TrackCollection collection;
     bool                    useThreatAssessment;

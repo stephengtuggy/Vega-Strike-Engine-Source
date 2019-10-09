@@ -53,7 +53,7 @@ bool MatchingMood(const CommunicationMessage &c, float mood, float randomrespons
 int CommunicatingAI::selectCommunicationMessageMood(CommunicationMessage &c, float mood)
 {
     std::shared_ptr<Unit> targ         = c.sender.GetUnit();
-    float relationship = 0;
+    float                 relationship = 0;
     if (targ) {
         relationship = parent->pilot->GetEffectiveRelationship(parent, targ);
         if (targ == parent->Target() && relationship > -1.0)
@@ -119,7 +119,7 @@ void AllUnitsCloseAndEngage(std::shared_ptr<Unit> un, int faction)
 void CommunicatingAI::TerminateContrabandSearch(bool contraband_detected)
 {
     // reports success or failure
-    std::shared_ptr<Unit> un;
+    std::shared_ptr<Unit>     un;
     unsigned char             gender;
     std::vector<Animation *> *comm_face = parent->pilot->getCommFaces(gender);
     if ((un = contraband_searchee.GetUnit())) {
@@ -182,7 +182,7 @@ void CommunicatingAI::UpdateContrabandSearch()
                         GetMadAt(u, 1);
                         SpeedAndCourse = u->GetVelocity();
                     }
-                    float HiddenTotal    = use_hidden_cargo_space ? (u->getHiddenCargoVolume()) : (0);
+                    float                 HiddenTotal    = use_hidden_cargo_space ? (u->getHiddenCargoVolume()) : (0);
                     std::shared_ptr<Unit> contrabandlist = FactionUtil::GetContraband(parent->faction);
                     if (InList(item, contrabandlist) > 0) {
                         // inlist now returns an integer so that we can do this at all...
@@ -384,7 +384,7 @@ void CommunicatingAI::ProcessCommMessage(CommunicationMessage &c)
 {
     if (messagequeue.back()->curstate < messagequeue.back()->fsm->GetUnDockNode()) {
         Order::ProcessCommMessage(c);
-        FSM * tmpfsm = c.fsm;
+        FSM *                 tmpfsm = c.fsm;
         std::shared_ptr<Unit> targ   = c.sender.GetUnit();
         if (targ && UnitUtil::getUnitSystemFile(targ) == UnitUtil::getUnitSystemFile(parent) && !isDockedAtAll(targ)) {
             c.fsm        = FactionUtil::GetConversation(parent->faction, targ->faction);

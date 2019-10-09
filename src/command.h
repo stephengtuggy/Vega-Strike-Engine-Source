@@ -54,7 +54,7 @@ class mItem
     // if inputbit2 is true.
     std::string selectstring; // string to be displayed when selected
     std::string predisplay;   // call virtual function Display(std::string &)
-                            // using this string, IF it's larger than 0.
+                              // using this string, IF it's larger than 0.
 };
 
 class menu

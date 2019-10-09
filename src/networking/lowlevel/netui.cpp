@@ -77,8 +77,8 @@ int NetUIBase::createClientSocket(const AddressIP &remote_ip, bool isTCP, bool i
         // Plus, we use select() for every read/write, so it should be safe.
         if (NONBLOCKING_CONNECT)                     //&&isHTTP) {
             VsnetOSS::set_blocking(local_fd, false); // Connect may hang... we don't want that.
-            // No, it really is good for your health.  You don't have to stare at
-            // the screen for 3 minutes until the OS times out the connection.
+                                                     // No, it really is good for your health.  You don't have to stare at
+                                                     // the screen for 3 minutes until the OS times out the connection.
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
         if (::connect(local_fd, (sockaddr *)&remote_ip, sizeof(struct sockaddr)) == SOCKET_ERROR)

@@ -58,18 +58,18 @@ class Track
   protected:
     // Produced by Sensor::CreateTrack
     friend class Sensor;
-    Track(std::shared_ptr<Unit> , const std::shared_ptr<Unit> );
-    Track(std::shared_ptr<Unit> , const std::shared_ptr<Unit> , const Vector &);
-    Track(std::shared_ptr<Unit> , const std::shared_ptr<Unit> , const Vector &, float);
+    Track(std::shared_ptr<Unit>, const std::shared_ptr<Unit>);
+    Track(std::shared_ptr<Unit>, const std::shared_ptr<Unit>, const Vector &);
+    Track(std::shared_ptr<Unit>, const std::shared_ptr<Unit>, const Vector &, float);
 
     Type::Value IdentifyType() const;
 
   protected:
-    std::shared_ptr<Unit> player;
+    std::shared_ptr<Unit>       player;
     const std::shared_ptr<Unit> target;
-    Vector      position;
-    float       distance;
-    Type::Value type;
+    Vector                      position;
+    float                       distance;
+    Type::Value                 type;
 };
 
 } // namespace Radar

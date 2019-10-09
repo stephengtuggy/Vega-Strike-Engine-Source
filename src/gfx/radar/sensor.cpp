@@ -158,7 +158,7 @@ class CollectRadarTracks
 
   private:
     const Sensor *           sensor;
-    std::shared_ptr<Unit> player;
+    std::shared_ptr<Unit>    player;
     Sensor::TrackCollection *collection;
 };
 
@@ -179,9 +179,9 @@ const Sensor::TrackCollection &Sensor::FindTracksInRange() const
         findObjects(_Universe->activeStarSystem()->collidemap[Unit::UNIT_ONLY], player->location[Unit::UNIT_ONLY], &unitLocator);
     }
     if (allGravUnits) {
-        std::shared_ptr<Unit> target = player->Target();
+        std::shared_ptr<Unit>       target = player->Target();
         const std::shared_ptr<Unit> gravUnit;
-        bool        foundtarget = false;
+        bool                        foundtarget = false;
         for (un_kiter i = _Universe->activeStarSystem()->gravitationalUnits().constIterator(); (gravUnit = *i) != NULL; ++i) {
             unitLocator.action.acquire(gravUnit, UnitUtil::getDistance(player, gravUnit));
             if (gravUnit == target)

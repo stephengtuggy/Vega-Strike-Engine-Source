@@ -32,7 +32,7 @@
 
 using std::list;
 
-typedef list<std::shared_ptr<Unit> >::iterator LUI;
+typedef list<std::shared_ptr<Unit>>::iterator LUI;
 
 typedef std::map<std::string, std::string>           SystemMap;
 typedef std::pair<std::string, std::string>          SystemPair;
@@ -80,13 +80,13 @@ class ZoneMgr
      * CMD_POSUPDATE and replaces CMD_FULLUPDATE.
      */
     enum SnapshotSubCommand {
-        End       = 0, // On client side (recv) : tells the buffer ends
-        PosUpdate = 1, // On client side (send): containing a ship's
-                       // data sent to server for position update
-                       // On client side (recv) : receive minimal update
-                       // data for a ship
-        FullUpdate = 2, // On client side (recv) : receive full update
-                        // info for a ship
+        End       = 0,     // On client side (recv) : tells the buffer ends
+        PosUpdate = 1,     // On client side (send): containing a ship's
+                           // data sent to server for position update
+                           // On client side (recv) : receive minimal update
+                           // data for a ship
+        FullUpdate = 2,    // On client side (recv) : receive full update
+                           // info for a ship
         DamageUpdate = 8,  // On client side (recv) : update changed damages.
         SPECUpdate   = 16, // On client side (recv) : send SPEC mult and ramp.
     };

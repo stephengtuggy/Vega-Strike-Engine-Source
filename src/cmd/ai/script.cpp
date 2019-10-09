@@ -526,8 +526,8 @@ void AIScript::beginElement(const string &name, const AttributeList &attributes)
 void AIScript::endElement(const string &name)
 {
     using namespace AiXml;
-    QVector temp(0, 0, 0);
-    Names   elem = (Names)element_map.lookup(name);
+    QVector               temp(0, 0, 0);
+    Names                 elem = (Names)element_map.lookup(name);
     std::shared_ptr<Unit> tmp;
     switch (elem) {
     case UNKNOWN:

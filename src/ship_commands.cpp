@@ -120,7 +120,7 @@ void ShipCommands::setkps(const char *in)
 {
     if (in == NULL)
         throw "What speed?";
-    float kps    = XMLSupport::parse_float(std::string(in));
+    float                 kps    = XMLSupport::parse_float(std::string(in));
     std::shared_ptr<Unit> player = UniverseUtil::getPlayer();
     if (player) {
         if (game_options.game_speed_lying)

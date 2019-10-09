@@ -36,7 +36,7 @@ int cloakVal(int cloak, int cloakmin, int cloakrate, bool cloakglass)
 
 const std::shared_ptr<Unit> getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0)
 {
-    const char *name     = upgradeName.c_str();
+    const char *                name     = upgradeName.c_str();
     const std::shared_ptr<Unit> partUnit = UnitConstCache::getCachedConst(StringIntKey(name, FactionUtil::GetUpgradeFaction()));
     if (!partUnit) {
         partUnit = UnitConstCache::setCachedConst(StringIntKey(name, FactionUtil::GetUpgradeFaction()),
@@ -130,7 +130,7 @@ void ScoreKill(Cockpit *cp, std::shared_ptr<Unit> un, std::shared_ptr<Unit> kill
             (*killlist)[faction]++;
         killlist->back()++;
     } else if (UnitUtil::getRelationToFaction(un, faction) < 0 && faction != upgrades && faction != planets) {
-        int   whichcp   = rand() % _Universe->numPlayers();
+        int                   whichcp   = rand() % _Universe->numPlayers();
         std::shared_ptr<Unit> whichrecv = _Universe->AccessCockpit(whichcp)->GetParent();
         if (whichrecv != NULL) {
             if (UnitUtil::getUnitSystemFile(whichrecv) == UnitUtil::getUnitSystemFile(un)) {

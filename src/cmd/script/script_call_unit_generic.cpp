@@ -94,8 +94,8 @@ varInst *Mission::call_unit(missionNode *node, int mode)
     }
     callback_module_unit_type method_id = (callback_module_unit_type)node->script.method_id;
     if (method_id == CMT_UNIT_getUnit) {
-        missionNode *nr_node = getArgument(node, mode, 0);
-        int          unit_nr = doIntVar(nr_node, mode);
+        missionNode *         nr_node = getArgument(node, mode, 0);
+        int                   unit_nr = doIntVar(nr_node, mode);
         std::shared_ptr<Unit> my_unit = NULL;
         if (mode == SCRIPT_RUN) {
             StarSystem *ssystem = _Universe->scriptStarSystem();
@@ -121,7 +121,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
         printVarInst(3, viret);
         return viret;
     } else if (method_id == CMT_UNIT_getPlayerX) {
-        int   which   = getIntArg(node, mode, 0);
+        int                   which   = getIntArg(node, mode, 0);
         std::shared_ptr<Unit> my_unit = NULL;
         if (mode == SCRIPT_RUN) {
             int j = 0;
@@ -224,9 +224,9 @@ varInst *Mission::call_unit(missionNode *node, int mode)
         varInst *vireturn = NULL;
         vireturn          = call_olist_new(node, mode);
         if (mode == SCRIPT_RUN) {
-            Cargo *      ret = NULL;
+            Cargo *               ret = NULL;
             std::shared_ptr<Unit> mpl = &GetUnitMasterPartList();
-            unsigned int max = mpl->numCargo();
+            unsigned int          max = mpl->numCargo();
             if (!category.empty()) {
                 size_t Begin, End;
                 mpl->GetSortedCargoCat(category, Begin, End);
@@ -279,7 +279,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
         printVarInst(3, vireturn);
         return vireturn;
     } else {
-        varInst *ovi     = getObjectArg(node, mode);
+        varInst *             ovi     = getObjectArg(node, mode);
         std::shared_ptr<Unit> my_unit = getUnitObject(node, mode, ovi);
         debug(3, node, mode, "unit object: ");
         printVarInst(3, ovi);
@@ -399,11 +399,11 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             viret->type = VAR_VOID;
         } else if (method_id == CMT_UNIT_equal) {
             std::shared_ptr<Unit> other_unit = getUnitArg(node, mode, 1);
-            viret            = newVarInst(VI_TEMP);
-            viret->type      = VAR_BOOL;
-            viret->bool_val  = (my_unit == other_unit); // doesn't dereference anything
+            viret                            = newVarInst(VI_TEMP);
+            viret->type                      = VAR_BOOL;
+            viret->bool_val                  = (my_unit == other_unit); // doesn't dereference anything
         } else if (method_id == CMT_UNIT_getDistance) {
-            float dist = 0.0;
+            float                 dist = 0.0;
             std::shared_ptr<Unit> un   = getUnitArg(node, mode, 1);
             if (mode == SCRIPT_RUN)
                 dist = (my_unit->Position() - un->Position()).Magnitude() - my_unit->rSize() - un->rSize();
@@ -420,7 +420,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             viret->float_val = dist;
         } else if (method_id == CMT_UNIT_getAngle) {
             std::shared_ptr<Unit> other_unit = getUnitArg(node, mode, 1);
-            float angle      = 0.0;
+            float                 angle      = 0.0;
             if (mode == SCRIPT_RUN) {
                 Vector  p, q, r;
                 QVector vectothem = QVector(other_unit->Position() - my_unit->Position()).Normalize();
@@ -532,7 +532,7 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             viret->type     = VAR_BOOL;
             viret->bool_val = res;
         } else if (method_id == CMT_UNIT_getRelation) {
-            float res        = 0.0;
+            float                 res        = 0.0;
             std::shared_ptr<Unit> other_unit = getUnitArg(node, mode, 1);
             if (mode == SCRIPT_RUN)
                 res = my_unit->getRelation(other_unit);
@@ -705,8 +705,8 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             viret->type      = VAR_FLOAT;
             viret->float_val = ret;
         } else if (method_id == CMT_UNIT_getTurret) {
-            missionNode *nr_node     = getArgument(node, mode, 1);
-            int          unit_nr     = doIntVar(nr_node, mode);
+            missionNode *         nr_node     = getArgument(node, mode, 1);
+            int                   unit_nr     = doIntVar(nr_node, mode);
             std::shared_ptr<Unit> turret_unit = NULL;
             if (mode == SCRIPT_RUN) {
                 un_iter uiter = my_unit->getSubUnits();
@@ -880,8 +880,8 @@ varInst *Mission::call_unit(missionNode *node, int mode)
             viret->type = VAR_VOID;
         } else if (method_id == CMT_UNIT_communicateTo) {
             std::shared_ptr<Unit> other_unit = getUnitArg(node, mode, 1);
-            float         mood       = getFloatArg(node, mode, 2);
-            unsigned char sex        = 0;
+            float                 mood       = getFloatArg(node, mode, 2);
+            unsigned char         sex        = 0;
             if (mode == SCRIPT_RUN) {
                 Cockpit *tmp;
                 if ((tmp = _Universe->isPlayerStarship(my_unit))) {
@@ -928,13 +928,13 @@ extern BLENDFUNC parse_alpha(const char *);
 
 std::shared_ptr<Unit> Mission::call_unit_launch(CreateFlightgroup *fg, int type, const string &destinations)
 {
-    int                   faction_nr = FactionUtil::GetFactionIndex(fg->fg->faction);
-    std::shared_ptr<Unit> *               units      = new std::shared_ptr<Unit> [fg->nr_ships];
-    int                   u;
-    std::shared_ptr<Unit> par         = _Universe->AccessCockpit()->GetParent();
-    CollideMap::iterator  metahint[2] = {_Universe->scriptStarSystem()->collidemap[Unit::UNIT_ONLY]->begin(),
+    int                    faction_nr = FactionUtil::GetFactionIndex(fg->fg->faction);
+    std::shared_ptr<Unit> *units      = new std::shared_ptr<Unit>[fg->nr_ships];
+    int                    u;
+    std::shared_ptr<Unit>  par         = _Universe->AccessCockpit()->GetParent();
+    CollideMap::iterator   metahint[2] = {_Universe->scriptStarSystem()->collidemap[Unit::UNIT_ONLY]->begin(),
                                         _Universe->scriptStarSystem()->collidemap[Unit::UNIT_BOLT]->begin()};
-    CollideMap::iterator *hint        = metahint;
+    CollideMap::iterator * hint        = metahint;
     if (par && !is_null(par->location[Unit::UNIT_ONLY]) && !is_null(par->location[Unit::UNIT_BOLT]) &&
         par->activeStarSystem == _Universe->scriptStarSystem())
         hint = par->location;
@@ -996,7 +996,7 @@ std::shared_ptr<Unit> Mission::call_unit_launch(CreateFlightgroup *fg, int type,
         }
         units[u] = my_unit;
     }
-    float fg_radius = units[0]->rSize();
+    float                 fg_radius = units[0]->rSize();
     std::shared_ptr<Unit> my_unit;
     for (u = 0; u < fg->nr_ships; u++) {
         my_unit = units[u];
@@ -1026,8 +1026,8 @@ std::shared_ptr<Unit> Mission::call_unit_launch(CreateFlightgroup *fg, int type,
 
 void Mission::findNextEnemyTarget(std::shared_ptr<Unit> my_unit)
 {
-    StarSystem *ssystem = _Universe->scriptStarSystem();
-    un_iter     uiter(ssystem->getUnitList().createIterator());
+    StarSystem *          ssystem = _Universe->scriptStarSystem();
+    un_iter               uiter(ssystem->getUnitList().createIterator());
     std::shared_ptr<Unit> unit;
     std::shared_ptr<Unit> target_unit = NULL;
     for (; (unit = *uiter); ++uiter)

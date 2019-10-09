@@ -34,11 +34,11 @@ class GameMissile : public GameUnit<Missile>
         GameUnit<Missile>::Kill(erase);
     }
     virtual void reactToCollision(std::shared_ptr<Unit> smaller,
-                                  const QVector &biglocation,
-                                  const Vector & bignormal,
-                                  const QVector &smalllocation,
-                                  const Vector & smallnormal,
-                                  float          dist)
+                                  const QVector &       biglocation,
+                                  const Vector &        bignormal,
+                                  const QVector &       smalllocation,
+                                  const Vector &        smallnormal,
+                                  float                 dist)
     {
         static bool doesmissilebounce = XMLSupport::parse_bool(vs_config->getVariable("physics", "missile_bounce", "false"));
         if (doesmissilebounce)

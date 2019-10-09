@@ -18,10 +18,10 @@ class DockingOps : public MoveTo
     DockingOps(std::shared_ptr<Unit> unitToDockWith, Order *oldstate, bool physicallyDock, bool keeptrying);
     virtual void SetParent(std::shared_ptr<Unit> par);
     void         Execute();
-    bool         RequestClearence(std::shared_ptr<Unit> );
-    bool         DockToTarget(std::shared_ptr<Unit> );
-    bool         PerformDockingOperations(std::shared_ptr<Unit> );
-    bool         Undock(std::shared_ptr<Unit> );
+    bool         RequestClearence(std::shared_ptr<Unit>);
+    bool         DockToTarget(std::shared_ptr<Unit>);
+    bool         PerformDockingOperations(std::shared_ptr<Unit>);
+    bool         Undock(std::shared_ptr<Unit>);
     virtual void Destroy();
     void         RestoreOldAI();
 };

@@ -360,7 +360,8 @@ void CommunicationMessage::SetCurrentState(int msg, std::vector<Animation *> *an
     assert(this->curstate >= 0);
 }
 
-CommunicationMessage::CommunicationMessage(std::shared_ptr<Unit> send, std::shared_ptr<Unit> recv, int messagechoice, std::vector<Animation *> *ani, unsigned char sex)
+CommunicationMessage::CommunicationMessage(
+    std::shared_ptr<Unit> send, std::shared_ptr<Unit> recv, int messagechoice, std::vector<Animation *> *ani, unsigned char sex)
 {
     Init(send, recv);
     prevstate = fsm->getDefaultState(send->getRelation(recv));
@@ -382,15 +383,22 @@ CommunicationMessage::CommunicationMessage(
     assert(this->curstate >= 0);
 }
 
-CommunicationMessage::CommunicationMessage(std::shared_ptr<Unit> send, std::shared_ptr<Unit> recv, std::vector<Animation *> *ani, unsigned char sex)
+CommunicationMessage::CommunicationMessage(std::shared_ptr<Unit>     send,
+                                           std::shared_ptr<Unit>     recv,
+                                           std::vector<Animation *> *ani,
+                                           unsigned char             sex)
 {
     Init(send, recv);
     SetAnimation(ani, sex);
     assert(this->curstate >= 0);
 }
 
-CommunicationMessage::CommunicationMessage(
-    std::shared_ptr<Unit> send, std::shared_ptr<Unit> recv, const CommunicationMessage &prevstate, int curstate, std::vector<Animation *> *ani, unsigned char sex)
+CommunicationMessage::CommunicationMessage(std::shared_ptr<Unit>       send,
+                                           std::shared_ptr<Unit>       recv,
+                                           const CommunicationMessage &prevstate,
+                                           int                         curstate,
+                                           std::vector<Animation *> *  ani,
+                                           unsigned char               sex)
 {
     Init(send, recv);
     this->prevstate = prevstate.curstate;

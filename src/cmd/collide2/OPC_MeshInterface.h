@@ -120,8 +120,8 @@ class OPCODE_API MeshInterface
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
      *	Strides control
-     *	\param		tri_stride		[in] size of a triangle in bytes. The first sizeof(IndexedTriangle) bytes are used to get vertex
-     *indices. \param		vertex_stride	[in] size of a vertex in bytes. The first sizeof(Point) bytes are used to get vertex
+     *	\param		tri_stride		[in] size of a triangle in bytes. The first sizeof(IndexedTriangle) bytes are used to get
+     *vertex indices. \param		vertex_stride	[in] size of a vertex in bytes. The first sizeof(Point) bytes are used to get vertex
      *position. \return		true if success
      */
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

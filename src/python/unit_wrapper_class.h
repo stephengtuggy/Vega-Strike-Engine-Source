@@ -3,7 +3,7 @@ using std::string;
 static const char *error = "\nERROR: NULL Unit used in Python script; returning default value...";
 #define CHECKME                                                                                                                            \
     }                                                                                                                                      \
-    std::shared_ptr<Unit> me = GetUnit();                                                                                                                  \
+    std::shared_ptr<Unit> me = GetUnit();                                                                                                  \
     if (!me) {                                                                                                                             \
         fprintf(stderr, "%s", error);                                                                                                      \
     return
@@ -307,7 +307,7 @@ class UnitWrapper : public UnitContainer
     UnitWrapper(std::shared_ptr<Unit> un = 0) : UnitContainer(un)
     {
     }
-    operator std::shared_ptr<Unit> ()
+    operator std::shared_ptr<Unit>()
     {
         return GetUnit();
     }

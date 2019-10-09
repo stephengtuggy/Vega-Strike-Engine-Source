@@ -98,16 +98,16 @@ int GetModeFromName(const char *input_buffer)
     return 0;
 }
 
-extern bool CheckAccessory(std::shared_ptr<Unit> );
+extern bool CheckAccessory(std::shared_ptr<Unit>);
 
 void Unit::beginElement(void *userData, const XML_Char *name, const XML_Char **atts)
 {
-    ((std::shared_ptr<Unit> )userData)->beginElement(name, AttributeList(atts));
+    ((std::shared_ptr<Unit>)userData)->beginElement(name, AttributeList(atts));
 }
 
 void Unit::endElement(void *userData, const XML_Char *name)
 {
-    ((std::shared_ptr<Unit> )userData)->endElement(name);
+    ((std::shared_ptr<Unit>)userData)->endElement(name);
 }
 
 namespace UnitXML
@@ -755,7 +755,7 @@ void Unit::beginElement(const string &name, const AttributeList &attributes)
                 break;
             }
         }
-        int   upgrfac  = FactionUtil::GetUpgradeFaction();
+        int                   upgrfac  = FactionUtil::GetUpgradeFaction();
         std::shared_ptr<Unit> upgradee = UnitFactory::createUnit(filename.c_str(), true, upgrfac);
         Unit::Upgrade(upgradee, moffset, soffset, GetModeFromName(filename.c_str()), true, percent, NULL);
         upgradee->Kill();

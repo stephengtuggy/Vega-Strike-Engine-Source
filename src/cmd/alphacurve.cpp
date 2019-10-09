@@ -72,8 +72,8 @@ int get_alpha(int _query, int _maxrez_x, int _min, int _max, double _focus, doub
     // SLOPES
     // double vx0                              = double(x1-x0);				//	slope/T X
     double vy0 = double(y1 - y0); // slope/T Y
-    // double vx1                              = double(x2-x0);				//	mid point slope (flat if at top/bottom, so there is no clipping, due
-    // to this, range capped to .2 -> .8 instead of 0 -> 1)
+    // double vx1                              = double(x2-x0);				//	mid point slope (flat if at top/bottom, so there is no clipping,
+    // due to this, range capped to .2 -> .8 instead of 0 -> 1)
     if (concavity < 0)
         concavity *= double(-1.0); // concavity ABSOLUTE
     double vy1 = (double(y2 - y0) / double(2)) * (double(1.0) - concavity);

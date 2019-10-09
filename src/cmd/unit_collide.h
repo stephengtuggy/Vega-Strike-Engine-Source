@@ -25,16 +25,16 @@ class StarSystem;
 template <class CTSIZ, class CTACCURACY, class CTHUGE> class UnitHash3d
 {
     /// All objects that are too large to fit (fastly) in the collide table
-    UnitCollection   hugeobjects;
-    UnitCollection   ha;
-    UnitCollection   hb;
-    UnitCollection * active_huge;
-    UnitCollection * accum_huge;
-    std::set<std::shared_ptr<Unit> > act_huge;
-    std::set<std::shared_ptr<Unit> > acc_huge;
+    UnitCollection                  hugeobjects;
+    UnitCollection                  ha;
+    UnitCollection                  hb;
+    UnitCollection *                active_huge;
+    UnitCollection *                accum_huge;
+    std::set<std::shared_ptr<Unit>> act_huge;
+    std::set<std::shared_ptr<Unit>> acc_huge;
     /// The hash table itself. Holds most units to be collided with
-    UnitCollection table[COLLIDETABLESIZE][COLLIDETABLESIZE][COLLIDETABLESIZE];
-    StarSystem *   activeStarSystem;
+    UnitCollection        table[COLLIDETABLESIZE][COLLIDETABLESIZE][COLLIDETABLESIZE];
+    StarSystem *          activeStarSystem;
     std::shared_ptr<Unit> debugUnit;
 
     /// hashes 3 values into the appropriate spot in the hash table

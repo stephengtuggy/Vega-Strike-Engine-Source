@@ -12,7 +12,7 @@
 void NetClient::send(Cmd cmd, NetBuffer &netbuf, int mode, const char *file, int line)
 {
     std::shared_ptr<Unit> un     = this->game_unit.GetUnit();
-    int   serial = 0;
+    int                   serial = 0;
     if (un)
         serial = un->GetSerial();
     Packet p;
@@ -57,8 +57,8 @@ void NetClient::sendCustom(string command, string args, string id)
 // Send a info request about the target
 void NetClient::scanRequest(std::shared_ptr<Unit> target)
 {
-    Packet    p;
-    NetBuffer netbuf;
+    Packet                p;
+    NetBuffer             netbuf;
     std::shared_ptr<Unit> un = this->game_unit.GetUnit();
     if (!un)
         return;
@@ -72,7 +72,7 @@ void NetClient::scanRequest(std::shared_ptr<Unit> target)
 // Send a info request about the target
 void NetClient::targetRequest(std::shared_ptr<Unit> target)
 {
-    NetBuffer netbuf;
+    NetBuffer             netbuf;
     std::shared_ptr<Unit> un = this->game_unit.GetUnit();
     if (!un)
         return;
@@ -113,7 +113,7 @@ void NetClient::unfireRequest(ObjSerial serial, const vector<int> &mount_indicie
 void NetClient::cargoRequest(
     ObjSerial buyer, ObjSerial seller, const std::string &cargo, unsigned int quantity, int mountOffset, int subunitOffset)
 {
-    NetBuffer netbuf;
+    NetBuffer             netbuf;
     std::shared_ptr<Unit> un = this->game_unit.GetUnit();
     if (!un)
         return;
@@ -137,7 +137,7 @@ void NetClient::shipRequest(const std::string &cargo, unsigned char type)
 
 bool NetClient::jumpRequest(string newsystem, ObjSerial jumpserial)
 {
-    NetBuffer netbuf;
+    NetBuffer             netbuf;
     std::shared_ptr<Unit> un = this->game_unit.GetUnit();
     if (!un)
         return false;
@@ -182,7 +182,7 @@ void NetClient::unreadyToJump()
 void NetClient::dieRequest()
 {
     // Send a packet with CMD_DOCK with serial and an ObjSerial = unit_to_dock_with_serial
-    NetBuffer netbuf;
+    NetBuffer             netbuf;
     std::shared_ptr<Unit> un = this->game_unit.GetUnit();
     if (!un)
         return;
@@ -193,7 +193,7 @@ void NetClient::dieRequest()
 void NetClient::saveRequest()
 {
     // Send a packet with CMD_DOCK with serial and an ObjSerial = unit_to_dock_with_serial
-    NetBuffer netbuf;
+    NetBuffer             netbuf;
     std::shared_ptr<Unit> un = this->game_unit.GetUnit();
     if (!un)
         return;

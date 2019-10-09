@@ -283,15 +283,15 @@ class Texture : public ::VSImage
     {
         return SetupPass(pass, stage, src, dst);
     } // If one is going to perform multipass rendering of this texture, the Texture() must handle blending - SetupPass() sets up blending.
-      // If it returns false, then blending is not compatible with the requested blend mode emulation. One may assume that if numPasses()==1,
-      // no SetupPass() is needed. pass==-1 means restore setup. You should call it after multipass rendering.
+      // If it returns false, then blending is not compatible with the requested blend mode emulation. One may assume that if
+      // numPasses()==1, no SetupPass() is needed. pass==-1 means restore setup. You should call it after multipass rendering.
 
     virtual bool SetupPass(int pass, int stage, const enum BLENDFUNC src, const enum BLENDFUNC dst)
     {
         return true;
     } // If one is going to perform multipass rendering of this texture, the Texture() must handle blending - SetupPass() sets up blending.
-      // If it returns false, then blending is not compatible with the requested blend mode emulation. One may assume that if numPasses()==1,
-      // no SetupPass() is needed. pass==-1 means restore setup. You should call it after multipass rendering.
+      // If it returns false, then blending is not compatible with the requested blend mode emulation. One may assume that if
+      // numPasses()==1, no SetupPass() is needed. pass==-1 means restore setup. You should call it after multipass rendering.
 
     /// If the texture has loaded properly returns true
     virtual bool LoadSuccess()

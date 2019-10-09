@@ -437,8 +437,8 @@ template <class UnitType> void GameUnit<UnitType>::Draw(const Transformation &pa
         }
         {
             std::shared_ptr<Unit> un;
-            double backup        = interpolation_blend_factor;
-            int    cur_sim_frame = _Universe->activeStarSystem()->getCurrentSimFrame();
+            double                backup        = interpolation_blend_factor;
+            int                   cur_sim_frame = _Universe->activeStarSystem()->getCurrentSimFrame();
             for (un_iter iter = this->getSubUnits(); (un = *iter); ++iter) {
                 float backup = SIMULATION_ATOM;
                 if (this->sim_atom_multiplier && un->sim_atom_multiplier)

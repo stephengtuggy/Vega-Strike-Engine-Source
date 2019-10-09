@@ -522,9 +522,9 @@ std::string LookUp(const lookuptable &a, float x)
     return "";
 }
 
-int globaltab           = 0; // go go kludge master!
-int globalfileout       = 1; // go go gadget kludge!
-int globallasttab       = 0; // go go uber kludge!
+int   globaltab         = 0; // go go kludge master!
+int   globalfileout     = 1; // go go gadget kludge!
+int   globallasttab     = 0; // go go uber kludge!
 float globalmassrescale = 1; // go go... ok, at this point, it's obvious I'm not trying
 #ifdef _WIN32
 #define strcasecmp stricmp

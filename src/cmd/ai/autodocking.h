@@ -54,7 +54,7 @@ namespace Orders
 
 class AutoDocking : public Order
 {
-    typedef void (AutoDocking::*StateFunction)(std::shared_ptr<Unit> , std::shared_ptr<Unit> );
+    typedef void (AutoDocking::*StateFunction)(std::shared_ptr<Unit>, std::shared_ptr<Unit>);
 
   public:
     typedef std::deque<int> DockingPath;
@@ -68,16 +68,16 @@ class AutoDocking : public Order
   protected:
     // States
     void InitialState(std::shared_ptr<Unit> player, std::shared_ptr<Unit> station);
-    void SelectionState(std::shared_ptr<Unit> , std::shared_ptr<Unit> );
-    void ApproachState(std::shared_ptr<Unit> , std::shared_ptr<Unit> );
-    void DockingState(std::shared_ptr<Unit> , std::shared_ptr<Unit> );
-    void DockedState(std::shared_ptr<Unit> , std::shared_ptr<Unit> );
-    void UndockingState(std::shared_ptr<Unit> , std::shared_ptr<Unit> );
-    void DepartureState(std::shared_ptr<Unit> , std::shared_ptr<Unit> );
-    void AbortState(std::shared_ptr<Unit> , std::shared_ptr<Unit> );
-    void EndState(std::shared_ptr<Unit> , std::shared_ptr<Unit> );
+    void SelectionState(std::shared_ptr<Unit>, std::shared_ptr<Unit>);
+    void ApproachState(std::shared_ptr<Unit>, std::shared_ptr<Unit>);
+    void DockingState(std::shared_ptr<Unit>, std::shared_ptr<Unit>);
+    void DockedState(std::shared_ptr<Unit>, std::shared_ptr<Unit>);
+    void UndockingState(std::shared_ptr<Unit>, std::shared_ptr<Unit>);
+    void DepartureState(std::shared_ptr<Unit>, std::shared_ptr<Unit>);
+    void AbortState(std::shared_ptr<Unit>, std::shared_ptr<Unit>);
+    void EndState(std::shared_ptr<Unit>, std::shared_ptr<Unit>);
 
-    void EnqueuePort(std::shared_ptr<Unit> , std::shared_ptr<Unit> , size_t);
+    void EnqueuePort(std::shared_ptr<Unit>, std::shared_ptr<Unit>, size_t);
     void EraseOrders();
 
   private:

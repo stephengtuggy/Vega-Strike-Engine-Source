@@ -315,7 +315,7 @@ struct UnitImages {
     /// The explosion starts at null, when activated time explode is incremented and ends at null
     Animation *pExplosion;
     float      timeexplode;
-    float *cockpit_damage; // 0 is radar, 1 to MAXVDU is vdus and >MAXVDU is gauges
+    float *    cockpit_damage; // 0 is radar, 1 to MAXVDU is vdus and >MAXVDU is gauges
     /// how likely to fool missiles
     /// -2 = inactive L2, -1 = inactive L1, 0 = not available, 1 = active L1, 2 = active L2, etc...
     int ecm;
@@ -330,28 +330,28 @@ struct UnitImages {
     /// If this unit cloaks like glass or like fading
     bool cloakglass;
     /// if the unit is a wormhole
-    bool                      forcejump;
-    float                     UpgradeVolume;
-    float                     CargoVolume; /// mass just makes you turn worse
-    float                     equipment_volume; // this one should be more general--might want to apply it to radioactive goods, passengers, ships (hangar), etc
-    float                     HiddenCargoVolume;
+    bool  forcejump;
+    float UpgradeVolume;
+    float CargoVolume;      /// mass just makes you turn worse
+    float equipment_volume; // this one should be more general--might want to apply it to radioactive goods, passengers, ships (hangar), etc
+    float HiddenCargoVolume;
     std::vector<Cargo>        cargo;
     std::vector<string>       destination;
     std::vector<DockingPorts> dockingports;
     /// warning unreliable pointer, never dereference!
-    std::vector<std::shared_ptr<Unit> >        clearedunits;
-    std::vector<DockedUnits *> dockedunits;
-    UnitContainer              DockedTo;
-    float                      unitscale; // for output
-    class XMLSerializer *      unitwriter;
-    float                      fireControlFunctionality;
-    float                      fireControlFunctionalityMax;
-    float                      SPECDriveFunctionality;
-    float                      SPECDriveFunctionalityMax;
-    float                      CommFunctionality;
-    float                      CommFunctionalityMax;
-    float                      LifeSupportFunctionality;
-    float                      LifeSupportFunctionalityMax;
+    std::vector<std::shared_ptr<Unit>> clearedunits;
+    std::vector<DockedUnits *>         dockedunits;
+    UnitContainer                      DockedTo;
+    float                              unitscale; // for output
+    class XMLSerializer *              unitwriter;
+    float                              fireControlFunctionality;
+    float                              fireControlFunctionalityMax;
+    float                              SPECDriveFunctionality;
+    float                              SPECDriveFunctionalityMax;
+    float                              CommFunctionality;
+    float                              CommFunctionalityMax;
+    float                              LifeSupportFunctionality;
+    float                              LifeSupportFunctionalityMax;
     enum GAUGES {
         // Image-based gauges
         ARMORF,
@@ -454,12 +454,12 @@ struct unorigdest {
     QVector       final_location;
     unorigdest(std::shared_ptr<Unit> un,
                std::shared_ptr<Unit> jumppoint,
-               StarSystem *orig,
-               StarSystem *dest,
-               float       delay,
-               int         ani,
-               bool        justloaded,
-               QVector     use_coordinates /*set to 0,0,0 for crap*/)
+               StarSystem *          orig,
+               StarSystem *          dest,
+               float                 delay,
+               int                   ani,
+               bool                  justloaded,
+               QVector               use_coordinates /*set to 0,0,0 for crap*/)
         : un(un),
           jumppoint(jumppoint),
           orig(orig),

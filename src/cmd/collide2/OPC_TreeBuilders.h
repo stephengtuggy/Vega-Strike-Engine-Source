@@ -28,9 +28,9 @@ enum SplittingRules {
     SPLIT_BEST_AXIS       = (1 << 2), //!< Try largest axis, then second, then last
     SPLIT_BALANCED        = (1 << 3), //!< Try to keep a well-balanced tree
     SPLIT_FIFTY           = (1 << 4), //!< Arbitrary 50-50 split
-                            // Node split
-    SPLIT_GEOM_CENTER = (1 << 5), //!< Split at geometric center (else split in the middle)
-                                  //
+                                      // Node split
+    SPLIT_GEOM_CENTER = (1 << 5),     //!< Split at geometric center (else split in the middle)
+                                      //
     SPLIT_FORCE_DWORD = 0x7fffffff
 };
 

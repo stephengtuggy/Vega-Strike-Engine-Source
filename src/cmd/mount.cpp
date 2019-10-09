@@ -213,7 +213,7 @@ bool Mount::PhysicsAlignedFire(std::shared_ptr<Unit> caller,
             return true; // Not ready to refire yet.  But don't stop firing.
 
         std::shared_ptr<Unit> temp;
-        Transformation tmp(orient, pos.Cast());
+        Transformation        tmp(orient, pos.Cast());
         tmp.Compose(Cumulative, m);
         Matrix mat;
         tmp.to_matrix(mat);
@@ -344,7 +344,7 @@ bool Mount::PhysicsAlignedFire(std::shared_ptr<Unit> caller,
                     temp->EnqueueAI(new Orders::MatchLinearVelocity(Vector(0, 0, 100000), true, false));
                     temp->EnqueueAI(new Orders::FireAllYouGot);
                 }
-                temp->SetOwner((std::shared_ptr<Unit> )owner);
+                temp->SetOwner((std::shared_ptr<Unit>)owner);
                 temp->Velocity            = velocity + adder;
                 temp->curr_physical_state = temp->prev_physical_state = temp->cumulative_transformation = tmp;
                 CopyMatrix(temp->cumulative_transformation_matrix, m);

@@ -745,7 +745,7 @@ void FireKeyboard::TogglePause(const KBData &, KBSTATE k)
         g().togglepausekey = k;
 }
 
-extern unsigned int DoSpeech(std::shared_ptr<Unit> un, std::shared_ptr<Unit> player_un, const FSM::Node &convNode);
+extern unsigned int          DoSpeech(std::shared_ptr<Unit> un, std::shared_ptr<Unit> player_un, const FSM::Node &convNode);
 extern std::shared_ptr<Unit> GetThreat(std::shared_ptr<Unit> par, std::shared_ptr<Unit> leader);
 
 void HelpOut(bool crit, std::string conv)
@@ -757,7 +757,7 @@ void HelpOut(bool crit, std::string conv)
         for (un_iter ui = _Universe->activeStarSystem()->getUnitList().createIterator(); (par = (*ui)); ++ui)
             if ((crit && UnitUtil::getFactionRelation(par, un) > 0) || par->faction == un->faction) {
                 std::shared_ptr<Unit> threat = GetThreat(par, un);
-                CommunicationMessage c(par, un, NULL, 0);
+                CommunicationMessage  c(par, un, NULL, 0);
                 if (threat) {
                     par->Target(threat);
                     c.SetCurrentState(c.fsm->GetYesNode(), NULL, 0);
@@ -1024,10 +1024,10 @@ bool TargNear(std::shared_ptr<Unit> me, std::shared_ptr<Unit> target)
 // 5 = jump point
 bool getNearestTargetUnit(std::shared_ptr<Unit> me, int iType)
 {
-    QVector pos(me->Position());
+    QVector               pos(me->Position());
     std::shared_ptr<Unit> un       = NULL;
     std::shared_ptr<Unit> targ     = NULL;
-    double  minrange = FLT_MAX;
+    double                minrange = FLT_MAX;
     for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = (*i)); ++i) {
         if (un == me)
             continue;
@@ -1067,18 +1067,18 @@ bool getNearestTargetUnit(std::shared_ptr<Unit> me, int iType)
     return true;
 }
 
-bool ChooseTargets(std::shared_ptr<Unit> me, bool (*typeofunit)(std::shared_ptr<Unit> , std::shared_ptr<Unit> ), bool reverse)
+bool ChooseTargets(std::shared_ptr<Unit> me, bool (*typeofunit)(std::shared_ptr<Unit>, std::shared_ptr<Unit>), bool reverse)
 {
-    UnitCollection &drawlist = _Universe->activeStarSystem()->getUnitList();
-    vector<std::shared_ptr<Unit> >  vec;
-    std::shared_ptr<Unit> target;
+    UnitCollection &              drawlist = _Universe->activeStarSystem()->getUnitList();
+    vector<std::shared_ptr<Unit>> vec;
+    std::shared_ptr<Unit>         target;
     for (un_iter iter = drawlist.createIterator(); (target = *iter) != NULL; ++iter)
         vec.push_back(target);
     if (vec.size() == 0)
         return false;
     if (reverse)
         std::reverse(vec.begin(), vec.end());
-    std::vector<std::shared_ptr<Unit> >::const_iterator veciter = std::find(vec.begin(), vec.end(), me->Target());
+    std::vector<std::shared_ptr<Unit>>::const_iterator veciter = std::find(vec.begin(), vec.end(), me->Target());
     if (veciter != vec.end())
         ++veciter;
     int cur = 0;
@@ -1168,7 +1168,7 @@ bool FireKeyboard::ShouldFire(std::shared_ptr<Unit> targ)
 
 static bool UnDockNow(std::shared_ptr<Unit> me, std::shared_ptr<Unit> targ)
 {
-    bool  ret = false;
+    bool                  ret = false;
     std::shared_ptr<Unit> un;
     for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = *i) != NULL; ++i)
         if (un->isDocked(me))
@@ -1177,7 +1177,7 @@ static bool UnDockNow(std::shared_ptr<Unit> me, std::shared_ptr<Unit> targ)
     return ret;
 }
 
-void Enslave(std::shared_ptr<Unit> , bool);
+void Enslave(std::shared_ptr<Unit>, bool);
 
 void abletodock(int dock)
 {
@@ -1314,9 +1314,9 @@ static bool ExecuteRequestClearenceKey(std::shared_ptr<Unit> parent, std::shared
 
 static void DoDockingOps(std::shared_ptr<Unit> parent, std::shared_ptr<Unit> targ, unsigned char playa, unsigned char gender)
 {
-    static int maxseverity = XMLSupport::parse_bool(vs_config->getVariable("AI", "dock_to_area", "false")) ? 2 : 1;
+    static int            maxseverity = XMLSupport::parse_bool(vs_config->getVariable("AI", "dock_to_area", "false")) ? 2 : 1;
     std::shared_ptr<Unit> endt        = targ;
-    bool       wasdock     = vectorOfKeyboardInput[playa].doc;
+    bool                  wasdock     = vectorOfKeyboardInput[playa].doc;
     if (vectorOfKeyboardInput[playa].doc) {
         bool isDone = false;
         if (targ) {
@@ -1404,8 +1404,8 @@ static void MyFunction()
 void FireKeyboard::ProcessCommMessage(class CommunicationMessage &c)
 {
     std::shared_ptr<Unit> un                = c.sender.GetUnit();
-    unsigned int whichsound        = 0;
-    bool         foundValidMessage = false;
+    unsigned int          whichsound        = 0;
+    bool                  foundValidMessage = false;
     if (_Universe->AccessCockpit()->CheckCommAnimation(un))
         return; // wait till later
 
@@ -1444,7 +1444,7 @@ static CommunicationMessage *GetTargetMessageQueue(std::shared_ptr<Unit> targ, s
         }
     return mymsg;
 }
-extern std::set<std::shared_ptr<Unit> > arrested_list_do_not_dereference;
+extern std::set<std::shared_ptr<Unit>> arrested_list_do_not_dereference;
 
 void Arrested(std::shared_ptr<Unit> parent)
 {
@@ -1664,10 +1664,10 @@ void FireKeyboard::Execute()
         parent->LockTarget(true);
     }
     if (f().targetukey == PRESS) {
-        f().targetukey               = DOWN;
-        static bool smart_targetting = XMLSupport::parse_bool(vs_config->getVariable("graphics", "smart_targetting_key", "true"));
+        f().targetukey                         = DOWN;
+        static bool           smart_targetting = XMLSupport::parse_bool(vs_config->getVariable("graphics", "smart_targetting_key", "true"));
         std::shared_ptr<Unit> tmp              = parent->Target();
-        bool        sysobj           = false;
+        bool                  sysobj           = false;
         if (tmp)
             if (tmp->owner == getTopLevelOwner())
                 sysobj = true;
@@ -1741,10 +1741,10 @@ void FireKeyboard::Execute()
         parent->LockTarget(true);
     }
     if (f().rtargetukey == PRESS) {
-        f().rtargetukey              = DOWN;
-        static bool smart_targetting = XMLSupport::parse_bool(vs_config->getVariable("graphics", "smart_targetting_key", "true"));
+        f().rtargetukey                        = DOWN;
+        static bool           smart_targetting = XMLSupport::parse_bool(vs_config->getVariable("graphics", "smart_targetting_key", "true"));
         std::shared_ptr<Unit> tmp              = parent->Target();
-        bool        sysobj           = false;
+        bool                  sysobj           = false;
         if (tmp)
             if (tmp->owner == getTopLevelOwner())
                 sysobj = true;
@@ -1906,8 +1906,8 @@ void FireKeyboard::Execute()
     }
     for (i = 0; i < NUMCOMMKEYS; i++)
         if (f().commKeys[i] == PRESS) {
-            f().commKeys[i] = RELEASE;
-            std::shared_ptr<Unit> targ      = parent->Target();
+            f().commKeys[i]            = RELEASE;
+            std::shared_ptr<Unit> targ = parent->Target();
             if (targ) {
                 CommunicationMessage *mymsg = GetTargetMessageQueue(targ, resp);
                 FSM *                 fsm   = FactionUtil::GetConversation(parent->faction, targ->faction);
@@ -1990,9 +1990,9 @@ void FireKeyboard::Execute()
     }
     // eject pilot and warp pilot to the docking screen instantly.
     if (f().ejectdock == PRESS) {
-        f().ejectdock = DOWN;
+        f().ejectdock              = DOWN;
         std::shared_ptr<Unit> utdw = parent;
-        Cockpit *cp   = NULL; // check if docking ports exist, no docking ports = no need to ejectdock so don't do anything
+        Cockpit *             cp   = NULL; // check if docking ports exist, no docking ports = no need to ejectdock so don't do anything
         if ((SelectDockPort(utdw, parent) > -1) && (cp = _Universe->isPlayerStarship(parent)))
             cp->EjectDock(); // use specialized ejectdock in the future
     }

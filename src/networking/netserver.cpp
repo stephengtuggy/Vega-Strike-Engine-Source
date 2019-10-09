@@ -92,8 +92,8 @@ using namespace VSFileSystem;
 
 // What header are these *supposed* to be defined in ???
 extern const std::shared_ptr<Unit> getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0);
-extern int          GetModeFromName(const char *); // 1=add, 2=mult, 0=neither.
-static const string LOAD_FAILED = "LOAD_FAILED";
+extern int                         GetModeFromName(const char *); // 1=add, 2=mult, 0=neither.
+static const string                LOAD_FAILED = "LOAD_FAILED";
 // Takes in a category of an upgrade or cargo and returns true if it is any type of mountable weapon.
 extern bool   isWeapon(std::string name);
 extern Cargo *GetMasterPartList(const char *input_buffer);
@@ -661,8 +661,8 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
     // Find the unit
     std::shared_ptr<Unit> un    = NULL;
     std::shared_ptr<Unit> unclt = NULL;
-    ObjSerial target_serial;
-    ObjSerial packet_serial = p.getSerial();
+    ObjSerial             target_serial;
+    ObjSerial             packet_serial = p.getSerial();
     switch (cmd) {
     case CMD_CONNECT: {
         if (!clt)
@@ -915,7 +915,7 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
             const std::shared_ptr<Unit> un;
             for (un_kiter ui = player->getStarSystem()->getUnitList().constIterator(); (un = *ui); ++ui)
                 if (un->isDocked(player)) {
-                    docked = const_cast<std::shared_ptr<Unit> >(un); // Stupid STL.
+                    docked = const_cast<std::shared_ptr<Unit>>(un); // Stupid STL.
                     break;
                 }
         }
@@ -1116,12 +1116,12 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
         break;
     }
     case CMD_COMM: {
-        ObjSerial send_to = netbuf.getSerial();
+        ObjSerial             send_to = netbuf.getSerial();
         std::shared_ptr<Unit> targ    = UniverseUtil::GetUnitFromSerial(send_to);
         if (!targ)
             break;
-        char  newEdge = netbuf.getChar();
-        int   node    = netbuf.getInt32();
+        char                  newEdge = netbuf.getChar();
+        int                   node    = netbuf.getInt32();
         std::shared_ptr<Unit> parent  = clt->game_unit.GetUnit();
         if (!parent)
             break;
@@ -1151,18 +1151,18 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
         break;
     }
     case CMD_CARGOUPGRADE: {
-        ObjSerial   buyer_ser     = netbuf.getSerial();
-        ObjSerial   seller_ser    = netbuf.getSerial();
-        int         quantity      = netbuf.getInt32();
-        std::string cargoName     = netbuf.getString();
-        int         mountOffset   = ((int)netbuf.getInt32());
-        int         subunitOffset = ((int)netbuf.getInt32());
+        ObjSerial             buyer_ser     = netbuf.getSerial();
+        ObjSerial             seller_ser    = netbuf.getSerial();
+        int                   quantity      = netbuf.getInt32();
+        std::string           cargoName     = netbuf.getString();
+        int                   mountOffset   = ((int)netbuf.getInt32());
+        int                   subunitOffset = ((int)netbuf.getInt32());
         std::shared_ptr<Unit> sender        = clt->game_unit.GetUnit();
-        Cockpit *   sender_cpt    = _Universe->isPlayerStarship(sender);
+        Cockpit *             sender_cpt    = _Universe->isPlayerStarship(sender);
         if (!sender || !sender->getStarSystem() || !sender_cpt)
             break;
-        zone                   = sender->getStarSystem()->GetZone();
-        unsigned int cargIndex = UINT_MAX;
+        zone                            = sender->getStarSystem()->GetZone();
+        unsigned int          cargIndex = UINT_MAX;
         std::shared_ptr<Unit> seller    = zonemgr->getUnit(seller_ser, zone);
         std::shared_ptr<Unit> buyer     = zonemgr->getUnit(buyer_ser, zone);
         std::shared_ptr<Unit> docked    = NULL;
@@ -1170,7 +1170,7 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
             const std::shared_ptr<Unit> un;
             for (un_kiter ui = sender->getStarSystem()->getUnitList().constIterator(); (un = *ui); ++ui) {
                 if (un->isDocked(sender)) {
-                    docked = const_cast<std::shared_ptr<Unit> >(un); // Stupid STL.
+                    docked = const_cast<std::shared_ptr<Unit>>(un); // Stupid STL.
                     break;
                 }
             }
@@ -1276,7 +1276,7 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
             _Universe->netLock(false);
         }
         if ((didMoney || weapon) && upgrade && (seller == sender || buyer == sender)) {
-            double      percent; // not used.
+            double                      percent; // not used.
             const std::shared_ptr<Unit> unitCarg = getUnitFromUpgradeName(carg.GetContent(), seller->faction);
             if (!unitCarg) {
                 // Return the credits.
@@ -1289,8 +1289,8 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
             // Wow! So much code just to perform an upgrade!
 
             string templateName;
-            int    faction; // FIXME If neither the seller nor the buyer is the sender, faction is uninitialized!!!
-            faction = 0;    // FIXME This line temporarily added by chuck_starchaser
+            int    faction;           // FIXME If neither the seller nor the buyer is the sender, faction is uninitialized!!!
+            faction              = 0; // FIXME This line temporarily added by chuck_starchaser
             const string unitDir = GetUnitDir(sender->name.get().c_str());
             if (seller == sender) {
                 templateName = unitDir + ".blank";
@@ -1300,8 +1300,9 @@ void NetServer::processPacket(ClientPtr clt, unsigned char cmd, const AddressIP 
                 templateName = unitDir + ".template";
             }
             // Get the "limiter" for the upgrade.  Stats can't increase more than this.
-            const std::shared_ptr<Unit> templateUnit = UnitConstCache::getCachedConst(StringIntKey(templateName, faction)); // FIXME faction
-                                                                                                            // uninitialized!!!
+            const std::shared_ptr<Unit> templateUnit =
+                UnitConstCache::getCachedConst(StringIntKey(templateName, faction)); // FIXME faction
+                                                                                     // uninitialized!!!
             if (!templateUnit)
                 templateUnit = UnitConstCache::setCachedConst(StringIntKey(templateName, faction), // FIXME faction uninitialized!!!
                                                               UnitFactory::createUnit(templateName.c_str(), true, faction));

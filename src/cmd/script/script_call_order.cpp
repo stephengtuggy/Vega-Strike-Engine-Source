@@ -264,12 +264,12 @@ varInst *Mission::call_order(missionNode *node, int mode)
         deleteVarInst(des_vi);
         return viret;
     } else if (method_id == CMT_ORDER_newFlyToJumppoint) {
-        missionNode *des_node = getArgument(node, mode, 0);
-        varInst *    des_vi   = checkObjectExpr(des_node, mode);
+        missionNode *         des_node = getArgument(node, mode, 0);
+        varInst *             des_vi   = checkObjectExpr(des_node, mode);
         std::shared_ptr<Unit> des_unit = getUnitObject(des_node, mode, des_vi);
-        float        vel      = getFloatArg(node, mode, 1);
-        bool         afburn   = getBoolArg(node, mode, 2);
-        Order *      my_order = NULL;
+        float                 vel      = getFloatArg(node, mode, 1);
+        bool                  afburn   = getBoolArg(node, mode, 2);
+        Order *               my_order = NULL;
         if (mode == SCRIPT_RUN)
             my_order = new AIFlyToJumppoint(des_unit, vel, afburn);
         viret             = newVarInst(VI_TEMP);
@@ -279,15 +279,15 @@ varInst *Mission::call_order(missionNode *node, int mode)
         deleteVarInst(des_vi);
         return viret;
     } else if (method_id == CMT_ORDER_newPatrol) {
-        int          patrol_mode  = getIntArg(node, mode, 0);
-        missionNode *des_node     = getArgument(node, mode, 1);
-        varInst *    des_vi       = checkObjectExpr(des_node, mode);
-        double       range        = getFloatArg(node, mode, 2);
-        missionNode *unit_node    = getArgument(node, mode, 3);
-        varInst *    unit_vi      = checkObjectExpr(unit_node, mode);
+        int                   patrol_mode  = getIntArg(node, mode, 0);
+        missionNode *         des_node     = getArgument(node, mode, 1);
+        varInst *             des_vi       = checkObjectExpr(des_node, mode);
+        double                range        = getFloatArg(node, mode, 2);
+        missionNode *         unit_node    = getArgument(node, mode, 3);
+        varInst *             unit_vi      = checkObjectExpr(unit_node, mode);
         std::shared_ptr<Unit> around_unit  = getUnitObject(unit_node, mode, unit_vi);
-        float        patrol_speed = getFloatArg(node, mode, 4);
-        Order *      my_order     = NULL;
+        float                 patrol_speed = getFloatArg(node, mode, 4);
+        Order *               my_order     = NULL;
         if (mode == SCRIPT_RUN) {
             QVector des3 = call_olist_tovector(des_node, mode, des_vi);
             my_order     = new AIPatrol(patrol_mode, des3, range, around_unit, patrol_speed);

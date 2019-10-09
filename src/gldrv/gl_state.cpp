@@ -267,8 +267,8 @@ void GFXTextureAddressMode(const ADDRESSMODE mode, enum TEXTURE_TARGET target)
 {
     if (!_GFXActiveTextureValid())
         return;
-    GLenum tt = GetGLTextureTarget(target);
-    float BColor[4] = {0, 0, 0, 0}; // set border color to clear... dunno if we wanna change?
+    GLenum tt        = GetGLTextureTarget(target);
+    float  BColor[4] = {0, 0, 0, 0}; // set border color to clear... dunno if we wanna change?
     GLenum wm1, wm2;
     switch (mode) {
     case DEFAULT_ADDRESS_MODE:

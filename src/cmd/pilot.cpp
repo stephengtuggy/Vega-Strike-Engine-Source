@@ -62,7 +62,7 @@ void Pilot::DoHit(std::shared_ptr<Unit> parent, void *aggressor, int faction)
             UniverseUtil::adjustRelationModifierInt(whichCp, faction, hitcost * getRank());
         } else {
             /* Instead use the Aggressor's cockpit? */
-            whichCp = _Universe->whichPlayerStarship((const std::shared_ptr<Unit> )aggressor);
+            whichCp = _Universe->whichPlayerStarship((const std::shared_ptr<Unit>)aggressor);
             if (whichCp != -1) {
                 Flightgroup *fg = parent->getFlightgroup();
                 if (parent->faction != faction)

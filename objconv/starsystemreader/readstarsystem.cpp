@@ -191,8 +191,8 @@ class System : public map<string, string>
     vector<string>     jumps;
     vec3               xyz;
     float              luminosity; // in sun
-    int                type; // 0 = 1O blue (-2000)  B = 20 blue(2000-4000) // A = 30 Bluish-white (4000-8000) F = 40 White G = 50 (13500-15000) yellow
-              // (15000-43000) K = 60 Orange (36500-80000) M = Red 70 (giant 80,000 dwarf 8,000-13500 )
+    int type;  // 0 = 1O blue (-2000)  B = 20 blue(2000-4000) // A = 30 Bluish-white (4000-8000) F = 40 White G = 50 (13500-15000) yellow
+               // (15000-43000) K = 60 Orange (36500-80000) M = Red 70 (giant 80,000 dwarf 8,000-13500 )
     int  size; // 0 dwwarf 1 normal 2 giant
     bool operator<(const System &a) const
     {

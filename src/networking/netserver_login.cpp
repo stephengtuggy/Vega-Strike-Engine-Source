@@ -25,7 +25,7 @@ ClientPtr NetServer::getClientFromSerial(ObjSerial serial)
     ClientPtr clt;
     bool      found = false;
     for (LI li = allClients.begin(); li != allClients.end(); li++) {
-        clt      = (*li);
+        clt                      = (*li);
         std::shared_ptr<Unit> un = clt->game_unit.GetUnit();
         if (un && serial == un->GetSerial()) {
             found = true;
@@ -105,7 +105,7 @@ void NetServer::sendLoginAccept(ClientPtr clt, Cockpit *cp)
 {
     COUT << "enter " << __PRETTY_FUNCTION__ << endl;
     // Verify that client already has a character
-    NetBuffer netbuf;
+    NetBuffer             netbuf;
     std::shared_ptr<Unit> un = cp->GetParent();
     if (!un) {
         sendLoginError(clt);
@@ -314,8 +314,8 @@ bool NetServer::loadFromNewGame(ClientPtr clt, Cockpit *cp, string fighter)
     string PLAYER_FACTION_STRING = cp->savegame->GetPlayerFaction();
     saved_faction                = FactionUtil::GetFactionIndex(PLAYER_FACTION_STRING);
 
-    bool               exist = true; //(VSFileSystem::LookForFile( savedships[0], VSFileSystem::UnitFile)<=VSFileSystem::Ok);
-    static std::string loadfailed("LOAD_FAILED");
+    bool                  exist = true; //(VSFileSystem::LookForFile( savedships[0], VSFileSystem::UnitFile)<=VSFileSystem::Ok);
+    static std::string    loadfailed("LOAD_FAILED");
     std::shared_ptr<Unit> un = NULL;
     if (!PLAYER_SHIPNAME.empty()) {
         un = UnitFactory::createUnit(
@@ -397,8 +397,8 @@ bool NetServer::loadFromSavegame(ClientPtr clt, Cockpit *cp)
 
     int saved_faction = FactionUtil::GetFactionIndex(PLAYER_FACTION_STRING);
     // vector<vector <string> > path = lookforUnit( savedships[0].c_str(), saved_faction, false);
-    bool               exist = true; //(VSFileSystem::LookForFile( savedships[0], VSFileSystem::UnitFile)<=VSFileSystem::Ok);
-    static std::string loadfailed("LOAD_FAILED");
+    bool                  exist = true; //(VSFileSystem::LookForFile( savedships[0], VSFileSystem::UnitFile)<=VSFileSystem::Ok);
+    static std::string    loadfailed("LOAD_FAILED");
     std::shared_ptr<Unit> un = NULL;
     if (!PLAYER_SHIPNAME.empty()) {
         un = UnitFactory::createUnit(

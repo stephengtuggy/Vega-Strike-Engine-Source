@@ -154,7 +154,7 @@ bool Mission::checkMission(easyDomNode *node, bool loadscripts)
             int         i            = strlen(constdumbstr); // constdumbstr is the string I wish to copy... i is its length.
             char *      dumbstr      = new char[i + 2];      // allocate 2 extra bytes for a double-null-terminated string.
             strncpy(dumbstr, constdumbstr, i);               // i copy constdumbstr to dumbstr.
-            dumbstr[i] = '\0';                               // I make sure that it has 2 null bytes at the end.
+            dumbstr[i]     = '\0';                           // I make sure that it has 2 null bytes at the end.
             dumbstr[i + 1] = '\0';                           // I am allowed to use i+1 because I allocated 2 extra bytes
             for (i -= 1; i >= 0; i--) {
                 // start from the end-1, or i-1 and set i to that value(i-=1)

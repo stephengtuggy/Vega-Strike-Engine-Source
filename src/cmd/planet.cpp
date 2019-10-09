@@ -234,7 +234,7 @@ GamePlanet::GamePlanet(QVector                           x,
                        BLENDFUNC                         blendDst,
                        const vector<string> &            dest,
                        const QVector &                   orbitcent,
-                       std::shared_ptr<Unit> parent,
+                       std::shared_ptr<Unit>             parent,
                        const GFXMaterial &               ourmat,
                        const std::vector<GFXLightLocal> &ligh,
                        int                               faction,
@@ -260,15 +260,15 @@ GamePlanet::GamePlanet(QVector                           x,
         string             stab(".stable");
         if (rand() > RAND_MAX * .99)
             stab = ".unstable";
-        string wormholename        = wormhole_unit + stab;
-        string wormholeneutralname = wormhole_unit + ".neutral" + stab;
+        string                wormholename        = wormhole_unit + stab;
+        string                wormholeneutralname = wormhole_unit + ".neutral" + stab;
         std::shared_ptr<Unit> jum                 = UnitFactory::createUnit(wormholename.c_str(), true, faction);
-        int    neutralfaction      = FactionUtil::GetNeutralFaction();
-        faction                    = neutralfaction;
+        int                   neutralfaction      = FactionUtil::GetNeutralFaction();
+        faction                                   = neutralfaction;
 
         std::shared_ptr<Unit> neujum  = UnitFactory::createUnit(wormholeneutralname.c_str(), true, neutralfaction);
         std::shared_ptr<Unit> jump    = jum;
-        bool  anytrue = false;
+        bool                  anytrue = false;
         while (jump != NULL) {
             if (jump->name != "LOAD_FAILED") {
                 anytrue      = true;
@@ -453,8 +453,12 @@ void GamePlanet::DrawTerrain()
 
 extern bool CrashForceDock(std::shared_ptr<Unit> thus, std::shared_ptr<Unit> dockingUn, bool force);
 extern void abletodock(int dock);
-void        GamePlanet::reactToCollision(
-    std::shared_ptr<Unit> un, const QVector &biglocation, const Vector &bignormal, const QVector &smalllocation, const Vector &smallnormal, float dist)
+void        GamePlanet::reactToCollision(std::shared_ptr<Unit> un,
+                                  const QVector &       biglocation,
+                                  const Vector &        bignormal,
+                                  const QVector &       smalllocation,
+                                  const Vector &        smallnormal,
+                                  float                 dist)
 {
 #ifdef JUMP_DEBUG
     VSFileSystem::vs_fprintf(

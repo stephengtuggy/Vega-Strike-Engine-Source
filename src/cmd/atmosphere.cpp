@@ -58,8 +58,8 @@ void Atmosphere::Update(const QVector &position, const Matrix &tmatrix)
     for (size_t a = 0; a < sunboxes.size(); ++a)
         delete sunboxes[a];
     sunboxes.clear();
-    QVector localDir;
-    float   rho1 = 0.0;
+    QVector               localDir;
+    float                 rho1 = 0.0;
     std::shared_ptr<Unit> primary;
     for (un_iter iter = system->getUnitList().createIterator(); (primary = *iter) != NULL; ++iter)
         if (primary->isUnit() == PLANETPTR && (currPlanet = (GamePlanet *)primary)->hasLights()) {

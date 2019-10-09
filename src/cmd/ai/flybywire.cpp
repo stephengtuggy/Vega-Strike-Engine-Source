@@ -21,9 +21,9 @@ using Orders::MatchAngularVelocity;
 // or loop, or the formatter might remove the braces and then you'll be in a heap of trouble looking for the
 // bug... --chuck_starchaser.
 #define MATCHLINVELSETUP()                                                                                                                 \
-    std::shared_ptr<Unit> match = parent->VelocityReference();                                                                                            \
-    Vector desired(desired_velocity);                                                                                                      \
-    Vector FrameOfRef(0, 0, 0);                                                                                                            \
+    std::shared_ptr<Unit> match = parent->VelocityReference();                                                                             \
+    Vector                desired(desired_velocity);                                                                                       \
+    Vector                FrameOfRef(0, 0, 0);                                                                                             \
     if (match != NULL) {                                                                                                                   \
         float dif1, dif2;                                                                                                                  \
         match->GetVelocityDifficultyMult(dif1);                                                                                            \

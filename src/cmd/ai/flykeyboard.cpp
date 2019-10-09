@@ -156,12 +156,12 @@ void FlyByKeyboard::Execute(bool resetangvelocity)
         Network[whichplayer].switchSecured();
     }
     if (SSCK.setunvel) {
-        SSCK.setunvel                 = false;
+        SSCK.setunvel                           = false;
         std::shared_ptr<Unit> t                 = parent->Target();
-        int         neu               = FactionUtil::GetNeutralFaction();
-        int         upg               = FactionUtil::GetUpgradeFaction();
-        static bool allowanyreference = XMLSupport::parse_bool(vs_config->getVariable("AI", "AllowAnySpeedReference", "false"));
-        static bool onlyupgraderef    = XMLSupport::parse_bool(vs_config->getVariable("AI", "OnlyUpgradeSpeedReference", "false"));
+        int                   neu               = FactionUtil::GetNeutralFaction();
+        int                   upg               = FactionUtil::GetUpgradeFaction();
+        static bool           allowanyreference = XMLSupport::parse_bool(vs_config->getVariable("AI", "AllowAnySpeedReference", "false"));
+        static bool           onlyupgraderef = XMLSupport::parse_bool(vs_config->getVariable("AI", "OnlyUpgradeSpeedReference", "false"));
         if (t) {
             if ((t->getRelation(parent) >= 0 && !onlyupgraderef) || t->faction == neu || t->faction == upg || allowanyreference)
                 parent->VelocityReference(parent->Target());
@@ -401,8 +401,8 @@ void FlyByKeyboard::Execute(bool resetangvelocity)
         SSCK.terminateauto = false;
     }
     if (SSCK.matchspeed) {
-        SSCK.matchspeed = false;
-        std::shared_ptr<Unit> targ      = parent->Target();
+        SSCK.matchspeed            = false;
+        std::shared_ptr<Unit> targ = parent->Target();
         if (targ)
             MatchSpeed(targ->GetVelocity());
     }

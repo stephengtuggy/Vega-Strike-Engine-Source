@@ -5,9 +5,9 @@
 //#include <boost/python/converter/arg_from_python.hpp>
 
 #include "init.h"
-BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::shared_ptr<Unit> ,
+BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::shared_ptr<Unit>,
                                                                         ::boost::python::to_python_value<UnitWrapper>()(UnitWrapper(x)));
-template <> struct default_result_converter::apply<std::shared_ptr<Unit> > {
+template <> struct default_result_converter::apply<std::shared_ptr<Unit>> {
     // typedef boost::python::to_python_value<std::shared_ptr<Unit> > type;
     typedef ::boost::python::default_result_converter::apply<UnitWrapper>::type type;
 };
@@ -70,7 +70,7 @@ inline PyObject *to_python(std::shared_ptr<Unit> un)
 {
     return to_python(UnitWrapper(un));
 }
-inline std::shared_ptr<Unit> from_python(PyObject *p, boost::python::type<std::shared_ptr<Unit> >)
+inline std::shared_ptr<Unit> from_python(PyObject *p, boost::python::type<std::shared_ptr<Unit>>)
 {
     UnitWrapper uw = (from_python(p, boost::python::type<UnitWrapper &>()));
     return uw.GetUnit();

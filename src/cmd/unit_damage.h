@@ -251,8 +251,8 @@ template <class UnitType> bool GameUnit<UnitType>::Explode(bool drawit, float ti
                                   this->ExplosionRadius() * game_options.explosion_damage_center * game_options.explosion_damage_edge,
                                   NULL));
         }
-        QVector exploc = this->cumulative_transformation.position;
-        bool    sub    = this->isSubUnit();
+        QVector               exploc = this->cumulative_transformation.position;
+        bool                  sub    = this->isSubUnit();
         std::shared_ptr<Unit> un     = NULL;
         if (!sub)
             if ((un = _Universe->AccessCockpit(0)->GetParent())) {

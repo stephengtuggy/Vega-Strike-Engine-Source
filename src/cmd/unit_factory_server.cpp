@@ -24,13 +24,13 @@ std::shared_ptr<Unit> UnitFactory::createUnit()
 }
 
 std::shared_ptr<Unit> UnitFactory::createUnit(const char * filename,
-                              bool         SubUnit,
-                              int          faction,
-                              std::string  customizedUnit,
-                              Flightgroup *flightgroup,
-                              int          fg_subnumber,
-                              string *     netxml,
-                              ObjSerial    netcreate)
+                                              bool         SubUnit,
+                                              int          faction,
+                                              std::string  customizedUnit,
+                                              Flightgroup *flightgroup,
+                                              int          fg_subnumber,
+                                              string *     netxml,
+                                              ObjSerial    netcreate)
 {
     _Universe->netLock(true);
     std::shared_ptr<Unit> un = new Unit(filename, SubUnit, faction, customizedUnit, flightgroup, fg_subnumber, netxml);
@@ -128,7 +128,7 @@ Planet *UnitFactory::createPlanet(QVector                           x,
                                   BLENDFUNC                         ds,
                                   const vector<string> &            dest,
                                   const QVector &                   orbitcent,
-                                  std::shared_ptr<Unit> parent,
+                                  std::shared_ptr<Unit>             parent,
                                   const GFXMaterial &               ourmat,
                                   const std::vector<GFXLightLocal> &ligh,
                                   int                               faction,

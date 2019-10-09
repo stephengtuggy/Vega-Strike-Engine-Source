@@ -67,7 +67,7 @@ extern bool CheckAccessory(std::shared_ptr<Unit> tur);
 
 static void TurretFAW(std::shared_ptr<Unit> parent)
 {
-    un_iter iter = parent->getSubUnits();
+    un_iter               iter = parent->getSubUnits();
     std::shared_ptr<Unit> un;
     while (NULL != (un = *iter)) {
         if (!CheckAccessory(un)) {
@@ -387,7 +387,7 @@ bool AggressiveAI::ProcessLogicItem(const AIEvents::AIEvresult &item)
         break;
     }
     case TARGET_FACES_YOU: {
-        value      = 0.0;
+        value                      = 0.0;
         std::shared_ptr<Unit> targ = parent->Target();
         if (targ) {
             Vector Q;
@@ -402,7 +402,7 @@ bool AggressiveAI::ProcessLogicItem(const AIEvents::AIEvresult &item)
         break;
     }
     case TARGET_IN_FRONT_OF_YOU: {
-        value      = 0.0;
+        value                      = 0.0;
         std::shared_ptr<Unit> targ = parent->Target();
         if (targ) {
             Vector Q;
@@ -417,7 +417,7 @@ bool AggressiveAI::ProcessLogicItem(const AIEvents::AIEvresult &item)
         break;
     }
     case TARGET_GOING_YOUR_DIRECTION: {
-        value      = 0.0;
+        value                      = 0.0;
         std::shared_ptr<Unit> targ = parent->Target();
         if (targ) {
             Vector Q;
@@ -497,8 +497,8 @@ std::shared_ptr<Unit> GetThreat(std::shared_ptr<Unit> parent, std::shared_ptr<Un
 {
     std::shared_ptr<Unit> th        = NULL;
     std::shared_ptr<Unit> un        = NULL;
-    bool  targetted = false;
-    float mindist   = FLT_MAX;
+    bool                  targetted = false;
+    float                 mindist   = FLT_MAX;
     for (un_iter ui = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = *ui); ++ui)
         if (parent->getRelation(un) < 0) {
             float d             = (un->Position() - leader->Position()).Magnitude();
@@ -551,7 +551,7 @@ bool AggressiveAI::ProcessCurrentFgDirective(Flightgroup *fg)
             leaderowner       = leader->owner ? leader->owner : leader;
             if (fg->directive.find("k") != string::npos || fg->directive.find("K") != string::npos) {
                 std::shared_ptr<Unit> targ   = fg->target.GetUnit();
-                bool  callme = false;
+                bool                  callme = false;
                 if (targ && (targ->faction != parent->faction)) {
                     if (targ->InCorrectStarSystem(_Universe->activeStarSystem())) {
                         CommunicationMessage c(parent, leader, NULL, 0);
@@ -595,7 +595,7 @@ bool AggressiveAI::ProcessCurrentFgDirective(Flightgroup *fg)
                 // a is now used for AI, for backward compatibility. do not use for player
             } else if (fg->directive.find("a") != string::npos || fg->directive.find("A") != string::npos) {
                 std::shared_ptr<Unit> targ = fg->leader.GetUnit();
-                targ       = targ != NULL ? targ->Target() : NULL;
+                targ                       = targ != NULL ? targ->Target() : NULL;
                 if (targ) {
                     if (targ->InCorrectStarSystem(_Universe->activeStarSystem())) {
                         CommunicationMessage c(parent, leader, NULL, 0);
@@ -1186,10 +1186,10 @@ static std::shared_ptr<Unit> ChooseNavPoint(std::shared_ptr<Unit> parent, std::s
     int         whichlist = 1;                                            // friendly
     std::string fgname    = UnitUtil::getFlightgroupName(parent);
 
-    bool                   insys       = (parent->GetJumpStatus().drive == -2) || fgname.find(insysString) != std::string::npos;
-    std::string::size_type whereconvoy = fgname.find(arrowString);
-    bool                   convoy      = (whereconvoy != std::string::npos);
-    size_t                 total_size  = stats->navs[0].size() + stats->navs[whichlist].size(); // friendly and neutral
+    bool                   insys          = (parent->GetJumpStatus().drive == -2) || fgname.find(insysString) != std::string::npos;
+    std::string::size_type whereconvoy    = fgname.find(arrowString);
+    bool                   convoy         = (whereconvoy != std::string::npos);
+    size_t                 total_size     = stats->navs[0].size() + stats->navs[whichlist].size(); // friendly and neutral
     static bool            bad_units_lurk = XMLSupport::parse_bool(vs_config->getVariable("AI", "hostile_lurk", "true"));
     if (hostile && bad_units_lurk) {
         if (anarchy && !siege) {
@@ -1255,13 +1255,14 @@ static std::shared_ptr<Unit> ChooseNavPoint(std::shared_ptr<Unit> parent, std::s
     return NULL;
 }
 
-static std::shared_ptr<Unit> ChooseNearNavPoint(std::shared_ptr<Unit> parent, std::shared_ptr<Unit> suggestion, QVector location, float locradius)
+static std::shared_ptr<Unit>
+ChooseNearNavPoint(std::shared_ptr<Unit> parent, std::shared_ptr<Unit> suggestion, QVector location, float locradius)
 {
     if (suggestion)
         return suggestion;
-    std::shared_ptr<Unit> candidate = NULL;
+    std::shared_ptr<Unit>      candidate = NULL;
     float                      dist      = FLT_MAX;
-    std::shared_ptr<Unit> un;
+    std::shared_ptr<Unit>      un;
     NearestNavOrCapshipLocator nnl;
     findObjects(_Universe->activeStarSystem()->collidemap[Unit::UNIT_ONLY], parent->location[Unit::UNIT_ONLY], &nnl);
     return nnl.retval.unit;
@@ -1297,7 +1298,12 @@ class FlyTo : public Orders::MoveTo
     UnitContainer destUnit;
 
   public:
-    FlyTo(const QVector &target, bool aft, bool terminating = true, float creationtime = 0, int leniency = 6, std::shared_ptr<Unit> destUnit = NULL)
+    FlyTo(const QVector &       target,
+          bool                  aft,
+          bool                  terminating  = true,
+          float                 creationtime = 0,
+          int                   leniency     = 6,
+          std::shared_ptr<Unit> destUnit     = NULL)
         : MoveTo(target, aft, leniency, terminating)
     {
         this->creationtime = creationtime;
@@ -1332,7 +1338,12 @@ static Vector randVector()
     return Vector((rand() / (float)RAND_MAX) * 2 - 1, (rand() / (float)RAND_MAX) * 2 - 1, (rand() / (float)RAND_MAX) * 2 - 1);
 }
 
-static void GoTo(AggressiveAI *ai, std::shared_ptr<Unit> parent, const QVector &nav, float creationtime, bool boonies = false, std::shared_ptr<Unit> destUnit = NULL)
+static void GoTo(AggressiveAI *        ai,
+                 std::shared_ptr<Unit> parent,
+                 const QVector &       nav,
+                 float                 creationtime,
+                 bool                  boonies  = false,
+                 std::shared_ptr<Unit> destUnit = NULL)
 {
     static bool can_afterburn = XMLSupport::parse_bool(vs_config->getVariable("AI", "afterburn_to_no_enemies", "true"));
     Order *     mt            = new FlyTo(nav, can_afterburn, true, creationtime, boonies ? 16 : 6, destUnit);
@@ -1405,7 +1416,7 @@ void AggressiveAI::ExecuteNoEnemies()
         if (CloseEnoughToNavOrDest(parent, navDestination.GetUnit(), nav) && lurk_on_arrival == 0) {
             std::string fgname = UnitUtil::getFlightgroupName(parent);
 
-            nav        = QVector(0, 0, 0);
+            nav                        = QVector(0, 0, 0);
             std::shared_ptr<Unit> dest = ChooseNearNavPoint(parent, navDestination.GetUnit(), parent->Position(), parent->rSize());
             if (dest) {
                 if (fgname.find(insysString) == string::npos && dest->GetDestinations().size() > 0 &&

@@ -234,7 +234,7 @@ void GameStarSystem::Draw(bool DrawCockpit)
     } else if (!par->isSubUnit()) {
         // now we can assume world is topps
         par->cumulative_transformation = linear_interpolate(par->prev_physical_state, par->curr_physical_state, interpolation_blend_factor);
-        std::shared_ptr<Unit> targ                     = par->Target();
+        std::shared_ptr<Unit> targ     = par->Target();
         if (targ && !targ->isSubUnit()) {
             targ->cumulative_transformation =
                 linear_interpolate(targ->prev_physical_state, targ->curr_physical_state, interpolation_blend_factor);
@@ -251,8 +251,8 @@ void GameStarSystem::Draw(bool DrawCockpit)
             targ = saveparent->Target();
         // Array containing the two interesting units, so as not to have to copy-paste code
         std::shared_ptr<Unit> camunits[2]   = {saveparent, targ};
-        float        backup        = SIMULATION_ATOM;
-        unsigned int cur_sim_frame = _Universe->activeStarSystem()->getCurrentSimFrame();
+        float                 backup        = SIMULATION_ATOM;
+        unsigned int          cur_sim_frame = _Universe->activeStarSystem()->getCurrentSimFrame();
         for (int i = 0; i < 2; ++i) {
             std::shared_ptr<Unit> unit = camunits[i];
             // Make sure unit is not null;

@@ -116,7 +116,7 @@ void Unit::SetNebula(Nebula *neb)
 {
     nebula = neb;
     if (!SubUnits.empty()) {
-        un_fiter iter = SubUnits.fastIterator();
+        un_fiter              iter = SubUnits.fastIterator();
         std::shared_ptr<Unit> un;
         while ((un = *iter)) {
             un->SetNebula(neb);
@@ -390,7 +390,7 @@ extern void abletodock(int dock);
 bool CrashForceDock(std::shared_ptr<Unit> thus, std::shared_ptr<Unit> dockingUn, bool force)
 {
     std::shared_ptr<Unit> un            = dockingUn;
-    int   whichdockport = thus->CanDockWithMe(un, force);
+    int                   whichdockport = thus->CanDockWithMe(un, force);
     if (whichdockport != -1) {
         if (Network == NULL) {
             QVector place = UniverseUtil::SafeEntrancePoint(un->Position(), un->rSize() * 1.5);
@@ -410,8 +410,12 @@ bool CrashForceDock(std::shared_ptr<Unit> thus, std::shared_ptr<Unit> dockingUn,
     return false;
 }
 
-void Unit::reactToCollision(
-    std::shared_ptr<Unit> smalle, const QVector &biglocation, const Vector &bignormal, const QVector &smalllocation, const Vector &smallnormal, float dist)
+void Unit::reactToCollision(std::shared_ptr<Unit> smalle,
+                            const QVector &       biglocation,
+                            const Vector &        bignormal,
+                            const QVector &       smalllocation,
+                            const Vector &        smallnormal,
+                            float                 dist)
 {
     clsptr smltyp = smalle->isUnit();
     if (smltyp == ENHANCEMENTPTR || smltyp == MISSILEPTR) {
@@ -677,7 +681,7 @@ std::string speedStarHandler(const XMLType &input, void *mythis)
     return XMLSupport::tostring((*input.w.f) / game_speed);
 }
 
-static list<std::shared_ptr<Unit> >                Unitdeletequeue;
+static list<std::shared_ptr<Unit>> Unitdeletequeue;
 static Hashtable<long, Unit, 2095> deletedUn;
 int                                deathofvs = 1;
 void                               CheckUnit(std::shared_ptr<Unit> un)
@@ -818,8 +822,8 @@ Unit::~Unit()
     free(pImage->cockpit_damage);
     if (!Killed())
         VSFileSystem::vs_fprintf(stderr, "Assumed exit on unit %s(if not quitting, report error)\n", name.get().c_str());
-    // if (ucref.load() > 0)
-    //     VSFileSystem::vs_fprintf(stderr, "DISASTER AREA!!!!");
+        // if (ucref.load() > 0)
+        //     VSFileSystem::vs_fprintf(stderr, "DISASTER AREA!!!!");
 // #ifdef DESTRUCTDEBUG
 //     VSFileSystem::vs_fprintf(stderr, "stage %d %x %d\n", 0, this, ucref.load());
 //     fflush(stderr);
@@ -1977,7 +1981,7 @@ void Unit::ExecuteAI()
     if (aistate)
         aistate->Execute();
     if (!SubUnits.empty()) {
-        un_iter iter = getSubUnits();
+        un_iter               iter = getSubUnits();
         std::shared_ptr<Unit> un;
         while ((un = *iter)) {
             un->ExecuteAI(); // like dubya
@@ -2098,7 +2102,7 @@ void Unit::DisableTurretAI()
 
 extern signed char ComputeAutoGuarantee(std::shared_ptr<Unit> un);
 extern float       getAutoRSize(std::shared_ptr<Unit> orig, std::shared_ptr<Unit> un, bool ignore_friend = false);
-extern void        SetShieldZero(std::shared_ptr<Unit> );
+extern void        SetShieldZero(std::shared_ptr<Unit>);
 double             howFarToJump()
 {
     static float tmp = XMLSupport::parse_float(vs_config->getVariable("physics", "distance_to_warp", "1000000000000.0"));
@@ -2166,8 +2170,12 @@ static std::string NearestSystem(std::string currentsystem, QVector pos)
     return closest_system;
 }
 
-void Unit::UpdatePhysics(
-    const Transformation &trans, const Matrix &transmat, const Vector &cum_vel, bool lastframe, UnitCollection *uc, std::shared_ptr<Unit> superunit)
+void Unit::UpdatePhysics(const Transformation &trans,
+                         const Matrix &        transmat,
+                         const Vector &        cum_vel,
+                         bool                  lastframe,
+                         UnitCollection *      uc,
+                         std::shared_ptr<Unit> superunit)
 {
     static float VELOCITY_MAX           = XMLSupport::parse_float(vs_config->getVariable("physics", "velocity_max", "10000"));
     static float SPACE_DRAG             = XMLSupport::parse_float(vs_config->getVariable("physics", "unit_space_drag", "0.000000"));
@@ -2261,9 +2269,9 @@ void Unit::UpdatePhysics(
     }
     if (SPACE_DRAG > 0)
         Velocity = Velocity * (1 - SPACE_DRAG);
-    float dist_sqr_to_target = FLT_MAX;
+    float                 dist_sqr_to_target = FLT_MAX;
     std::shared_ptr<Unit> target             = Unit::Target();
-    bool  increase_locking   = false;
+    bool                  increase_locking   = false;
     if (target && cloaking < 0 /*-1 or -32768*/) {
         if (target->isUnit() != PLANETPTR) {
             Vector TargetPos(InvTransform(cumulative_transformation_matrix, (target->Position())).Cast());
@@ -2459,14 +2467,18 @@ void Unit::UpdatePhysics(
     }
 }
 
-void Unit::UpdateSubunitPhysics(
-    const Transformation &trans, const Matrix &transmat, const Vector &cum_vel, bool lastframe, UnitCollection *uc, std::shared_ptr<Unit> superunit)
+void Unit::UpdateSubunitPhysics(const Transformation &trans,
+                                const Matrix &        transmat,
+                                const Vector &        cum_vel,
+                                bool                  lastframe,
+                                UnitCollection *      uc,
+                                std::shared_ptr<Unit> superunit)
 {
     if (!SubUnits.empty()) {
         std::shared_ptr<Unit> su;
-        float        backup        = SIMULATION_ATOM;
-        float        basesimatom   = (this->sim_atom_multiplier ? backup / (float)this->sim_atom_multiplier : backup);
-        unsigned int cur_sim_frame = _Universe->activeStarSystem()->getCurrentSimFrame();
+        float                 backup        = SIMULATION_ATOM;
+        float                 basesimatom   = (this->sim_atom_multiplier ? backup / (float)this->sim_atom_multiplier : backup);
+        unsigned int          cur_sim_frame = _Universe->activeStarSystem()->getCurrentSimFrame();
         for (un_iter iter = getSubUnits(); (su = *iter); ++iter)
             if (this->sim_atom_multiplier && su->sim_atom_multiplier) {
                 // This ugly thing detects skipped frames.
@@ -2521,7 +2533,10 @@ void Unit::UpdateSubunitPhysics(std::shared_ptr<Unit> subunit,
     }
 }
 
-float CalculateNearestWarpUnit(const std::shared_ptr<Unit> thus, float minmultiplier, std::shared_ptr<Unit> *nearest_unit, bool count_negative_warp_units)
+float CalculateNearestWarpUnit(const std::shared_ptr<Unit> thus,
+                               float                       minmultiplier,
+                               std::shared_ptr<Unit> *     nearest_unit,
+                               bool                        count_negative_warp_units)
 {
     static float smallwarphack = XMLSupport::parse_float(vs_config->getVariable("physics", "minwarpeffectsize", "100"));
     static float bigwarphack   = XMLSupport::parse_float(vs_config->getVariable("physics", "maxwarpeffectsize", "10000000"));
@@ -2609,11 +2624,11 @@ float Unit::GetMaxWarpFieldStrength(float rampmult) const
     // Pi^2 * C
     static float warpMaxEfVel = XMLSupport::parse_float(vs_config->getVariable("physics", "warpMaxEfVel", "2960881320"));
     // inverse fractional effect of ship vs real big object
-    float minmultiplier = warpMultiplierMax * graphicOptions.MaxWarpMultiplier;
+    float                 minmultiplier = warpMultiplierMax * graphicOptions.MaxWarpMultiplier;
     std::shared_ptr<Unit> nearest_unit  = NULL;
-    minmultiplier       = CalculateNearestWarpUnit(this, minmultiplier, &nearest_unit, true);
-    float minWarp       = warpMultiplierMin * graphicOptions.MinWarpMultiplier;
-    float maxWarp       = warpMultiplierMax * graphicOptions.MaxWarpMultiplier;
+    minmultiplier                       = CalculateNearestWarpUnit(this, minmultiplier, &nearest_unit, true);
+    float minWarp                       = warpMultiplierMin * graphicOptions.MinWarpMultiplier;
+    float maxWarp                       = warpMultiplierMax * graphicOptions.MaxWarpMultiplier;
     if (minmultiplier < minWarp)
         minmultiplier = minWarp;
     if (minmultiplier > maxWarp)
@@ -2763,7 +2778,10 @@ std::string GenerateAutoError(std::shared_ptr<Unit> me, std::shared_ptr<Unit> ta
     return err;
 }
 
-bool Unit::AutoPilotToErrorMessage(const std::shared_ptr<Unit> target, bool ignore_energy_requirements, std::string &failuremessage, int recursive_level)
+bool Unit::AutoPilotToErrorMessage(const std::shared_ptr<Unit> target,
+                                   bool                        ignore_energy_requirements,
+                                   std::string &               failuremessage,
+                                   int                         recursive_level)
 {
     static bool auto_valid = XMLSupport::parse_bool(vs_config->getVariable("physics", "insystem_jump_or_timeless_auto-pilot", "false"));
     if (!auto_valid) {
@@ -2799,10 +2817,10 @@ bool Unit::AutoPilotToErrorMessage(const std::shared_ptr<Unit> target, bool igno
     if (ss == NULL)
         ss = _Universe->activeStarSystem();
     std::shared_ptr<Unit> un = NULL;
-    QVector start(Position());
-    QVector end(RealPosition(target));
-    float   totallength = (start - end).Magnitude();
-    bool    nanspace    = false;
+    QVector               start(Position());
+    QVector               end(RealPosition(target));
+    float                 totallength = (start - end).Magnitude();
+    bool                  nanspace    = false;
     if (!FINITE(totallength)) {
         nanspace    = true;
         start       = QVector(100000000.0, 100000000.0, 10000000000000.0);
@@ -4044,21 +4062,21 @@ std::shared_ptr<Unit> findUnitInStarsystem(const void *unitDoNotDereference)
 {
     std::shared_ptr<Unit> un;
     for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = *i) != NULL; ++i)
-        if (un == reinterpret_cast<const std::shared_ptr<Unit> >(unitDoNotDereference))
+        if (un == reinterpret_cast<const std::shared_ptr<Unit>>(unitDoNotDereference))
             return un;
     return NULL;
 }
 
 extern void ScoreKill(Cockpit *cp, std::shared_ptr<Unit> killer, std::shared_ptr<Unit> killedUnit);
 // Changed order of things -> Vectors and ApplyLocalDamage are computed before Cockpit thing now
-void AllUnitsCloseAndEngage(std::shared_ptr<Unit> , int faction);
-void Unit::ApplyDamage(const Vector &  pnt,
-                       const Vector &  normal,
-                       float           amt,
+void AllUnitsCloseAndEngage(std::shared_ptr<Unit>, int faction);
+void Unit::ApplyDamage(const Vector &        pnt,
+                       const Vector &        normal,
+                       float                 amt,
                        std::shared_ptr<Unit> affectedUnit,
-                       const GFXColor &color,
-                       void *          ownerDoNotDereference,
-                       float           phasedamage)
+                       const GFXColor &      color,
+                       void *                ownerDoNotDereference,
+                       float                 phasedamage)
 {
     Cockpit *cp          = _Universe->isPlayerStarshipVoid(ownerDoNotDereference);
     float    hullpercent = GetHullPercent();
@@ -4078,13 +4096,13 @@ void Unit::ApplyDamage(const Vector &  pnt,
         int        howmany                = armor_damage ? MadnessForHullDamage : MadnessForShieldDamage;
         for (int i = 0; i < howmany; ++i) {
             // now we can dereference it because we checked it against the parent
-            CommunicationMessage c(reinterpret_cast<std::shared_ptr<Unit> >(ownerDoNotDereference), this, NULL, 0);
+            CommunicationMessage c(reinterpret_cast<std::shared_ptr<Unit>>(ownerDoNotDereference), this, NULL, 0);
             c.SetCurrentState(c.fsm->GetHitNode(), NULL, 0);
             if (this->getAIState())
                 this->getAIState()->Communicate(c);
         }
         // the dark danger is real!
-        Threaten(reinterpret_cast<std::shared_ptr<Unit> >(ownerDoNotDereference), 10);
+        Threaten(reinterpret_cast<std::shared_ptr<Unit>>(ownerDoNotDereference), 10);
     } else if (!Network) {
         // if only the damage contained which faction it belonged to
         pilot->DoHit(this, ownerDoNotDereference, FactionUtil::GetNeutralFaction());
@@ -4093,7 +4111,7 @@ void Unit::ApplyDamage(const Vector &  pnt,
         ClearMounts();
         if (!mykilled) {
             if (cp) {
-                ScoreKill(cp, reinterpret_cast<std::shared_ptr<Unit> >(ownerDoNotDereference), this);
+                ScoreKill(cp, reinterpret_cast<std::shared_ptr<Unit>>(ownerDoNotDereference), this);
             } else {
                 std::shared_ptr<Unit> tmp;
                 if ((tmp = findUnitInStarsystem(ownerDoNotDereference)) != NULL) {
@@ -4426,8 +4444,8 @@ void Unit::Kill(bool erasefromsave, bool quitting)
         static int i_survival        = float_to_int((RAND_MAX * survival));
         static int i_player_survival = float_to_int((RAND_MAX * player_survival));
 
-        vector<std::shared_ptr<Unit> > dockedun;
-        unsigned int   i;
+        vector<std::shared_ptr<Unit>> dockedun;
+        unsigned int                  i;
         for (i = 0; i < pImage->dockedunits.size(); ++i) {
             std::shared_ptr<Unit> un;
             if (NULL != (un = pImage->dockedunits[i]->uc.GetUnit()))
@@ -4848,7 +4866,8 @@ float Unit::DealDamageToHullReturnArmor(const Vector &pnt, float damage, float *
                         static bool NotActuallyDowngrade =
                             XMLSupport::parse_bool(vs_config->getVariable("physics", "separate_system_flakiness_component", "false"));
                         if (!NotActuallyDowngrade) {
-                            const std::shared_ptr<Unit> downgrade = loadUnitByCache(GetCargo(which).content, FactionUtil::GetFactionIndex("upgrades"));
+                            const std::shared_ptr<Unit> downgrade =
+                                loadUnitByCache(GetCargo(which).content, FactionUtil::GetFactionIndex("upgrades"));
                             if (downgrade) {
                                 if (0 == downgrade->GetNumMounts() && downgrade->SubUnits.empty()) {
                                     double percentage = 0;
@@ -5046,7 +5065,7 @@ void Unit::TargetTurret(std::shared_ptr<Unit> targ)
 {
     if (!SubUnits.empty()) {
         std::shared_ptr<Unit> su;
-        bool  inrange = (targ != NULL) ? InRange(targ) : true;
+        bool                  inrange = (targ != NULL) ? InRange(targ) : true;
         if (inrange) {
             for (un_iter iter = getSubUnits(); (su = *iter); ++iter) {
                 su->Target(targ);
@@ -5123,7 +5142,7 @@ void Unit::Target(std::shared_ptr<Unit> targ)
             }
         } else {
             if (jump.drive != -1) {
-                bool  found = false;
+                bool                  found = false;
                 std::shared_ptr<Unit> u;
                 for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (u = *i) != NULL; ++i)
                     if (!u->GetDestinations().empty()) {
@@ -5545,7 +5564,7 @@ const std::vector<struct DockingPorts> &Unit::DockingPortLocations() const
 
 bool Unit::EndRequestClearance(std::shared_ptr<Unit> targ)
 {
-    std::vector<std::shared_ptr<Unit> >::iterator lookcleared;
+    std::vector<std::shared_ptr<Unit>>::iterator lookcleared;
     if ((lookcleared = std::find(targ->pImage->clearedunits.begin(), targ->pImage->clearedunits.end(), this)) !=
         targ->pImage->clearedunits.end()) {
         targ->pImage->clearedunits.erase(lookcleared);
@@ -5594,7 +5613,7 @@ static Transformation HoldPositionWithRespectTo(Transformation holder, const Tra
 }
 
 extern void ExecuteDirector();
-extern void SwitchUnits(std::shared_ptr<Unit> , std::shared_ptr<Unit> );
+extern void SwitchUnits(std::shared_ptr<Unit>, std::shared_ptr<Unit>);
 
 void Unit::PerformDockingOperations()
 {
@@ -5628,8 +5647,8 @@ void Unit::PerformDockingOperations()
     }
 }
 
-std::set<std::shared_ptr<Unit> > arrested_list_do_not_dereference;
-bool             Unit::RefillWarpEnergy()
+std::set<std::shared_ptr<Unit>> arrested_list_do_not_dereference;
+bool                            Unit::RefillWarpEnergy()
 {
     static bool WCfuelhack = XMLSupport::parse_bool(vs_config->getVariable("physics", "fuel_equals_warp", "false"));
     if (WCfuelhack)
@@ -5646,7 +5665,7 @@ bool             Unit::RefillWarpEnergy()
     return false;
 }
 
-void UpdateMasterPartList(std::shared_ptr<Unit> );
+void UpdateMasterPartList(std::shared_ptr<Unit>);
 int  Unit::ForceDock(std::shared_ptr<Unit> utdw, unsigned int whichdockport)
 {
     if (utdw->pImage->dockingports.size() <= whichdockport)
@@ -5696,7 +5715,7 @@ int  Unit::ForceDock(std::shared_ptr<Unit> utdw, unsigned int whichdockport)
         else if (_Universe->AccessCockpit(cockpit)->credits >= 0)
             _Universe->AccessCockpit(cockpit)->credits = 0;
     }
-    std::set<std::shared_ptr<Unit> >::iterator arrested = arrested_list_do_not_dereference.find(this);
+    std::set<std::shared_ptr<Unit>>::iterator arrested = arrested_list_do_not_dereference.find(this);
     if (arrested != arrested_list_do_not_dereference.end()) {
         arrested_list_do_not_dereference.erase(arrested);
         // do this for jail time
@@ -5713,7 +5732,7 @@ int Unit::Dock(std::shared_ptr<Unit> utdw)
     if (Network == NULL) {
         if (docked & (DOCKED_INSIDE | DOCKED))
             return 0;
-        std::vector<std::shared_ptr<Unit> >::iterator lookcleared;
+        std::vector<std::shared_ptr<Unit>>::iterator lookcleared;
         if ((lookcleared = std::find(utdw->pImage->clearedunits.begin(), utdw->pImage->clearedunits.end(), this)) !=
             utdw->pImage->clearedunits.end()) {
             int whichdockport;
@@ -6136,7 +6155,13 @@ std::string getTurretSize(const std::string &size)
     return "capital";
 }
 
-bool Unit::UpgradeMounts(const std::shared_ptr<Unit> up, int mountoffset, bool touchme, bool downgrade, int &numave, const std::shared_ptr<Unit> templ, double &percentage)
+bool Unit::UpgradeMounts(const std::shared_ptr<Unit> up,
+                         int                         mountoffset,
+                         bool                        touchme,
+                         bool                        downgrade,
+                         int &                       numave,
+                         const std::shared_ptr<Unit> templ,
+                         double &                    percentage)
 {
     int  j;
     int  i;
@@ -6316,11 +6341,11 @@ bool Unit::UpgradeSubUnits(const std::shared_ptr<Unit> up, int subunitoffset, bo
 }
 
 bool Unit::UpgradeSubUnitsWithFactory(const std::shared_ptr<Unit> up,
-                                      int         subunitoffset,
-                                      bool        touchme,
-                                      bool        downgrade,
-                                      int &       numave,
-                                      double &    percentage,
+                                      int                         subunitoffset,
+                                      bool                        touchme,
+                                      bool                        downgrade,
+                                      int &                       numave,
+                                      double &                    percentage,
                                       std::shared_ptr<Unit> (*createupgradesubunit)(std::string s, int faction))
 {
     bool        cancompletefully = true;
@@ -6330,7 +6355,7 @@ bool Unit::UpgradeSubUnitsWithFactory(const std::shared_ptr<Unit> up,
     bool        found = false;
     for (j = 0, ui = getSubUnits(); !ui.isDone() && j < subunitoffset; ++ui, ++j) {
     } /// set the turrets to the offset
-    un_kiter upturrets;
+    un_kiter              upturrets;
     std::shared_ptr<Unit> giveAway;
 
     giveAway = *ui;
@@ -6365,8 +6390,8 @@ bool Unit::UpgradeSubUnitsWithFactory(const std::shared_ptr<Unit> up,
                 ui.remove();      // remove the turret from the first unit
                 // if we are upgrading swap them
                 if (!downgrade) {
-                    std::shared_ptr<Unit> addToMeNew                = (*createupgradesubunit)(addtome->name, addtome->faction);
-                    addToMeNew->curr_physical_state = addToMeCur;
+                    std::shared_ptr<Unit> addToMeNew = (*createupgradesubunit)(addtome->name, addtome->faction);
+                    addToMeNew->curr_physical_state  = addToMeCur;
                     addToMeNew->SetFaction(faction);
                     addToMeNew->prev_physical_state = addToMePrev;
                     // add unit to your ship
@@ -6408,14 +6433,14 @@ static void GCCBugCheckFloat(float *f, int offset)
 }
 
 bool Unit::canUpgrade(const std::shared_ptr<Unit> upgrador,
-                      int         mountoffset,
-                      int         subunitoffset,
-                      int         additive,
-                      bool        force,
-                      double &    percentage,
+                      int                         mountoffset,
+                      int                         subunitoffset,
+                      int                         additive,
+                      bool                        force,
+                      double &                    percentage,
                       const std::shared_ptr<Unit> templ,
-                      bool        force_change_on_nothing,
-                      bool        gen_downgrade_list)
+                      bool                        force_change_on_nothing,
+                      bool                        gen_downgrade_list)
 {
     return UpAndDownGrade(upgrador,
                           templ,
@@ -6432,14 +6457,14 @@ bool Unit::canUpgrade(const std::shared_ptr<Unit> upgrador,
 }
 
 bool Unit::Upgrade(const std::shared_ptr<Unit> upgrador,
-                   int         mountoffset,
-                   int         subunitoffset,
-                   int         additive,
-                   bool        force,
-                   double &    percentage,
+                   int                         mountoffset,
+                   int                         subunitoffset,
+                   int                         additive,
+                   bool                        force,
+                   double &                    percentage,
                    const std::shared_ptr<Unit> templ,
-                   bool        force_change_on_nothing,
-                   bool        gen_downgrade_list)
+                   bool                        force_change_on_nothing,
+                   bool                        gen_downgrade_list)
 {
     return UpAndDownGrade(upgrador,
                           templ,
@@ -6455,15 +6480,23 @@ bool Unit::Upgrade(const std::shared_ptr<Unit> upgrador,
                           gen_downgrade_list);
 }
 
-bool Unit::canDowngrade(
-    const std::shared_ptr<Unit> downgradeor, int mountoffset, int subunitoffset, double &percentage, const std::shared_ptr<Unit> downgradelimit, bool gen_downgrade_list)
+bool Unit::canDowngrade(const std::shared_ptr<Unit> downgradeor,
+                        int                         mountoffset,
+                        int                         subunitoffset,
+                        double &                    percentage,
+                        const std::shared_ptr<Unit> downgradelimit,
+                        bool                        gen_downgrade_list)
 {
     return UpAndDownGrade(
         downgradeor, NULL, mountoffset, subunitoffset, false, true, false, true, percentage, downgradelimit, false, gen_downgrade_list);
 }
 
-bool Unit::Downgrade(
-    const std::shared_ptr<Unit> downgradeor, int mountoffset, int subunitoffset, double &percentage, const std::shared_ptr<Unit> downgradelimit, bool gen_downgrade_list)
+bool Unit::Downgrade(const std::shared_ptr<Unit> downgradeor,
+                     int                         mountoffset,
+                     int                         subunitoffset,
+                     double &                    percentage,
+                     const std::shared_ptr<Unit> downgradelimit,
+                     bool                        gen_downgrade_list)
 {
     return UpAndDownGrade(
         downgradeor, NULL, mountoffset, subunitoffset, true, true, false, true, percentage, downgradelimit, false, gen_downgrade_list);
@@ -6504,7 +6537,7 @@ double       Unit::Upgrade(const std::string &file, int mountoffset, int subunit
     else
         printf( "shields before %s %d %d", file.c_str(), shield.fbrl.frontmax, shield.fbrl.backmax );
 #endif
-    int         upgradefac = FactionUtil::GetUpgradeFaction();
+    int                         upgradefac = FactionUtil::GetUpgradeFaction();
     const std::shared_ptr<Unit> up         = UnitConstCache::getCachedConst(StringIntKey(file, upgradefac));
     if (!up)
         up = UnitConstCache::setCachedConst(StringIntKey(file, upgradefac), UnitFactory::createUnit(file.c_str(), true, upgradefac));
@@ -6512,8 +6545,8 @@ double       Unit::Upgrade(const std::string &file, int mountoffset, int subunit
     Cargo *      cargo = GetCargo(file, cargonum);
     if (cargo)
         cargo->installed = true;
-    char *      unitdir  = GetUnitDir(this->name.get().c_str());
-    string      templnam = string(unitdir) + ".template";
+    char *                      unitdir  = GetUnitDir(this->name.get().c_str());
+    string                      templnam = string(unitdir) + ".template";
     const std::shared_ptr<Unit> templ    = UnitConstCache::getCachedConst(StringIntKey(templnam, this->faction));
     if (templ == NULL) {
         templ = UnitConstCache::setCachedConst(StringIntKey(templnam, this->faction),
@@ -6676,16 +6709,16 @@ static bool cell_has_recursive_data(const string &name, unsigned int fac, const 
 
 bool Unit::UpAndDownGrade(const std::shared_ptr<Unit> up,
                           const std::shared_ptr<Unit> templ,
-                          int         mountoffset,
-                          int         subunitoffset,
-                          bool        touchme,
-                          bool        downgrade,
-                          int         additive,
-                          bool        forcetransaction,
-                          double &    percentage,
+                          int                         mountoffset,
+                          int                         subunitoffset,
+                          bool                        touchme,
+                          bool                        downgrade,
+                          int                         additive,
+                          bool                        forcetransaction,
+                          double &                    percentage,
                           const std::shared_ptr<Unit> downgradelimit,
-                          bool        force_change_on_nothing,
-                          bool        gen_downgrade_list)
+                          bool                        force_change_on_nothing,
+                          bool                        gen_downgrade_list)
 {
     percentage = 0;
     if (Network && !_Universe->netLocked() && touchme) {
@@ -6769,11 +6802,11 @@ bool Unit::UpAndDownGrade(const std::shared_ptr<Unit> up,
         }
         Comparer = AGreaterB;
     }
-    double       resultdoub;
-    int          retval = 0; //"= 0" added by chuck_starchaser to shut off a warning about its possibly being used uninitialized
-    double       temppercent;
+    double resultdoub;
+    int    retval = 0; //"= 0" added by chuck_starchaser to shut off a warning about its possibly being used uninitialized
+    double temppercent;
     static std::shared_ptr<Unit> blankship     = NULL;
-    static bool  initblankship = false;
+    static bool                  initblankship = false;
     if (!initblankship) {
         blankship     = this;
         initblankship = true;
@@ -7218,8 +7251,8 @@ bool Unit::ReduceToTemplate()
     vector<Mount> savedWeap;
     savedWeap.swap(mounts);
     const std::shared_ptr<Unit> temprate = makeFinalBlankUpgrade(name, faction);
-    bool        success  = false;
-    double      pct      = 0;
+    bool                        success  = false;
+    double                      pct      = 0;
     if (temprate && temprate->name != string("LOAD_FAILED")) {
         success = Upgrade(temprate, -1, -1, 0, true, pct, NULL, true);
         if (pct > 0)
@@ -7276,10 +7309,10 @@ int Unit::RepairUpgrade()
     savedCargo.swap(pImage->cargo);
     vector<Mount> savedWeap;
     savedWeap.swap(mounts);
-    int         upfac    = FactionUtil::GetUpgradeFaction();
+    int                         upfac    = FactionUtil::GetUpgradeFaction();
     const std::shared_ptr<Unit> temprate = makeFinalBlankUpgrade(name, faction);
-    int         success  = 0;
-    double      pct      = 0;
+    int                         success  = 0;
+    double                      pct      = 0;
     if (temprate && temprate->name != string("LOAD_FAILED")) {
         success = Upgrade(temprate, -1, -1, 0, false, pct, NULL, false) ? 1 : 0;
         if (pct > 0)
@@ -7415,7 +7448,7 @@ bool Unit::RepairUpgradeCargo(Cargo *item, std::shared_ptr<Unit> baseUnit, float
         Cargo sold;
         bool  notadditive = (item->GetContent().find("add_") != 0 && item->GetContent().find("mult_") != 0);
         if (notadditive || item->GetCategory().find(DamagedCategory) == 0) {
-            Cargo       itemCopy = *item; // Copy this because we reload master list before we need it.
+            Cargo                       itemCopy = *item; // Copy this because we reload master list before we need it.
             const std::shared_ptr<Unit> un       = getUnitFromUpgradeName(item->content, this->faction);
             if (un) {
                 double percentage = UnitUtil::PercentOperational(this, item->content, item->category, false);
@@ -7474,20 +7507,22 @@ vector<CargoColor> &Unit::FilterDowngradeList(vector<CargoColor> &mylist, bool d
 {
     const std::shared_ptr<Unit> templ          = NULL;
     const std::shared_ptr<Unit> downgradelimit = NULL;
-    static bool  staticrem      = XMLSupport::parse_bool(vs_config->getVariable("general", "remove_impossible_downgrades", "true"));
-    static float MyPercentMin   = ComputeMinDowngradePercent();
-    int          upgrfac        = FactionUtil::GetUpgradeFaction();
+    static bool  staticrem    = XMLSupport::parse_bool(vs_config->getVariable("general", "remove_impossible_downgrades", "true"));
+    static float MyPercentMin = ComputeMinDowngradePercent();
+    int          upgrfac      = FactionUtil::GetUpgradeFaction();
     for (unsigned int i = 0; i < mylist.size(); ++i) {
         bool removethis = true /*staticrem*/;
         int  mode       = GetModeFromName(mylist[i].cargo.GetContent().c_str());
         if (mode != 2 || (!downgrade)) {
-            const std::shared_ptr<Unit> NewPart = UnitConstCache::getCachedConst(StringIntKey(mylist[i].cargo.GetContent().c_str(), upgrfac));
+            const std::shared_ptr<Unit> NewPart =
+                UnitConstCache::getCachedConst(StringIntKey(mylist[i].cargo.GetContent().c_str(), upgrfac));
             if (!NewPart) {
                 NewPart = UnitConstCache::setCachedConst(StringIntKey(mylist[i].cargo.GetContent(), upgrfac),
                                                          UnitFactory::createUnit(mylist[i].cargo.GetContent().c_str(), false, upgrfac));
             }
             if (NewPart->name == string("LOAD_FAILED")) {
-                const std::shared_ptr<Unit> NewPart = UnitConstCache::getCachedConst(StringIntKey(mylist[i].cargo.GetContent().c_str(), faction));
+                const std::shared_ptr<Unit> NewPart =
+                    UnitConstCache::getCachedConst(StringIntKey(mylist[i].cargo.GetContent().c_str(), faction));
                 if (!NewPart) {
                     NewPart = UnitConstCache::setCachedConst(StringIntKey(mylist[i].cargo.content, faction),
                                                              UnitFactory::createUnit(mylist[i].cargo.GetContent().c_str(), false, faction));
@@ -7594,7 +7629,7 @@ void Unit::TurretFAW()
     }
 }
 
-extern int SelectDockPort(std::shared_ptr<Unit> , std::shared_ptr<Unit> parent);
+extern int SelectDockPort(std::shared_ptr<Unit>, std::shared_ptr<Unit> parent);
 
 // index in here is unsigned, UINT_MAX and UINT_MAX-1 seem to be
 // special states.  This means the total amount of cargo any ship can have
@@ -7649,7 +7684,7 @@ void Unit::EjectCargo(unsigned int index)
             tmpcontent = "Space_Salvage";
         // this happens if it's a ship
         if (tmp->quantity > 0) {
-            const int sslen = strlen("starships");
+            const int             sslen = strlen("starships");
             std::shared_ptr<Unit> cargo = NULL;
             if (tmp->GetCategory().length() >= (unsigned int)sslen) {
                 if ((!tmp->mission) && memcmp(tmp->GetCategory().c_str(), "starships", sslen) == 0) {
@@ -8046,7 +8081,7 @@ Cargo *Unit::GetCargo(const std::string &s, unsigned int &i)
 const Cargo *Unit::GetCargo(const std::string &s, unsigned int &i) const
 {
     static Hashtable<string, unsigned int, 2047> index_cache_table;
-    std::shared_ptr<Unit> mpl = UnitFactory::getMasterPartList();
+    std::shared_ptr<Unit>                        mpl = UnitFactory::getMasterPartList();
     if (this == mpl) {
         unsigned int *ind = index_cache_table.Get(s);
         if (ind) {
@@ -8239,9 +8274,9 @@ void Unit::ImportPartList(const std::string &category, float price, float priced
 
 std::string Unit::massSerializer(const XMLType &input, void *mythis)
 {
-    std::shared_ptr<Unit> un      = (std::shared_ptr<Unit> )mythis;
-    float       mass    = un->Mass;
-    static bool usemass = XMLSupport::parse_bool(vs_config->getVariable("physics", "use_cargo_mass", "true"));
+    std::shared_ptr<Unit> un      = (std::shared_ptr<Unit>)mythis;
+    float                 mass    = un->Mass;
+    static bool           usemass = XMLSupport::parse_bool(vs_config->getVariable("physics", "use_cargo_mass", "true"));
     for (unsigned int i = 0; i < un->pImage->cargo.size(); ++i)
         if (un->pImage->cargo[i].quantity > 0)
             if (usemass)
@@ -8251,7 +8286,7 @@ std::string Unit::massSerializer(const XMLType &input, void *mythis)
 
 std::string Unit::shieldSerializer(const XMLType &input, void *mythis)
 {
-    std::shared_ptr<Unit> un = (std::shared_ptr<Unit> )mythis;
+    std::shared_ptr<Unit> un = (std::shared_ptr<Unit>)mythis;
     switch (un->shield.number) {
     case 2:
         return tostring(un->shield.shield2fb.frontmax) + string("\" back=\"") + tostring(un->shield.shield2fb.backmax);
@@ -8275,8 +8310,8 @@ std::string Unit::shieldSerializer(const XMLType &input, void *mythis)
 
 std::string Unit::mountSerializer(const XMLType &input, void *mythis)
 {
-    std::shared_ptr<Unit> un = (std::shared_ptr<Unit> )mythis;
-    int   i  = input.w.hardint;
+    std::shared_ptr<Unit> un = (std::shared_ptr<Unit>)mythis;
+    int                   i  = input.w.hardint;
     if (un->GetNumMounts() > i) {
         string result(lookupMountSize(un->mounts[i].size));
         if (un->mounts[i].status == Mount::INACTIVE || un->mounts[i].status == Mount::ACTIVE)
@@ -8308,10 +8343,10 @@ std::string Unit::mountSerializer(const XMLType &input, void *mythis)
 
 std::string Unit::subunitSerializer(const XMLType &input, void *mythis)
 {
-    std::shared_ptr<Unit> un    = (std::shared_ptr<Unit> )mythis;
-    int   index = input.w.hardint;
+    std::shared_ptr<Unit> un    = (std::shared_ptr<Unit>)mythis;
+    int                   index = input.w.hardint;
     std::shared_ptr<Unit> su;
-    int   i = 0;
+    int                   i = 0;
     for (un_iter ui = un->getSubUnits(); (su = *ui); ++ui, ++i) {
         if (i == index) {
             if (su->pImage->unitwriter)
@@ -8405,7 +8440,7 @@ std::string CargoToString(const Cargo &cargo)
 
 std::string Unit::cargoSerializer(const XMLType &input, void *mythis)
 {
-    std::shared_ptr<Unit> un = (std::shared_ptr<Unit> )mythis;
+    std::shared_ptr<Unit> un = (std::shared_ptr<Unit>)mythis;
     if (un->pImage->cargo.size() == 0)
         return string("0");
     un->SortCargo();
@@ -8506,9 +8541,9 @@ void Unit::Repair()
                             UniverseUtil::GetGameTime() + repairtime * (1 - percentoperational) / pImage->repair_droid;
                     } else {
                         // ACtually fix the cargo here
-                        static int         upfac = FactionUtil::GetUpgradeFaction();
+                        static int                  upfac = FactionUtil::GetUpgradeFaction();
                         const std::shared_ptr<Unit> up    = getUnitFromUpgradeName(carg->content, upfac);
-                        static std::string loadfailed("LOAD_FAILED");
+                        static std::string          loadfailed("LOAD_FAILED");
                         if (up->name == loadfailed) {
                             printf("Bug: Load failed cargo encountered: report to hellcatv@hotmail.com\n");
                         } else {
@@ -8616,7 +8651,7 @@ void Unit::applyTechniqueOverrides(const std::map<std::string, std::string> &ove
     // FIXME ?
 }
 
-std::map<string, std::shared_ptr<Unit> > MeshAnimation::Units;
+std::map<string, std::shared_ptr<Unit>> MeshAnimation::Units;
 
 MeshAnimation::MeshAnimation(std::shared_ptr<Unit> _unitDst)
     : animatedMesh(true),
@@ -8828,7 +8863,7 @@ void MeshAnimation::AnimationStep()
 
 void MeshAnimation::UpdateFrames()
 {
-    std::map<string, std::shared_ptr<Unit> >::iterator pos;
+    std::map<string, std::shared_ptr<Unit>>::iterator pos;
     for (pos = Units.begin(); pos != Units.end(); ++pos) {
         pos->second->pMeshAnimation->curtime += GetElapsedTime();
         if (pos->second->pMeshAnimation->curtime >= pos->second->pMeshAnimation->timePerFrame()) {

@@ -771,8 +771,8 @@ char *JpegFromBmp(
 
     cinfo.image_width      = lpbi->biWidth; // Image width and height, in pixels
     cinfo.image_height     = lpbi->biHeight;
-    cinfo.input_components = 3; // Color components per pixel
-                                //(RGB_PIXELSIZE - see jmorecfg.h)
+    cinfo.input_components = 3;     // Color components per pixel
+                                    //(RGB_PIXELSIZE - see jmorecfg.h)
     cinfo.in_color_space = JCS_RGB; // Colorspace of input image
 
     jpeg_set_defaults(&cinfo);
@@ -913,8 +913,8 @@ BOOL JpegFromDib(HANDLE       hDib,     // Handle to DIB
 
     cinfo.image_width      = lpbi->biWidth; // Image width and height, in pixels
     cinfo.image_height     = lpbi->biHeight;
-    cinfo.input_components = 3; // Color components per pixel
-                                //(RGB_PIXELSIZE - see jmorecfg.h)
+    cinfo.input_components = 3;     // Color components per pixel
+                                    //(RGB_PIXELSIZE - see jmorecfg.h)
     cinfo.in_color_space = JCS_RGB; // Colorspace of input image
 
     jpeg_set_defaults(&cinfo);

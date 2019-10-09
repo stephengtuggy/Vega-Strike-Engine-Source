@@ -131,20 +131,20 @@ class NetClient
     void disconnect();
     int  checkAcctMsg();
 
-    void  receiveLocations(const Packet *packet);
-    void  receiveUnitDamage(NetBuffer &netbuf, std::shared_ptr<Unit> un);
-    void  receivePositions(unsigned int numUnits, unsigned int timestamp, NetBuffer &netbuf, double deltat);
+    void                  receiveLocations(const Packet *packet);
+    void                  receiveUnitDamage(NetBuffer &netbuf, std::shared_ptr<Unit> un);
+    void                  receivePositions(unsigned int numUnits, unsigned int timestamp, NetBuffer &netbuf, double deltat);
     std::shared_ptr<Unit> enterClient(NetBuffer &netbuf, ObjSerial ser);
-    void  removeClient(const Packet *packet);
+    void                  removeClient(const Packet *packet);
 
   public:
     NetClient();
     void Reinitialize(); // sets all values back to defaults
     ~NetClient();
 
-    int connectLoad(string user, string pass, string &error); // First step of loading... returns ships.
-    vector<string> *loginSavedGame(int ship = 0);             // Second half of loading process... returns savegame
-    void startGame();                                         // Third half of loading process.
+    int             connectLoad(string user, string pass, string &error); // First step of loading... returns ships.
+    vector<string> *loginSavedGame(int ship = 0);                         // Second half of loading process... returns savegame
+    void            startGame();                                          // Third half of loading process.
 
     /**** netclient_login.cpp stuff ****/
     void SetConfigServerAddress(string &host, unsigned short &port); // reads config vars, sets address/port and returns them.
@@ -288,7 +288,7 @@ class NetClient
 };
 
 std::shared_ptr<Unit> getNetworkUnit(ObjSerial cserial);
-bool  isLocalSerial(ObjSerial sernum);
+bool                  isLocalSerial(ObjSerial sernum);
 
 extern vector<ObjSerial> localSerials;
 void                     Reconnect(std::string ip, std::string port);

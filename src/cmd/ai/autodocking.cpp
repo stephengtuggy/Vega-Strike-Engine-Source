@@ -99,7 +99,8 @@ Orders::AutoDocking::DockingPath FindDockingPort(std::shared_ptr<Unit> player, s
 namespace Orders
 {
 
-AutoDocking::AutoDocking(std::shared_ptr<Unit> destination) : Order(MOVEMENT | FACING, SLOCATION), state(&AutoDocking::InitialState), target(destination)
+AutoDocking::AutoDocking(std::shared_ptr<Unit> destination)
+    : Order(MOVEMENT | FACING, SLOCATION), state(&AutoDocking::InitialState), target(destination)
 {
 }
 

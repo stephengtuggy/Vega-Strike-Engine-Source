@@ -219,7 +219,7 @@ struct outputContext {
     int     cur_lod_level; // initialize to 0 (no lods yet)
 
     map<string, pair<string, string>> materials; // maps a material hash (use getMaterialHash()) to an Ogre Material Name/Script.
-    set<string>                       predefined_materials; // materials that are defined somewhere (as in the .material script already, or in another material
+    set<string> predefined_materials; // materials that are defined somewhere (as in the .material script already, or in another material
                                       // scripts) - not to be defined again
 
     vector<GFXVertex> sharedvert;
@@ -251,7 +251,7 @@ void ConverterInit()
     skelMgr            = new Ogre::SkeletonManager();
     meshSerializer     = new Ogre::MeshSerializer();
     skeletonSerializer = new Ogre::SkeletonSerializer();
-    bufferManager = new Ogre::DefaultHardwareBufferManager(); // needed because we don't have a rendersystem
+    bufferManager      = new Ogre::DefaultHardwareBufferManager(); // needed because we don't have a rendersystem
 }
 
 void ConverterClose()

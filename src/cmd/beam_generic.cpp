@@ -61,26 +61,26 @@ void Beam::Init(const Transformation &trans, const weapon_info &cln, void *own, 
     local_transformation = trans; // location on ship
     // cumalative_transformation =trans;
     // trans.to_matrix (cumalative_transformation_matrix);
-    speed          = cln.Speed;
-    texturespeed   = cln.PulseSpeed;
-    range          = cln.Range;
-    radialspeed    = cln.RadialSpeed;
-    thickness      = cln.Radius;
-    stability      = cln.Stability;
-    rangepenalty   = cln.Longrange;
-    damagerate     = cln.Damage;
-    phasedamage    = cln.PhaseDamage;
-    texturestretch = cln.TextureStretch;
-    refiretime     = 0;
-    refire         = cln.Refire();
-    Col.r          = cln.r;
-    Col.g          = cln.g;
-    Col.b          = cln.b;
-    Col.a          = cln.a;
-    impact         = ALIVE;
-    owner          = own;
-    numframes      = 0;
-    static int radslices = XMLSupport::parse_int(vs_config->getVariable("graphics", "tractor.scoop_rad_slices", "10")) | 1; // Must be odd
+    speed                 = cln.Speed;
+    texturespeed          = cln.PulseSpeed;
+    range                 = cln.Range;
+    radialspeed           = cln.RadialSpeed;
+    thickness             = cln.Radius;
+    stability             = cln.Stability;
+    rangepenalty          = cln.Longrange;
+    damagerate            = cln.Damage;
+    phasedamage           = cln.PhaseDamage;
+    texturestretch        = cln.TextureStretch;
+    refiretime            = 0;
+    refire                = cln.Refire();
+    Col.r                 = cln.r;
+    Col.g                 = cln.g;
+    Col.b                 = cln.b;
+    Col.a                 = cln.a;
+    impact                = ALIVE;
+    owner                 = own;
+    numframes             = 0;
+    static int radslices  = XMLSupport::parse_int(vs_config->getVariable("graphics", "tractor.scoop_rad_slices", "10")) | 1; // Must be odd
     static int longslices = XMLSupport::parse_int(vs_config->getVariable("graphics", "tractor.scoop_long_slices", "10"));
     lastlength            = 0;
     curlength             = SIMULATION_ATOM * speed;
@@ -91,7 +91,7 @@ void Beam::Init(const Transformation &trans, const weapon_info &cln, void *own, 
     static GFXVertexList *_vlist = 0;
     if (!_vlist) {
         int             numvertex = float_to_int(mymax(48, ((4 * radslices) + 1) * longslices * 4));
-        GFXColorVertex *beam      = new GFXColorVertex[numvertex]; // regretably necessary: radslices and longslices come from the config file...
+        GFXColorVertex *beam = new GFXColorVertex[numvertex]; // regretably necessary: radslices and longslices come from the config file...
                                                               // so it's at runtime.
         memset(beam, 0, sizeof(*beam) * numvertex);
         _vlist = new GFXVertexList(GFXQUAD, numvertex, beam, numvertex, true); // mutable color contained list
@@ -130,13 +130,13 @@ void Beam::RecalculateVertices(const Matrix &trans)
     static float scooptanangle = (float)tan(scoopangle);
     static bool  scoop         = XMLSupport::parse_bool(vs_config->getVariable("graphics", "tractor.scoop", "true"));
     static float scoopa        = XMLSupport::parse_float(vs_config->getVariable("graphics", "tractor.scoop_alpha_multiplier", "2.5"));
-    static int radslices = XMLSupport::parse_int(vs_config->getVariable("graphics", "tractor.scoop_rad_slices", "10")) | 1; // Must be odd
-    static int  longslices   = XMLSupport::parse_int(vs_config->getVariable("graphics", "tractor.scoop_long_slices", "10"));
-    const float fadeinlength = 4;
-    const bool  tractor      = (damagerate < 0 && phasedamage > 0);
-    const bool  repulsor     = (damagerate > 0 && phasedamage < 0);
-    float       leftex       = -texturespeed * (numframes * SIMULATION_ATOM + interpolation_blend_factor * SIMULATION_ATOM);
-    float       righttex = leftex + texturestretch * curlength / curthick; // how long compared to how wide!
+    static int   radslices = XMLSupport::parse_int(vs_config->getVariable("graphics", "tractor.scoop_rad_slices", "10")) | 1; // Must be odd
+    static int   longslices   = XMLSupport::parse_int(vs_config->getVariable("graphics", "tractor.scoop_long_slices", "10"));
+    const float  fadeinlength = 4;
+    const bool   tractor      = (damagerate < 0 && phasedamage > 0);
+    const bool   repulsor     = (damagerate > 0 && phasedamage < 0);
+    float        leftex       = -texturespeed * (numframes * SIMULATION_ATOM + interpolation_blend_factor * SIMULATION_ATOM);
+    float        righttex     = leftex + texturestretch * curlength / curthick; // how long compared to how wide!
     float len = (impact == ALIVE) ? (curlength < range ? curlength - speed * SIMULATION_ATOM * (1 - interpolation_blend_factor) : range)
                                   : curlength;
     float       fadelen  = (impact == ALIVE) ? len * fadelocation : len * hitfadelocation;
@@ -384,23 +384,23 @@ bool Beam::Collide(std::shared_ptr<Unit> target, std::shared_ptr<Unit> firer, st
     static bool  o_fp            = XMLSupport::parse_bool(vs_config->getVariable("physics", "tractor.others.force_push", "false"));
     static bool  o_fi            = XMLSupport::parse_bool(vs_config->getVariable("physics", "tractor.others.force_in", "false"));
     static bool  scoop           = XMLSupport::parse_bool(vs_config->getVariable("physics", "tractor.scoop", "true"));
-    static float scoopangle = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.scoop_angle", "0.5")); // In radians
-    static float scoopcosangle = (float)cos(scoopangle);
-    static float maxrelspeed   = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.max_relative_speed", "150"));
-    static float c_ors_m       = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.cargo.distance_own_rsize", "1.5"));
-    static float c_trs_m       = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.cargo.distance_tgt_rsize", "1.1"));
-    static float c_o           = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.cargo.distance", "0"));
-    static float u_ors_m       = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.ugprade.distance_own_rsize", "1.5"));
-    static float u_trs_m       = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.upgrade.distance_tgt_rsize", "1.1"));
-    static float u_o           = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.upgrade.distance", "0"));
-    static float f_ors_m       = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.faction.distance_own_rsize", "2.2"));
-    static float f_trs_m       = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.faction.distance_tgt_rsize", "2.2"));
-    static float f_o           = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.faction.distance", "0"));
-    static float o_ors_m       = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.others.distance_own_rsize", "1.1"));
-    static float o_trs_m       = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.others.distance_tgt_rsize", "1.1"));
-    static float o_o           = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.others.distance", "0"));
-    bool         tractor       = (damagerate < 0 && phasedamage > 0);
-    bool         repulsor      = (damagerate > 0 && phasedamage < 0);
+    static float scoopangle      = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.scoop_angle", "0.5")); // In radians
+    static float scoopcosangle   = (float)cos(scoopangle);
+    static float maxrelspeed     = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.max_relative_speed", "150"));
+    static float c_ors_m         = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.cargo.distance_own_rsize", "1.5"));
+    static float c_trs_m         = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.cargo.distance_tgt_rsize", "1.1"));
+    static float c_o             = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.cargo.distance", "0"));
+    static float u_ors_m         = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.ugprade.distance_own_rsize", "1.5"));
+    static float u_trs_m         = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.upgrade.distance_tgt_rsize", "1.1"));
+    static float u_o             = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.upgrade.distance", "0"));
+    static float f_ors_m         = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.faction.distance_own_rsize", "2.2"));
+    static float f_trs_m         = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.faction.distance_tgt_rsize", "2.2"));
+    static float f_o             = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.faction.distance", "0"));
+    static float o_ors_m         = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.others.distance_own_rsize", "1.1"));
+    static float o_trs_m         = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.others.distance_tgt_rsize", "1.1"));
+    static float o_o             = XMLSupport::parse_float(vs_config->getVariable("physics", "tractor.others.distance", "0"));
+    bool         tractor         = (damagerate < 0 && phasedamage > 0);
+    bool         repulsor        = (damagerate > 0 && phasedamage < 0);
     if (scoop && (tractor || repulsor)) {
         QVector d2(target->Position() - center);
         d2.Normalize();

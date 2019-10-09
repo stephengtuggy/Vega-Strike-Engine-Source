@@ -89,9 +89,9 @@ class BaseComputer : public WctlBase<BaseComputer>
   protected:
     // Association between CargoColor list, picker, and transaction type.
     struct TransactionList {
-        vector<CargoColor> masterList; // All the items that could be in the picker.
-        Picker *           picker;     // The picker loaded with the list.
-        TransactionType transaction;   // The kind of transaction these items will generate.
+        vector<CargoColor> masterList;  // All the items that could be in the picker.
+        Picker *           picker;      // The picker loaded with the list.
+        TransactionType    transaction; // The kind of transaction these items will generate.
         TransactionList() : picker(NULL), transaction(NULL_TRANSACTION)
         {
         }
@@ -285,8 +285,11 @@ class BaseComputer : public WctlBase<BaseComputer>
     GFXColor getColorForGroup(std::string id);
 
     // Get a filtered list of items from a unit.
-    void
-    loadMasterList(std::shared_ptr<Unit> un, const vector<string> &filterthis, const vector<string> &invfilterthis, bool removezero, TransactionList &list);
+    void loadMasterList(std::shared_ptr<Unit> un,
+                        const vector<string> &filterthis,
+                        const vector<string> &invfilterthis,
+                        bool                  removezero,
+                        TransactionList &     list);
 
     // Load a master list with missions.
     void loadMissionsMasterList(TransactionList &list);
@@ -297,12 +300,12 @@ class BaseComputer : public WctlBase<BaseComputer>
     UnitContainer m_player; // Ship info, etc.
     UnitContainer m_base;   // The base we are in.
   protected:
-    DisplayMode     m_currentDisplay;          // The current display mode.
-    TransactionList m_transList1;              // The commonly-used list/picker.
-    TransactionList m_transList2;              // If there are two pickers, the second one.
-    TransactionList *m_selectedList;           // Which transaction list has the selection. NULL = none.
-    Control *m_modeGroups[DISPLAY_MODE_COUNT]; // Array of GroupControls, one for each mode.
-    bool     m_playingMuzak;                   // True = We are playing muzak for some mode.
+    DisplayMode      m_currentDisplay;                 // The current display mode.
+    TransactionList  m_transList1;                     // The commonly-used list/picker.
+    TransactionList  m_transList2;                     // If there are two pickers, the second one.
+    TransactionList *m_selectedList;                   // Which transaction list has the selection. NULL = none.
+    Control *        m_modeGroups[DISPLAY_MODE_COUNT]; // Array of GroupControls, one for each mode.
+    bool             m_playingMuzak;                   // True = We are playing muzak for some mode.
 
     // INTERNAL CLASSES.
     class UpgradeOperation;
@@ -313,7 +316,8 @@ class BaseComputer : public WctlBase<BaseComputer>
     friend class BuyUpgradeOperation;
     friend class SellUpgradeOperation;
 };
-bool buyShip(std::shared_ptr<Unit> base, std::shared_ptr<Unit> player, std::string, bool myfleet, bool force_base_inventory, BaseComputer *);
+bool buyShip(
+    std::shared_ptr<Unit> base, std::shared_ptr<Unit> player, std::string, bool myfleet, bool force_base_inventory, BaseComputer *);
 bool sellShip(std::shared_ptr<Unit> base, std::shared_ptr<Unit> player, std::string, BaseComputer *);
 
 #endif //__BASECOMPUTER_H__

@@ -38,9 +38,9 @@ int main()
 {
     std::shared_ptr<Unit> unit;
     srand(time(NULL));
-    UnitCollection *c = new UnitCollection;
+    UnitCollection *      c = new UnitCollection;
     std::shared_ptr<Unit> u[SIZE];
-    time_t          seconds;
+    time_t                seconds;
     for (int i = 0; i < SIZE; ++i)
         u[i] = createUnit();
     seconds = time(NULL);

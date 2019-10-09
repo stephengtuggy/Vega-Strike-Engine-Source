@@ -18,7 +18,7 @@ class Collidable
 
     union CollideRef {
         std::shared_ptr<Unit> unit;
-        unsigned int bolt_index;
+        unsigned int          bolt_index;
     } ref;
     QVector GetPosition() const
     {
@@ -165,10 +165,10 @@ class CollideMap : public CollideArray
     // Check collisions takes an item to check collisions with, and returns whether that item collided with a Unit only
     bool CheckCollisions(Bolt *bol, const Collidable &updated);
     bool CheckUnitCollisions(Bolt *            bol,
-                             const Collidable &updated);       // DANGER must be used on lists that are only populated with Units, not bolts
+                             const Collidable &updated); // DANGER must be used on lists that are only populated with Units, not bolts
     bool CheckCollisions(std::shared_ptr<Unit> un, const Collidable &updated); // will be handed off to a templated function
     bool CheckUnitCollisions(std::shared_ptr<Unit> un,
-                             const Collidable &updated); // DANGER must be used on lists that are only populated with Units, not bolts
+                             const Collidable &    updated); // DANGER must be used on lists that are only populated with Units, not bolts
 };
 
 #if defined(VS_ENABLE_COLLIDE_LIST) || defined(VS_ENABLE_COLLIDE_KEY)

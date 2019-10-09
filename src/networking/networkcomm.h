@@ -44,8 +44,8 @@ class NetworkCommunication
     // Text message
     std::deque<std::string> message_history; // Text message history
     unsigned short          max_messages;    // Maximum number of text messages recorded
-    std::list<ClientPtr> commClients;        // List of client communicating on the same frequency
-    CltPtrIterator       webcamClient;       // The client we are watching the webcam
+    std::list<ClientPtr>    commClients;     // List of client communicating on the same frequency
+    CltPtrIterator          webcamClient;    // The client we are watching the webcam
 
     char          crypt_key[DESKEY_SIZE]; // Key used for encryption on secured channels
     float         min_freq, max_freq;

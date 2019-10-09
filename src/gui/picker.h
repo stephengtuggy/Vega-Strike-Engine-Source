@@ -264,20 +264,20 @@ class Picker : public Control
         }
     };
 
-    PickerCells *     m_cells;              // The collection containing the list entries.
-    GFXColor          m_selectionColor;     // Selected cell background color.
-    GFXColor          m_selectionTextColor; // Selected cell text color.
-    GFXColor          m_highlightColor;     // Highlighted cell background color.
-    GFXColor          m_highlightTextColor; // Highlighted cell text color.
-    float             m_extraCellHeight;    // Extra height to be added to each cell. 1.0 for whole cell height.
-    Size              m_textMargins;        // Inset area where no text appears.
-    PickerCell *      m_cellPressed;        // Item that mouse-down came on.
-    const PickerCell *m_highlightedCell;    // Cell that mouse is currently over.
-    PickerCell *      m_selectedCell;       // Cell that is currently selected.
-    Scroller *        m_scroller;
-    size_t            m_scrollPosition;      // Index of first display cell shown.
-    bool m_needRecalcDisplay;                // True = Need to recalculate the displayed cells.
-    std::vector<DisplayCell> m_displayCells; // Array of cells currently displayed.
+    PickerCells *            m_cells;              // The collection containing the list entries.
+    GFXColor                 m_selectionColor;     // Selected cell background color.
+    GFXColor                 m_selectionTextColor; // Selected cell text color.
+    GFXColor                 m_highlightColor;     // Highlighted cell background color.
+    GFXColor                 m_highlightTextColor; // Highlighted cell text color.
+    float                    m_extraCellHeight;    // Extra height to be added to each cell. 1.0 for whole cell height.
+    Size                     m_textMargins;        // Inset area where no text appears.
+    PickerCell *             m_cellPressed;        // Item that mouse-down came on.
+    const PickerCell *       m_highlightedCell;    // Cell that mouse is currently over.
+    PickerCell *             m_selectedCell;       // Cell that is currently selected.
+    Scroller *               m_scroller;
+    size_t                   m_scrollPosition;    // Index of first display cell shown.
+    bool                     m_needRecalcDisplay; // True = Need to recalculate the displayed cells.
+    std::vector<DisplayCell> m_displayCells;      // Array of cells currently displayed.
 };
 
 #endif //__PICKER_H__

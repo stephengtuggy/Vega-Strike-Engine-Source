@@ -382,14 +382,14 @@ template <class T, bool canbebolt> class CollideChecker
         return false;
     }
     static bool ComputeMaxLookMinLook(std::shared_ptr<Unit> un,
-                                      CollideMap *         cm,
-                                      CollideMap::iterator collider,
-                                      CollideMap::iterator begin,
-                                      CollideMap::iterator end,
-                                      double               sortedloc,
-                                      float                radius,
-                                      double &             minlook,
-                                      double &             maxlook)
+                                      CollideMap *          cm,
+                                      CollideMap::iterator  collider,
+                                      CollideMap::iterator  begin,
+                                      CollideMap::iterator  end,
+                                      double                sortedloc,
+                                      float                 radius,
+                                      double &              minlook,
+                                      double &              maxlook)
     {
         maxlook = sortedloc + 2.0625 * radius;
         minlook = sortedloc - 2.0625 * radius;

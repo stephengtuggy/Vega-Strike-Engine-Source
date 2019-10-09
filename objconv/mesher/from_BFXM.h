@@ -11,5 +11,5 @@ void BFXMToXmeshOrOBJ(FILE *      Inputfile,
                       FILE *      outputObj,
                       FILE *      mtl,
                       std::string meshname,
-                      char hackaroundhack);            // Translate BFXM file Inputfile to text file Outputfile
+                      char        hackaroundhack);            // Translate BFXM file Inputfile to text file Outputfile
 void BFXMtoBoxDims(FILE *Inputfile, const char *name); // computes box dimensions given a bfxm

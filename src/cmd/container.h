@@ -12,7 +12,7 @@ class UnitContainer
 
   public:
     UnitContainer();
-    UnitContainer(std::shared_ptr<Unit> );
+    UnitContainer(std::shared_ptr<Unit>);
     UnitContainer(const UnitContainer &un)
     {
         VSCONSTRUCT1('U')
@@ -41,7 +41,7 @@ class UnitContainer
         return unit != oth.unit;
     }
     ~UnitContainer();
-    void  SetUnit(std::shared_ptr<Unit> );
+    void                  SetUnit(std::shared_ptr<Unit>);
     std::shared_ptr<Unit> GetUnit();
 
     const std::shared_ptr<Unit> GetConstUnit() const

@@ -280,24 +280,24 @@ string              volume_format;
 enum VSVolumeFormat q_volume_format;
 
 vector<vector<string>> SubDirectories; // Subdirectories where we should look for VSFileTypes files
-vector<string> Directories;            // Directories where we should look for VSFileTypes files
-vector<string> Rootdir;                // Root directories where we should look for VSFileTypes files
-string         sharedtextures;
-string         sharedunits;
-string         sharedsounds;
-string         sharedmeshes;
-string         sharedsectors;
-string         sharedcockpits;
-string         shareduniverse;
-string         aidir;
-string         sharedanims;
-string         sharedvideos;
-string         sharedsprites;
-string         savedunitpath;
-string         modname;
-string         moddir;
-string         datadir;
-string         homedir;
+vector<string>         Directories;    // Directories where we should look for VSFileTypes files
+vector<string>         Rootdir;        // Root directories where we should look for VSFileTypes files
+string                 sharedtextures;
+string                 sharedunits;
+string                 sharedsounds;
+string                 sharedmeshes;
+string                 sharedsectors;
+string                 sharedcockpits;
+string                 shareduniverse;
+string                 aidir;
+string                 sharedanims;
+string                 sharedvideos;
+string                 sharedsprites;
+string                 savedunitpath;
+string                 modname;
+string                 moddir;
+string                 datadir;
+string                 homedir;
 
 string             config_file;
 string             weapon_list;

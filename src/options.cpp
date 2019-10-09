@@ -102,7 +102,7 @@ void vs_options::init()
     reflectivity             = XMLSupport::parse_float(vs_config->getVariable("graphics", "reflectivity", ".2"));
     hardware_cursor          = XMLSupport::parse_bool(vs_config->getVariable("physics", "hardware_cursor", "false"));
     always_make_smooth_cam = XMLSupport::parse_bool(vs_config->getVariable("graphics", "always_make_smooth_cam", "false")); // Not used yet
-    precull_dist = XMLSupport::parse_float(vs_config->getVariable("graphics", "precull_dist", "500000000"));
+    precull_dist           = XMLSupport::parse_float(vs_config->getVariable("graphics", "precull_dist", "500000000"));
     draw_near_stars_in_front_of_planets =
         XMLSupport::parse_bool(vs_config->getVariable("graphics", "draw_near_stars_in_front_of_planets", "false"));
     starblend = XMLSupport::parse_bool(vs_config->getVariable("graphics", "starblend", "true"));

@@ -185,7 +185,7 @@ JoyStick::JoyStick(int which) : mouse(which == MOUSE_JOYSTICK)
     }
     joy_buttons = 0;
 
-    player = which; // by default bind players to whichever joystick it is
+    player                  = which; // by default bind players to whichever joystick it is
     debug_digital_hatswitch = game_options.debug_digital_hatswitch;
     if (which != MOUSE_JOYSTICK)
         deadzone = game_options.deadband;

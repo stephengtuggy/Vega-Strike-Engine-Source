@@ -14,7 +14,7 @@ varInst *Mission::call_briefing(missionNode *node, int mode)
     }
     callback_module_briefing_type method_id = (callback_module_briefing_type)node->script.method_id;
     viret                                   = newVarInst(VI_TEMP);
-    viret->type = VAR_VOID; // assumed void except when otherwise so stated
+    viret->type                             = VAR_VOID; // assumed void except when otherwise so stated
     if (briefing != NULL || mode != SCRIPT_RUN) {
         if (method_id == CMT_BRIEFING_addShip) {
             std::string name    = getStringArgument(node, mode, 0);

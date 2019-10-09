@@ -153,7 +153,8 @@ AIFlyToJumppoint::AIFlyToJumppoint(std::shared_ptr<Unit> jumppoint_unit, float f
     vi_unit->object     = jumppoint_unit;
 }
 
-AIPatrol::AIPatrol(int mode, const QVector &area, float range, std::shared_ptr<Unit> around_unit, float patrol_speed) : AImissionScript("ai_patrol")
+AIPatrol::AIPatrol(int mode, const QVector &area, float range, std::shared_ptr<Unit> around_unit, float patrol_speed)
+    : AImissionScript("ai_patrol")
 {
     varInst *vi_wp = mission->lookupClassVariable(modulename, "area", classid);
     mission->call_vector_into_olist(vi_wp, area);

@@ -39,7 +39,7 @@ class Sensor;
 #include "cmd/images.h"
 #include "soundcontainer_generic.h"
 /**
- * The Cockpit Contains all displayable information about a particular std::shared_ptr<Unit> 
+ * The Cockpit Contains all displayable information about a particular std::shared_ptr<Unit>
  * Gauges are used to indicate analog controls, and some diagital ones
  * The ones starting from KPS are digital with text readout
  */
@@ -339,9 +339,9 @@ class Cockpit
 
     /// Sets owner of this cockpit
     // unsigned int whichcockpit;//0 is the first player, 1 is the second and so forth
-    class Flightgroup *fg;
-    class StarSystem * activeStarSystem; // used for context switch in Universe
-    virtual void       SetParent(std::shared_ptr<Unit> unit, const char *filename, const char *unitmodname, const QVector &startloc);
+    class Flightgroup *   fg;
+    class StarSystem *    activeStarSystem; // used for context switch in Universe
+    virtual void          SetParent(std::shared_ptr<Unit> unit, const char *filename, const char *unitmodname, const QVector &startloc);
     std::shared_ptr<Unit> GetParent()
     {
         return parent.GetUnit();
@@ -352,7 +352,7 @@ class Cockpit
     virtual void Draw()
     {
     }
-    bool Update(); // respawns and the like. Returns true if starsystem was reloaded
+    bool         Update(); // respawns and the like. Returns true if starsystem was reloaded
     virtual void UpdAutoPilot();
 
     /// Sets up the world for rendering...call before draw
@@ -471,13 +471,13 @@ class Cockpit
     virtual void OnPauseEnd()
     {
     }
-    virtual void OnDockEnd(std::shared_ptr<Unit> , std::shared_ptr<Unit> )
+    virtual void OnDockEnd(std::shared_ptr<Unit>, std::shared_ptr<Unit>)
     {
     }
-    virtual void OnJumpBegin(std::shared_ptr<Unit> )
+    virtual void OnJumpBegin(std::shared_ptr<Unit>)
     {
     }
-    virtual void OnJumpEnd(std::shared_ptr<Unit> )
+    virtual void OnJumpEnd(std::shared_ptr<Unit>)
     {
     }
 

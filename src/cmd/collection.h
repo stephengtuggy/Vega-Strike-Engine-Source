@@ -60,7 +60,7 @@ class UnitCollection
         void moveBefore(UnitCollection &);
 
         /* Insert unit before current unit */
-        void preinsert(class std::shared_ptr<Unit> );
+        void preinsert(class std::shared_ptr<Unit>);
 
         /* Insert unit after current unit */
         void postinsert(class std::shared_ptr<Unit> unit);
@@ -100,7 +100,7 @@ class UnitCollection
         UnitCollection *col;
 
         // Current position in the list
-        std::list<class std::shared_ptr<Unit> >::iterator it;
+        std::list<class std::shared_ptr<Unit>>::iterator it;
     };
 
     /* This class is to be used when no changes to the list are made
@@ -117,9 +117,9 @@ class UnitCollection
         ConstIterator(const ConstIterator &);
         ConstIterator(const UnitCollection *);
         ~ConstIterator();
-        ConstIterator &operator=(const ConstIterator &orig);
+        ConstIterator &       operator=(const ConstIterator &orig);
         std::shared_ptr<Unit> next();
-        int            size() const
+        int                   size() const
         {
             return (col->size());
         }
@@ -130,9 +130,9 @@ class UnitCollection
                 return false;
             return true;
         }
-        void                 advance();
-        const ConstIterator &operator++();
-        const ConstIterator  operator++(int);
+        void                         advance();
+        const ConstIterator &        operator++();
+        const ConstIterator          operator++(int);
         inline std::shared_ptr<Unit> operator*() const
         {
             if (it != col->u.end() && !col->empty())
@@ -142,8 +142,8 @@ class UnitCollection
 
       protected:
         friend class UnitCollection;
-        const UnitCollection *                  col;
-        std::list<class std::shared_ptr<Unit> >::const_iterator it;
+        const UnitCollection *                                 col;
+        std::list<class std::shared_ptr<Unit>>::const_iterator it;
     };
 
     /* backwards compatibility only.  Typedefs suck. dont use them. */
@@ -177,7 +177,7 @@ class UnitCollection
 
     /* Traverses entire list and only inserts if no matches are found
      * Do not use in any fast-code paths */
-    void        insert_unique(std::shared_ptr<Unit> );
+    void        insert_unique(std::shared_ptr<Unit>);
     inline bool empty() const
     {
         if (u.size() - removedIters.size() > 0)
@@ -186,21 +186,21 @@ class UnitCollection
     }
 
     /* Add a unit or iterator to the front of the list. */
-    void prepend(std::shared_ptr<Unit> );
+    void prepend(std::shared_ptr<Unit>);
     void prepend(UnitIterator *);
 
     /* Add a unit or iterator to the back of the list. */
-    void append(class std::shared_ptr<Unit> );
+    void append(class std::shared_ptr<Unit>);
     void append(UnitIterator *);
 
     /* This is how iterators insert units. Always inserts before iterator */
-    void insert(std::list<std::shared_ptr<Unit> >::iterator &, std::shared_ptr<Unit> );
+    void insert(std::list<std::shared_ptr<Unit>>::iterator &, std::shared_ptr<Unit>);
 
     /* Whipes out entire list only if no iterators are being held.
      * No code uses this function as of 0.5 release */
     void clear();
 
-    bool contains(const class std::shared_ptr<Unit> ) const;
+    bool contains(const class std::shared_ptr<Unit>) const;
 
     /* We only erase the unit from the list under the following conditions:
      * 1. if we have less than 4 iterators being held
@@ -211,11 +211,11 @@ class UnitCollection
      * The reason for this is so we can be scalable to 20,000+ units and
      * modifications to the list by multiple held iterators dont bog us down
      */
-    void erase(std::list<class std::shared_ptr<Unit> >::iterator &);
+    void erase(std::list<class std::shared_ptr<Unit>>::iterator &);
 
     /* traverse list and remove first (only) matching Unit.
      * Do not use in fast-path code */
-    bool remove(const class std::shared_ptr<Unit> );
+    bool remove(const class std::shared_ptr<Unit>);
 
     /* Returns number of non-null units in list */
     inline const int size() const
@@ -226,7 +226,7 @@ class UnitCollection
     /* Returns last non-null unit in list. May be Killed() */
     inline std::shared_ptr<Unit> back()
     {
-        for (std::list<std::shared_ptr<Unit> >::reverse_iterator it = u.rbegin(); it != u.rend(); ++it)
+        for (std::list<std::shared_ptr<Unit>>::reverse_iterator it = u.rbegin(); it != u.rend(); ++it)
             if (*it)
                 return *it;
         return NULL;
@@ -235,7 +235,7 @@ class UnitCollection
     /* Returns first non-null unit in list. May be Killed() */
     inline std::shared_ptr<Unit> front()
     {
-        for (std::list<std::shared_ptr<Unit> >::iterator it = u.begin(); it != u.end(); ++it)
+        for (std::list<std::shared_ptr<Unit>>::iterator it = u.begin(); it != u.end(); ++it)
             if (*it)
                 return *it;
         return NULL;
@@ -270,10 +270,10 @@ class UnitCollection
     /* This is a list of positions in the collection that are pointing to
      * NULL units, positions that should be removed from the collection
      * but couldn't because another iterator was referencing it. */
-    std::vector<std::list<class std::shared_ptr<Unit> >::iterator> removedIters;
+    std::vector<std::list<class std::shared_ptr<Unit>>::iterator> removedIters;
 
     /* Main collection */
-    std::list<class std::shared_ptr<Unit> > u;
+    std::list<class std::shared_ptr<Unit>> u;
 };
 
 /* Typedefs.   We really should not use them but we're lazy */

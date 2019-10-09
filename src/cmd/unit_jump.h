@@ -18,16 +18,16 @@ inline bool CompareDest(std::shared_ptr<Unit> un, StarSystem *origin)
     return false;
 }
 
-inline std::vector<std::shared_ptr<Unit> > ComparePrimaries(std::shared_ptr<Unit> primary, StarSystem *origin)
+inline std::vector<std::shared_ptr<Unit>> ComparePrimaries(std::shared_ptr<Unit> primary, StarSystem *origin)
 {
-    std::vector<std::shared_ptr<Unit> > myvec;
+    std::vector<std::shared_ptr<Unit>> myvec;
     if (CompareDest(primary, origin))
         myvec.push_back(primary);
     return myvec;
 }
 
 extern void DealPossibleJumpDamage(std::shared_ptr<Unit> un);
-extern void ActivateAnimation(std::shared_ptr<Unit> );
+extern void ActivateAnimation(std::shared_ptr<Unit>);
 void        WarpPursuit(std::shared_ptr<Unit> un, StarSystem *sourcess, std::string destination);
 
 template <class UnitType> bool GameUnit<UnitType>::TransferUnitToSystem(unsigned int kk, StarSystem *&savedStarSystem, bool dosightandsound)
@@ -69,11 +69,11 @@ template <class UnitType> bool GameUnit<UnitType>::TransferUnitToSystem(unsigned
                 pendingjump[kk]->dest->SwapIn();
             }
             _Universe->setActiveStarSystem(pendingjump[kk]->dest);
-            vector<std::shared_ptr<Unit> > possibilities;
-            std::shared_ptr<Unit> primary;
+            vector<std::shared_ptr<Unit>> possibilities;
+            std::shared_ptr<Unit>         primary;
             if (pendingjump[kk]->final_location.i == 0 && pendingjump[kk]->final_location.j == 0 && pendingjump[kk]->final_location.k == 0)
                 for (un_iter iter = pendingjump[kk]->dest->getUnitList().createIterator(); (primary = *iter); ++iter) {
-                    vector<std::shared_ptr<Unit> > tmp;
+                    vector<std::shared_ptr<Unit>> tmp;
                     tmp = ComparePrimaries(primary, pendingjump[kk]->orig);
                     if (!tmp.empty())
                         possibilities.insert(possibilities.end(), tmp.begin(), tmp.end());
@@ -81,9 +81,9 @@ template <class UnitType> bool GameUnit<UnitType>::TransferUnitToSystem(unsigned
             else
                 this->SetCurPosition(pendingjump[kk]->final_location);
             if (!possibilities.empty()) {
-                static int jumpdest = 235034;
+                static int            jumpdest = 235034;
                 std::shared_ptr<Unit> jumpnode = possibilities[jumpdest % possibilities.size()];
-                QVector    pos      = jumpnode->Position();
+                QVector               pos      = jumpnode->Position();
 
                 this->SetCurPosition(pos);
                 ActivateAnimation(jumpnode);

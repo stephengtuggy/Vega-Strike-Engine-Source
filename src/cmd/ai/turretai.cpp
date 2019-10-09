@@ -26,7 +26,7 @@ void                TurretAI::Execute()
     if (range == -1) {
         range = mrange = speed = 0;
         parent->getAverageGunSpeed(speed, range, mrange);
-        float tspeed, trange, tmrange;
+        float                 tspeed, trange, tmrange;
         std::shared_ptr<Unit> gun;
         if (parent->GetNumMounts() == 0) {
             speed  = 1;
@@ -62,9 +62,9 @@ void                TurretAI::Execute()
 
             bool shouldfire = ((mag - targ->rSize() - parent->rSize() < range && dot > dot_cutoff) &&
                                (isplayerstarship == false || targ->faction == upg ||
-                                (isplayerstarship &&
-                                 (targ->getRelation((std::shared_ptr<Unit> )parent->owner) < 0 /*now that it is a player, we know it's dereferencable*/
-                                  || targ->Target() == (std::shared_ptr<Unit> )parent->owner))) &&
+                                (isplayerstarship && (targ->getRelation((std::shared_ptr<Unit>)parent->owner) <
+                                                          0 /*now that it is a player, we know it's dereferencable*/
+                                                      || targ->Target() == (std::shared_ptr<Unit>)parent->owner))) &&
                                targ->faction != neu);
 
             parent->Fire(FireBitmask(parent, shouldfire, rand() < missile_prob * RAND_MAX * SIMULATION_ATOM), true);

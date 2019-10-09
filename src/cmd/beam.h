@@ -46,7 +46,10 @@ class Beam
     Vector        direction;
 
     void RecalculateVertices(const Matrix &trans);
-    void CollideHuge(const LineCollide &, std::shared_ptr<Unit> targetToCollideWith, std::shared_ptr<Unit> firer, std::shared_ptr<Unit> superunit);
+    void CollideHuge(const LineCollide &,
+                     std::shared_ptr<Unit> targetToCollideWith,
+                     std::shared_ptr<Unit> firer,
+                     std::shared_ptr<Unit> superunit);
 
   public:
     void ListenToOwner(bool listen)
@@ -67,11 +70,11 @@ class Beam
     void UpdatePhysics(const Transformation &,
                        const Matrix &,
                        class std::shared_ptr<Unit> target,
-                       float       trackingcone,
-                       std::shared_ptr<Unit> targetToCollideWith /*prevent AI friendly fire--speed up app*/,
-                       float       HeatSink,
-                       std::shared_ptr<Unit> firer,
-                       std::shared_ptr<Unit> superunit);
+                       float                       trackingcone,
+                       std::shared_ptr<Unit>       targetToCollideWith /*prevent AI friendly fire--speed up app*/,
+                       float                       HeatSink,
+                       std::shared_ptr<Unit>       firer,
+                       std::shared_ptr<Unit>       superunit);
     void Draw(const Transformation &, const Matrix &, class std::shared_ptr<Unit> target, float trackingcone);
     void Destabilize()
     {

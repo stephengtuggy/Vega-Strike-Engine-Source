@@ -18,7 +18,7 @@ class Flightgroup
     UnitContainer leader;          // I'm on the leader
     UnitContainer target;          // this is my target, what i'm doing with it depends on things
     int           leader_decision; //-1 if decision is made
-    Texture *squadLogo;            // null if not there
+    Texture *     squadLogo;       // null if not there
     std::string
                                      directive; //"a" for attack target "b" for attack at will "h" for help out "f" for form up.... missions can get this..and set this
     std::string                      name; // flightgroup name
@@ -99,7 +99,7 @@ class CreateFlightgroup
 {
   public:
     Flightgroup *fg;
-    int terrain_nr; // which terrain to use. -1 for normal unit -2 for mission ter
+    int          terrain_nr; // which terrain to use. -1 for normal unit -2 for mission ter
     enum { UNIT, VEHICLE, BUILDING } unittype;
     int                waves, nr_ships; // number of waves, number of ships per wave
     float              rot[3];

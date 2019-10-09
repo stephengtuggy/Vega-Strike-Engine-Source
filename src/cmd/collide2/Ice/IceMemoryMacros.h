@@ -102,7 +102,7 @@ inline_ void MoveMemory(void *dest, const void *src, udword size)
 
 #define SIZEOFOBJECT sizeof(*this) //!< Gives the size of current object. Avoid some mistakes (e.g. "sizeof(this)").
 //#define CLEAROBJECT		{ memset(this, 0, SIZEOFOBJECT);	}			//!< Clears current object. Laziness is my
-//business. HANDLE WITH CARE.
+// business. HANDLE WITH CARE.
 #define DELETESINGLE(x)                                                                                                                    \
     {                                                                                                                                      \
         delete x;                                                                                                                          \

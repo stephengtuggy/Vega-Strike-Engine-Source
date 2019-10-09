@@ -137,15 +137,15 @@ std::string vsConfig(std::string category, std::string option, std::string def)
 }
 
 std::shared_ptr<Unit> launchJumppoint(string  name_string,
-                      string  faction_string,
-                      string  type_string,
-                      string  unittype_string,
-                      string  ai_string,
-                      int     nr_of_ships,
-                      int     nr_of_waves,
-                      QVector pos,
-                      string  squadlogo,
-                      string  destinations)
+                                      string  faction_string,
+                                      string  type_string,
+                                      string  unittype_string,
+                                      string  ai_string,
+                                      int     nr_of_ships,
+                                      int     nr_of_waves,
+                                      QVector pos,
+                                      string  squadlogo,
+                                      string  destinations)
 {
     if (Network)
         return NULL;
@@ -165,16 +165,16 @@ std::shared_ptr<Unit> launchJumppoint(string  name_string,
     cf.nr_ships   = nr_of_ships;
     cf.fg->pos    = pos;
     cf.rot[0] = cf.rot[1] = cf.rot[2] = 0.0f;
-    std::shared_ptr<Unit> tmp                         = mission->call_unit_launch(&cf, clstype, destinations);
+    std::shared_ptr<Unit> tmp         = mission->call_unit_launch(&cf, clstype, destinations);
     mission->number_of_ships += nr_of_ships;
 
     return tmp;
 }
 Cargo getRandCargo(int quantity, string category)
 {
-    Cargo *      ret = NULL;
+    Cargo *               ret = NULL;
     std::shared_ptr<Unit> mpl = &GetUnitMasterPartList();
-    unsigned int max = mpl->numCargo();
+    unsigned int          max = mpl->numCargo();
     if (!category.empty()) {
         size_t Begin, End;
         mpl->GetSortedCargoCat(category, Begin, End);
@@ -270,8 +270,8 @@ string getSystemName()
 /// tells the respective flightgroups in this system to start shooting at each other
 void TargetEachOther(string fgname, string faction, string enfgname, string enfaction)
 {
-    int   fac   = FactionUtil::GetFactionIndex(faction);
-    int   enfac = FactionUtil::GetFactionIndex(enfaction);
+    int                   fac   = FactionUtil::GetFactionIndex(faction);
+    int                   enfac = FactionUtil::GetFactionIndex(enfaction);
     std::shared_ptr<Unit> un;
     std::shared_ptr<Unit> en = NULL;
     std::shared_ptr<Unit> al = NULL;
@@ -297,10 +297,10 @@ void TargetEachOther(string fgname, string faction, string enfgname, string enfa
 /// tells the respective flightgroups in this system to stop killing each other urgently...they may still attack--just not warping and stuff
 void StopTargettingEachOther(string fgname, string faction, string enfgname, string enfaction)
 {
-    int   fac   = FactionUtil::GetFactionIndex(faction);
-    int   enfac = FactionUtil::GetFactionIndex(enfaction);
+    int                   fac   = FactionUtil::GetFactionIndex(faction);
+    int                   enfac = FactionUtil::GetFactionIndex(enfaction);
     std::shared_ptr<Unit> un;
-    int   clear = 0;
+    int                   clear = 0;
     for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = *i) && clear != 3; ++i) {
         if ((un->faction == enfac && UnitUtil::getFlightgroupName(un) == enfgname)) {
             clear |= 1;
@@ -324,9 +324,9 @@ bool systemInMemory(string nam)
 
 float GetRelation(std::string myfaction, std::string theirfaction)
 {
-    int   myfac    = FactionUtil::GetFactionIndex(myfaction);
-    int   theirfac = FactionUtil::GetFactionIndex(theirfaction);
-    int   cp       = _Universe->CurrentCockpit();
+    int                   myfac    = FactionUtil::GetFactionIndex(myfaction);
+    int                   theirfac = FactionUtil::GetFactionIndex(theirfaction);
+    int                   cp       = _Universe->CurrentCockpit();
     std::shared_ptr<Unit> un       = _Universe->AccessCockpit()->GetParent();
     if (!un)
         return FactionUtil::GetIntRelation(myfac, theirfac);
@@ -341,10 +341,10 @@ float GetRelation(std::string myfaction, std::string theirfaction)
 }
 void AdjustRelation(std::string myfaction, std::string theirfaction, float factor, float rank)
 {
-    int   myfac      = FactionUtil::GetFactionIndex(myfaction);
-    int   theirfac   = FactionUtil::GetFactionIndex(theirfaction);
-    float realfactor = factor * rank;
-    int   cp         = _Universe->CurrentCockpit();
+    int                   myfac      = FactionUtil::GetFactionIndex(myfaction);
+    int                   theirfac   = FactionUtil::GetFactionIndex(theirfaction);
+    float                 realfactor = factor * rank;
+    int                   cp         = _Universe->CurrentCockpit();
     std::shared_ptr<Unit> un         = _Universe->AccessCockpit()->GetParent();
     if (!un)
         return;
@@ -417,7 +417,7 @@ UniverseUtil::PythonUnitIter getUnitList()
 }
 std::shared_ptr<Unit> getUnit(int index)
 {
-    un_iter iter = activeSys->getUnitList().createIterator();
+    un_iter               iter = activeSys->getUnitList().createIterator();
     std::shared_ptr<Unit> un   = NULL;
     for (int i = -1; (un = *iter) && i < index; ++iter) {
         if (un->GetHull() > 0)
@@ -433,14 +433,14 @@ std::shared_ptr<Unit> getUnitByPtr(void *ptr, std::shared_ptr<Unit> finder, bool
         UnitPtrLocator unitLocator(ptr);
         findObjects(activeSys->collidemap[Unit::UNIT_ONLY], finder->location[Unit::UNIT_ONLY], &unitLocator);
         if (unitLocator.retval)
-            return reinterpret_cast<std::shared_ptr<Unit> >(ptr);
+            return reinterpret_cast<std::shared_ptr<Unit>>(ptr);
 
         else if (!finder->isSubUnit())
             return 0;
     }
     if (!allowslowness)
         return 0;
-    return ((activeSys->getUnitList().contains((std::shared_ptr<Unit> )ptr)) ? reinterpret_cast<std::shared_ptr<Unit> >(ptr) : NULL);
+    return ((activeSys->getUnitList().contains((std::shared_ptr<Unit>)ptr)) ? reinterpret_cast<std::shared_ptr<Unit>>(ptr) : NULL);
 }
 std::shared_ptr<Unit> getUnitByName(std::string name)
 {
@@ -671,7 +671,7 @@ QVector SafeStarSystemEntrancePoint(StarSystem *sts, QVector pos, float radial_s
         radial_size = game_options.respawn_unit_size;
     for (unsigned int k = 0; k < 10; ++k) {
         std::shared_ptr<Unit> un;
-        bool  collision = false;
+        bool                  collision = false;
         {
             // fixme, make me faster, use collide map
             for (un_iter i = sts->getUnitList().createIterator(); (un = *i) != NULL; ++i) {
@@ -707,14 +707,14 @@ QVector SafeEntrancePoint(QVector pos, float radial_size)
     return SafeStarSystemEntrancePoint(_Universe->activeStarSystem(), pos, radial_size);
 }
 std::shared_ptr<Unit> launch(string  name_string,
-             string  type_string,
-             string  faction_string,
-             string  unittype,
-             string  ai_string,
-             int     nr_of_ships,
-             int     nr_of_waves,
-             QVector pos,
-             string  sqadlogo)
+                             string  type_string,
+                             string  faction_string,
+                             string  unittype,
+                             string  ai_string,
+                             int     nr_of_ships,
+                             int     nr_of_waves,
+                             QVector pos,
+                             string  sqadlogo)
 {
     if (Network)
         return NULL;
@@ -731,8 +731,8 @@ string LookupUnitStat(const string &unitname, const string &faction, const strin
         return string();
 }
 
-static std::vector<std::shared_ptr<Unit> > cachedUnits;
-void                       precacheUnit(string type_string, string faction_string)
+static std::vector<std::shared_ptr<Unit>> cachedUnits;
+void                                      precacheUnit(string type_string, string faction_string)
 {
     cachedUnits.push_back(UnitFactory::createUnit(type_string.c_str(), true, FactionUtil::GetFactionIndex(faction_string)));
 }

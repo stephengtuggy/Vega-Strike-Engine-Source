@@ -167,18 +167,18 @@ class PaintText
     // Description of a "fragment" of text to be displayed.
     // This is a section of text with the same attributes.
     struct TextFragment {
-        size_t start;   // Index (in m_text) of first character in the fragment.
-        size_t end;     // Index of last character in fragment (NOT one past last char).
+        size_t   start; // Index (in m_text) of first character in the fragment.
+        size_t   end;   // Index of last character in fragment (NOT one past last char).
         Font     font;  // Font.
         GFXColor color; // Text color.
     };
 
     // Layout of one line.
     struct TextLine {
-        float height;                   // Height of this line.
-        float width;                    // Width of all the chars in this line (including ellipsis).
-        float x;                        // x-origin of first character, relative to boundary rect.
-        float baseLine;                 // y-origin of first character, relative to top of line.
+        float                height;    // Height of this line.
+        float                width;     // Width of all the chars in this line (including ellipsis).
+        float                x;         // x-origin of first character, relative to boundary rect.
+        float                baseLine;  // y-origin of first character, relative to top of line.
         vector<TextFragment> fragments; // Bits of text that make up this line.
     };
 
@@ -209,24 +209,24 @@ class PaintText
 
     // Parse a format string in a PaintText string.
     // The first character should be the one *after* the initial format char.
-    void parseFormat(std::string::size_type startPos,   // Location of beginning of string to examine.
+    void parseFormat(std::string::size_type  startPos,  // Location of beginning of string to examine.
                      std::string::size_type *resultPos, // OUT: Ptr to string past the format string.
                      bool *                  endLine    // OUT: True = Done with current line.
     );
 
     // Parse one line of text, create fragments, end line when overflow width.
-    void parseFragmentsWithCharBreak(TextLine &line,                   // Line descriptor.
-                                     std::string::size_type startPos,  // Location of beginning of string to examine.
-                                     std::string::size_type endPos,    // Location of one past the last character to examine.
-                                     float maxWidth,                   // Can't go beyond this width.
-                                     bool ellipsis,                    // True = if line doesn't fit, append ellipsis.
+    void parseFragmentsWithCharBreak(TextLine &              line,     // Line descriptor.
+                                     std::string::size_type  startPos, // Location of beginning of string to examine.
+                                     std::string::size_type  endPos,   // Location of one past the last character to examine.
+                                     float                   maxWidth, // Can't go beyond this width.
+                                     bool                    ellipsis, // True = if line doesn't fit, append ellipsis.
                                      std::string::size_type *resultPos // OUT: Ptr to string past the format string.
     );
 
     // Parse one line of text, create fragments, end line on word break when width overflows.
-    void parseFragmentsWithWordBreak(TextLine &line,                   // Line descriptor.
-                                     std::string::size_type startPos,  // Location of beginning of string to examine.
-                                     float maxWidth,                   // Can't go beyond this width.
+    void parseFragmentsWithWordBreak(TextLine &              line,     // Line descriptor.
+                                     std::string::size_type  startPos, // Location of beginning of string to examine.
+                                     float                   maxWidth, // Can't go beyond this width.
                                      std::string::size_type *resultPos // OUT: Ptr to string past the format string.
     );
 
@@ -239,8 +239,8 @@ class PaintText
     Justification m_justification; // Right, center, left.
     WidthExceeded m_widthExceeded; // What to do when text width exceeds boundary rectangle.
 
-    bool m_needLayout;                    // True = something changed.  Need to recalc the layout.
-    int  m_layoutVersion;                 // Incremented every time we re-layout things.
+    bool             m_needLayout;        // True = something changed.  Need to recalc the layout.
+    int              m_layoutVersion;     // Incremented every time we re-layout things.
     vector<TextLine> m_lines;             // List of lines.
     double           m_verticalScaling;   // Vertical factor from char reference space to identity space.
     double           m_horizontalScaling; // Horizontal factor from char reference space to identity space.

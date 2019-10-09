@@ -350,7 +350,7 @@ void StarSystem::Statistics::CheckVitals(StarSystem *ss)
         Collidable *collide = &ss->collidemap[Unit::UNIT_ONLY]->sorted[checkIter];
         if (collide->radius > 0) {
             std::shared_ptr<Unit> un  = collide->ref.unit;
-            float rel = UnitUtil::getRelationFromFaction(un, sysfac);
+            float                 rel = UnitUtil::getRelationFromFaction(un, sysfac);
             if (FactionUtil::isCitizenInt(un->faction)) {
                 ++newcitizencount;
             } else {
@@ -451,7 +451,7 @@ double       targetpick          = 0;
 void StarSystem::RequestPhysics(std::shared_ptr<Unit> un, unsigned int queue)
 {
     std::shared_ptr<Unit> unit = NULL;
-    un_iter iter = this->physics_buffer[queue].createIterator();
+    un_iter               iter = this->physics_buffer[queue].createIterator();
     while ((unit = *iter) && *iter != un)
         ++iter;
     if (unit == un) {
@@ -624,7 +624,7 @@ std::shared_ptr<Unit> StarSystem::nextSignificantUnit()
 void StarSystem::Update(float priority)
 {
     std::shared_ptr<Unit> unit;
-    bool  firstframe = true;
+    bool                  firstframe = true;
     // No time compression here
     float normal_simulation_atom = SIMULATION_ATOM;
     time += GetElapsedTime();
@@ -757,7 +757,7 @@ bool PendingJumpsEmpty()
     return pendingjump.empty();
 }
 
-extern void SetShieldZero(std::shared_ptr<Unit> );
+extern void SetShieldZero(std::shared_ptr<Unit>);
 
 void StarSystem::ProcessPendingJumps()
 {
@@ -796,7 +796,7 @@ void StarSystem::ProcessPendingJumps()
         // In non-networking mode or in networking mode or a netplayer wants to jump and is ready or a non-player jump
         if (Network == NULL || playernum < 0 || (Network != NULL && playernum >= 0 && Network[playernum].readyToJump())) {
             std::shared_ptr<Unit> un              = pendingjump[kk]->un.GetUnit();
-            StarSystem *savedStarSystem = _Universe->activeStarSystem();
+            StarSystem *          savedStarSystem = _Universe->activeStarSystem();
             // Download client descriptions of the new zone (has to be blocking)
             if (Network != NULL)
                 Network[playernum].downloadZoneInfo();
@@ -881,7 +881,8 @@ QVector ComputeJumpPointArrival(QVector pos, std::string origin, std::string des
     return QVector(0, 0, 0);
 }
 
-bool StarSystem::JumpTo(std::shared_ptr<Unit> un, std::shared_ptr<Unit> jumppoint, const std::string &system, bool force, bool save_coordinates)
+bool StarSystem::JumpTo(
+    std::shared_ptr<Unit> un, std::shared_ptr<Unit> jumppoint, const std::string &system, bool force, bool save_coordinates)
 {
     if ((un->DockedOrDocking() & (~Unit::DOCKING_UNITS)) != 0)
         return false;
