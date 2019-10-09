@@ -554,7 +554,7 @@ class Base
             std::string       text;
             const std::string index;
             unsigned int      parentindex;
-            virtual void      Click(::Base *base, float x, float y, int button, int state);
+            virtual void      Click(std::shared_ptr<Base> base, float x, float y, int button, int state);
             explicit Link(unsigned int parind, std::string ind, std::string pfile) : parentindex(parind), pythonfile(pfile), index(ind)
             {
             }
@@ -569,7 +569,7 @@ class Base
         {
           public:
             int          index;
-            virtual void Click(::Base *base, float x, float y, int button, int state);
+            virtual void Click(std::shared_ptr<Base> base, float x, float y, int button, int state);
             virtual ~Goto()
             {
             }
@@ -584,7 +584,7 @@ class Base
         {
           public:
             std::vector<DisplayMode> modes;
-            virtual void             Click(::Base *base, float x, float y, int button, int state);
+            virtual void             Click(std::shared_ptr<Base> base, float x, float y, int button, int state);
             virtual ~Comp()
             {
             }
@@ -598,7 +598,7 @@ class Base
         class Launch : public Link
         {
           public:
-            virtual void Click(::Base *base, float x, float y, int button, int state);
+            virtual void Click(std::shared_ptr<Base> base, float x, float y, int button, int state);
             virtual ~Launch()
             {
             }
@@ -696,7 +696,7 @@ class Base
             std::vector<std::string> soundfiles;
             int                      index;
             int                      curroom;
-            virtual void             Click(::Base *base, float x, float y, int button, int state);
+            virtual void             Click(std::shared_ptr<Base> base, float x, float y, int button, int state);
             explicit Talk(unsigned int parind, std::string ind, std::string pythonfile);
             virtual ~Talk()
             {
@@ -709,7 +709,7 @@ class Base
         {
           public:
             std::string  file;
-            virtual void Click(::Base *base, float x, float y, int button, int state);
+            virtual void Click(std::shared_ptr<Base> base, float x, float y, int button, int state);
             Python(unsigned int parind, std::string ind, std::string pythonfile);
             virtual ~Python()
             {
@@ -722,7 +722,7 @@ class Base
         {
           public:
             const std::string index;
-            virtual void      Draw(::Base *base);
+            virtual void      Draw(std::shared_ptr<Base> base);
 #ifdef BASE_MAKER
             virtual void EndXML(FILE *fp);
 #endif
@@ -736,7 +736,7 @@ class Base
         class BaseShip : public BaseObj
         {
           public:
-            virtual void Draw(::Base *base);
+            virtual void Draw(std::shared_ptr<Base> base);
             Matrix       mat;
             virtual ~BaseShip()
             {
@@ -755,7 +755,7 @@ class Base
         class BaseVSSprite : public BaseObj
         {
           public:
-            virtual void Draw(::Base *base);
+            virtual void Draw(std::shared_ptr<Base> base);
             VSSprite     spr;
 #ifdef BASE_MAKER
             std::string  texfile;
@@ -773,7 +773,7 @@ class Base
         {
           public:
             static bool  hastalked;
-            virtual void Draw(::Base *base);
+            virtual void Draw(std::shared_ptr<Base> base);
             // Talk * caller;
             // int sayindex;
             int   curchar;
@@ -799,9 +799,9 @@ class Base
         void EndXML(FILE *fp);
         void PrintLinks(FILE *fp);
 #endif
-        void Draw(::Base *base);
-        void Click(::Base *base, float x, float y, int button, int state);
-        int  MouseOver(::Base *base, float x, float y);
+        void Draw(std::shared_ptr<Base> base);
+        void Click(std::shared_ptr<Base> base, float x, float y, int button, int state);
+        int  MouseOver(std::shared_ptr<Base> base, float x, float y);
         Room(unsigned int index);
         ~Room();
     };
@@ -813,7 +813,7 @@ class Base
     bool                time_of_day;
     TextPlane           othtext;
     TextPlane           curtext;
-    static Base *       CurrentBase;
+    static std::shared_ptr<Base> CurrentBase;
     bool                CallComp;
     int                 curlinkindex;
 #ifdef BASE_MAKER
@@ -1457,19 +1457,19 @@ Base::Room::Room(unsigned int index) : index(index)
     tmp_xy.y = 0.97;
 }
 
-void Base::Room::BaseObj::Draw(Base *base)
+void Base::Room::BaseObj::Draw(std::shared_ptr<Base> base)
 {
     // Do nothing...
 }
 
-void Base::Room::BaseVSSprite::Draw(Base *base)
+void Base::Room::BaseVSSprite::Draw(std::shared_ptr<Base> base)
 {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_TEXTURE0);
     spr.Draw();
 }
 
-void Base::Room::BaseShip::Draw(Base *base)
+void Base::Room::BaseShip::Draw(std::shared_ptr<Base> base)
 {
     /*
      *  std::shared_ptr<Unit> un=base->caller.GetUnit();
@@ -1515,7 +1515,7 @@ void Base::Room::BaseShip::Draw(Base *base)
     glEnd();
 }
 
-void Base::Room::Draw(Base *base)
+void Base::Room::Draw(std::shared_ptr<Base> base)
 {
     int i;
     for (i = 0; i < objs.size(); i++)
@@ -1530,7 +1530,7 @@ Base::Room::BaseTalk::BaseTalk(std::string msg, std::string ind, bool only_one) 
         only_one_talk = this;
 }
 
-void Base::Room::BaseTalk::Draw(Base *base)
+void Base::Room::BaseTalk::Draw(std::shared_ptr<Base> base)
 {
     if (hastalked)
         return;
@@ -1538,7 +1538,7 @@ void Base::Room::BaseTalk::Draw(Base *base)
     hastalked = true;
 }
 
-int Base::Room::MouseOver(Base *base, float x, float y)
+int Base::Room::MouseOver(std::shared_ptr<Base> base, float x, float y)
 {
     for (int i = 0; i < links.size(); i++)
         if (links[i]) {
@@ -1548,7 +1548,7 @@ int Base::Room::MouseOver(Base *base, float x, float y)
     return -1;
 }
 
-Base *Base::CurrentBase = 0;
+std::shared_ptr<Base> Base::CurrentBase = 0;
 
 bool RefreshGUI(void)
 {
@@ -1672,7 +1672,7 @@ bool LinkStage1(std::string input, unsigned int inputroomindex, void *dat1, void
     return false;
 }
 
-void Base::Room::Click(Base *base, float x, float y, int button, int state)
+void Base::Room::Click(std::shared_ptr<Base> base, float x, float y, int button, int state)
 {
     if (makingstate == 2) {
         Input("Add a sprite (ESC=cancel, blank=Ship) (No extension. file must be png or jpg format.) ",
@@ -1960,7 +1960,7 @@ Base::Base(const char *basefile)
     GotoLink(0);
 }
 
-void Base::Room::Python::Click(Base *base, float x, float y, int button, int state)
+void Base::Room::Python::Click(std::shared_ptr<Base> base, float x, float y, int button, int state)
 {
     if (state == GLUT_UP)
         Link::Click(base, x, y, button, state);
@@ -1981,7 +1981,7 @@ void TerminateCurrentBase(void)
 
 // end NEW_GUI.
 
-void Base::Room::Comp::Click(Base *base, float x, float y, int button, int state)
+void Base::Room::Comp::Click(std::shared_ptr<Base> base, float x, float y, int button, int state)
 {
     if (state == GLUT_UP)
         Link::Click(base, x, y, button, state);
@@ -1993,13 +1993,13 @@ void Base::Terminate()
 
 extern void abletodock(int dock);
 
-void Base::Room::Launch::Click(Base *base, float x, float y, int button, int state)
+void Base::Room::Launch::Click(std::shared_ptr<Base> base, float x, float y, int button, int state)
 {
     if (state == GLUT_UP)
         base->Terminate();
 }
 
-void Base::Room::Goto::Click(Base *base, float x, float y, int button, int state)
+void Base::Room::Goto::Click(std::shared_ptr<Base> base, float x, float y, int button, int state)
 {
     if (state == GLUT_UP) {
         Link::Click(base, x, y, button, state);
@@ -2007,7 +2007,7 @@ void Base::Room::Goto::Click(Base *base, float x, float y, int button, int state
     }
 }
 
-void Base::Room::Talk::Click(Base *base, float x, float y, int button, int state)
+void Base::Room::Talk::Click(std::shared_ptr<Base> base, float x, float y, int button, int state)
 {
     if (state == GLUT_UP) {
         Link::Click(base, x, y, button, state);
@@ -2029,7 +2029,7 @@ void Base::Room::Talk::Click(Base *base, float x, float y, int button, int state
     }
 }
 
-void Base::Room::Link::Click(Base *base, float x, float y, int button, int state)
+void Base::Room::Link::Click(std::shared_ptr<Base> base, float x, float y, int button, int state)
 {
     if (state == GLUT_UP) {
         /*
@@ -2096,7 +2096,7 @@ void Base::DrawWin()
             istimeofday = true;
             bases.pop();
         }
-        Base *newBase     = new Base(bases.front().c_str());
+        std::shared_ptr<Base> newBase = std::make_shared<Base>(bases.front().c_str());
         Base::CurrentBase = newBase;
         newBase->Draw();
         bases.pop();
