@@ -818,10 +818,10 @@ Unit::~Unit()
     free(pImage->cockpit_damage);
     if (!Killed())
         VSFileSystem::vs_fprintf(stderr, "Assumed exit on unit %s(if not quitting, report error)\n", name.get().c_str());
-    if (ucref)
+    if (ucref.load() > 0)
         VSFileSystem::vs_fprintf(stderr, "DISASTER AREA!!!!");
 #ifdef DESTRUCTDEBUG
-    VSFileSystem::vs_fprintf(stderr, "stage %d %x %d\n", 0, this, ucref);
+    VSFileSystem::vs_fprintf(stderr, "stage %d %x %d\n", 0, this, ucref.load());
     fflush(stderr);
 #endif
 #ifdef DESTRUCTDEBUG
@@ -875,8 +875,8 @@ Unit::~Unit()
 
 void Unit::ZeroAll()
 {
+    ucref.store(0);
     sound           = NULL;
-    ucref           = 0;
     networked       = false;
     serial          = 0;
     net_accel.i     = 0;
@@ -944,7 +944,7 @@ void Unit::ZeroAll()
     corner_max.j  = 0;
     corner_max.k  = 0;
     resolveforces = false;
-	killed.store(false);
+    killed.store(false);
     // armor has a constructor
     // shield has a constructor
     hull          = 0;
@@ -1074,12 +1074,12 @@ void Unit::Init()
     maxhull                                              = 1; // 10;
     shield.number                                        = 0;
 
-	killed.store(false);
+    killed.store(false);
 
     pImage->pExplosion  = NULL;
     pImage->timeexplode = 0;
-    ucref               = 0;
     aistate             = NULL;
+    ucref.store(0);
     Identity(cumulative_transformation_matrix);
     cumulative_transformation = identity_transformation;
     curr_physical_state = prev_physical_state = identity_transformation;
@@ -4467,7 +4467,7 @@ void Unit::Kill(bool erasefromsave, bool quitting)
         VSFileSystem::vs_dbg(1) << boost::format("UNIT HAS DIED: %1% %2% (file %3%)") % name.get() % fullname % filename.get() << std::endl;
     }
 
-    if (ucref == 0) {
+    if (ucref.load() == 0) {
         Unitdeletequeue.push_back(this);
         if (flightgroup)
             if (flightgroup->leader.GetUnit() == this)
@@ -4512,8 +4512,8 @@ void Unit::UnRef()
 #ifdef CONTAINER_DEBUG
     CheckUnit(this);
 #endif
-    ucref--;
-    if (Killed() && ucref == 0) {
+    --ucref;
+    if (Killed() && ucref.load() == 0) {
 #ifdef CONTAINER_DEBUG
         deletedUn.Put((long)this, this);
 #endif

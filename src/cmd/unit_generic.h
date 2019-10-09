@@ -212,7 +212,7 @@ class Unit
 {
   protected:
     // How many lists are referencing us
-    int                   ucref;
+    std::atomic_int       ucref;
     StringPool::Reference csvRow;
 
   public:
@@ -420,7 +420,7 @@ class Unit
                  bool        force_change_on_nothing = false,
                  bool        gen_downgrade_list      = true);
     int  RepairCost(); // returns how many things need to be repaired--if nothing is damaged it will return 1 for labor.  doesn't assume any
-                      // given cost on such thigns.
+                       // given cost on such thigns.
     int RepairUpgrade(); // returns how many things were repaired
     // returns percentOperational,maxPercentOperational,and whether mount is damaged (1 is damaged, 0 is fine, -1 is invalid mount)
     bool           RepairUpgradeCargo(Cargo *item,
@@ -868,7 +868,7 @@ class Unit
     // Should not be drawn
     enum INVIS { DEFAULTVIS = 0x0, INVISGLOW = 0x1, INVISUNIT = 0x2, INVISCAMERA = 0x4 };
     unsigned char invisible; // 1 means turn off glow, 2 means turn off ship
-    // corners of object
+                             // corners of object
 
   public:
     Vector corner_min, corner_max;
