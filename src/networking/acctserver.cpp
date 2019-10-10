@@ -14,7 +14,7 @@
 
 using namespace VSFileSystem;
 
-VegaConfig *vs_config = NULL;
+std::shared_ptr<VegaConfig>vs_config = NULL;
 string      acctdir;
 
 void getZoneInfoBuffer(unsigned short zoneid, NetBuffer &netbuf)

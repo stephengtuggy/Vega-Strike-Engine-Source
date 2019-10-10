@@ -72,7 +72,7 @@ class Music;
 extern Music *muzak;
 extern int    muzak_count;
 class VegaConfig;
-extern VegaConfig *vs_config;
+extern std::shared_ptr<VegaConfig>vs_config;
 class NetServer;
 class NetClient;
 extern NetClient *Network;

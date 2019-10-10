@@ -3,7 +3,7 @@
 #include "star_system_generic.h"
 #include "cmd/unit_generic.h"
 
-VegaConfig *createVegaConfig(const char *file)
+std::shared_ptr<VegaConfig>createVegaConfig(const char *file)
 {
     return new VegaConfig(file);
 }

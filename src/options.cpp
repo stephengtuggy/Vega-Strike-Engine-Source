@@ -1,7 +1,7 @@
 #include "options.h"
 #include "configxml.h"
 
-extern VegaConfig *vs_config;
+extern std::shared_ptr<VegaConfig>vs_config;
 
 void vs_options::init()
 {

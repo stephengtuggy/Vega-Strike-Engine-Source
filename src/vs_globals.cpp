@@ -5,7 +5,7 @@
  */
 game_data_t    g_game;
 ForceFeedback *forcefeedback              = NULL;
-VegaConfig *   vs_config                  = NULL;
+std::shared_ptr<VegaConfig>vs_config                  = NULL;
 bool           cleanexit                  = false;
 bool           run_only_player_starsystem = true;
 

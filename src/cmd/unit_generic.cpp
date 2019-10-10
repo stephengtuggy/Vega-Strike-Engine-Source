@@ -4078,7 +4078,7 @@ void Unit::ApplyDamage(const Vector &        pnt,
                        void *                ownerDoNotDereference,
                        float                 phasedamage)
 {
-    std::shared_ptr<Cockpit> cp          = _Universe->isPlayerStarshipVoid(ownerDoNotDereference);
+    Cockpit *cp          = _Universe->isPlayerStarshipVoid(ownerDoNotDereference);
     float    hullpercent = GetHullPercent();
     // Only on client side
     bool   mykilled = hull < 0;
@@ -4096,7 +4096,7 @@ void Unit::ApplyDamage(const Vector &        pnt,
         int        howmany                = armor_damage ? MadnessForHullDamage : MadnessForShieldDamage;
         for (int i = 0; i < howmany; ++i) {
             // now we can dereference it because we checked it against the parent
-            CommunicationMessage c(reinterpret_cast<std::shared_ptr<Unit>>(ownerDoNotDereference), this, NULL, 0);
+            CommunicationMessage c(reinterpret_cast<Unit *>(ownerDoNotDereference), this, NULL, 0);
             c.SetCurrentState(c.fsm->GetHitNode(), NULL, 0);
             if (this->getAIState())
                 this->getAIState()->Communicate(c);

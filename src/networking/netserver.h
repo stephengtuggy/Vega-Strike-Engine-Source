@@ -46,7 +46,7 @@
 
 struct GFXColor;
 
-extern VegaConfig *vs_config;
+extern std::shared_ptr<VegaConfig>vs_config;
 // extern VegaSimpleConfig *server_config;
 using std::vector;
 // typedef list<Client *>::iterator LI;

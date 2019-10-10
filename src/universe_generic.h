@@ -84,9 +84,9 @@ class Universe
     std::shared_ptr<Cockpit> isPlayerStarship(const std::shared_ptr<Unit> fighter);
     std::shared_ptr<Cockpit> isPlayerStarshipVoid(const void *pointercompare)
     {
-        // void *newp = const_cast<void *>(pointercompare);
-        // return this->isPlayerStarship(reinterpret_cast<std::shared_ptr<Unit> >(newp));
-        return isPlayerStarship((const std::shared_ptr<Unit>)pointercompare);
+        void *newp = const_cast<void *>(pointercompare);
+        return this->isPlayerStarship(reinterpret_cast<std::shared_ptr<Unit> >(newp));
+        // return isPlayerStarship((const std::shared_ptr<Unit>)pointercompare);
     }
     int      whichPlayerStarship(const std::shared_ptr<Unit> fighter);
     std::shared_ptr<Cockpit> AccessCockpit()

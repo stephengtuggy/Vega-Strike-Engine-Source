@@ -37,7 +37,7 @@ class Unit;
 class UnitContainer;
 class Prediction;
 
-extern VegaConfig *vs_config;
+extern std::shared_ptr<VegaConfig>vs_config;
 
 void displayError(ObjSerial error_code);
 enum accountServerCommands {

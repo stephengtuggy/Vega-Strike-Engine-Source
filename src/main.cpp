@@ -123,7 +123,7 @@ void setup_game_data()
     g_game.MouseSensitivityX    = 2;
     g_game.MouseSensitivityY    = 4;
 }
-VegaConfig *createVegaConfig(const char *file)
+std::shared_ptr<VegaConfig>createVegaConfig(const char *file)
 {
     return new GameVegaConfig(file);
 }
