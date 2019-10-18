@@ -28,7 +28,7 @@
 #endif
 
 #if defined( SDL_WINDOWING ) && defined (HAVE_SDL)
-#   include <SDL/SDL.h>
+#   include <SDL.h>
 #elif defined( HAVE_GLUT )
 #if defined(__APPLE__) || defined(MACOSX)
     #include <GLUT/glut.h>
