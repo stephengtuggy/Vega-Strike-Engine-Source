@@ -32,7 +32,7 @@ UNSET(OGRE_FOUND)
 #                            (Default value not implemented yet)
 # UNSET(Boost_DIR)
 
-SET(CMAKE_CXX_STANDARD 14)
+SET(CMAKE_CXX_STANDARD 11)
 
 # 2019-10-14 stephengtuggy - The new Boost.Log stuff didn't work without these next two lines
 SET(Boost_USE_STATIC_LIBS ON)
@@ -522,9 +522,10 @@ SET(VEGASERVER_SOURCES ${LIBCMDSERVER_SOURCES}
 					   src/gldrv/gl_vertex_list.cpp
 					   src/gldrv/gl_sphere_list_server.cpp)
 					   
-if(COMMAND cmake_policy)					   
-	cmake_policy(SET CMP0003 OLD) 
-endif(COMMAND cmake_policy)
+# 2019-10-17 stephengtuggy - As far as I can tell, this no longer has the desired effect.
+# if(COMMAND cmake_policy)					   
+	# cmake_policy(SET CMP0003 OLD) 
+# endif(COMMAND cmake_policy)
 
 # Set the default build type to Release
 IF(NOT CMAKE_BUILD_TYPE)
@@ -995,6 +996,8 @@ else(UNIX)
 	SET(HOSTOS "APPLE")
 endif(UNIX)
 
+include_directories(${TST_INCLUDES} )
+
 CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/cmake-config.h.in ${CMAKE_BINARY_DIR}/config.h)
 
 #end config.h generation 
@@ -1003,7 +1006,6 @@ CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/cmake-config.h.in ${CMAKE_BINARY_DIR}/config.
 #Setup shared lib and include listings for vegastrike and vegaserver.
 SET(TST_LIBS engine_com OPcollide netgeneric netlowlevel ${TST_LIBS})
 SET(TST_SERVER_LIBS netgeneric engine_com netlowlevel OPcollide ${TST_LIBS})
-include_directories(${TST_INCLUDES})	
 
 IF(NOT DISABLE_CLIENT)
 	target_link_libraries(vegastrike ${TST_LIBS})
@@ -1035,9 +1037,9 @@ ENDIF(NOT DISABLE_SERVER)
 # Debug crap 
 get_directory_property(TEMP_DIRECTORY INCLUDE_DIRECTORIES)
 message("Default build type is Release, no cpu opts enabled. ")
-#message("Building with CFLAGS: ${CMAKE_CXX_FLAGS}")
-#message("Linking with : ${TST_LIBS}")
-#message("including : ${TEMP_DIRECTORY}")
+message("Building with CFLAGS: ${CMAKE_CXX_FLAGS}")
+message("Linking with : ${TST_LIBS}")
+message("including : ${TEMP_DIRECTORY}")
 # End Debug Crap 
 
 MARK_AS_ADVANCED(FORCE
