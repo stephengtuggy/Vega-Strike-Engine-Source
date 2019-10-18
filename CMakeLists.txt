@@ -30,12 +30,14 @@ UNSET(OGRE_FOUND)
 # UNSET(Boost_DIR)
 
 # 2019-10-14 stephengtuggy - The new Boost.Log stuff didn't work without these next two lines
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
+SET(Boost_USE_STATIC_LIBS ON)
+SET(Boost_USE_MULTITHREADED ON)
 
-include_directories(${vsUTCS_SOURCE_DIR}/src 
-					${vsUTCS_SOURCE_DIR}/src/cmd
-					${vsUTCS_BINARY_DIR} ) 
+# 2019-10-17 stephengtuggy - I don't think these variables are working
+include_directories(${CMAKE_SOURCE_DIR}/src 
+					${CMAKE_SOURCE_DIR}/src/cmd
+                    ${CMAKE_BINARY_DIR}
+                    ) 
 					
 add_library(netlowlevel    src/networking/lowlevel/netbuffer.cpp
 						   src/networking/lowlevel/netui.cpp
@@ -526,11 +528,12 @@ IF(NOT CMAKE_BUILD_TYPE)
       FORCE )
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
-IF(NOT BUILD_OPT)
-	SET(BUILD_OPT -O2 CACHE STRING
-      "-O0, -O1, -O2, -O3, -Os, -Ofast"
-      FORCE )
-ENDIF(NOT BUILD_OPT)
+# 2019-10-16 stephengtuggy - These are compiler-specific. Attempting to refactor.
+# IF(NOT BUILD_OPT)
+    # SET(BUILD_OPT -O2 CACHE STRING
+      # "-O0, -O1, -O2, -O3, -Os, -Ofast"
+      # FORCE )
+# ENDIF(NOT BUILD_OPT)
 
 
 
@@ -555,16 +558,19 @@ OPTION(CPUINTEL_core2 "Enable Intel Core2 optimizations"
 OPTION(CPUINTEL_native "Enable host-specific optimizations for this machine"
     OFF )
 
-SET(DATADIR "" CACHE STRING "Default vegastrike data directory")
+SET(DATADIR "" CACHE PATH "Default vegastrike data directory")
 
 # Hide our temporary variable and initialize it to empty
 SET(CPU_OPTS  )
-# 2019-10-14 stephengtuggy - Each -D clause needs a space between it and the variable name to take effect
-SET(DEFINES " -D NV_CUBE_MAP=1 -D BOOST_PYTHON_NO_PY_SIGNATURES=1 ")
+# 2019-10-16 stephengtuggy - Refactoring again, in a more cross-platform, cross-compiler compatible way.
+add_compile_definitions(
+                        NV_CUBE_MAP=1
+                        BOOST_PYTHON_NO_PY_SIGNATURES=1
+                        )
 MARK_AS_ADVANCED( CPU_OPTS )
-MARK_AS_ADVANCED( DEFINES )
 SET(CPU_SMP "1" CACHE STRING 
     "Number of CPU's in system")
+# 2019-10-16 stephengtuggy - These options are also compiler-specific. Might want to refactor at some point.
 # Depending on the boolean chosen above, set CPU_OPTS to the correct cpu opts
 
 IF(CPUAMD_k8)
@@ -590,16 +596,17 @@ IF(CPU_SMP GREATER 1)
 ENDIF(CPU_SMP GREATER 1)
 
 IF(DATADIR)
-    SET(DEFINES "${DEFINES} -D DATA_DIR=\"${DATADIR}\"")
+    add_compile_definitions(DATA_DIR="${DATADIR}")
 ENDIF(DATADIR)
 
 # Debug target block. 
 # 2019-10-14 stephengtuggy - DESTRUCTDEBUG and DEBUG_RUN_PYTHON flags set temporarily for easier debugging. It looks like these flags must
-# 							 be set here, since this overrides whatever is specified to cmake on the commend line or using ccmake.
-SET(CMAKE_CXX_FLAGS_DEBUG " ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -D DESTRUCTDEBUG=1 -D DEBUG_RUN_PYTHON=1 -include config.h -pipe -g2 -Wall -fvisibility=hidden" CACHE STRING
+#                            be set here, since this overrides whatever is specified to cmake on the commend line or using ccmake.
+# 2019-10-16 stephengtuggy - Refactoring in a more cross-platform, cross-compiler compatible way.
+SET(CMAKE_CXX_FLAGS_DEBUG " ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -include config.h -pipe -g2 -Wall -fvisibility=hidden" CACHE STRING
     "Flags used by the C++ compiler during debug builds."
      FORCE )
-SET( CMAKE_C_FLAGS_DEBUG "  ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -D DESTRUCTDEBUG=1 -D DEBUG_RUN_PYTHON=1 -include config.h -pipe -g2 -Wall -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
+SET( CMAKE_C_FLAGS_DEBUG "  ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -include config.h -pipe -g2 -Wall -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
     "Flags used by the C compiler during debug builds."
      FORCE )
 SET( CMAKE_EXE_LINKER_FLAGS_DEBUG
@@ -612,6 +619,10 @@ MARK_AS_ADVANCED(
 IF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 	MARK_AS_ADVANCED( CLEAR
     	CMAKE_CXX_FLAGS_DEBUG )
+    add_compile_definitions(
+                            DESTRUCTDEBUG=1
+                            DEBUG_RUN_PYTHON=1
+                            )
 ELSE("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     MARK_AS_ADVANCED( FORCE 
     	CMAKE_CXX_FLAGS_DEBUG )
@@ -620,11 +631,11 @@ ENDIF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 
 
 # Release Target block 
-# 2019-10-14 stephengtuggy - Each -D clause needs a space between it and the variable name to take effect
-SET(CMAKE_CXX_FLAGS_RELEASE  " ${BUILD_OPT} ${CPU_OPTS} -D NV_CUBE_MAP=1 -D BOOST_PYTHON_NO_PY_SIGNATURES=1 -include config.h -pipe -Wall -fvisibility=hidden" CACHE STRING
+# 2019-10-17 stephengtuggy - Refactoring in a more cross-platform, cross-compiler compatible way.
+SET(CMAKE_CXX_FLAGS_RELEASE  " ${BUILD_OPT} ${CPU_OPTS} -include config.h -pipe -Wall -fvisibility=hidden" CACHE STRING
     "Flags used by the C++ compiler during release builds."
     FORCE)
-SET( CMAKE_C_FLAGS_RELEASE " ${BUILD_OPT} ${CPU_OPTS} -D NV_CUBE_MAP=1 -D BOOST_PYTHON_NO_PY_SIGNATURES=1 -include config.h -pipe -Wall -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
+SET( CMAKE_C_FLAGS_RELEASE " ${BUILD_OPT} ${CPU_OPTS} -include config.h -pipe -Wall -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
     "Flags used by the C compiler during release builds." 
     FORCE )
 SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "-Bsymbolic" CACHE STRING "Release linker flags"
@@ -642,11 +653,11 @@ ELSE("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
 ENDIF("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
 
 # Profiler Target block
-# 2019-10-14 stephengtuggy - Each -D clause needs a space between it and the variable name to take effect
-SET(CMAKE_CXX_FLAGS_PROFILER " ${BUILD_OPT} ${CPU_OPTS} -pg -g2 -D NV_CUBE_MAP=1 -D BOOST_PYTHON_NO_PY_SIGNATURES=1 -include config.h -pipe -Wall -Wno-unused-function -Wno-unused-variable" CACHE STRING
+# 2019-10-17 stephengtuggy - Refactoring in a more cross-platform, cross-compiler compatible way.
+SET(CMAKE_CXX_FLAGS_PROFILER " ${BUILD_OPT} ${CPU_OPTS} -pg -g2 -include config.h -pipe -Wall -Wno-unused-function -Wno-unused-variable" CACHE STRING
     "Flags used by the C++ compiler during profiler builds."
      FORCE )
-SET( CMAKE_C_FLAGS_PROFILER " ${BUILD_OPT} ${CPU_OPTS} -pg -g2 -D NV_CUBE_MAP=1 -D BOOST_PYTHON_NO_PY_SIGNATURES=1 -include config.h -pipe -Wall -Wno-unused-function -Wno-unused-variable" CACHE STRING
+SET( CMAKE_C_FLAGS_PROFILER " ${BUILD_OPT} ${CPU_OPTS} -pg -g2 -include config.h -pipe -Wall -Wno-unused-function -Wno-unused-variable" CACHE STRING
     "Flags used by the C compiler during profiler builds."
      FORCE )
 SET( CMAKE_EXE_LINKER_FLAGS_PROFILER
@@ -686,7 +697,7 @@ include (CheckIncludeFileCXX)
 INCLUDE(CheckTypeSize)
 check_type_size("void*" SIZEOF_VOID_P BUILTIN_TYPES_ONLY)
 # Let cmake find our in-tree modules
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${vsUTCS_SOURCE_DIR})
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR})
 
 # Configurable python version (some data sets might need 3.x, some 2.x)
 SET(VS_PYTHON_VERSION 2 CACHE STRING "Python version to build against: 2, 3, 2.x, 3.x")
@@ -733,7 +744,6 @@ IF(USE_SYSTEM_BOOST)
     SET(BOOST_PYTHON_NO_PY_SIGNATURES 1)
     SET(TST_INCLUDES ${TST_INCLUDES} ${Boost_INCLUDE_DIRS})
     SET(TST_LIBS ${TST_LIBS} ${Boost_LIBRARIES})
-    include_directories(${TST_INCLUDES})
   ELSE(Boost_FOUND)
     SET(USE_SYSTEM_BOOST OFF)
   ENDIF(Boost_FOUND)
@@ -752,9 +762,8 @@ IF(NOT USE_SYSTEM_BOOST)
     # UNSET(Boost_PYTHON_LIBRARY_RELEASE)
     # SET(Boost_DIR 1_53_0)
     SET(BOOST_PYTHON_NO_PY_SIGNATURES 1)
-    # SET(TST_INCLUDES ${TST_INCLUDES} ${vsUTCS_SOURCE_DIR}/boost/1_53)
+    SET(TST_INCLUDES ${TST_INCLUDES} ${Boost_INCLUDE_DIRS})
     SET(TST_LIBS ${TST_LIBS} ${Boost_LIBRARIES})
-    include_directories(${TST_INCLUDES})
     # add_subdirectory(boost/1_53)
     # 2019-10-14 stephengtuggy - These clauses didn't work right
     # IF(NOT DISABLE_CLIENT)
@@ -764,6 +773,8 @@ IF(NOT USE_SYSTEM_BOOST)
     #     add_dependencies(vegaserver boost_python )
     # ENDIF(NOT DISABLE_SERVER)
 ENDIF(NOT USE_SYSTEM_BOOST)
+
+# include_directories(${TST_INCLUDES})
 
 IF(NOT DISABLE_CLIENT) ##########
 
@@ -835,7 +846,7 @@ ENDIF(JPEG_FOUND)
 #Find PNG
 find_package(PNG REQUIRED)
 IF(PNG_FOUND)
-	SET(TEST_INCLUDES ${TST_INCLUDES} ${PNG_INCLUDE_DIRS})
+	SET(TST_INCLUDES ${TST_INCLUDES} ${PNG_INCLUDE_DIRS})
 	SET(TST_LIBS ${TST_LIBS} ${PNG_LIBRARIES})
 ELSE(PNG_FOUND)
 	message("!! Can't find PNG lib")
@@ -979,7 +990,7 @@ else(UNIX)
 	SET(HOSTOS "APPLE")
 endif(UNIX)
 
-CONFIGURE_FILE(${vsUTCS_SOURCE_DIR}/cmake-config.h.in ${vsUTCS_BINARY_DIR}/config.h)
+CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/cmake-config.h.in ${CMAKE_BINARY_DIR}/config.h)
 
 #end config.h generation 
 #SET(CMAKE_CXX_FLAGS "-include config.h;-pipe;"${CMAKE_CXX_FLAGS})
@@ -1006,12 +1017,14 @@ add_subdirectory(objconv)
 
 
 IF(NOT DISABLE_SERVER)
-target_link_libraries(vegaserver ${TST_SERVER_LIBS})
-# 2019-10-14 stephengtuggy - Each -D clause needs a space between it and the variable name to take effect
-set_target_properties(vegaserver PROPERTIES LINK_FLAGS "-L/usr/lib -L${vsUTCS_BINARY_DIR}"
-                                            COMPILE_FLAGS "-D NO_GFX=1")
-add_dependencies(vegaserver mesh_tool)
-add_dependencies(vegaserver vssetup)
+    # 2019-10-17 stephengtuggy - Refactor this section, among others, to work in as broadly compatible a way as possible
+    target_link_directories(vegaserver PUBLIC ${CMAKE_BINARY_DIR})
+    target_link_libraries(vegaserver ${TST_SERVER_LIBS})
+    # 2019-10-17 stephengtuggy - Declare compile definitions in as compatible a way as possible
+    target_compile_definitions(vegaserver PRIVATE NO_GFX=1)
+    set_target_properties(vegaserver PROPERTIES LINK_FLAGS "-L/usr/lib")
+    add_dependencies(vegaserver mesh_tool)
+    add_dependencies(vegaserver vssetup)
 ENDIF(NOT DISABLE_SERVER)
 
 # Debug crap 
