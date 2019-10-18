@@ -6,7 +6,10 @@
 # ccmake will let you set the Build type (debug,release,basic)
 
 
-cmake_minimum_required(VERSION 2.6)
+# 2019-10-17 stephengtuggy - This is the CMake version in which CMAKE_CXX_STANDARD was introduced, which, in turn, is needed to keep 
+#                            Visual Studio 2019 from trying to build the project using the c++17 standard. That, in turn, is necessary in 
+#                            order to keep auto_ptr references from erring out.
+cmake_minimum_required(VERSION 3.1)
 
 project (vsUTCS)
 
@@ -28,6 +31,8 @@ UNSET(OGRE_FOUND)
 # 2019-10-14 stephengtuggy - I think we need to allow specifying a custom Boost directory location, but provide a default value
 #                            (Default value not implemented yet)
 # UNSET(Boost_DIR)
+
+SET(CMAKE_CXX_STANDARD 14)
 
 # 2019-10-14 stephengtuggy - The new Boost.Log stuff didn't work without these next two lines
 SET(Boost_USE_STATIC_LIBS ON)
