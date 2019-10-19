@@ -32,11 +32,9 @@ UNSET(OGRE_FOUND)
 #                            (Default value not implemented yet)
 # UNSET(Boost_DIR)
 
-SET(CMAKE_CXX_STANDARD 11)
-
 # 2019-10-14 stephengtuggy - The new Boost.Log stuff didn't work without these next two lines
-SET(Boost_USE_STATIC_LIBS ON)
-SET(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
 
 # 2019-10-17 stephengtuggy - I don't think these variables are working
 include_directories(${CMAKE_SOURCE_DIR}/src 
@@ -72,6 +70,7 @@ add_library(netlowlevel    src/networking/lowlevel/netbuffer.cpp
 						   src/networking/lowlevel/vsnet_thread_p.cpp
 						   src/networking/lowlevel/vsnet_thread_sdl.cpp
                            ${CONFIG_HEADER_FILE}
+                           src/posh.cpp
                            )
 
 SET(LIBNET_SOURCES src/networking/inet_file.cpp 
