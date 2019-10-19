@@ -1,23 +1,25 @@
 find_package(EXPAT REQUIRED)
 IF(EXPAT_FOUND)
-SET(MESHER_SOURCES Converter.cpp
-                   from_obj.cpp
-                   to_BFXM.cpp
-                   from_BFXM.cpp
-                   main.cpp
-                   to_obj.cpp
-                   to_OgreMesh.cpp
-                   Modules/Convert.cpp
-                   Modules/OldSyntax.cpp
-                   Modules/Dims.cpp
-                   Modules/BFXM_to_Wavefront.cpp
-                   Modules/BFXM_to_XMesh.cpp
-                   Modules/XMesh_to_BFXM.cpp
-                   Modules/XMesh_to_Ogre.cpp
-                   Modules/Wavefront_to_BFXM.cpp
-                   PrecompiledHeaders/Converter.cpp
-                   ${CMAKE_SOURCE_DIR}/src/hashtable.cpp
-                   ${CMAKE_SOURCE_DIR}/src/xml_support.cpp)
+SET(MESHER_SOURCES              ${CONFIG_HEADER_FILE}
+                                Converter.cpp
+                                from_obj.cpp
+                                to_BFXM.cpp
+                                from_BFXM.cpp
+                                main.cpp
+                                to_obj.cpp
+                                to_OgreMesh.cpp
+                                Modules/Convert.cpp
+                                Modules/OldSyntax.cpp
+                                Modules/Dims.cpp
+                                Modules/BFXM_to_Wavefront.cpp
+                                Modules/BFXM_to_XMesh.cpp
+                                Modules/XMesh_to_BFXM.cpp
+                                Modules/XMesh_to_Ogre.cpp
+                                Modules/Wavefront_to_BFXM.cpp
+                                PrecompiledHeaders/Converter.cpp
+                                ${CMAKE_SOURCE_DIR}/src/hashtable.cpp
+                                ${CMAKE_SOURCE_DIR}/src/xml_support.cpp
+                                )
 
 # Still need to add CEGUI and OGRE find packages
 #if have OGRE

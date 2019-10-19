@@ -1,12 +1,14 @@
 IF (NOT BEOS)
 #set_property(DIRECTORY PROPERTY INCLUDE_DIRECTORIES "")
-SET(VSSETUP_SOURCES src/c/setup.cpp
-                    src/include/central.cpp
-                    src/include/display_gtk.cpp
-                    src/include/display_dialog.cpp
-                    src/include/file.cpp
-                    src/include/general.cpp
-                    ../src/common/common.cpp )                                                                                                        
+SET(VSSETUP_SOURCES             ${CONFIG_HEADER_FILE}
+                                src/c/setup.cpp
+                                src/include/central.cpp
+                                src/include/display_gtk.cpp
+                                src/include/display_dialog.cpp
+                                src/include/file.cpp
+                                src/include/general.cpp
+                                ../src/common/common.cpp
+                                )
 
 
 add_executable(vssetup ${VSSETUP_SOURCES})

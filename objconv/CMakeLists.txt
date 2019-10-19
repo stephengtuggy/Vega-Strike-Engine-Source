@@ -27,23 +27,25 @@ ELSE(OGRE_FOUND)
     message("-- Compiling mesh_tool without OgreMesh support: Ogre not found")
 ENDIF(OGRE_FOUND)
 
-SET(MESHER_SOURCES mesher/Converter.cpp
-                   mesher/from_BFXM.cpp
-                   mesher/from_obj.cpp
-                   mesher/main.cpp
-                   mesher/to_obj.cpp
-                   mesher/to_OgreMesh.cpp
-                   mesher/to_BFXM.cpp
-                   mesher/Modules/Convert.cpp
-                   mesher/Modules/OldSyntax.cpp
-                   mesher/Modules/Dims.cpp
-                   mesher/Modules/BFXM_to_Wavefront.cpp
-                   mesher/Modules/BFXM_to_XMesh.cpp
-                   mesher/Modules/XMesh_to_BFXM.cpp
-                   mesher/Modules/XMesh_to_Ogre.cpp
-                   mesher/Modules/Wavefront_to_BFXM.cpp
-                   ${CMAKE_SOURCE_DIR}/src/hashtable.cpp
-                   ${CMAKE_SOURCE_DIR}/src/xml_support.cpp)
+SET(MESHER_SOURCES              ${CONFIG_HEADER_FILE}
+                                mesher/Converter.cpp
+                                mesher/from_BFXM.cpp
+                                mesher/from_obj.cpp
+                                mesher/main.cpp
+                                mesher/to_obj.cpp
+                                mesher/to_OgreMesh.cpp
+                                mesher/to_BFXM.cpp
+                                mesher/Modules/Convert.cpp
+                                mesher/Modules/OldSyntax.cpp
+                                mesher/Modules/Dims.cpp
+                                mesher/Modules/BFXM_to_Wavefront.cpp
+                                mesher/Modules/BFXM_to_XMesh.cpp
+                                mesher/Modules/XMesh_to_BFXM.cpp
+                                mesher/Modules/XMesh_to_Ogre.cpp
+                                mesher/Modules/Wavefront_to_BFXM.cpp
+                                ${CMAKE_SOURCE_DIR}/src/hashtable.cpp
+                                ${CMAKE_SOURCE_DIR}/src/xml_support.cpp
+                                )
 
 include_directories(${MSH_INCLUDES} mesher)
 add_executable(mesh_tool ${MESHER_SOURCES})
@@ -57,5 +59,3 @@ IF(OGRE_FOUND AND NOT USE_SYSTEM_BOOST)
 ENDIF(OGRE_FOUND AND NOT USE_SYSTEM_BOOST)
 
 target_link_libraries(mesh_tool ${MSH_LIBS})
-
-

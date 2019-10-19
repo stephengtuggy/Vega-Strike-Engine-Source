@@ -6,7 +6,7 @@
 # ccmake will let you set the Build type (debug,release,basic)
 
 
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.15)
 
 project (vsUTCS)
 
@@ -1024,7 +1024,7 @@ else(UNIX)
 	SET(HOSTOS "APPLE")
 endif(UNIX)
 
-include_directories("${TST_INCLUDES}" )
+include_directories($<REMOVE_DUPLICATES:${TST_INCLUDES}> )
 
 configure_file(${CMAKE_SOURCE_DIR}/cmake-config.h.in ${CMAKE_BINARY_DIR}/config.h)
 
