@@ -43,6 +43,8 @@ include_directories(${CMAKE_SOURCE_DIR}/src
 					${CMAKE_SOURCE_DIR}/src/cmd
                     ${CMAKE_BINARY_DIR}
                     ) 
+
+set(CONFIG_HEADER_FILE ${CMAKE_BINARY_DIR}/config.h )
 					
 add_library(netlowlevel    src/networking/lowlevel/netbuffer.cpp
 						   src/networking/lowlevel/netui.cpp
@@ -67,11 +69,14 @@ add_library(netlowlevel    src/networking/lowlevel/netbuffer.cpp
 						   src/networking/lowlevel/vsnet_sockettcp.cpp
 						   src/networking/lowlevel/vsnet_socketudp.cpp
 						   src/networking/lowlevel/vsnet_thread_non.cpp
-						   src/networking/lowlevel/vsnet_thread_p.cpp 
-						   src/networking/lowlevel/vsnet_thread_sdl.cpp )
+						   src/networking/lowlevel/vsnet_thread_p.cpp
+						   src/networking/lowlevel/vsnet_thread_sdl.cpp
+                           ${CONFIG_HEADER_FILE}
+                           )
 
 SET(LIBNET_SOURCES src/networking/inet_file.cpp 
-				   src/networking/inet.cpp )
+				   src/networking/inet.cpp
+                   )
 
 add_library(netgeneric    src/networking/accountsxml.cpp
 						  src/networking/client.cpp
@@ -90,12 +95,16 @@ add_library(netgeneric    src/networking/accountsxml.cpp
 						  src/networking/netserver_net.cpp
 						  src/networking/netserver.cpp 
 						  src/networking/prediction.cpp
-						  src/networking/zonemgr.cpp )
+						  src/networking/zonemgr.cpp
+                          ${CONFIG_HEADER_FILE}
+                          )
 
 SET(LIBNETCLIENT_SOURCES src/networking/networkcomm.cpp
-						 src/networking/webcam_support.cpp )
+						 src/networking/webcam_support.cpp
+                         )
 
-SET(LIBNETSERVER_SOURCES src/networking/networkcomm_server.cpp )
+SET(LIBNETSERVER_SOURCES src/networking/networkcomm_server.cpp
+                         )
 
 SET(LIBGUI_SOURCES src/gui/button.cpp
 				   src/gui/control.cpp
@@ -117,7 +126,8 @@ SET(LIBGUI_SOURCES src/gui/button.cpp
 				   src/gui/text_area.cpp
 				   src/gui/textinputdisplay.cpp
 				   src/gui/window.cpp
-				   src/gui/windowcontroller.cpp )
+				   src/gui/windowcontroller.cpp
+                   )
 
 SET(LIBPYTHON_SOURCES src/python/init.cpp
 					  src/python/python_compile.cpp
@@ -127,7 +137,8 @@ SET(LIBPYTHON_SOURCES src/python/init.cpp
 					  src/python/unit_exports3.cpp 
 					  src/python/unit_method_defs.cpp
 					  src/python/unit_wrapper.cpp
-					  src/python/universe_util_export.cpp )
+					  src/python/universe_util_export.cpp
+                      )
 					  				   
 SET(LIBSCRIPT_SOURCES src/cmd/script/director_generic.cpp
 					  src/cmd/script/mission_script.cpp
@@ -144,12 +155,14 @@ SET(LIBSCRIPT_SOURCES src/cmd/script/director_generic.cpp
 					  src/cmd/script/script_generic.cpp
 					  src/cmd/script/script_statement.cpp
 					  src/cmd/script/script_util.cpp
-					  src/cmd/script/script_variables.cpp )
+					  src/cmd/script/script_variables.cpp
+                      )
 					  
 SET(LIBCMDSCRIPTSERVER_SOURCES src/cmd/script/flightgroup_server.cpp
 							   src/cmd/script/script_call_unit_server.cpp
 							   src/cmd/script/c_alike/c_alike.tab.cpp
-							   src/cmd/script/c_alike/lex.yy.cpp )
+							   src/cmd/script/c_alike/lex.yy.cpp
+                               )
 
 
 SET(LIBAI_SOURCES src/cmd/ai/aggressive.cpp
@@ -172,7 +185,8 @@ SET(LIBAI_SOURCES src/cmd/ai/aggressive.cpp
 				  src/cmd/ai/tactics.cpp
 				  src/cmd/ai/turretai.cpp
 				  src/cmd/ai/warpto.cpp
-				  src/cmd/ai/flykeyboard_generic.cpp)
+				  src/cmd/ai/flykeyboard_generic.cpp
+                  )
 
 add_library(OPcollide  src/cmd/collide2/Ice/IceAABB.cpp
 			   		   src/cmd/collide2/Ice/IceContainer.cpp
@@ -212,7 +226,9 @@ add_library(OPcollide  src/cmd/collide2/Ice/IceAABB.cpp
 			   		   src/cmd/collide2/OPC_TreeBuilders.cpp 
 			   		   src/cmd/collide2/OPC_TreeCollider.cpp 
 			   		   src/cmd/collide2/OPC_VolumeCollider.cpp 
-			   		   src/cmd/collide2/CSopcodecollider.cpp )
+			   		   src/cmd/collide2/CSopcodecollider.cpp
+                       ${CONFIG_HEADER_FILE}
+                       )
 
 SET(LIBCMD_SOURCES src/cmd/alphacurve.cpp
 				   src/cmd/asteroid_generic.cpp
@@ -238,7 +254,8 @@ SET(LIBCMD_SOURCES src/cmd/alphacurve.cpp
 				   src/cmd/fg_util.cpp
 				   src/cmd/unit_util_generic.cpp
 				   src/cmd/unit_xml.cpp 
-				   src/cmd/weapon_xml.cpp )
+				   src/cmd/weapon_xml.cpp
+                   )
 
 SET(LIBCMDSERVER_SOURCES src/cmd/atmosphere_server.cpp
 						 src/cmd/base_util_server.cpp
@@ -250,7 +267,8 @@ SET(LIBCMDSERVER_SOURCES src/cmd/atmosphere_server.cpp
                          src/cmd/unit_server.cpp 
                          src/cmd/pilot_server.cpp 
                          src/cmd/images_server.cpp 
-                         src/cmd/faction_xml_server.cpp )
+                         src/cmd/faction_xml_server.cpp
+                         )
 
 
 SET(LIBGFXGENERIC_SOURCES src/gfx/cockpit_generic.cpp
@@ -261,9 +279,10 @@ SET(LIBGFXGENERIC_SOURCES src/gfx/cockpit_generic.cpp
 						  src/gfx/mesh_xml.cpp
 						  src/gfx/mesh.cpp
 						  src/gfx/quaternion.cpp
-                                                  src/gfx/soundcontainer_generic.cpp
+                          src/gfx/soundcontainer_generic.cpp
 						  src/gfx/sphere_generic.cpp
-						  src/gfx/vec.cpp )
+						  src/gfx/vec.cpp
+                          )
 
 SET(LIBGFXCLIENT_SOURCES src/gfx/ani_texture.cpp
 						 src/gfx/animation.cpp
@@ -283,7 +302,7 @@ SET(LIBGFXCLIENT_SOURCES src/gfx/ani_texture.cpp
 						 src/gfx/jpeg_memory.cpp
 						 src/gfx/loc_select.cpp
 						 src/gfx/masks.cpp
-                                                 src/gfx/mesh_bin.cpp
+                         src/gfx/mesh_bin.cpp
 						 src/gfx/mesh_fx.cpp
 						 src/gfx/mesh_gfx.cpp
 						 src/gfx/nav/criteria_xml.cpp
@@ -322,10 +341,10 @@ SET(LIBGFXCLIENT_SOURCES src/gfx/ani_texture.cpp
 						 src/gfx/quadtree_xml.cpp
 						 src/gfx/quadtree.cpp
 						 src/gfx/ring.cpp
-                                                 src/gfx/occlusion.cpp
+                         src/gfx/occlusion.cpp
 						 src/gfx/screenshot.cpp
-                                                 src/gfx/soundcontainer.cpp
-                                                 src/gfx/soundcontainer_aldrv.cpp
+                         src/gfx/soundcontainer.cpp
+                         src/gfx/soundcontainer_aldrv.cpp
 						 src/gfx/sphere.cpp
 						 src/gfx/sprite.cpp 
 						 src/gfx/star.cpp
@@ -337,13 +356,15 @@ SET(LIBGFXCLIENT_SOURCES src/gfx/ani_texture.cpp
 						 src/ffmpeg_init.cpp 
 						 src/gfx/vsbox.cpp
 						 src/gfx/vsimage.cpp 
-						 src/gfx/warptrail.cpp )
+						 src/gfx/warptrail.cpp
+                         )
 
 SET(LIBGFXSERVER_SOURCES src/gfx/sphere_server.cpp
 						 src/gfx/vsbox_server.cpp
 						 src/gfx/mesh_server.cpp 
 						 src/gfx/background_server.cpp
-                        src/gfx/mesh_bin_server.cpp )
+                         src/gfx/mesh_bin_server.cpp
+                         )
 
 #add_library(posh  src/posh.cpp )
 
@@ -373,7 +394,8 @@ SET(LIBROOTGENERIC_SOURCES src/configxml.cpp
 						   src/xml_serializer.cpp
 						   src/xml_support.cpp
 						   src/XMLDocument.cpp
-						   src/options.cpp )
+						   src/options.cpp
+                           )
 
 SET(LIBROOTCLIENT_SOURCES src/cg_global.cpp
 						  src/command.cpp
@@ -395,14 +417,16 @@ SET(LIBROOTCLIENT_SOURCES src/cg_global.cpp
 						  src/star_system_jump.cpp
 						  src/star_system.cpp
 						  src/universe_util.cpp
-						  src/universe.cpp )
+						  src/universe.cpp
+                          )
 						  
 SET(LIBROOTSERVER_SOURCES  src/force_feedback_server.cpp
 						   src/faction_util_server.cpp
 						   src/gfxlib_struct_server.cpp
 						   src/libaudioserver.cpp
 						   src/libserver.cpp
-						   src/universe_util_server.cpp )
+						   src/universe_util_server.cpp
+                           )
 						   
 SET(LIBAUDIO_SOURCES src/audio/CodecRegistry.cpp
                      src/audio/Listener.cpp
@@ -444,7 +468,9 @@ add_library(engine_com ${LIBAI_SOURCES}
 					   ${LIBPYTHON_SOURCES}
 					   ${LIBROOTGENERIC_SOURCES}
 					   ${LIBSCRIPT_SOURCES}
-					   ${LIBGFXGENERIC_SOURCES} )
+					   ${LIBGFXGENERIC_SOURCES}
+                       ${CONFIG_HEADER_FILE}
+                       )
 				   
 SET(VEGASTRIKE_SOURCES ${LIBGUI_SOURCES}
 					   ${LIBNETCLIENT_SOURCES}
@@ -509,7 +535,8 @@ SET(VEGASTRIKE_SOURCES ${LIBGUI_SOURCES}
 					   src/gldrv/gl_vertex_list.cpp
 					   src/gldrv/winsys.cpp
 					   src/main.cpp 
-					   src/python/briefing_wrapper.cpp )
+					   src/python/briefing_wrapper.cpp
+                       )
 
 SET(VEGASERVER_SOURCES ${LIBCMDSERVER_SOURCES}
 					   ${LIBNETSERVER_SOURCES}
@@ -520,7 +547,8 @@ SET(VEGASERVER_SOURCES ${LIBCMDSERVER_SOURCES}
 					   src/cmd/script/director_server.cpp
 					   src/cmd/ai/flykeyboard_server.cpp
 					   src/gldrv/gl_vertex_list.cpp
-					   src/gldrv/gl_sphere_list_server.cpp)
+					   src/gldrv/gl_sphere_list_server.cpp
+                       )
 					   
 # 2019-10-17 stephengtuggy - As far as I can tell, this no longer has the desired effect.
 # if(COMMAND cmake_policy)					   
@@ -569,9 +597,9 @@ SET(DATADIR "" CACHE PATH "Default vegastrike data directory")
 # Hide our temporary variable and initialize it to empty
 SET(CPU_OPTS  )
 # 2019-10-16 stephengtuggy - Refactoring again, in a more cross-platform, cross-compiler compatible way.
-add_compile_definitions(
-                        NV_CUBE_MAP=1
+add_compile_definitions(NV_CUBE_MAP=1
                         BOOST_PYTHON_NO_PY_SIGNATURES=1
+                        _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS=1
                         )
 MARK_AS_ADVANCED( CPU_OPTS )
 SET(CPU_SMP "1" CACHE STRING 
@@ -609,10 +637,10 @@ ENDIF(DATADIR)
 # 2019-10-14 stephengtuggy - DESTRUCTDEBUG and DEBUG_RUN_PYTHON flags set temporarily for easier debugging. It looks like these flags must
 #                            be set here, since this overrides whatever is specified to cmake on the commend line or using ccmake.
 # 2019-10-16 stephengtuggy - Refactoring in a more cross-platform, cross-compiler compatible way.
-SET(CMAKE_CXX_FLAGS_DEBUG " ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -include config.h -pipe -g2 -Wall -fvisibility=hidden" CACHE STRING
+SET(CMAKE_CXX_FLAGS_DEBUG " ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -pipe -g2 -Wall -fvisibility=hidden" CACHE STRING
     "Flags used by the C++ compiler during debug builds."
      FORCE )
-SET( CMAKE_C_FLAGS_DEBUG "  ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -include config.h -pipe -g2 -Wall -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
+SET( CMAKE_C_FLAGS_DEBUG "  ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -pipe -g2 -Wall -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
     "Flags used by the C compiler during debug builds."
      FORCE )
 SET( CMAKE_EXE_LINKER_FLAGS_DEBUG
@@ -638,10 +666,10 @@ ENDIF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 
 # Release Target block 
 # 2019-10-17 stephengtuggy - Refactoring in a more cross-platform, cross-compiler compatible way.
-SET(CMAKE_CXX_FLAGS_RELEASE  " ${BUILD_OPT} ${CPU_OPTS} -include config.h -pipe -Wall -fvisibility=hidden" CACHE STRING
+SET(CMAKE_CXX_FLAGS_RELEASE  " ${BUILD_OPT} ${CPU_OPTS} -pipe -Wall -fvisibility=hidden" CACHE STRING
     "Flags used by the C++ compiler during release builds."
     FORCE)
-SET( CMAKE_C_FLAGS_RELEASE " ${BUILD_OPT} ${CPU_OPTS} -include config.h -pipe -Wall -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
+SET( CMAKE_C_FLAGS_RELEASE " ${BUILD_OPT} ${CPU_OPTS} -pipe -Wall -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
     "Flags used by the C compiler during release builds." 
     FORCE )
 SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "-Bsymbolic" CACHE STRING "Release linker flags"
@@ -660,10 +688,10 @@ ENDIF("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
 
 # Profiler Target block
 # 2019-10-17 stephengtuggy - Refactoring in a more cross-platform, cross-compiler compatible way.
-SET(CMAKE_CXX_FLAGS_PROFILER " ${BUILD_OPT} ${CPU_OPTS} -pg -g2 -include config.h -pipe -Wall -Wno-unused-function -Wno-unused-variable" CACHE STRING
+SET(CMAKE_CXX_FLAGS_PROFILER " ${BUILD_OPT} ${CPU_OPTS} -pg -g2 -pipe -Wall -Wno-unused-function -Wno-unused-variable" CACHE STRING
     "Flags used by the C++ compiler during profiler builds."
      FORCE )
-SET( CMAKE_C_FLAGS_PROFILER " ${BUILD_OPT} ${CPU_OPTS} -pg -g2 -include config.h -pipe -Wall -Wno-unused-function -Wno-unused-variable" CACHE STRING
+SET( CMAKE_C_FLAGS_PROFILER " ${BUILD_OPT} ${CPU_OPTS} -pg -g2 -pipe -Wall -Wno-unused-function -Wno-unused-variable" CACHE STRING
     "Flags used by the C compiler during profiler builds."
      FORCE )
 SET( CMAKE_EXE_LINKER_FLAGS_PROFILER
@@ -688,13 +716,17 @@ ENDIF("${CMAKE_BUILD_TYPE}" STREQUAL "Profiler")
 OPTION(DISABLE_CLIENT "Disable building the vegastrike bin"
 		OFF )
 IF(NOT DISABLE_CLIENT)
-	add_executable(vegastrike ${VEGASTRIKE_SOURCES})
+	add_executable(vegastrike ${VEGASTRIKE_SOURCES}
+                              ${CONFIG_HEADER_FILE}
+                              )
 ENDIF(NOT DISABLE_CLIENT)
 
 OPTION(DISABLE_SERVER "Disable building the vegaserver bin"
         OFF )
 IF(NOT DISABLE_SERVER)
-    add_executable(vegaserver ${VEGASERVER_SOURCES})
+    add_executable(vegaserver ${VEGASERVER_SOURCES}
+                              ${CONFIG_HEADER_FILE}
+                              )
 ENDIF(NOT DISABLE_SERVER)
 
 
@@ -996,9 +1028,9 @@ else(UNIX)
 	SET(HOSTOS "APPLE")
 endif(UNIX)
 
-include_directories(${TST_INCLUDES} )
+include_directories("${TST_INCLUDES}" )
 
-CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/cmake-config.h.in ${CMAKE_BINARY_DIR}/config.h)
+configure_file(${CMAKE_SOURCE_DIR}/cmake-config.h.in ${CMAKE_BINARY_DIR}/config.h)
 
 #end config.h generation 
 #SET(CMAKE_CXX_FLAGS "-include config.h;-pipe;"${CMAKE_CXX_FLAGS})
