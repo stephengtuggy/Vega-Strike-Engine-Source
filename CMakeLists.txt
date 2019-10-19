@@ -6,10 +6,7 @@
 # ccmake will let you set the Build type (debug,release,basic)
 
 
-# 2019-10-17 stephengtuggy - This is the CMake version in which CMAKE_CXX_STANDARD was introduced, which, in turn, is needed to keep 
-#                            Visual Studio 2019 from trying to build the project using the c++17 standard. That, in turn, is necessary in 
-#                            order to keep auto_ptr references from erring out.
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12)
 
 project (vsUTCS)
 
@@ -1046,12 +1043,12 @@ ENDIF(NOT DISABLE_CLIENT)
 # Vssetup Sub build file  
 add_subdirectory(setup)
 
-#ADD_CUSTOM_TARGET(vssetup DEPENDS setup/vssetup COMMAND ln -fs ${vsUTCS_BINARY_DIR}/setup/vssetup vssetup || true)
+# ADD_CUSTOM_TARGET(vssetup DEPENDS setup/vssetup COMMAND ln -fs ${CMAKE_BINARY_DIR}/setup/vssetup vssetup || true)
 
 # Add other utilies here
 add_subdirectory(objconv)
 
-#ADD_CUSTOM_TARGET(mesher DEPENDS objconv/mesher COMMAND ln -fs ${vsUTCS_BINARY_DIR}/objconv/mesher mesher || true)
+# ADD_CUSTOM_TARGET(mesher DEPENDS objconv/mesher COMMAND ln -fs ${CMAKE_BINARY_DIR}/objconv/mesher mesher || true)
 
 
 IF(NOT DISABLE_SERVER)

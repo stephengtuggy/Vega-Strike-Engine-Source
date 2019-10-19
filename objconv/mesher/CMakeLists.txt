@@ -16,8 +16,8 @@ SET(MESHER_SOURCES Converter.cpp
                    Modules/XMesh_to_Ogre.cpp
                    Modules/Wavefront_to_BFXM.cpp
                    PrecompiledHeaders/Converter.cpp
-                   ${vsUTCS_SOURCE_DIR}/src/hashtable.cpp
-                   ${vsUTCS_SOURCE_DIR}/src/xml_support.cpp)
+                   ${CMAKE_SOURCE_DIR}/src/hashtable.cpp
+                   ${CMAKE_SOURCE_DIR}/src/xml_support.cpp)
 
 # Still need to add CEGUI and OGRE find packages
 #if have OGRE
