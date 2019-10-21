@@ -732,7 +732,7 @@ IF(NOT DISABLE_SERVER)
                                                 )
 ENDIF(NOT DISABLE_SERVER)
 
-set(TST_INCLUDES                                vsUTCS_INCLUDE_DIRS)
+# set(TST_INCLUDES                                vsUTCS_INCLUDE_DIRS)
 
 
 include (CheckIncludeFile)
@@ -1047,7 +1047,9 @@ target_include_directories(OPcollide PRIVATE        ${TST_INCLUDES})
 target_include_directories(engine_com PRIVATE       ${TST_INCLUDES})
 
 IF(NOT DISABLE_CLIENT)
-    target_include_directories(vegastrike PRIVATE   ${TST_INCLUDES})
+    target_include_directories(vegastrike PRIVATE   ${TST_INCLUDES}
+                                                    ${vsUTCS_INCLUDE_DIRS}
+                                                    )
     target_link_libraries(vegastrike                ${TST_LIBS})
 	set_target_properties(vegastrike PROPERTIES LINK_FLAGS "-L/usr/lib ${TST_LFLAGS}")
 ENDIF(NOT DISABLE_CLIENT)
@@ -1064,7 +1066,9 @@ add_subdirectory(objconv)
 
 
 IF(NOT DISABLE_SERVER)
-    target_include_directories(vegaserver PRIVATE   ${TST_INCLUDES})
+    target_include_directories(vegaserver PRIVATE   ${TST_INCLUDES}
+                                                    ${vsUTCS_INCLUDE_DIRS}
+                                                    )
     target_link_libraries(vegaserver                ${TST_SERVER_LIBS})
     # 2019-10-17 stephengtuggy - Declare compile definitions in as compatible a way as possible
     target_compile_definitions(vegaserver PRIVATE NO_GFX=1)
