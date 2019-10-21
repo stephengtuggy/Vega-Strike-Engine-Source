@@ -1041,8 +1041,13 @@ configure_file(${CMAKE_SOURCE_DIR}/cmake-config.h.in ${CMAKE_BINARY_DIR}/config.
 SET(TST_LIBS engine_com OPcollide netgeneric netlowlevel ${TST_LIBS})
 SET(TST_SERVER_LIBS netgeneric engine_com netlowlevel OPcollide ${TST_LIBS})
 
+target_include_directories(netlowlevel PRIVATE      ${TST_INCLUDES})
+target_include_directories(netgeneric PRIVATE       ${TST_INCLUDES})
+target_include_directories(OPcollide PRIVATE        ${TST_INCLUDES})
+target_include_directories(engine_com PRIVATE       ${TST_INCLUDES})
+
 IF(NOT DISABLE_CLIENT)
-    target_include_directories(vegastrike PRIVATE   $<REMOVE_DUPLICATES:${TST_INCLUDES}>)
+    target_include_directories(vegastrike PRIVATE   ${TST_INCLUDES})
     target_link_libraries(vegastrike                ${TST_LIBS})
 	set_target_properties(vegastrike PROPERTIES LINK_FLAGS "-L/usr/lib ${TST_LFLAGS}")
 ENDIF(NOT DISABLE_CLIENT)
@@ -1059,7 +1064,7 @@ add_subdirectory(objconv)
 
 
 IF(NOT DISABLE_SERVER)
-    target_include_directories(vegaserver PRIVATE   $<REMOVE_DUPLICATES:${TST_INCLUDES}>)
+    target_include_directories(vegaserver PRIVATE   ${TST_INCLUDES})
     target_link_libraries(vegaserver                ${TST_SERVER_LIBS})
     # 2019-10-17 stephengtuggy - Declare compile definitions in as compatible a way as possible
     target_compile_definitions(vegaserver PRIVATE NO_GFX=1)
