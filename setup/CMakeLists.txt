@@ -1,14 +1,14 @@
 IF (NOT BEOS)
 #set_property(DIRECTORY PROPERTY INCLUDE_DIRECTORIES "")
-SET(VSSETUP_SOURCES             ${CONFIG_HEADER_FILE}
-                                src/c/setup.cpp
-                                src/include/central.cpp
-                                src/include/display_gtk.cpp
-                                src/include/display_dialog.cpp
-                                src/include/file.cpp
-                                src/include/general.cpp
-                                ../src/common/common.cpp
-                                )
+SET(VSSETUP_SOURCES                         ${CONFIG_HEADER_FILE}
+                                            src/c/setup.cpp
+                                            src/include/central.cpp
+                                            src/include/display_gtk.cpp
+                                            src/include/display_dialog.cpp
+                                            src/include/file.cpp
+                                            src/include/general.cpp
+                                            ../src/common/common.cpp
+                                            )
 
 
 add_executable(vssetup ${VSSETUP_SOURCES})
@@ -23,6 +23,10 @@ ELSE(GTK2_FOUND)
 ENDIF(GTK2_FOUND)
 
 add_definitions(${GTK_CFLAGS})
-include_directories(${CMAKE_SOURCE_DIR}/setup/src/include ${CMAKE_SOURCE_DIR}/src/common ${CMAKE_BINARY_DIR} ${GTK2_INCLUDE_DIRS})
-target_link_libraries(vssetup ${GTK_LIBS})
+target_include_directories(vssetup PRIVATE  src/include 
+                                            ../src/common
+                                            ${CMAKE_BINARY_DIR}/..
+                                            ${GTK2_INCLUDE_DIRS}
+                                            )
+target_link_libraries(vssetup               ${GTK_LIBS})
 ENDIF (NOT BEOS)
