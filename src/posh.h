@@ -342,9 +342,9 @@
 ** Win32/Win64
 ** ------------------------------------------------------------------
 */
-#if defined _WIN32 || defined WIN32 || defined __NT__ || defined __WIN32__ || defined FORCE_DOXYGEN
+#if defined _WIN32 || defined WIN32 || defined __NT__ || defined __WIN32__ || defined _M_X64 || defined FORCE_DOXYGEN
 #  define POSH_OS_WIN32 /**<if defined, target OS is Win32 (implies Win9x/Me/2K/XP)*/
-#  if defined _WIN64 || defined FORCE_DOXYGEN
+#  if defined _WIN64 || defined _M_X64 || defined FORCE_DOXYGEN
 #     define POSH_OS_WIN64 /**<if defined, target OS is Win64 */
 #     if !defined FORCE_DOXYGEN
 #        define POSH_OS_STRING "Win64"
