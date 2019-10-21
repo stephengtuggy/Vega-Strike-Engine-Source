@@ -747,7 +747,7 @@ SET(VS_PYTHON_VERSION 2 CACHE STRING "Python version to build against: 2, 3, 2.x
 SET(Python_ADDITIONAL_VERSIONS 3.3mu 3.3m 3.2mu 3.2m)
 
 find_package(PythonLibs ${VS_PYTHON_VERSION} REQUIRED)
-IF(PYTHONLIBS_FOUND OR PYTHON_LIBRARIES AND PYTHON_INCLUDE_PATH)
+IF(PYTHONLIBS_FOUND OR PYTHON_LIBRARIES AND PYTHON_INCLUDE_DIR)
     message("Found Python " ${PYTHONLIBS_VERSION_STRING})
     # Multi-arch systems with python 3.3 need to check 64bit include dir
     # and the regular generic include dir, cmake's python search doesn't do that
@@ -757,14 +757,14 @@ IF(PYTHONLIBS_FOUND OR PYTHON_LIBRARIES AND PYTHON_INCLUDE_PATH)
     string(REGEX MATCH "3\\.3\\..*" FOUND_33 "${PYTHONLIBS_VERSION_STRING}")
     IF(FOUND_33 AND SIZEOF_VOID_P EQUAL 8)
        #  THIS IS 64 bit and version 3.3 ####################
-       SET(TST_INCLUDES ${PYTHON_INCLUDE_PATH} "/usr/include/x86_64-linux-gnu/python3.3m")
+       SET(TST_INCLUDES ${PYTHON_INCLUDE_DIR} "/usr/include/x86_64-linux-gnu/python3.3m")
     ELSE(FOUND_33 AND SIZEOF_VOID_P EQUAL 8)
        IF(FOUND_33)
           #  THIS IS 32bit and 3.3       #######################
-          SET(TST_INCLUDES ${PYTHON_INCLUDE_PATH} "/usr/include/i386-linux-gnu/python3.3m")
+          SET(TST_INCLUDES ${PYTHON_INCLUDE_DIR} "/usr/include/i386-linux-gnu/python3.3m")
        ELSE(FOUND_33)
           #  THIS IS NOT 3.3 so who cares   ####################
-          SET(TST_INCLUDES ${PYTHON_INCLUDE_PATH})
+          SET(TST_INCLUDES ${PYTHON_INCLUDE_DIR})
        ENDIF(FOUND_33)
    ENDIF(FOUND_33 AND SIZEOF_VOID_P EQUAL 8)
    #  What the above block says is if we're 3.3 then our distro may be putting
@@ -773,9 +773,9 @@ IF(PYTHONLIBS_FOUND OR PYTHON_LIBRARIES AND PYTHON_INCLUDE_PATH)
        
    SET(TST_LIBS ${PYTHON_LIBRARIES})
    SET(HAVE_PYTHON 1)
-ELSE(PYTHONLIBS_FOUND OR PYTHON_LIBRARIES AND PYTHON_INCLUDE_PATH)
+ELSE(PYTHONLIBS_FOUND OR PYTHON_LIBRARIES AND PYTHON_INCLUDE_DIR)
     message(FATAL_ERROR "Can't find python3")
-ENDIF(PYTHONLIBS_FOUND OR PYTHON_LIBRARIES AND PYTHON_INCLUDE_PATH)
+ENDIF(PYTHONLIBS_FOUND OR PYTHON_LIBRARIES AND PYTHON_INCLUDE_DIR)
 
 # Find Boost with boost_python library
 OPTION(USE_SYSTEM_BOOST "Use system boost" OFF)
