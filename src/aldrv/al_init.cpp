@@ -1,3 +1,5 @@
+#include "config.h"
+
 #ifdef HAVE_AL
 #ifdef __APPLE__
 #include <al.h>
