@@ -1050,7 +1050,7 @@ IF(NOT DISABLE_CLIENT)
     target_include_directories(vegastrike PRIVATE   ${TST_INCLUDES}
                                                     ${vsUTCS_INCLUDE_DIRS}
                                                     )
-    add_dependencies(vegastrike                     ${TST_LIBS})
+    add_dependencies(vegastrike                     netlowlevel netgeneric OPcollide engine_com)
     target_link_libraries(vegastrike                ${TST_LIBS})
 	set_target_properties(vegastrike PROPERTIES LINK_FLAGS "-L/usr/lib ${TST_LFLAGS}")
 ENDIF(NOT DISABLE_CLIENT)
@@ -1070,7 +1070,7 @@ IF(NOT DISABLE_SERVER)
     target_include_directories(vegaserver PRIVATE   ${TST_INCLUDES}
                                                     ${vsUTCS_INCLUDE_DIRS}
                                                     )
-    add_dependencies(vegaserver                     ${TST_SERVER_LIBS})
+    add_dependencies(vegaserver                     netlowlevel netgeneric OPcollide engine_com)
     target_link_libraries(vegaserver                ${TST_SERVER_LIBS})
     # 2019-10-17 stephengtuggy - Declare compile definitions in as compatible a way as possible
     target_compile_definitions(vegaserver PRIVATE NO_GFX=1)
