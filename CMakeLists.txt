@@ -6,7 +6,7 @@
 # ccmake will let you set the Build type (debug,release,basic)
 
 
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
 
 project (vsUTCS)
 
@@ -1050,6 +1050,7 @@ IF(NOT DISABLE_CLIENT)
     target_include_directories(vegastrike PRIVATE   ${TST_INCLUDES}
                                                     ${vsUTCS_INCLUDE_DIRS}
                                                     )
+    add_dependencies(vegastrike                     ${TST_LIBS})
     target_link_libraries(vegastrike                ${TST_LIBS})
 	set_target_properties(vegastrike PROPERTIES LINK_FLAGS "-L/usr/lib ${TST_LFLAGS}")
 ENDIF(NOT DISABLE_CLIENT)
@@ -1069,6 +1070,7 @@ IF(NOT DISABLE_SERVER)
     target_include_directories(vegaserver PRIVATE   ${TST_INCLUDES}
                                                     ${vsUTCS_INCLUDE_DIRS}
                                                     )
+    add_dependencies(vegaserver                     ${TST_SERVER_LIBS})
     target_link_libraries(vegaserver                ${TST_SERVER_LIBS})
     # 2019-10-17 stephengtuggy - Declare compile definitions in as compatible a way as possible
     target_compile_definitions(vegaserver PRIVATE NO_GFX=1)
