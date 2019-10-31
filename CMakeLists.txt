@@ -38,6 +38,10 @@ set(vsUTCS_INCLUDE_DIRS                         ${CMAKE_BINARY_DIR}
 set(Boost_USE_STATIC_LIBS                       ON)
 set(Boost_USE_MULTITHREADED                     ON)
 
+IF(WIN32)
+    add_compile_definitions(BOOST_ALL_NO_LIB=1)
+ENDIF(WIN32)
+
 set(CONFIG_HEADER_FILE                          ${CMAKE_BINARY_DIR}/config.h )
 					
 add_library(netlowlevel                         ${CONFIG_HEADER_FILE}
@@ -805,7 +809,7 @@ IF(NOT USE_SYSTEM_BOOST)
     # UNSET(Boost_PYTHON_LIBRARY_RELEASE)
     # SET(Boost_DIR 1_53_0)
     SET(BOOST_PYTHON_NO_PY_SIGNATURES 1)
-    SET(TST_INCLUDES ${TST_INCLUDES} ${Boost_INCLUDE_DIRS})
+    SET(TST_INCLUDES ${TST_INCLUDES} ${Boost_INCLUDE_DIR})
     SET(TST_LIBS ${TST_LIBS} ${Boost_LIBRARIES})
     # add_subdirectory(boost/1_53)
     # 2019-10-14 stephengtuggy - These clauses didn't work right
