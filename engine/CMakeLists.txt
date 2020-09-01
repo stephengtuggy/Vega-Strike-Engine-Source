@@ -549,7 +549,7 @@ SET(DATADIR "" CACHE STRING "Default vegastrike data directory")
 
 # Hide our temporary variable and initialize it to empty
 SET(CPU_OPTS  )
-SET(DEFINES " -DNV_CUBE_MAP -DBOOST_PYTHON_NO_PY_SIGNATURES -DBOOST_ALL_DYN_LINK ")
+ADD_DEFINITIONS(-DNV_CUBE_MAP -DBOOST_PYTHON_NO_PY_SIGNATURES -DBOOST_ALL_DYN_LINK)
 MARK_AS_ADVANCED( CPU_OPTS )
 MARK_AS_ADVANCED( DEFINES )
 SET(CPU_SMP "1" CACHE STRING "Number of CPU's in system")
@@ -578,7 +578,7 @@ IF (CPU_SMP GREATER 1)
 ENDIF (CPU_SMP GREATER 1)
 
 IF (DATADIR)
-    SET(DEFINES "${DEFINES} -DDATA_DIR=\"${DATADIR}\"")
+    ADD_DEFINITIONS(-DDATA_DIR=\"${DATADIR}\")
 ENDIF (DATADIR)
 
 # Gather info about Linux distro and release (if applicable) for later use down below.
@@ -626,12 +626,19 @@ ELSE (ENABLE_PIE)
 ENDIF (ENABLE_PIE)
 
 
+IF (MSVC)
+    ADD_COMPILE_OPTIONS(/W0 /FI ${Vega_Strike_BINARY_DIR}/config.h)
+ELSE (MSVC)
+    ADD_COMPILE_OPTIONS(-Wall -include config.h)
+ENDIF (MSVC)
+
+
 # Debug target block.
-SET(CMAKE_CXX_FLAGS_DEBUG " ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -include config.h -pipe -Og -g3 -std=c++11 -Wall -fvisibility=hidden" CACHE STRING
+SET(CMAKE_CXX_FLAGS_DEBUG " ${BUILD_OPT} ${CPU_OPTS} -pipe -Og -g3 -std=c++11 -fvisibility=hidden" CACHE STRING
     "Flags used by the C++ compiler during debug builds."
     FORCE
 )
-SET(CMAKE_C_FLAGS_DEBUG "  ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -include config.h -pipe -Og -g3 -Wall -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
+SET(CMAKE_C_FLAGS_DEBUG "  ${BUILD_OPT} ${CPU_OPTS} -pipe -Og -g3 -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
     "Flags used by the C compiler during debug builds."
     FORCE
 )
@@ -652,11 +659,11 @@ ENDIF ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 
 
 # Release Target block
-SET(CMAKE_CXX_FLAGS_RELEASE  " ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -include config.h -pipe -std=c++11 -Wall -fvisibility=hidden" CACHE STRING
+SET(CMAKE_CXX_FLAGS_RELEASE  " ${BUILD_OPT} ${CPU_OPTS} -pipe -std=c++11 -fvisibility=hidden" CACHE STRING
     "Flags used by the C++ compiler during release builds."
     FORCE
 )
-SET(CMAKE_C_FLAGS_RELEASE " ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -include config.h -pipe -Wall -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
+SET(CMAKE_C_FLAGS_RELEASE " ${BUILD_OPT} ${CPU_OPTS} -pipe -Wall -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
     "Flags used by the C compiler during release builds."
     FORCE
 )
@@ -676,11 +683,11 @@ ENDIF ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
 
 
 # RelWithDebInfo Target block
-SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO  " ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -g3 -include config.h -pipe -std=c++11 -Wall -fvisibility=hidden" CACHE STRING
+SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO  " ${BUILD_OPT} ${CPU_OPTS} -g3 -pipe -std=c++11 -fvisibility=hidden" CACHE STRING
     "Flags used by the C++ compiler during release-with-debug-info builds."
     FORCE
 )
-SET(CMAKE_C_FLAGS_RELWITHDEBINFO " ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -g3 -include config.h -pipe -Wall -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
+SET(CMAKE_C_FLAGS_RELWITHDEBINFO " ${BUILD_OPT} ${CPU_OPTS} -g3 -pipe -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
     "Flags used by the C compiler during release-with-debug-info builds."
     FORCE
 )
@@ -700,11 +707,11 @@ ENDIF ("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
 
 
 # Profiler Target block
-SET(CMAKE_CXX_FLAGS_PROFILER " ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -pg -g2 -include config.h -pipe -std=c++11 -Wall -Wno-unused-function -Wno-unused-variable" CACHE STRING
+SET(CMAKE_CXX_FLAGS_PROFILER " ${BUILD_OPT} ${CPU_OPTS} -pg -g2 -pipe -std=c++11 -Wno-unused-function -Wno-unused-variable" CACHE STRING
     "Flags used by the C++ compiler during profiler builds."
     FORCE
 )
-SET(CMAKE_C_FLAGS_PROFILER " ${BUILD_OPT} ${CPU_OPTS} ${DEFINES} -pg -g2 -include config.h -pipe -Wall -Wno-unused-function -Wno-unused-variable" CACHE STRING
+SET(CMAKE_C_FLAGS_PROFILER " ${BUILD_OPT} ${CPU_OPTS} -pg -g2 -pipe -Wno-unused-function -Wno-unused-variable" CACHE STRING
     "Flags used by the C compiler during profiler builds."
     FORCE
 )
@@ -954,7 +961,7 @@ ELSE (EXPAT_FOUND)
 ENDIF (EXPAT_FOUND)
 
 #find Math
-IF (NOT BEOS)
+IF (NOT BEOS AND NOT WIN32)
     FIND_PACKAGE(MATH REQUIRED)
     IF (MATH_FOUND)
         SET(TST_INCLUDES ${TST_INCLUDES} ${MATH_INCLUDE_DIRS})
@@ -962,7 +969,7 @@ IF (NOT BEOS)
     ELSE (MATH_FOUND)
         MESSAGE("!! Without math we have nothing")
     ENDIF (MATH_FOUND)
-ENDIF (NOT BEOS)
+ENDIF (NOT BEOS AND NOT WIN32)
 
 #Find FFMpeg
 OPTION(DISABLE_FFMPEG "Disable ffmpeg codecs" ON)
