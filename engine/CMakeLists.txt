@@ -279,11 +279,7 @@ ELSE ("${CMAKE_BUILD_TYPE}" STREQUAL "Profiler")
     MARK_AS_ADVANCED( FORCE CMAKE_CXX_FLAGS_PROFILER )
 ENDIF ("${CMAKE_BUILD_TYPE}" STREQUAL "Profiler")
 
-# Turn off compiling vegastrike bin
 OPTION(DISABLE_CLIENT "Disable building the vegastrike bin" OFF )
-IF (NOT DISABLE_CLIENT)
-    ADD_EXECUTABLE(vegastrike ${VEGASTRIKE_SOURCES})
-ENDIF (NOT DISABLE_CLIENT)
 
 INCLUDE(CheckIncludeFile)
 INCLUDE(CheckIncludeFileCXX)
@@ -558,13 +554,13 @@ ELSE (NOT DISABLE_OGRE)
     MESSAGE("-- Ogre disabled")
 ENDIF (NOT DISABLE_OGRE)
 
-IF (NOT BEOS)
-    FIND_LIBRARY(UTIL_LIB util)
-ELSE (NOT BEOS)
+IF (BEOS)
     FIND_LIBRARY(UTIL_LIB network)
-ENDIF (NOT BEOS)
-
-SET(TST_LIBS ${TST_LIBS} ${UTIL_LIB})
+ELSEIF (WIN32)
+	# Don't need it?
+ELSE (BEOS)
+    FIND_LIBRARY(UTIL_LIB util)
+ENDIF (BEOS)
 
 # Still need to add CEGUI and OGRE find packages
 
@@ -1083,9 +1079,17 @@ SET(VEGASTRIKE_SOURCES
     src/python/briefing_wrapper.cpp
 )
 
+IF (NOT DISABLE_CLIENT)
+    ADD_EXECUTABLE(vegastrike ${VEGASTRIKE_SOURCES})
+ENDIF (NOT DISABLE_CLIENT)
+
 #Setup shared lib and include listings for vegastrike.
 SET(TST_LIBS engine_com OPcollide ${TST_LIBS})
 INCLUDE_DIRECTORIES(${TST_INCLUDES})
+
+IF (NOT WIN32)
+	SET(TST_LIBS ${TST_LIBS} ${UTIL_LIB})
+ENDIF (NOT WIN32)
 
 TARGET_LINK_LIBRARIES(vegastrike ${TST_LIBS})
 SET_TARGET_PROPERTIES(vegastrike PROPERTIES LINK_FLAGS "-L/usr/lib ${TST_LFLAGS}")
