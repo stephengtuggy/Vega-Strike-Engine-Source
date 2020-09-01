@@ -529,9 +529,9 @@ IF (NOT BUILD_OPT)
     SET(BUILD_OPT -O2 CACHE STRING "-O0, -O1, -O2, -O3, -Os, -Ofast" FORCE )
 ENDIF (NOT BUILD_OPT)
 
-IF (CMAKE_COMPILER_IS_GNUCXX)
-    ADD_DEFINITIONS(-std=gnu++03)
-ENDIF ()
+# IF (CMAKE_COMPILER_IS_GNUCXX)
+    # ADD_DEFINITIONS(-std=gnu++03)
+# ENDIF ()
 
 
 # Provide boolean options for enabling various cpu optimizations.
@@ -634,7 +634,7 @@ ENDIF (MSVC)
 
 ADD_COMPILE_OPTIONS(" ${BUILD_OPT} ${CPU_OPTS} -pipe -fvisibility=hidden")
 
-SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -std=c++11" CACHE STRING "Flags used by the C++ compiler during all builds." FORCE)
+# SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -std=c++11" CACHE STRING "Flags used by the C++ compiler during all builds." FORCE)
 SET(CMAKE_C_FLAGS " ${CMAKE_C_FLAGS} -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING "Flags used by the C compiler during all builds." FORCE)
 
 
