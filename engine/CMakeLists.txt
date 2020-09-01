@@ -174,7 +174,7 @@ ELSE (MSVC)
     ADD_COMPILE_OPTIONS(-Wall -include config.h)
 ENDIF (MSVC)
 
-ADD_COMPILE_OPTIONS(" ${BUILD_OPT} ${CPU_OPTS} -pipe -fvisibility=hidden")
+ADD_COMPILE_OPTIONS(${BUILD_OPT} ${CPU_OPTS} -pipe -fvisibility=hidden)
 
 # SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -std=c++11" CACHE STRING "Flags used by the C++ compiler during all builds." FORCE)
 SET(CMAKE_C_FLAGS " ${CMAKE_C_FLAGS} -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING "Flags used by the C compiler during all builds." FORCE)
