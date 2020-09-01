@@ -247,7 +247,8 @@ public: VSImage();
     unsigned long sizeX;
     unsigned long sizeY;
 
-    //Defined for gcc which pads the size of structs
+#ifdef __GNUG__
+	//Defined for gcc which pads the size of structs
     //const static int SIZEOF_BITMAPFILEHEADER;
     LOCALCONST_DECL( int, SIZEOF_BITMAPFILEHEADER, sizeof (WORD)+sizeof (DWORD)+sizeof (WORD)+sizeof (WORD)+sizeof (DWORD) )
     //Defined for gcc which pads the size of structs
@@ -259,6 +260,7 @@ public: VSImage();
     //Defined for gcc which pads size of structs (not entirely necessary)
     //const static int SIZEOF_RGBQUAD;
     LOCALCONST_DECL( int, SIZEOF_RGBQUAD, sizeof (BYTE)*4 )
+#endif // __GNUG__
 
 
 //f2 is needed for bmp loading
