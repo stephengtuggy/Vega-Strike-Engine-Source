@@ -714,7 +714,7 @@ SET(LIBAI_SOURCES
     src/cmd/ai/flykeyboard_generic.cpp
 )
 
-ADD_LIBRARY(OPcollide
+ADD_LIBRARY(OPcollide STATIC
     src/cmd/collide2/Ice/IceAABB.cpp
     src/cmd/collide2/Ice/IceContainer.cpp
     src/cmd/collide2/Ice/IceHPoint.cpp
@@ -1003,7 +1003,7 @@ SET(LIBAUDIO_SOURCES
 )
 
 
-ADD_LIBRARY(engine_com
+ADD_LIBRARY(engine_com STATIC
     ${LIBAI_SOURCES}
     ${LIBCMD_SOURCES}
     ${LIBNET_SOURCES}
