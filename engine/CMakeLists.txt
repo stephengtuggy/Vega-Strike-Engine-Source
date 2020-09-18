@@ -116,7 +116,7 @@ ELSEIF (CPUAMD_vishera)
 ENDIF (CPUAMD_k8)
 
 IF (CPU_SMP GREATER 1)
-    SET(CPU_OPTS " ${CPU_OPTS} -ftree-parallelize-loops=${CPU_SMP} ")
+    SET(CPU_OPTS "${CPU_OPTS} -ftree-parallelize-loops=${CPU_SMP} ")
 ENDIF (CPU_SMP GREATER 1)
 
 IF (DATADIR)
@@ -176,16 +176,16 @@ ENDIF (MSVC)
 
 ADD_COMPILE_OPTIONS(${BUILD_OPT} ${CPU_OPTS} -pipe -fvisibility=hidden)
 
-# SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -std=c++11" CACHE STRING "Flags used by the C++ compiler during all builds." FORCE)
-SET(CMAKE_C_FLAGS " ${CMAKE_C_FLAGS} -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING "Flags used by the C compiler during all builds." FORCE)
+# SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" CACHE STRING "Flags used by the C++ compiler during all builds." FORCE)
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING "Flags used by the C compiler during all builds." FORCE)
 
 
 # Debug target block.
-SET(CMAKE_CXX_FLAGS_DEBUG " ${CMAKE_CXX_FLAGS_DEBUG} -Og -g3" CACHE STRING
+SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Og -g3" CACHE STRING
     "Flags used by the C++ compiler during debug builds."
     FORCE
 )
-SET(CMAKE_C_FLAGS_DEBUG " ${CMAKE_C_FLAGS_DEBUG} -Og -g3" CACHE STRING
+SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Og -g3" CACHE STRING
     "Flags used by the C compiler during debug builds."
     FORCE
 )
@@ -206,11 +206,11 @@ ENDIF ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 
 
 # Release Target block
-# SET(CMAKE_CXX_FLAGS_RELEASE  " ${BUILD_OPT} ${CPU_OPTS} -pipe -std=c++11 -fvisibility=hidden" CACHE STRING
+# SET(CMAKE_CXX_FLAGS_RELEASE "${BUILD_OPT} ${CPU_OPTS} -pipe -std=c++11 -fvisibility=hidden" CACHE STRING
     # "Flags used by the C++ compiler during release builds."
     # FORCE
 # )
-# SET(CMAKE_C_FLAGS_RELEASE " ${BUILD_OPT} ${CPU_OPTS} -pipe -Wall -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
+# SET(CMAKE_C_FLAGS_RELEASE "${BUILD_OPT} ${CPU_OPTS} -pipe -Wall -Wno-unused-function -Wno-unused-variable -fvisibility=hidden" CACHE STRING
     # "Flags used by the C compiler during release builds."
     # FORCE
 # )
@@ -230,11 +230,11 @@ MARK_AS_ADVANCED(
 
 
 # RelWithDebInfo Target block
-SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO " ${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -g3" CACHE STRING
+SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -g3" CACHE STRING
     "Flags used by the C++ compiler during release-with-debug-info builds."
     FORCE
 )
-SET(CMAKE_C_FLAGS_RELWITHDEBINFO " ${CMAKE_C_FLAGS_RELWITHDEBINFO} -g3" CACHE STRING
+SET(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -g3" CACHE STRING
     "Flags used by the C compiler during release-with-debug-info builds."
     FORCE
 )
@@ -254,11 +254,11 @@ ENDIF ("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
 
 
 # Profiler Target block
-SET(CMAKE_CXX_FLAGS_PROFILER " ${CMAKE_CXX_FLAGS_PROFILER} -pg -g2" CACHE STRING
+SET(CMAKE_CXX_FLAGS_PROFILER "${CMAKE_CXX_FLAGS_PROFILER} -pg -g2" CACHE STRING
     "Flags used by the C++ compiler during profiler builds."
     FORCE
 )
-SET(CMAKE_C_FLAGS_PROFILER " ${CMAKE_CXX_FLAGS_PROFILER} -pg -g2" CACHE STRING
+SET(CMAKE_C_FLAGS_PROFILER "${CMAKE_CXX_FLAGS_PROFILER} -pg -g2" CACHE STRING
     "Flags used by the C compiler during profiler builds."
     FORCE
 )
