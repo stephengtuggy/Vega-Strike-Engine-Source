@@ -35,15 +35,15 @@ public:
 ///This set inherits from the STL multiset, with a slight variation: The value is nonconst--that means you are allowed to change things but must not alter the key.
 ///This set inherits from the STL multiset, with a slight variation: You are allowed to update the key of a particular iterator that you have obtained.
 /** Note: T is the type that each element is pointing to. */
-template < class T, class _Compare = std::less< MutableShell< T > > >
-class KeyMutableSet : public std::multiset< MutableShell< T >, _Compare >
+template < class T, class _KMS_Cmp = std::less< MutableShell< T > > >
+class KeyMutableSet : public std::multiset< MutableShell< T >, _KMS_Cmp >
 {
-    typedef std::multiset< MutableShell< T >, _Compare >SUPER;
+    typedef std::multiset< MutableShell< T >, _KMS_Cmp >SUPER;
 public:
 /// This just checks the order of the set for testing purposes..
     void checkSet()
     {
-        _Compare comparator;
+        _KMS_Cmp comparator;
         if ( this->begin() != this->end() )
             for (typename SUPER::iterator newiter = this->begin(), iter = newiter++; newiter != this->end(); iter = newiter++)
                 assert( !comparator( *newiter, *iter ) );
@@ -66,7 +66,7 @@ public:
             --tempmore;
         if ( templess != this->begin() )
             --templess;
-        _Compare comparator;
+        _KMS_Cmp comparator;
 
         //O(1) amortized time on the insertion - Yippie!
         bool     byebye = false;
@@ -100,7 +100,7 @@ public:
     }
 };
 
-template < class T, class _Compare = std::less< T > >
+template < class T, class _LMS_Cmp = std::less< T > >
 class ListMutableSet : public std::list< T >
 {
     typedef std::list< T >SUPER;
@@ -110,7 +110,7 @@ public:
 /// This just checks the order of the set for testing purposes..
     void checkSet()
     {
-        _Compare comparator;
+        _LMS_Cmp comparator;
         if ( this->begin() != this->end() )
             for (typename SUPER::iterator newiter = this->begin(), iter = newiter++; newiter != this->end(); iter = newiter++)
                 assert( !comparator( *newiter, *iter ) );
@@ -132,7 +132,7 @@ public:
             --tempmore;
         if ( templess != this->begin() )
             --templess;
-        _Compare comparator;
+        _LMS_Cmp comparator;
         if ( comparator( newKeyShell, *templess ) || comparator( *tempmore, newKeyShell ) ) {
             rettempmore = templess = iter = this->insert( newKeyShell, this->erase( iter ) );
             ++rettempmore;
@@ -153,7 +153,7 @@ public:
     typename SUPER::iterator insert( const T &newKey, typename SUPER::iterator hint )
     {
         bool     gequal = false, lequal = false;
-        _Compare comparator;
+        _LMS_Cmp comparator;
         while (1) {
             if ( hint != this->end() ) {
                 bool tlequal = !comparator( *hint, newKey );
