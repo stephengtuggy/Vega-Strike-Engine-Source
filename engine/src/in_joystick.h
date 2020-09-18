@@ -27,7 +27,7 @@
 #define _JOYSTICK_H_
 
 #if defined (HAVE_SDL)
-#include <SDL/SDL.h>
+#include <SDL.h>
 #endif
 
 #include "vegastrike.h"

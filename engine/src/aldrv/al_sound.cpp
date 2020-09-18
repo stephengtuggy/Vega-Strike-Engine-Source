@@ -186,8 +186,8 @@ void blutLoadWAVMemory( ALbyte *memory, ALenum
 //their LoadWav is b0rken seriously!!!!!!
 
 #else
-#include <AL/al.h>
-#include <AL/alc.h>
+#include <al.h>
+#include <alc.h>
 
 #endif
 //#include <AL/alext.h>

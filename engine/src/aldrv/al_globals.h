@@ -8,11 +8,7 @@
 #include <vector>
 
 #ifdef HAVE_AL
-#ifdef __APPLE__
 #include <al.h>
-#else
-#include <AL/al.h>
-#endif
 #endif
 
 struct AUDSoundProperties

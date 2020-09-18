@@ -1,6 +1,6 @@
 #include "command.h"
 #include "mmorpgclient.h"
-#include "SDL/SDL.h"
+#include "SDL.h"
 #include "SDL_thread.h"
 #include "vegastrike.h"
 #include "vs_globals.h"

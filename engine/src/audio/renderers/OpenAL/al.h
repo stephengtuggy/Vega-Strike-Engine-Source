@@ -2,13 +2,8 @@
 #define __AL_INCLUDES__INCLUDED__
 
 
-#ifdef __APPLE__
-    #include <al.h>
-    #include <alc.h>
-#else
-    #include <AL/al.h>
-    #include <AL/alc.h>
-#endif
+#include <al.h>
+#include <alc.h>
 
 typedef ALuint ALSourceHandle;
 typedef ALuint ALBufferHandle;

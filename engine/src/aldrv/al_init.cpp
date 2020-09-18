@@ -5,8 +5,8 @@
 #define KeyMap AppleKeyMap
 #undef KeyMap
 #else
-#include <AL/al.h>
-#include <AL/alc.h>
+#include <al.h>
+#include <alc.h>
 #endif
 #include <stdlib.h>
 #include <stdio.h>

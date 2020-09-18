@@ -19,7 +19,7 @@
 #include <Python.h>
 #include "audio/test.h"
 #if defined (HAVE_SDL)
-#include <SDL/SDL.h>
+#include <SDL.h>
 #endif
 #include "cmd/role_bitmask.h"
 #if defined (WITH_MACOSX_BUNDLE)
