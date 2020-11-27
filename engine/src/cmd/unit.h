@@ -30,6 +30,7 @@
 #include <map>
 #include <memory>
 #include "gfx/vec.h"
+#include "unit_generics.h"
 
 class HaloSystem;
 struct GFXColor; // labeled as class, declared as struct in gfxlib_struct.h
@@ -186,8 +187,8 @@ public:
 /////////////////////////////////////////////////////
 //forward declarations of explicit instantiations, added by chuck_starchaser:
 
-class Asteroid;
-template < class Asteroid >
+class AsteroidGeneric;
+template < class AsteroidGeneric >
 class GameUnit;
 
 class Building;
@@ -202,8 +203,8 @@ class Unit;
 template < class Unit >
 class GameUnit;
 
-class Missile;
-template < class Missile >
+class MissileGeneric;
+template < class MissileGeneric >
 class GameUnit;
 
 class Nebula;
