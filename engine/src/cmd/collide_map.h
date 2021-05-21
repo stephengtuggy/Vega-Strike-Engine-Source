@@ -2,8 +2,9 @@
  * collide_map.h
  *
  * Copyright (C) Daniel Horn
- * Copyright (C) 2020 pyramid3d, Stephen G. Tuggy, and other Vega Strike
- * contributors
+ * Copyright (C) 2020 pyramid3d, Stephen G. Tuggy, and other
+ * Vega Strike contributors
+ * Copyright (C) 2021 Stephen G. Tuggy
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -120,7 +121,7 @@ public:
     {
 public:
 
-        size_t toflattenhints_offset;
+        size_t toflattenhints_offset{}; // Initialize this field!
         CollidableBackref() : Collidable() {}
         CollidableBackref( Unit *un ) : Collidable( un ) {}
         CollidableBackref( unsigned int bolt_index, float speed, const QVector &p ) : Collidable( bolt_index, speed, p ) {}

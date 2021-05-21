@@ -4,6 +4,7 @@
  * Copyright (C) Daniel Horn
  * Copyright (C) 2020 pyramid3d, Stephen G. Tuggy, and other Vega Strike
  * contributors
+ * Copyright (C) 2021 Stephen G. Tuggy
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -39,19 +40,23 @@ void CollideArray::erase( iterator target )
     count -= 1;
     if ( target >= this->begin() && target < this->end() ) {
         target->radius   = 0;
-        target->ref.unit = NULL;
+        target->ref.unit = nullptr;
         size_t diff = ( target-this->begin() );
         if (this->unsorted.size() > diff) {
             //for secondary collide arrays that have no unsorted array
             iterator tmp = &*(this->unsorted.begin()+diff);
             tmp->radius   = 0;
-            tmp->ref.unit = NULL;
+            tmp->ref.unit = nullptr;
         }
         return;
-    } else if (target == NULL) {
+    } else if (target == nullptr) {
         return;
     } else {
         CollidableBackref *targ = static_cast< CollidableBackref* > (&*target);
+        if (targ->toflattenhints_offset == 0)
+        {
+            return;
+        }
         std::list< CollidableBackref > *targlist = &toflattenhints[targ->toflattenhints_offset];
         std::list< CollidableBackref >::iterator endlist = targlist->end();
         for (std::list< CollidableBackref >::iterator i = targlist->begin(); i != endlist; ++i)
