@@ -51,20 +51,21 @@ void CollideArray::erase( iterator target )
         return;
     } else if (target == nullptr) {
         return;
-    } else {
-        CollidableBackref *targ = static_cast< CollidableBackref* > (&*target);
-        if (targ->toflattenhints_offset == 0)
-        {
-            return;
-        }
-        std::list< CollidableBackref > *targlist = &toflattenhints[targ->toflattenhints_offset];
-        std::list< CollidableBackref >::iterator endlist = targlist->end();
-        for (std::list< CollidableBackref >::iterator i = targlist->begin(); i != endlist; ++i)
-            if (&*i == target) {
-                targlist->erase( i );
-                return;
-            }
-    }
+    } 
+    // else {
+    //     CollidableBackref *targ = static_cast< CollidableBackref* > (&*target);
+    //     if (targ->toflattenhints_offset == 0)
+    //     {
+    //         return;
+    //     }
+    //     std::list< CollidableBackref > *targlist = &toflattenhints[targ->toflattenhints_offset];
+    //     std::list< CollidableBackref >::iterator endlist = targlist->end();
+    //     for (std::list< CollidableBackref >::iterator i = targlist->begin(); i != endlist; ++i)
+    //         if (&*i == target) {
+    //             targlist->erase( i );
+    //             return;
+    //         }
+    // }
 }
 void CollideArray::UpdateBoltInfo( CollideArray::iterator iter, Collidable::CollideRef ref )
 {
