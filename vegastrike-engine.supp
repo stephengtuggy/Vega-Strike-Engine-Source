@@ -1,0 +1,362 @@
+{
+   <Memcheck_Addr4_from_i965_dri_from_bootstrap_draw>
+   Memcheck:Addr4
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   ...
+   fun:_Z14bootstrap_drawRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEP9Animation
+   fun:_Z20bootstrap_first_loopv
+   fun:_ZN8UniverseC1EiPPcPKc
+   fun:main
+}
+{
+   <Memcheck_Addr8_from_i965_dri_from_bootstrap_draw>
+   Memcheck:Addr8
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   ...
+   fun:_Z14bootstrap_drawRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEP9Animation
+   fun:_Z20bootstrap_first_loopv
+   fun:_ZN8UniverseC1EiPPcPKc
+   fun:main
+}
+{
+   <Memcheck_Addr4_from_i965_dri_from_GFXDraw>
+   Memcheck:Addr4
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   ...
+   fun:GFXDraw
+   ...
+}
+{
+   <Memcheck_Addr8_from_i965_dri_from_GFXDraw>
+   Memcheck:Addr8
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   ...
+   fun:GFXDraw
+   ...
+}
+{
+   <Memcheck_Addr8_from_i965_dri_from_GFXTransferTexture>
+   Memcheck:Addr8
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   fun:_Z18GFXTransferTexturePhiii13TEXTUREFORMAT20TEXTURE_IMAGE_TARGETihj
+   fun:_ZN7Texture8TransferEih
+   fun:_ZN7Texture4BindEih
+}
+{
+   <Memcheck_Addr4_from__PyEval_EvalFrameDefault>
+   Memcheck:Addr4
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   fun:_PyEval_EvalFrameDefault
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   fun:_PyEval_EvalFrameDefault
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   fun:_PyEval_EvalFrameDefault
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   fun:_PyFunction_FastCallDict
+}
+{
+   <Memcheck_Addr4_from_libpython_unidentified_fn>
+   Memcheck:Addr4
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+}
+{
+   <Memcheck_Addr4_from_i965_dri_from_GFXInit>
+   Memcheck:Addr4
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   ...
+   fun:_Z7GFXInitiPPc
+   fun:_ZN8UniverseC1EiPPcPKc
+}
+{
+   <Memcheck_Addr8_from_i965_dri_from_GFXInit>
+   Memcheck:Addr8
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   ...
+   fun:_Z7GFXInitiPPc
+   fun:_ZN8UniverseC1EiPPcPKc
+}
+{
+   <Memcheck_Addr4_from_i965_dri_from_GFXInit_from_main>
+   Memcheck:Addr4
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   ...
+   fun:_Z7GFXInitiPPc
+   fun:_ZN8UniverseC1EiPPcPKc
+   fun:main
+}
+{
+   <Memcheck_Addr8_from_i965_dri_from_GFXInit_from_main>
+   Memcheck:Addr8
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   ...
+   fun:_Z7GFXInitiPPc
+   fun:_ZN8UniverseC1EiPPcPKc
+   fun:main
+}
+{
+   <Memcheck_Addr2_from_memmove_from_i965_dri_from_GFXDraw>
+   Memcheck:Addr2
+   fun:memmove
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   fun:GFXDraw
+   ...
+}
+{
+   <Memcheck_Addr8_from_memmove_from_i965_dri_from_GFXDraw>
+   Memcheck:Addr8
+   fun:memmove
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   fun:GFXDraw
+   ...
+}
+{
+   <Memcheck_Addr4_from_Animation__DrawNow>
+   Memcheck:Addr4
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   fun:GFXDraw
+   fun:_Z7GFXDraw8POLYTYPEPKfiiiii
+   fun:_ZN9Animation7DrawNowERK6Matrix.part.29
+   fun:_Z14bootstrap_drawRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEP9Animation
+   fun:_Z20bootstrap_first_loopv
+   fun:_ZN8UniverseC1EiPPcPKc
+   fun:main
+}
+{
+   <Memcheck_leak_reachable_from_eventually_main>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:main
+}
+{
+   <Memcheck_leak_reachable_from_libpython>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+}
+{
+   <Memcheck_Addr4_from_libpython_from_eventually_main>
+   Memcheck:Addr4
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+   ...
+   fun:main
+}
+{
+   <Memcheck_Addr4_from_eventually_glXCreateContext>
+   Memcheck:Addr4
+   ...
+   fun:glXCreateContext
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libSDL-*
+}
+{
+   <Memcheck_Addr8_from_eventually_glXCreateContext>
+   Memcheck:Addr8
+   ...
+   fun:glXCreateContext
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libSDL-*
+}
+{
+   <Memcheck_Addr8_from_memmove_from_i965_dri>
+   Memcheck:Addr8
+   fun:memmove
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+}
+{
+   <Memcheck_Leak_reachable_from_eventually_libopenal>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libopenal.*
+   ...
+}
+{
+   <Memcheck_Leak_reachable_from_eventually_libSDL>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libSDL-*
+}
+{
+   <Memcheck_Leak_reachable_from_eventually_libpulsecommon>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-*
+   ...
+}
+{
+   <Memcheck_Addr2_from_libGLU>
+   Memcheck:Addr2
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libGLU.*
+}
+{
+   <Memcheck_Addr4_from_libGLU>
+   Memcheck:Addr4
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libGLU.*
+}
+{
+   <Memcheck_Addr8_from_libGLU>
+   Memcheck:Addr8
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libGLU.*
+}
+{
+   <Memcheck_Addr2_from_gluBuild2DMipmaps>
+   Memcheck:Addr2
+   fun:memmove
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/libGLU.*
+   fun:gluBuild2DMipmaps
+}
+{
+   <Memcheck_Addr4_from_gluBuild2DMipmaps>
+   Memcheck:Addr4
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/libGLU.*
+   fun:gluBuild2DMipmaps
+}
+{
+   <Memcheck_Addr8_from_gluBuild2DMipmaps>
+   Memcheck:Addr8
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/libGLU.*
+   fun:gluBuild2DMipmaps
+}
+{
+   <Memcheck_Addr4_from_gluBuild2DMipmaps_from_GFXTransferTexture>
+   Memcheck:Addr4
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/libGLU.*
+   fun:gluBuild2DMipmaps
+   fun:_Z18GFXTransferTexturePhiii13TEXTUREFORMAT20TEXTURE_IMAGE_TARGETihj
+}
+{
+   <Memcheck_Addr8_from_gluBuild2DMipmaps_from_GFXTransferTexture>
+   Memcheck:Addr8
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   obj:/usr/lib/x86_64-linux-gnu/libGLU.*
+   fun:gluBuild2DMipmaps
+   fun:_Z18GFXTransferTexturePhiii13TEXTUREFORMAT20TEXTURE_IMAGE_TARGETihj
+}
+{
+   <Memcheck_Leak_possible_from_eventually__PyEval_EvalFrameDefault>
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   fun:_PyEval_EvalFrameDefault
+   obj:/usr/lib/x86_64-linux-gnu/libpython*
+}
+{
+   <Memcheck_Addr4_from_eventually_StarSystem__createBackground>
+   Memcheck:Addr4
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   ...
+   fun:_ZN9TextPlane4DrawERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEibbb
+   fun:_Z14bootstrap_drawRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEP9Animation
+   fun:_ZN7Texture4LoadEPKci6FILTER14TEXTURE_TARGET20TEXTURE_IMAGE_TARGEThihh11ADDRESSMODEPS_
+   fun:_ZN7TextureC1EPKci6FILTER14TEXTURE_TARGET20TEXTURE_IMAGE_TARGEThihh11ADDRESSMODEPS_
+   fun:_ZN10StarSystem16createBackgroundEP8Star_XML
+   fun:_ZN10StarSystem7LoadXMLENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERK7TVectorIfdEf
+}
+{
+   <Memcheck_Addr8_from_eventually_StarSystem__createBackground>
+   Memcheck:Addr8
+   obj:/usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+   ...
+   fun:_ZN9TextPlane4DrawERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEibbb
+   fun:_Z14bootstrap_drawRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEP9Animation
+   fun:_ZN7Texture4LoadEPKci6FILTER14TEXTURE_TARGET20TEXTURE_IMAGE_TARGEThihh11ADDRESSMODEPS_
+   fun:_ZN7TextureC1EPKci6FILTER14TEXTURE_TARGET20TEXTURE_IMAGE_TARGEThihh11ADDRESSMODEPS_
+   fun:_ZN10StarSystem16createBackgroundEP8Star_XML
+   fun:_ZN10StarSystem7LoadXMLENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERK7TVectorIfdEf
+}
