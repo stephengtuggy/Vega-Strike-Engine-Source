@@ -432,7 +432,7 @@ FIND_PACKAGE(LinuxDistro REQUIRED)
 ## Python 3 has a SASL compatibility issue which causes an error
 ## on some installations that prefer Python 3
 # We want at least Python 3.4, but we prefer newer versions
-SET(Python_ADDITIONAL_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4)
+SET(Python_ADDITIONAL_VERSIONS 3.11 3.10 3.9 3.8 3.7 3.6 3.5 3.4)
 UNSET(PYTHON_INCLUDE_DIR CACHE)
 UNSET(PYTHON_LIBRARY CACHE)
 # The python version we want is set via Python_ADDITIONAL_VERSIONS
