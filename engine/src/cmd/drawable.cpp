@@ -247,10 +247,12 @@ void Drawable::clear()
 
     for (unsigned int i = 0; i < vecAnimations.size(); i++) {
         for(unsigned int j = 0; j < vecAnimations[i]->size(); j++) {
-                delete vecAnimations[i]->at(j);
+            delete vecAnimations[i]->at(j);
+            vecAnimations[i]->at(j) = nullptr;
         }
+        vecAnimations[i]->clear();
         delete vecAnimations[i];
-                vecAnimations[i]->clear();
+        vecAnimations[i] = nullptr;
     }
     vecAnimations.clear();
     vecAnimationNames.clear();

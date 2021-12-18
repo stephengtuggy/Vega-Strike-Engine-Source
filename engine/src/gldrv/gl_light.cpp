@@ -382,8 +382,9 @@ void /*GFXDRVAPI*/ GFXSetLightContext( const int con_number )
 void GFXDestroyAllLights()
 {
     lighttable.Clear();
-    if (GLLights) {
+    if (GLLights != nullptr) {
         free( GLLights );
+        GLLights = nullptr;
     }
 }
 

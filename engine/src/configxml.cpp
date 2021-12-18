@@ -41,23 +41,29 @@ VegaConfig::VegaConfig( const char *configfile )
 {
     configNodeFactory domf;
     configNode *top = (configNode*) domf.LoadXML( configfile );
-    if (top == NULL) {
+    if (top == nullptr) {
         BOOST_LOG_TRIVIAL(fatal)<<"Panic exit - no configuration";
         VSExit( 0 );
     }
-    variables = NULL;
-    colors    = NULL;
+    variables = nullptr;
+    colors    = nullptr;
     checkConfig( top );
 }
 
 VegaConfig::~VegaConfig()
 {
-    if (variables != NULL)
+    if (variables != nullptr) {
         delete variables;
-    if (colors != NULL)
+        variables = nullptr;
+    }
+    if (colors != nullptr) {
         delete colors;
-    if (bindings != NULL)
+        colors = nullptr;
+    }
+    if (bindings != nullptr) {
         delete bindings;
+        bindings = nullptr;
+    }
 }
 
 /* *********************************************************** */

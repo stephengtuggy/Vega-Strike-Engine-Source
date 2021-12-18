@@ -101,8 +101,10 @@ Mesh::~Mesh()
         }
         orig->refcount--;
         //printf ("orig refcount: %d",refcount);
-        if (orig->refcount == 0)
+        if (orig->refcount == 0) {
             delete[] orig;
+            orig = nullptr;
+        }
     }
 }
 

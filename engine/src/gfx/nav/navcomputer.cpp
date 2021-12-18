@@ -1186,8 +1186,10 @@ void NavComputer::loadAbsoluteButton()
 
 bool NavComputer::setCurrentNode( PathNode *source )
 {
-    if (currentNode)
+    if (currentNode != nullptr) {
         delete currentNode;
+        currentNode = nullptr;
+    }
     currentNode = source;
     updateNodeDescription();
     return true;
@@ -1423,8 +1425,10 @@ bool NavComputer::actionRemoveCriteria( const EventCommandId &command, Control *
     if (criteriaCell == NULL)
         return true;
     CriteriaNode *deleteHere = criteriaCell->value()->unhook();
-    if (deleteHere)
+    if (deleteHere != nullptr) {
         delete deleteHere;
+        deleteHere = nullptr;
+    }
     updateNodeDescription();
     loadCriteriaLister();
     return true;

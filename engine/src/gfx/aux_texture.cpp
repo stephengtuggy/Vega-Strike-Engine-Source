@@ -292,10 +292,14 @@ void Texture::Load( const char *FileName,
                     enum ADDRESSMODE address_mode,
                     Texture *main )
 {
-    if (data) free( data );
-    if (palette) free( palette );
-    data = NULL;
-    palette = NULL;
+    if (data != nullptr) {
+        free( data );
+        data = nullptr;
+    }
+    if (palette != nullptr) {
+        free( palette );
+        palette = nullptr;
+    }
     ismipmapped = mipmap;
     texture_target     = target;
     image_target       = imagetarget;
@@ -434,10 +438,14 @@ void Texture::Load( const char *FileNameRGB,
                     enum ADDRESSMODE address_mode,
                     Texture *main )
 {
-    if (data) free( data );
-    if (palette) free( palette );
-    data = NULL;
-    palette = NULL;
+    if (data != nullptr) {
+        free( data );
+        data = nullptr;
+    }
+    if (palette != nullptr) {
+        free( palette );
+        palette = nullptr;
+    }
     ismipmapped = mipmap;
 
     this->stage = stage;
@@ -526,14 +534,16 @@ Texture::~Texture()
          *     }
          */
         UnBind();
-        if (palette != NULL) {
+        if (palette != nullptr) {
             free( palette );
-            palette = NULL;
+            palette = nullptr;
         }
     } else {
         original->refcount--;
-        if (original->refcount == 0)
+        if (original->refcount == 0) {
             delete original;
+            original = nullptr;
+        }
     }
 }
 

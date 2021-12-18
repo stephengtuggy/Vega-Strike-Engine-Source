@@ -40,10 +40,13 @@ void Button::ModifyName( const char *newname )
     if (newname)
         label = strdup( newname );
 }
+
 Button::~Button( void )
 {
-    if (label)
+    if (label != nullptr) {
         free( label );
+        label = nullptr;
+    }
 }
 
 void Button::Refresh( void )

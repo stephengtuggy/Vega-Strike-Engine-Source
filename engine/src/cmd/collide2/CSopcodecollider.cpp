@@ -125,6 +125,7 @@ csOPCODECollider::~csOPCODECollider ()
     }
     //pairs.DecRef();
     delete[] vertholder;
+    vertholder = nullptr;
 }
 
 

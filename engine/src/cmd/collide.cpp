@@ -90,11 +90,16 @@ void collideTrees::Dec()
     refcount--;
     if (refcount == 0) {
         unitColliders.Delete( hash_key );
-        for (unsigned int i = 0; i < collideTreesMaxTrees; ++i)
-            if (rapidColliders[i])
+        for (unsigned int i = 0; i < collideTreesMaxTrees; ++i) {
+            if (rapidColliders[i] != nullptr) {
                 delete rapidColliders[i];
-        if (colShield)
+                rapidColliders[i] = nullptr;
+            }
+        }
+        if (colShield != nullptr) {
             delete colShield;
+            colShield = nullptr;
+        }
         delete this;
         return;
     }

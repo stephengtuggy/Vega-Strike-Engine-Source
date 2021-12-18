@@ -63,6 +63,7 @@ varInst* Mission::call_string( missionNode *node, int mode )
         if (method_id == CMT_STRING_delete) {
             if (mode == SCRIPT_RUN) {
                 delete my_string;
+                my_string = nullptr;
                 string_counter--;
             }
             viret = newVarInst( VI_TEMP );

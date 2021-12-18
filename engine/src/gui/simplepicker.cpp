@@ -53,8 +53,10 @@ SimplePickerCell::SimplePickerCell( const std::string &t, const std::string &id,
 //Destructor.
 SimplePickerCell::~SimplePickerCell( void )
 {
-    if (m_children != NULL)
+    if (m_children != nullptr) {
         delete m_children;
+        m_children = nullptr;
+    }
 }
 
 SimplePickerCell&SimplePickerCell::operator=( const SimplePickerCell &cell )

@@ -209,8 +209,10 @@ DWORD WINAPI DrawStartupDialog(LPVOID lpParameter) {
 				chdir("..");
 			}
 		}
-        if (s->num)
-          free (s->num);
+        if (s->num != nullptr) {
+            free (s->num);
+            s->num = nullptr;
+        }
         free (s->my_mission);
         delete (s);
         progress=true;

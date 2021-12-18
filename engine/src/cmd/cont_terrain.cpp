@@ -138,21 +138,35 @@ ContinuousTerrain::ContinuousTerrain( const char *filename, const Vector &Scales
 ContinuousTerrain::~ContinuousTerrain()
 {
     for (int i = 0; i < numcontterr; i++) {
-        if (data[i])
+        if (data[i]) {
             delete data[i];
-        if (md[i].mesh)
+            data[i] = nullptr;
+        }
+        if (md[i].mesh) {
             delete md[i].mesh;
-        if (md[i].collider)
+            md[i].mesh = nullptr;
+        }
+        if (md[i].collider) {
             delete md[i].collider;
+            md[i].collider = nullptr;
+        }
     }
-    if (dirty)
+    if (dirty != nullptr) {
         delete[] dirty;
-    if (location)
+        dirty = nullptr;
+    }
+    if (location != nullptr) {
         delete[] location;
-    if (data)
+        location = nullptr;
+    }
+    if (data != nullptr) {
         delete[] data;
-    if (md)
+        data = nullptr;
+    }
+    if (md != nullptr) {
         delete[] md;
+        md = nullptr;
+    }
 }
 void ContinuousTerrain::Collide()
 {

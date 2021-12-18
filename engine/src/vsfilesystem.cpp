@@ -1419,8 +1419,10 @@ VSFile::~VSFile()
         fclose( fp );
         this->fp = NULL;
     }
-    if (pk3_extracted_file)
+    if (pk3_extracted_file != nullptr) {
         delete[] pk3_extracted_file;
+        pk3_extracted_file = nullptr;
+    }
 }
 
 void VSFile::checkExtracted()
@@ -1955,9 +1957,10 @@ void VSFile::Close()
         this->fp = NULL;
     } else {
         if (q_volume_format == vfmtVSR) {} else if (q_volume_format == vfmtPK3) {
-            if (pk3_extracted_file)
+            if (pk3_extracted_file != nullptr) {
                 delete[] pk3_extracted_file;
-            pk3_extracted_file = NULL;
+                pk3_extracted_file = nullptr;
+            }
         }
     }
     this->size = -1;
@@ -2140,7 +2143,10 @@ int scandir( const char *dirname, struct dirent ***namelist, int (*select)( cons
             if (nDir == NDir) {
                 struct dirent **tempDir = (dirent**) calloc( sizeof (struct dirent*), NDir+33 );
                 if (NDir) memcpy( tempDir, dir, sizeof (struct dirent*) *NDir );
-                if (dir) free( dir );
+                if (dir != nullptr) {
+                    free( dir );
+                    dir = nullptr;
+                }
                 dir   = tempDir;
                 NDir += 32;
             }

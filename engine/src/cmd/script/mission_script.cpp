@@ -146,9 +146,12 @@ void Mission::removeContextStack()
 {
     contextStack *cstack = runtime.cur_thread->exec_stack.back();
     runtime.cur_thread->exec_stack.pop_back();
-    if (cstack->return_value != NULL)
+    if (cstack->return_value != nullptr) {
         deleteVarInst( cstack->return_value, true );
+        cstack->return_value = nullptr;
+    }
     delete cstack;
+    cstack = nullptr;
 }
 
 void Mission::addContextStack( missionNode *node )
@@ -507,9 +510,10 @@ varInst* Mission::doExec( missionNode *node, int mode )
 
         runtime.cur_thread->module_stack.pop_back();
         runtime.cur_thread->classid_stack.pop_back();
-        if (varmap) {
+        if (varmap != nullptr) {
             deleteVarMap( varmap );
             delete varmap;
+            varmap = nullptr;
         }
         return vi;
     }

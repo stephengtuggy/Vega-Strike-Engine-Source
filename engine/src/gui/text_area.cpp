@@ -224,7 +224,10 @@ void TextArea::ChangeTextItemColor( const char *name, const GFXColor &col )
 void TextArea::ClearList( void )
 {
     //Wipe the list clean
-    if (ItemList != NULL) delete ItemList;
+    if (ItemList != nullptr) {
+        delete ItemList;
+        ItemList = nullptr;
+    }
     item_count      = 0;
     cur_selected    = 0;
     top_item_number = 0;
@@ -537,11 +540,24 @@ TextAreaItem::TextAreaItem( const char *new_name, const char *desc, TextAreaItem
 TextAreaItem::~TextAreaItem( void )
 {
     int cur = 0;
-    if (name != NULL) free( name );
-    if (description != NULL) free( description );                                  //if there are no children, it won't run through this for
-    for (cur = 0; cur < child_count; cur++)
-        if (child[cur] != NULL) delete child[cur];
-    if (child != NULL) delete child;
+    if (name != nullptr) {
+        free( name );
+        name = nullptr;
+    }
+    if (description != nullptr) {
+        free( description );
+        description = nullptr;
+    }
+    //if there are no children, it won't run through this for
+    for (cur = 0; cur < child_count; ++cur)
+        if (child[cur] != nullptr) {
+            delete child[cur];
+            child[cur] = nullptr;
+        }
+    if (child != nullptr) {
+        delete child;
+        child = nullptr;
+    }
 }
 
 TextAreaItem* TextAreaItem::FindChild( const char *search_name )

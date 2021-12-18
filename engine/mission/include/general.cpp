@@ -122,7 +122,7 @@ char *pre_chomp(char *line) {
  * This function searches the first parameter for the second parameter
  * If the second parameter is found, it is replaced with the third parameter
  */
-
+// FIXME - Don't use malloc and free
 char *replace(char *line, char *search, char *replace, int LENGTH) {
 	int length, dif, calc;
 	char *ptr_new, *location;
@@ -368,7 +368,11 @@ char *GetString(char *line) {
 }
 
 void SetString(char **ptr, char *line) {
-        if (*ptr > 0) { delete *ptr; }
+        if (*ptr != nullptr)
+        {
+            delete *ptr;
+            *ptr = nullptr;
+        }
         *ptr = _strdup(line);
 }
 

@@ -92,7 +92,7 @@ class VSSprite
     float    maxs, maxt;
     float    rotation;
     Texture *surface;
-public: 
+public:
 	VSSprite( const char *file, enum FILTER texturefilter = BILINEAR, GFXBOOL force = GFXFALSE );
     ~VSSprite();
     bool LoadSuccess()
@@ -212,8 +212,10 @@ void VSSprite::ReadTexture( FILE *f )
 
 VSSprite::~VSSprite()
 {
-    if (surface != NULL)
+    if (surface != nullptr) {
         delete surface;
+        surface = nullptr;
+    }
 }
 
 void VSSprite::SetST( const float s, const float t )
@@ -1176,12 +1178,18 @@ void SetSoftwareMousePosition( int x, int y )
 Base::Room::~Room()
 {
     int i;
-    for (i = 0; i < links.size(); i++)
-        if (links[i])
+    for (i = 0; i < links.size(); i++) {
+        if (links[i] != nullptr) {
             delete links[i];
-    for (i = 0; i < objs.size(); i++)
-        if (objs[i])
+            links[i] = nullptr;
+        }
+    }
+    for (i = 0; i < objs.size(); i++) {
+        if (objs[i] != nullptr) {
             delete objs[i];
+            objs[i] = nullptr;
+        }
+    }
 }
 
 typedef bool (*InputFunc)( std::string input, unsigned int inputroomindex, void *dat1, void *dat2, const void *dat3, float x,

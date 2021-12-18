@@ -315,8 +315,10 @@ void CheckUnit( Unit *un )
 
 void UncheckUnit( Unit *un )
 {
+    // FIXME -- We should not be casting to long here. Among other things.
     if (deletedUn.Get( (long) un ) != NULL) {
         deletedUn.Delete( (long) un );
+        un = nullptr;
     }
 }
 
@@ -458,17 +460,14 @@ Unit::~Unit()
     BOOST_LOG_TRIVIAL(trace) << boost::format("%1$d %2$x") % 2 % pImage->pHudImage;
     VSFileSystem::flushLogs();
 #endif
-    if (pImage->unitwriter) {
+    if (pImage->unitwriter != nullptr) {
         delete pImage->unitwriter;
-        // pImage->unitwriter = nullptr;
+        pImage->unitwriter = nullptr;
     }
     delete pImage;
-    // pImage = nullptr;
-#ifdef DESTRUCTDEBUG
-    BOOST_LOG_TRIVIAL(trace) << boost::format("%1$d %2$x") % 3 % pImage;
-    VSFileSystem::flushLogs();
-#endif
+    pImage = nullptr;
     delete pilot;
+    pilot = nullptr;
 #ifdef DESTRUCTDEBUG
     BOOST_LOG_TRIVIAL(trace) << boost::format("%1$d") % 5;
     VSFileSystem::flushLogs();
@@ -496,9 +495,10 @@ Unit::~Unit()
     BOOST_LOG_TRIVIAL(trace) << boost::format("%1$d") % 0;
     VSFileSystem::flushLogs();
 #endif
-    for (unsigned int meshcount = 0; meshcount < meshdata.size(); ++meshcount) {
-        if (meshdata[meshcount]) {
+    for (size_t meshcount = 0; meshcount < meshdata.size(); ++meshcount) {
+        if (meshdata[meshcount] != nullptr) {
             delete meshdata[meshcount];
+            meshdata[meshcount] = nullptr;
         }
     }
     meshdata.clear();

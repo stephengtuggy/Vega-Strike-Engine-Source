@@ -39,11 +39,11 @@ extern "C" int _url_open( URLContext *h, const char *filename, int flags )
 {
     if (strncmp( filename, "vsfile:", 7 ) != 0)
         return AVERROR( ENOENT );
-    
+
     const char *type   = strchr( filename+7, '|' );
     std::string path( filename+7, type ? type-filename-7 : strlen( filename+7 ) );
     VSFileType  vstype = ( (type && *type) ? (VSFileType) atoi( type+1 ) : VideoFile);
-    
+
     VSFile     *f = new VSFile();
     if (f->OpenReadOnly( path, vstype ) > Ok) {
         delete f;
@@ -56,7 +56,10 @@ extern "C" int _url_open( URLContext *h, const char *filename, int flags )
 
 extern "C" int _url_close( URLContext *h )
 {
-    delete (VSFile*) (h->priv_data);
+    if (h->priv_data != nullptr) {
+        delete (VSFile*) (h->priv_data);
+        h->priv_data = nullptr;
+    }
     return 0;
 }
 
@@ -94,7 +97,7 @@ struct URLProtocol vsFileProtocol = {
     _url_write,
     _url_seek,
     _url_close,
-    
+
 #if (LIBAVCODEC_VERSION_MAJOR >= 53)
     NULL, NULL, NULL, NULL,
     0,

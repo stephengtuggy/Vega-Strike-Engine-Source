@@ -57,8 +57,9 @@ Flightgroup* Flightgroup::newFlightgroup( const std::string &name,
 }
 Flightgroup::~Flightgroup()
 {
-    if (squadLogo) {
+    if (squadLogo != nullptr) {
         delete squadLogo;
+        squadLogo = nullptr;
     }
 }
 

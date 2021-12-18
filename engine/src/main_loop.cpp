@@ -979,8 +979,10 @@ void AddUnitToSystem( const SavedUnits *su )
 
 void destroyObjects()
 {
-    if (myterrain)
+    if (myterrain != nullptr) {
         delete myterrain;
+        myterrain = nullptr;
+    }
     Terrain::DeleteAll();
     delete tmpcockpittexture;
     delete[] fighters;

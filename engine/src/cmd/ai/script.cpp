@@ -898,8 +898,10 @@ AIScript::~AIScript()
     BOOST_LOG_TRIVIAL(debug) << boost::format("sc%1$x") % this;
     VSFileSystem::flushLogs();
 #endif
-    if (filename)
+    if (filename != nullptr) {
         delete[] filename;
+        filename = nullptr;
+    }
 #ifdef ORDERDEBUG
     BOOST_LOG_TRIVIAL(debug) << "sc";
     VSFileSystem::flushLogs();
@@ -908,14 +910,14 @@ AIScript::~AIScript()
 
 void AIScript::Execute()
 {
-    if (filename) {
+    if (filename != nullptr) {
         LoadXML();
 #ifdef ORDERDEBUG
         BOOST_LOG_TRIVIAL(debug) << boost::format("fn%1$x") % this;
         VSFileSystem::flushLogs();
 #endif
         delete[] filename;
-        filename = NULL;
+        filename = nullptr;
 #ifdef ORDERDEBUG
         BOOST_LOG_TRIVIAL(debug) << "fn";
         VSFileSystem::flushLogs();

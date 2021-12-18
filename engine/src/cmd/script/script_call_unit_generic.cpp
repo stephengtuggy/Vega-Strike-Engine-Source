@@ -314,8 +314,10 @@ varInst* Mission::call_unit( missionNode *node, int mode )
             viret->object     = ret;
         } else if (method_id == CMT_UNIT_deleteContainer) {
             UnitContainer *cont = (UnitContainer*) my_unit;
-            if (mode == SCRIPT_RUN)
+            if (mode == SCRIPT_RUN) {
                 delete cont;
+                cont = nullptr;
+            }
             viret = newVarInst( VI_TEMP );
             viret->type = VAR_VOID;
         } else if (method_id == CMT_UNIT_getPosition) {

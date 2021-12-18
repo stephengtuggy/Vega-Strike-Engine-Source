@@ -113,8 +113,10 @@ CriteriaRoot::CriteriaRoot( CriteriaNode *child ) :
 
 CriteriaRoot::~CriteriaRoot()
 {
-    if (m_child)
+    if (m_child != nullptr) {
         delete m_child;
+        m_child = nullptr;
+    }
 }
 
 /////////////////////////////////////////////////////////////////
@@ -189,8 +191,10 @@ CriteriaNot::CriteriaNot( CriteriaNode *child ) :
 
 CriteriaNot::~CriteriaNot()
 {
-    if (m_child)
+    if (m_child != nullptr) {
         delete m_child;
+        m_child = nullptr;
+    }
 }
 
 /////////////////////////////////////////////////////////////////
@@ -241,10 +245,14 @@ vector< CriteriaNode* >CriteriaBinaryOperator::getChildren() const
 
 CriteriaBinaryOperator::~CriteriaBinaryOperator()
 {
-    if (m_left)
+    if (m_left != nullptr) {
         delete m_left;
-    if (m_right)
+        m_left = nullptr;
+    }
+    if (m_right != nullptr) {
         delete m_right;
+        m_right = nullptr;
+    }
 }
 
 void CriteriaBinaryOperator::replaceChild( CriteriaNode *child, CriteriaNode *replacement )

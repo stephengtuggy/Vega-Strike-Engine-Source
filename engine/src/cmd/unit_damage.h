@@ -109,8 +109,10 @@ void GameUnit::Split( int level )
             meshsizes.push_back( 1 );
     }
     old.push_back( NULL );     //push back shield
-    if (shield)
+    if (shield != nullptr) {
         delete shield;
+        shield = nullptr;
+    }
     nm = old.size()-1;
     unsigned int k = 0;
     vector< Mesh* >tempmeshes;

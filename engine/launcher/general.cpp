@@ -355,6 +355,7 @@ char *GetString(char *line) {
 void SetString(char **ptr, char *line) {
         if (*ptr != nullptr) {
             delete *ptr;
+            *ptr = nullptr;
         }
         *ptr = strdup(line);
 }

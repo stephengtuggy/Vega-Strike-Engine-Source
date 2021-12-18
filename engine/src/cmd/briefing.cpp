@@ -151,6 +151,7 @@ Vector Briefing::GetPosition( int which )
 }
 int Briefing::AddStarship( const char *fn, int faction, const Vector &pos )
 {
+    // Can error out in constructor?? FIXME!!
     Ship *tmp = new Ship( fn, faction, pos );
     if ( tmp->LoadFailed() ) {
         delete tmp;

@@ -867,8 +867,10 @@ void Cockpit::visitSystem( string systemname )
 Cockpit::~Cockpit()
 {
     Delete();
-    if (savegame != NULL)
+    if (savegame != nullptr) {
         delete savegame;
+        savegame = nullptr;
+    }
 }
 
 void Cockpit::SetInsidePanYawSpeed( float )

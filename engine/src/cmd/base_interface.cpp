@@ -142,12 +142,18 @@ static void SetupViewport()
 BaseInterface::Room::~Room()
 {
     size_t i;
-    for (i = 0; i < links.size(); i++)
-        if (links[i])
+    for (i = 0; i < links.size(); i++) {
+        if (links[i]) {
             delete links[i];
-    for (i = 0; i < objs.size(); i++)
-        if (objs[i])
+            links[i] = nullptr;
+        }
+    }
+    for (i = 0; i < objs.size(); i++) {
+        if (objs[i]) {
             delete objs[i];
+            objs[i] = nullptr;
+        }
+    }
 }
 
 BaseInterface::Room::Room()

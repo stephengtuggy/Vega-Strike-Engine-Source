@@ -191,8 +191,10 @@ namespace Audio {
             ~FFData()
             {
                 // Free sample buffer
-                if (sampleBufferBase)
+                if (sampleBufferBase != nullptr) {
                     free(sampleBufferBase);
+                    sampleBufferBase = nullptr;
+                }
 
                 // Close the codec
                 if (pCodecCtx)

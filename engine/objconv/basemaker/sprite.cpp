@@ -102,8 +102,10 @@ void VSSprite::ReadTexture( FILE *f )
 
 VSSprite::~VSSprite()
 {
-    if (surface != NULL)
+    if (surface != nullptr) {
         delete surface;
+        surface = nullptr;
+    }
 }
 
 void VSSprite::SetST( const float s, const float t )

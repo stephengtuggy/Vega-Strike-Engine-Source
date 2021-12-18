@@ -936,9 +936,10 @@ GFXBOOL /*GFXDRVAPI*/ GFXTransferTexture( unsigned char *buffer,
                                    GL_UNSIGNED_BYTE,
                                    buffer );
             }
-            if (tempbuf)
+            if (tempbuf != nullptr) {
                 free( tempbuf );
-            tempbuf = NULL;
+                tempbuf = nullptr;
+            }
         } else {
             //WE HAVE NO MIPMAPS HERE
             if (internformat >= DXT1 && internformat <= DXT5) {
@@ -970,11 +971,15 @@ GFXBOOL /*GFXDRVAPI*/ GFXTransferTexture( unsigned char *buffer,
             glColorTable_p( textures[handle].targets, GL_RGBA, 256, GL_RGBA, GL_UNSIGNED_BYTE, textures[handle].palette );
             error = glGetError();
             if (error) {
-                if (tempbuf)
+                if (tempbuf != nullptr) {
                     free( tempbuf );
+                    tempbuf = nullptr;
+                }
                 gl_options.compression = comptemp;
-                if (data)
+                if (data != nullptr) {
                     free( data );
+                    data = nullptr;
+                }
                 return GFXFALSE;
             }
             if ( ( textures[handle].mipmapped&(MIPMAP|TRILINEAR) ) && gl_options.mipmap >= 2 )
@@ -1017,11 +1022,15 @@ GFXBOOL /*GFXDRVAPI*/ GFXTransferTexture( unsigned char *buffer,
             free( tbuf );
         }
     }
-    if (tempbuf)
+    if (tempbuf != nullptr) {
         free( tempbuf );
+        tempbuf = nullptr;
+    }
     gl_options.compression = comptemp;
-    if (data)
+    if (data != nullptr) {
         free( data );
+        data = nullptr;
+    }
     return GFXTRUE;
 }
 

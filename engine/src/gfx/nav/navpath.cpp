@@ -178,9 +178,10 @@ bool NavPath::setSourceNode( PathNode *node )
                 oldNode->getRequiredPath()->removeDependant( this );
         if ( node->getRequiredPath() )
             node->getRequiredPath()->addDependant( this );
-        if (oldNode)
+        if (oldNode != nullptr) {
             delete oldNode;
-        oldNode = NULL;
+            oldNode = nullptr;
+        }
         _Universe->AccessCockpit()->AccessNavSystem()->pathman->updateSpecificPath( this );
         return true;
     }
@@ -203,9 +204,10 @@ bool NavPath::setDestinationNode( PathNode *node )
                 oldNode->getRequiredPath()->removeDependant( this );
         if ( node->getRequiredPath() )
             node->getRequiredPath()->addDependant( this );
-        if (oldNode)
+        if (oldNode != nullptr) {
             delete oldNode;
-        oldNode = NULL;
+            oldNode = nullptr;
+        }
         _Universe->AccessCockpit()->AccessNavSystem()->pathman->updateSpecificPath( this );
         return true;
     }

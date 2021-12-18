@@ -2058,9 +2058,12 @@ void Unit::LoadXML( VSFileSystem::VSFile &f, const char *modifications, string *
                                                                         &polies );
                 }
     }
-    if (xml->rapidmesh)
+    if (xml->rapidmesh != nullptr) {
         delete xml->rapidmesh;
+        xml->rapidmesh = nullptr;
+    }
     delete xml;
+    xml = nullptr;
 }
 
 

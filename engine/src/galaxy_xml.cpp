@@ -167,20 +167,23 @@ void endElement( void *userdata, const XML_Char *nam )
 using namespace GalaxyXML;
 SGalaxy::~SGalaxy()
 {
-    if (subheirarchy)
+    if (subheirarchy != nullptr) {
         delete subheirarchy;
-    subheirarchy = NULL;
+        subheirarchy = nullptr;
+    }
 }
 SGalaxy&SGalaxy::operator=( const SGalaxy &g )
 {
     if (g.subheirarchy) {
         SubHeirarchy *temp = new SubHeirarchy( *g.subheirarchy );
-        if (subheirarchy)
+        if (subheirarchy != nullptr) {
             delete subheirarchy;
+            subheirarchy = nullptr;
+        }
         subheirarchy = temp;
-    } else if (subheirarchy) {
+    } else if (subheirarchy != nullptr) {
         delete subheirarchy;
-        subheirarchy = NULL;
+        subheirarchy = nullptr;
     }
     data = g.data;
     return *this;

@@ -34,7 +34,7 @@
 
 #include <float.h>
 const float size = 100;
-Background::Background( const char *file, int numstars, float spread, const std::string &filename, const GFXColor &color_, bool degamma_ ) 
+Background::Background( const char *file, int numstars, float spread, const std::string &filename, const GFXColor &color_, bool degamma_ )
     : Enabled( true )
     , degamma( degamma_ )
     , color( color_ )
@@ -126,23 +126,39 @@ void Background::EnableBG( bool tf )
 Background::~Background()
 {
 #ifndef NV_CUBE_MAP
-    if (up)
+    if (up != nullptr) {
         delete up;
-    if (left)
+        up = nullptr;
+    }
+    if (left != nullptr) {
         delete left;
-    if (front)
+        left = nullptr;
+    }
+    if (front != nullptr) {
         delete front;
-    if (right)
+        front = nullptr;
+    }
+    if (right != nullptr) {
         delete right;
-    if (back)
+        right = nullptr;
+    }
+    if (back != nullptr) {
         delete back;
-    if (down)
+        back = nullptr;
+    }
+    if (down != nullptr) {
         delete down;
+        down = nullptr;
+    }
 #endif
-    if (SphereBackground)
+    if (SphereBackground != nullptr) {
         delete SphereBackground;
-    if (stars)
+        SphereBackground = nullptr;
+    }
+    if (stars != nullptr) {
         delete stars;
+        stars = nullptr;
+    }
 }
 Background::BackgroundClone Background::Cache()
 {
@@ -394,7 +410,7 @@ void Background::Draw()
 #define V( i ) ttca[size_t(skybox_rendering_sequence[skr].tcoord[i][3])]
 
 #ifdef NV_CUBE_MAP
-                        const float verts[4 * (3 + 3)] = { 
+                        const float verts[4 * (3 + 3)] = {
                             X(0), Y(0), Z(0), S(0), T(0), U(0),
                             X(1), Y(1), Z(1), S(1), T(1), U(1),
                             X(2), Y(2), Z(2), S(2), T(2), U(2),
@@ -403,7 +419,7 @@ void Background::Draw()
                         GFXDraw( GFXQUAD, verts, 4, 3, 0, 3 );
 #else
                         if (!multitex) {
-                            const float verts[4 * (3 + 2)] = { 
+                            const float verts[4 * (3 + 2)] = {
                                 X(0), Y(0), Z(0), S(0), T(0),
                                 X(1), Y(1), Z(1), S(1), T(1),
                                 X(2), Y(2), Z(2), S(2), T(2),
@@ -411,7 +427,7 @@ void Background::Draw()
                             };
                             GFXDraw( GFXQUAD, verts, 4, 3, 0, 2 );
                         } else {
-                            const float verts[4 * (3 + 2 + 2)] = { 
+                            const float verts[4 * (3 + 2 + 2)] = {
                                 X(0), Y(0), Z(0), S(0), T(0), U(0), V(0),
                                 X(1), Y(1), Z(1), S(1), T(1), U(1), V(1),
                                 X(2), Y(2), Z(2), S(2), T(2), U(2), V(2),

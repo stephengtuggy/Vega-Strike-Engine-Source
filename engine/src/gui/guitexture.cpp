@@ -73,6 +73,9 @@ GuiTexture::GuiTexture( void ) :
 
 GuiTexture::~GuiTexture( void )
 {
-    if (m_texture) delete m_texture;
+    if (m_texture != nullptr) {
+        delete m_texture;
+        m_texture = nullptr;
+    }
 }
 
