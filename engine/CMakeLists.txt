@@ -9,7 +9,7 @@
 # to change build target (in Release, RelWithDebInfo, Debug, Profiler)
 # > cmake -DCMAKE_BUILD_TYPE=Debug <path to source tree>
 #====================================
-# Copyright (C) 2008-2021 safemode, Anth0rx, pyramid, Roy Falk,
+# Copyright (C) 2008-2022 safemode, Anth0rx, pyramid, Roy Falk,
 # Nachum Barcohen, Rune Morling, Stephen G. Tuggy, Benjamen Meyer, s0600204,
 # Evert Vorster, and other Vega Strike contributors.
 #
@@ -31,24 +31,45 @@
 # along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
 
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.11 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.13 FATAL_ERROR)
 
 SET(VEGASTRIKE_VERSION_MAJOR "0")
 SET(VEGASTRIKE_VERSION_MINOR "9")
 SET(VEGASTRIKE_VERSION_PATCH "0")
-# Auto-populate with the git hash of the build
-SET (GIT_ROOT_DIR "${CMAKE_SOURCE_DIR}/..")
-MESSAGE("-- CMAKE_SOURCE_DIR = ${CMAKE_SOURCE_DIR}")
-MESSAGE("-- GIT_ROOT_DIR = ${GIT_ROOT_DIR}")
-IF (DEFINED ENV{GITHUB_SHA} AND NOT "$ENV{GITHUB_SHA}" STREQUAL "")
-    SET (VEGASTRIKE_VERSION_TWEAK "$ENV{GITHUB_SHA}")
+
+IF (DEFINED ENV{SHORT_SHA} AND NOT "$ENV{SHORT_SHA}" STREQUAL "")
+    SET(VEGASTRIKE_VERSION_TWEAK "$ENV{SHORT_SHA}")
 ELSE ()
+    SET (GIT_ROOT_DIR "${CMAKE_SOURCE_DIR}/..")
+    MESSAGE("-- CMAKE_SOURCE_DIR = ${CMAKE_SOURCE_DIR}")
+    MESSAGE("-- GIT_ROOT_DIR = ${GIT_ROOT_DIR}")
     EXECUTE_PROCESS(
-        COMMAND git rev-parse --short HEAD
-        WORKING_DIRECTORY ${GIT_ROOT_DIR}
-        OUTPUT_VARIABLE VEGASTRIKE_VERSION_TWEAK
-        OUTPUT_STRIP_TRAILING_WHITESPACE
+            COMMAND git rev-parse --short HEAD
+            WORKING_DIRECTORY ${GIT_ROOT_DIR}
+            OUTPUT_VARIABLE VEGASTRIKE_VERSION_TWEAK
+            OUTPUT_STRIP_TRAILING_WHITESPACE
     )
+ENDIF ()
+
+SET(VEGASTRIKE_VERSION_LONG_STR "${VEGASTRIKE_VERSION_MAJOR}.${VEGASTRIKE_VERSION_MINOR}.${VEGASTRIKE_VERSION_PATCH}-${VEGASTRIKE_VERSION_TWEAK}")
+SET(VEGASTRIKE_VERSION_SHORT_STR "${VEGASTRIKE_VERSION_MAJOR}.${VEGASTRIKE_VERSION_MINOR}.${VEGASTRIKE_VERSION_PATCH}")
+SET(VEGASTRIKE_PKG_VERSION_STR "${VEGASTRIKE_VERSION_MAJOR}.${VEGASTRIKE_VERSION_MINOR}.${VEGASTRIKE_VERSION_PATCH}")
+
+IF (DEFINED ENV{TAG_NAME} AND NOT "$ENV{TAG_NAME}" STREQUAL "")
+    STRING(REGEX REPLACE "^v([0-9]+)\\..*" "\\1" TAG_VERSION_MAJOR "$ENV{TAG_NAME}")
+    STRING(REGEX REPLACE "^v[0-9]+\\.([0-9]+).*" "\\1" TAG_VERSION_MINOR "$ENV{TAG_NAME}")
+    STRING(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" TAG_VERSION_PATCH "$ENV{TAG_NAME}")
+    STRING(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.[0-9]+(.*)" "\\1" TAG_VERSION_TWEAK "$ENV{TAG_NAME}")
+
+    SET(TAG_VERSION_SHORT_STR "${TAG_VERSION_MAJOR}.${TAG_VERSION_MINOR}.${TAG_VERSION_PATCH}")
+
+    IF (NOT "${VEGASTRIKE_VERSION_SHORT_STR}" VERSION_EQUAL "${TAG_VERSION_SHORT_STR}")
+        MESSAGE(FATAL_ERROR "!! Project version spelled out in CMake file does not match project version from TAG_NAME environment variable")
+    ENDIF ()
+    IF (NOT "${TAG_VERSION_TWEAK}" STREQUAL "")
+        SET(VEGASTRIKE_VERSION_LONG_STR "${VEGASTRIKE_VERSION_MAJOR}.${VEGASTRIKE_VERSION_MINOR}.${VEGASTRIKE_VERSION_PATCH}${TAG_VERSION_TWEAK}-${VEGASTRIKE_VERSION_TWEAK}")
+        SET(VEGASTRIKE_PKG_VERSION_STR "${VEGASTRIKE_VERSION_MAJOR}.${VEGASTRIKE_VERSION_MINOR}.${VEGASTRIKE_VERSION_PATCH}${TAG_VERSION_TWEAK}")
+    ENDIF ()
 ENDIF ()
 
 # API Version for Game Assets
@@ -102,7 +123,7 @@ PROJECT(Vega_Strike
 CONFIGURE_FILE(src/version.h.in ${CMAKE_SOURCE_DIR}/src/version.h)
 CONFIGURE_FILE(src/version.h.in ${CMAKE_SOURCE_DIR}/setup/src/include/version.h)
 
-MESSAGE("== Vega Strike Version: ${VEGASTRIKE_VERSION_MAJOR}.${VEGASTRIKE_VERSION_MINOR}.${VEGASTRIKE_VERSION_PATCH}-${VEGASTRIKE_VERSION_TWEAK}")
+MESSAGE("== Vega Strike Version: ${VEGASTRIKE_VERSION_LONG_STR}")
 
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED TRUE)
@@ -202,14 +223,13 @@ ENDIF (NOT BUILD_OPT)
 OPTION(DISABLE_CLIENT "Disable building the vegastrike bin" OFF )
 
 # Should we prefer the Mesa OpenGL implementation, or GLVND?
-OPTION(VEGA_STRIKE_PREFER_LEGACY_OPENGL "Prefer legacy OpenGL implementation (such as Mesa's)? Or prefer GLVND?" OFF )
-IF (VEGA_STRIKE_PREFER_LEGACY_OPENGL)
-    SET (OpenGL_GL_PREFERENCE LEGACY)
+# OPTION(VEGA_STRIKE_PREFER_LEGACY_OPENGL "Prefer legacy OpenGL implementation (such as Mesa's)? Or prefer GLVND?" OFF )
+IF (OpenGL_GL_PREFERENCE STREQUAL "LEGACY")
     SET (VEGA_STRIKE_GLU_DEPENDENCY "libglu1-mesa")
 ELSE ()
-    SET (OpenGL_GL_PREFERENCE GLVND)
     SET (VEGA_STRIKE_GLU_DEPENDENCY "libglvnd0")
 ENDIF ()
+MESSAGE("** OpenGL_GL_PREFERENCE: ${OpenGL_GL_PREFERENCE}")
 
 # Should we install gtest?
 OPTION(INSTALL_GTEST "Should we download and install GTest?" ON)
@@ -239,21 +259,21 @@ SET(CPU_SMP "1" CACHE STRING "Number of CPU's in system")
 
 # Depending on the boolean chosen above, set CPU_OPTS to the correct cpu opts
 IF (CPUAMD_k8)
-    SET(CPU_OPTS "-mtune=athlon64 -mfpmath=sse -msse2 -mmmx -m3dnow -ftree-vectorize -ffast-math -fassociative-math -funsafe-math-optimizations -fprefetch-loop-arrays ")
+    SET(CPU_OPTS "-mtune=athlon64 -mfpmath=sse -msse2 -mmmx -m3dnow -ftree-vectorize -ffast-math -fassociative-math -fprefetch-loop-arrays ")
 ELSEIF (CPUAMD_K9)
-    SET(CPU_OPTS "-mtune=k8-sse3 -mfpmath=sse -msse3 -mmmx -m3dnow -ftree-vectorize -ffast-math -fassociative-math -funsafe-math-optimizations -funroll-loops ")
+    SET(CPU_OPTS "-mtune=k8-sse3 -mfpmath=sse -msse3 -mmmx -m3dnow -ftree-vectorize -ffast-math -fassociative-math -funroll-loops ")
 ELSEIF (CPUINTEL_p4)
-    SET(CPU_OPTS "-mtune=pentium4 -mfpmath=sse -msse2 -mmmx -ftree-vectorize -ffast-math -fassociative-math -funsafe-math-optimizations -funroll-loops ")
+    SET(CPU_OPTS "-mtune=pentium4 -mfpmath=sse -msse2 -mmmx -ftree-vectorize -ffast-math -fassociative-math -funroll-loops ")
 ELSEIF (CPUINTEL_prescott)
-    SET(CPU_OPTS "-mtune=prescott -mfpmath=sse -msse3 -mmmx -ftree-vectorize -ffast-math -fassociative-math -funsafe-math-optimizations -funroll-loops " )
+    SET(CPU_OPTS "-mtune=prescott -mfpmath=sse -msse3 -mmmx -ftree-vectorize -ffast-math -fassociative-math -funroll-loops " )
 ELSEIF (CPUINTEL_nocona)
-    SET(CPU_OPTS "-mtune=nocona -mfpmath=sse -msse3 -mmmx -ftree-vectorize -ffast-math -fassociative-math -funsafe-math-optimizations -funroll-loops ")
+    SET(CPU_OPTS "-mtune=nocona -mfpmath=sse -msse3 -mmmx -ftree-vectorize -ffast-math -fassociative-math -funroll-loops ")
 ELSEIF (CPUINTEL_core2)
-    SET(CPU_OPTS "-mtune=core2 -mfpmath=sse -msse3 -mmmx -ftree-vectorize -ffast-math -fassociative-math -funsafe-math-optimizations -funroll-loops ")
+    SET(CPU_OPTS "-mtune=core2 -mfpmath=sse -msse3 -mmmx -ftree-vectorize -ffast-math -fassociative-math -funroll-loops ")
 ELSEIF (CPUINTEL_native)
-    SET(CPU_OPTS "-mtune=native -march=native -mfpmath=sse -msse3 -mmmx -ftree-vectorize -ffast-math -fassociative-math -funsafe-math-optimizations -funroll-loops ")
+    SET(CPU_OPTS "-mtune=native -march=native -mfpmath=sse -msse3 -mmmx -ftree-vectorize -ffast-math -fassociative-math -funroll-loops ")
 ELSEIF (CPUAMD_vishera)
-    SET(CPU_OPTS "-march=bdver2 -mfpmath=both -mmmx -msse4a -msse4.2 -maes -mpclmul -mfsgsbase -mrdrnd -mf16c -mfma -mfma4 -m3dnow -mxop -mlwp -mtbm -mavx2 -mvzeroupper -msahf -mcx16 -funsafe-loop-optimizations ")
+    SET(CPU_OPTS "-march=bdver2 -mfpmath=both -mmmx -msse4a -msse4.2 -maes -mpclmul -mfsgsbase -mrdrnd -mf16c -mfma -mfma4 -m3dnow -mxop -mlwp -mtbm -mavx2 -mvzeroupper -msahf -mcx16 ")
 ENDIF (CPUAMD_k8)
 
 IF (CPU_SMP GREATER 1)
@@ -435,21 +455,16 @@ FIND_PACKAGE(LinuxDistro REQUIRED)
 
 # No more Python 2 -- stephengtuggy 2021-05-30
 # We want at least Python 3.4, but we prefer newer versions
-SET(Python_ADDITIONAL_VERSIONS 3.11 3.10 3.9 3.8 3.7 3.6 3.5 3.4)
-UNSET(PYTHON_INCLUDE_DIR CACHE)
-UNSET(PYTHON_LIBRARY CACHE)
-# The python version we want is set via Python_ADDITIONAL_VERSIONS
-MESSAGE("++ Python release(s) searched for : ${Python_ADDITIONAL_VERSIONS}")
-FIND_PACKAGE(PythonLibs REQUIRED)
-MESSAGE("++ Python library : ${PYTHON_LIBRARY} (${PYTHONLIBS_VERSION_STRING})")
-MESSAGE("++ Python include dir : ${PYTHON_INCLUDE_DIR}")
-IF (PYTHONLIBS_FOUND OR PYTHON_LIBRARIES AND PYTHON_INCLUDE_DIRS)
-    SET(TST_INCLUDES ${PYTHON_INCLUDE_DIRS})
-    SET(TST_LIBS ${PYTHON_LIBRARIES})
+FIND_PACKAGE(Python3 REQUIRED COMPONENTS Development)
+MESSAGE("++ Python library : ${Python3_LIBRARIES} (${Python3_VERSION})")
+MESSAGE("++ Python include dir : ${Python3_INCLUDE_DIRS}")
+IF (Python3_FOUND)
+    SET(TST_INCLUDES ${Python3_INCLUDE_DIRS})
+    SET(TST_LIBS ${Python3_LIBRARIES})
     SET(HAVE_PYTHON 1)
-ELSE (PYTHONLIBS_FOUND OR PYTHON_LIBRARIES AND PYTHON_INCLUDE_DIRS)
+ELSE (Python3_FOUND)
     MESSAGE(FATAL_ERROR "Can't find python")
-ENDIF (PYTHONLIBS_FOUND OR PYTHON_LIBRARIES AND PYTHON_INCLUDE_DIRS)
+ENDIF (Python3_FOUND)
 
 # Find Boost with boost_python library
 OPTION(USE_SYSTEM_BOOST "Use system boost" ON)
@@ -473,12 +488,9 @@ IF (USE_SYSTEM_BOOST)
         ELSE (Boost_DERIVED_VERSION VERSION_EQUAL 1.67.0)
             SET(Boost_1_67_Or_Later_Result FALSE)
         ENDIF (Boost_DERIVED_VERSION VERSION_EQUAL 1.67.0)
-        STRING(REPLACE "." ";" PYTHONLIBS_VERSION_LIST ${PYTHONLIBS_VERSION_STRING})
-        LIST(GET PYTHONLIBS_VERSION_LIST 0 PYTHON_VERSION_MAJOR)
-        LIST(GET PYTHONLIBS_VERSION_LIST 1 PYTHON_VERSION_MINOR)
         MESSAGE("-- Boost_1_67_Or_Later_Result: ${Boost_1_67_Or_Later_Result}")
         IF (Boost_1_67_Or_Later_Result)
-            SET(BOOST_PYTHON_COMPONENT "python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
+            SET(BOOST_PYTHON_COMPONENT "python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")
         ELSE (Boost_1_67_Or_Later_Result)
             SET(BOOST_PYTHON_COMPONENT "python3")
 
@@ -487,7 +499,7 @@ IF (USE_SYSTEM_BOOST)
             # Debian stretch.
             IF (CMAKE_SYSTEM_NAME STREQUAL Linux)
                 IF (LINUX_CODENAME STREQUAL xenial OR LINUX_CODENAME STREQUAL stretch)
-                    SET(BOOST_PYTHON_COMPONENT "python-py3${PYTHON_VERSION_MINOR}")
+                    SET(BOOST_PYTHON_COMPONENT "python-py3${Python3_VERSION_MINOR}")
                 ENDIF (LINUX_CODENAME STREQUAL xenial OR LINUX_CODENAME STREQUAL stretch)
             ENDIF (CMAKE_SYSTEM_NAME STREQUAL Linux)
         ENDIF (Boost_1_67_Or_Later_Result)
@@ -1384,12 +1396,7 @@ SET(CPACK_PACKAGE_INSTALL_DIRECTORY "VegaStrike-${CPACK_PACKAGE_VERSION_MAJOR}.$
 SET(CPACK_PACKAGE_EXECUTABLES "vegastrike" "vegastrike-engine" "vega-meshtool" "vegasettings")
 SET(CPACK_CONTACT "maintainers@vega-strike.org")
 
-IF (DEFINED ENV{TAG_NAME})
-    SET(VEGA_STRIKE_PACKAGE_VERSION_STR "$ENV{TAG_NAME}")
-ELSE (DEFINED ENV{TAG_NAME})
-    SET(VEGA_STRIKE_PACKAGE_VERSION_STR "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-${VEGASTRIKE_VERSION_TWEAK}")
-ENDIF (DEFINED ENV{TAG_NAME})
-SET(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}_${VEGA_STRIKE_PACKAGE_VERSION_STR}-Source")
+SET(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}_v${VEGASTRIKE_PKG_VERSION_STR}-Source")
 SET(CPACK_SOURCE_GENERATOR "TBZ2" "TXZ")
 
 # See https://gitlab.kitware.com/cmake/community/-/wikis/doc/cpack/PackageGenerators for generator lists
@@ -1434,6 +1441,7 @@ ELSEIF (CMAKE_SYSTEM_NAME STREQUAL Linux)
         # See https://cmake.org/cmake/help/v3.3/module/CPackDeb.html
         SET(CPACK_DEBIAN_PACKAGE_NAME "Vega-Strike")
         SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "maintainers@vega-strike.org")
+        SET(CPACK_DEBIAN_PACKAGE_VERSION "${VEGASTRIKE_PKG_VERSION_STR}")
         # Debian Version: /etc/debian_version - <name>/<junk>
         IF (NOT LSB_EXISTS)
             SET(USE_DEBIAN_VERSION TRUE)
@@ -1575,6 +1583,14 @@ ELSEIF (CMAKE_SYSTEM_NAME STREQUAL Linux)
                         SET(BOOST_VER "${Boost_DERIVED_VERSION}")
                     ENDIF (Boost_DERIVED_VERSION STREQUAL "")
                     SET(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, libjpeg62, libpng16-16, freeglut3, libgtk-3-0, libvorbis0a, libopenal1, libsdl-gfx1.2-5, xdg-utils, libgl1-mesa-glx, libboost-filesystem${BOOST_VER}, libboost-log${BOOST_VER}, libboost-python${BOOST_VER}, libboost-regex${BOOST_VER}, libboost-system${BOOST_VER}, libboost-thread${BOOST_VER}")
+                ELSEIF (LSB_LINUX_DISTRIBUTION_CODENAME STREQUAL "impish")
+                    SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libpython3.10")
+                    IF (Boost_DERIVED_VERSION STREQUAL "")
+                        SET(BOOST_VER "1.74.0")
+                    ELSE (Boost_DERIVED_VERSION STREQUAL "")
+                        SET(BOOST_VER "${Boost_DERIVED_VERSION}")
+                    ENDIF (Boost_DERIVED_VERSION STREQUAL "")
+                    SET(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, libjpeg62-turbo, libpng16-16, freeglut3, libgtk-3-0, libvorbis0a, libopenal1, libsdl-gfx1.2-5, xdg-utils, libgl1, libopengl0, ${VEGA_STRIKE_GLU_DEPENDENCY}, libboost-atomic${BOOST_VER}, libboost-chrono${BOOST_VER}, libboost-date-time${BOOST_VER}, libboost-filesystem${BOOST_VER}, libboost-log${BOOST_VER}, libboost-python${BOOST_VER}, libboost-regex${BOOST_VER}, libboost-system${BOOST_VER}, libboost-thread${BOOST_VER}")
                 ELSE (LSB_LINUX_DISTRIBUTION_CODENAME STREQUAL "bionic")
                     MESSAGE(SEND_WARNING "!! Unsupported Debian derivative.")
                 ENDIF (LSB_LINUX_DISTRIBUTION_CODENAME STREQUAL "bionic")
@@ -1584,11 +1600,11 @@ ELSEIF (CMAKE_SYSTEM_NAME STREQUAL Linux)
 
         IF (USE_DEBIAN_VERSION)
             # Add the platform (Ubuntu, Debian, etc) to the filename, including the version (stretch, jessie, etc)
-            SET(CPACK_PACKAGE_FILE_NAME "${CPACK_DEBIAN_PACKAGE_NAME}_${VEGA_STRIKE_PACKAGE_VERSION_STR}-${OpenGL_GL_PREFERENCE}-debian-${DEBIAN_RELEASE_VERSION}_x86_64")
+            SET(CPACK_PACKAGE_FILE_NAME "${CPACK_DEBIAN_PACKAGE_NAME}_v${VEGASTRIKE_PKG_VERSION_STR}-${OpenGL_GL_PREFERENCE}-debian-${DEBIAN_RELEASE_VERSION}_${CMAKE_SYSTEM_PROCESSOR}")
 
         ELSE (USE_DEBIAN_VERSION)
             # Add the platform (Ubuntu, Debian, etc) to the filename, including the version (stretch, jessie, etc)
-            SET(CPACK_PACKAGE_FILE_NAME "${CPACK_DEBIAN_PACKAGE_NAME}_${VEGA_STRIKE_PACKAGE_VERSION_STR}-${OpenGL_GL_PREFERENCE}-${LSB_LINUX_DISTRIBUTION}-${LSB_LINUX_DISTRIBUTION_CODENAME}_x86_64")
+            SET(CPACK_PACKAGE_FILE_NAME "${CPACK_DEBIAN_PACKAGE_NAME}_v${VEGASTRIKE_PKG_VERSION_STR}-${OpenGL_GL_PREFERENCE}-${LSB_LINUX_DISTRIBUTION}-${LSB_LINUX_DISTRIBUTION_CODENAME}_${CMAKE_SYSTEM_PROCESSOR}")
         ENDIF (USE_DEBIAN_VERSION)
         SET(CPACK_DEBIAN_PACKAGE_SECTION "Amusements/Games")
         SET(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://www.vega-strike.org")
@@ -1610,7 +1626,7 @@ ELSEIF (CMAKE_SYSTEM_NAME STREQUAL Linux)
             SET(VEGA_STRIKE_LINUX_VERSION_STR "${LINUX_VERSION_ID}")
         ENDIF (LINUX_CODENAME)
 
-        SET(CPACK_PACKAGE_FILE_NAME "${CPACK_RPM_PACKAGE_NAME}_${VEGA_STRIKE_PACKAGE_VERSION_STR}-${OpenGL_GL_PREFERENCE}-${LINUX_ID}-${VEGA_STRIKE_LINUX_VERSION_STR}_x86_64")
+        SET(CPACK_PACKAGE_FILE_NAME "${CPACK_RPM_PACKAGE_NAME}_v${VEGASTRIKE_PKG_VERSION_STR}-${OpenGL_GL_PREFERENCE}-${LINUX_ID}-${VEGA_STRIKE_LINUX_VERSION_STR}_${CMAKE_SYSTEM_PROCESSOR}")
 
         # TODO: Finish porting the script/package script over for RPM-based distros
         # Detect whether SuSe or RH/CentOS/Fedora as deps may change
@@ -1622,16 +1638,16 @@ ELSEIF (CMAKE_SYSTEM_NAME STREQUAL Linux)
                 MESSAGE (SEND_WARNING "!! Unsupported version of openSUSE")
                 SET(CPACK_RPM_PACKAGE_REQUIRES "")
             ENDIF (LINUX_VERSION_ID VERSION_EQUAL 15.2 OR LINUX_VERSION_ID VERSION_EQUAL 15.3)
-        ELSEIF (LINUX_ID STREQUAL fedora AND (LINUX_VERSION_ID VERSION_EQUAL 30 OR LINUX_VERSION_ID VERSION_GREATER 30) AND (LINUX_VERSION_ID VERSION_LESS 34 OR LINUX_VERSION_ID VERSION_EQUAL 34))
-            IF (LINUX_VERSION_ID VERSION_EQUAL 34)
+            ELSEIF (LINUX_ID STREQUAL fedora AND LINUX_VERSION_ID VERSION_GREATER_EQUAL 30 AND LINUX_VERSION_ID VERSION_LESS_EQUAL 35)
+            IF (LINUX_VERSION_ID VERSION_GREATER_EQUAL 34)
                 SET(CPACK_RPM_PACKAGE_REQUIRES "python3, boost-python3")
             ELSEIF (LINUX_VERSION_ID VERSION_EQUAL 32 OR LINUX_VERSION_ID VERSION_EQUAL 33)
                 SET(CPACK_RPM_PACKAGE_REQUIRES "python38, boost-python3")       # python39
             ELSEIF (LINUX_VERSION_ID VERSION_EQUAL 31)
                 SET(CPACK_RPM_PACKAGE_REQUIRES "python38, boost-python3")
-            ELSE (LINUX_VERSION_ID VERSION_EQUAL 34)
+            ELSE (LINUX_VERSION_ID VERSION_GREATER_EQUAL 34)
                 SET(CPACK_RPM_PACKAGE_REQUIRES "python37, boost-python3")
-            ENDIF (LINUX_VERSION_ID VERSION_EQUAL 34)
+            ENDIF (LINUX_VERSION_ID VERSION_GREATER_EQUAL 34)
             SET(CPACK_RPM_PACKAGE_REQUIRES "${CPACK_RPM_PACKAGE_REQUIRES}, libjpeg-turbo, libpng, freeglut, gtk3, libvorbis, openal-soft, SDL, libglvnd, expat, boost-log, boost-system, boost-filesystem, boost-thread, boost-regex, boost-chrono, boost-atomic")
         ELSEIF (LINUX_ID STREQUAL centos AND LINUX_VERSION_ID STREQUAL "8")
             SET(CPACK_RPM_PACKAGE_REQUIRES "boost-python3")
@@ -1640,13 +1656,13 @@ ELSEIF (CMAKE_SYSTEM_NAME STREQUAL Linux)
             SET(CPACK_RPM_PACKAGE_REQUIRES "boost-python3")
             SET(CPACK_RPM_PACKAGE_REQUIRES "${CPACK_RPM_PACKAGE_REQUIRES}, libjpeg-turbo, libpng, freeglut, gtk3, libvorbis, openal-soft, SDL, libglvnd, expat, boost-log, boost-system, boost-filesystem, boost-thread, boost-regex, boost-chrono, boost-atomic")
         ELSEIF (LINUX_ID STREQUAL rocky)
-            IF (LINUX_VERSION_ID VERSION_EQUAL 8.4)
+            IF (LINUX_VERSION_ID VERSION_GREATER_EQUAL 8.4 AND LINUX_VERSION_ID VERSION_LESS_EQUAL 8.5)
                 SET(CPACK_RPM_PACKAGE_REQUIRES "python39, boost-python3")
                 SET(CPACK_RPM_PACKAGE_REQUIRES "${CPACK_RPM_PACKAGE_REQUIRES}, libjpeg-turbo, libpng, freeglut, gtk3, libvorbis, openal-soft, SDL, libglvnd, expat, boost-log, boost-system, boost-filesystem, boost-thread, boost-regex, boost-chrono, boost-atomic")
-            ELSE (LINUX_VERSION_ID VERSION_EQUAL 8.4)
+            ELSE (LINUX_VERSION_ID VERSION_GREATER_EQUAL 8.4 AND LINUX_VERSION_ID VERSION_LESS_EQUAL 8.5)
                 MESSAGE(SEND_WARNING "!! This version of Rocky Linux is not currently supported.")
                 SET(CPACK_RPM_PACKAGE_REQUIRES "")
-            ENDIF (LINUX_VERSION_ID VERSION_EQUAL 8.4)
+            ENDIF (LINUX_VERSION_ID VERSION_GREATER_EQUAL 8.4 AND LINUX_VERSION_ID VERSION_LESS_EQUAL 8.5)
         ELSE (LINUX_ID STREQUAL opensuse-leap)
             MESSAGE(SEND_WARNING "!! Unrecognized RPM-based Linux distribution. RPM Dependencies may be wrong for this platform.")
             SET(CPACK_RPM_PACKAGE_REQUIRES "python3")
