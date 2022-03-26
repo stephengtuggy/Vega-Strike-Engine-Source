@@ -1,3 +1,7 @@
+#undef __STRICT_ANSI__
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include "cockpit_gfx_utils.h"
 
 #include "../configuration/game_config.h"
@@ -178,7 +182,7 @@ VertexBuilder<> GetAnimatedLockingIcon(const QVector &location, const Vector& ca
     const double rtot = 1./sqrtf( 2 );
 
     //this causes the rotation!
-    const float theta = 4*M_PI*lock_percent*theta_speed;
+    const float theta = 4 * M_PI * lock_percent * theta_speed;
     const Vector lock_box( -cos( theta )*rtot, -rtot, sin( theta )*rtot );
 
     QVector t_lock_box( rtot*lock_box.i+rtot*lock_box.j, rtot*lock_box.j-rtot*lock_box.i, lock_box.k );
