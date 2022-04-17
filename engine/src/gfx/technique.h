@@ -92,12 +92,12 @@ public:
         return passes.size();
     }
 
-    const Pass &getPass(int idx) const {
-        return passes[idx];
+    const Pass &getPass(size_t idx) const {
+        return passes.at(idx);
     }
 
-    Pass &getPass(int idx) {
-        return passes[idx];
+    Pass &getPass(size_t idx) {
+        return passes.at(idx);
     }
 
     /** Cached technique factory function */

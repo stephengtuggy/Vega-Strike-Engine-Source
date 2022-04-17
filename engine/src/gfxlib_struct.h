@@ -55,24 +55,24 @@ extern void /*GFXDRVAPI*/ GFXDeleteList(int list);
 /// Vertex, Normal, Texture, and (deprecated) Environment Mapping T2F_N3F_V3F format
 struct GFXVertex {
     //Texcoord
-    float s;
-    float t;
+    float s{};
+    float t{};
 
     //Normal
-    float i;
-    float j;
-    float k;
+    float i{};
+    float j{};
+    float k{};
 
     //Position
-    float x;
-    float y;
-    float z;
+    float x{};
+    float y{};
+    float z{};
 
     //Tangent
-    float tx;
-    float ty;
-    float tz;
-    float tw;
+    float tx{};
+    float ty{};
+    float tz{};
+    float tw{};
 
     GFXVertex() {
     }
@@ -892,7 +892,7 @@ protected:
         ///Or has color data
         GFXColorVertex *colors;
 
-        VDAT() : vertices(0) {
+        VDAT() : vertices(nullptr) {
         };
     }
             data;

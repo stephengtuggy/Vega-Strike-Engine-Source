@@ -3,6 +3,8 @@
  *	OPCODE - Optimized Collision Detection
  *	Copyright (C) 2001 Pierre Terdiman
  *	Homepage: http://www.codercorner.com/Opcode.htm
+ *
+ *	Copyright (C) 2021-2022 Stephen G. Tuggy
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -20,7 +22,7 @@
  *	Contains a sphere-vs-tree collider.
  *	This class performs a collision test between a sphere and an AABB tree. You can use this to do a standard player vs world collision,
  *	in a Nettle/Telemachos way. It doesn't suffer from all reported bugs in those two classic codes - the "new" one by Paul Nettle is a
- *	debuggued version I think. Collision response can be driven by reported collision data - it works extremely well for me. In sake of
+ *	debugged version I think. Collision response can be driven by reported collision data - it works extremely well for me. In sake of
  *	efficiency, all meshes (that is, all AABB trees) should of course also be kept in an extra hierarchical structure (octree, whatever).
  *
  *	\class		SphereCollider
@@ -28,13 +30,6 @@
  *	\version	1.3
  *	\date		June, 2, 2001
 */
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
- * Updated by Stephen G. Tuggy 2021-07-03
- * Updated by Stephen G. Tuggy 2022-01-06
- */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,7 +43,7 @@ using namespace Opcode;
 
 #define SET_CONTACT(prim_index, flag)                                       \
     /* Set contact status */                                                \
-    mFlags |= flag;                                                         \
+    mFlags |= (flag);                                                       \
     mTouchedPrimitives->Add(prim_index);
 
 //! Sphere-triangle overlap test
@@ -652,7 +647,8 @@ void SphereCollider::_CollideNoPrimitiveTest(const AABBQuantizedNoLeafNode *node
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void SphereCollider::_Collide(const AABBTreeNode *node) {
     // Perform Sphere-AABB overlap test
-    Point Center, Extents;
+    Point Center;
+    Point Extents;
     node->GetAABB()->GetCenter(Center);
     node->GetAABB()->GetExtents(Extents);
     if (!SphereAABBOverlap(Center, Extents)) {

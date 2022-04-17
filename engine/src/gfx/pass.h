@@ -370,13 +370,13 @@ public:
     }
 
     /** Get the specified texture unit */
-    const TextureUnit &getTextureUnit(int index) const {
-        return textureUnits[index];
+    const TextureUnit &getTextureUnit(size_t index) const {
+        return textureUnits.at(index);
     }
 
     /** Get the specified texture unit */
-    TextureUnit &getTextureUnit(int index) {
-        return textureUnits[index];
+    TextureUnit &getTextureUnit(size_t index) {
+        return textureUnits.at(index);
     }
 
     /** Get the number of shader params in this pass */
@@ -385,13 +385,13 @@ public:
     }
 
     /** Get the specified shader param */
-    const ShaderParam &getShaderParam(int index) const {
-        return shaderParams[index];
+    const ShaderParam &getShaderParam(size_t index) const {
+        return shaderParams.at(index);
     }
 
     /** Get the specified shader param */
-    ShaderParam &getShaderParam(int index) {
-        return shaderParams[index];
+    ShaderParam &getShaderParam(size_t index) {
+        return shaderParams.at(index);
     }
 
     /** Compile the pass (shaders, fetch shader params, etc...) */

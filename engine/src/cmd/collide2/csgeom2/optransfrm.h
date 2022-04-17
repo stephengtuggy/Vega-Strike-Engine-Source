@@ -2,17 +2,17 @@
     Copyright (C) 1998-2001 by Jorrit Tyberghein
     Largely rewritten by Ivan Avramovic <ivan@avramovic.com>
     Copyright (C) 2022 Stephen G. Tuggy
-  
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-  
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-  
+
     You should have received a copy of the GNU Library General Public
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -207,8 +207,8 @@ public:
 
     ///Daniel: I think that this matrix is in row major order...
     ///but it appears to look for the matrix that takes from world to object
-    ///hence it is the transpose... transpose of transpose is identty...which is what I pass in below
-    csReversibleTransform(const Matrix &m) :
+    ///hence it is the transpose... transpose of transpose is identity...which is what I pass in below
+    explicit csReversibleTransform(const Matrix &m) :
             csTransform(
                     csMatrix3(m.r[0], m.r[3], m.r[6],
                             m.r[1], m.r[4], m.r[7],

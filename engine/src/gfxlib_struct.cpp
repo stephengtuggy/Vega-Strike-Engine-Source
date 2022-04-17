@@ -526,11 +526,11 @@ GFXVertexList::~GFXVertexList() {
     }
     if (changed & HAS_COLOR) {
         if (data.colors != nullptr) {
-            free(data.colors);
+            delete[] data.colors;
             data.colors = nullptr;
         }
     } else if (data.vertices != nullptr) {
-        free(data.vertices);
+        delete[] data.vertices;
         data.vertices = nullptr;
     }
 }
@@ -573,8 +573,8 @@ void GFXVertexList::UnMap() {
             }
             GFXBindBuffer(vbo_data);
             (*glUnmapBufferARB_p)(GL_ARRAY_BUFFER_ARB);
-            data.colors = NULL;
-            data.vertices = NULL;
+            data.colors = nullptr;
+            data.vertices = nullptr;
         }
     }
 

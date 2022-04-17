@@ -945,10 +945,10 @@ void GameCockpit::Delete() {
         delete text;
         text = nullptr;
     }
-    for (size_t i = 0; i < (int) mesh.size(); ++i) {
-        if (mesh[i] != nullptr) {
-            delete mesh[i];
-            mesh[i] = nullptr;
+    for (size_t i = 0; i < mesh.size(); ++i) {
+        if (mesh.at(i) != nullptr) {
+            delete mesh.at(i);
+            mesh.at(i) = nullptr;
         }
     }
     mesh.clear();

@@ -1713,7 +1713,7 @@ bool BaseComputer::scrollToItem(Picker *picker, const Cargo &item, bool select, 
         //original, un-beautified name.
         int i = 0;
         for (; i < count; i++) {
-            if (item.content < cells->cellAt(i)->id()) {
+            if (item.content < cells->constCellAt(i)->id()) {
                 break;
             }
         }
@@ -1721,13 +1721,13 @@ bool BaseComputer::scrollToItem(Picker *picker, const Cargo &item, bool select, 
             i--;
         }
         cell = cells->cellAt(i);
-        assert(cell != NULL);
+        assert(cell != nullptr);
         //Drop through to get cell handled.
     }
     if (select) {
         picker->selectCell(cell, true);
         //This may not be a selectable cell.
-        return picker->selectedCell() != NULL;
+        return picker->selectedCell() != nullptr;
     } else {
         //Make sure we scroll it into view.
         //Since it's not selected, we assume it's in the "other" list and scroll

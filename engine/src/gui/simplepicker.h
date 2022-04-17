@@ -92,12 +92,12 @@ public:
     }
 
 //Get a particular cell.
-    virtual PickerCell *cellAt(int index) {
-        return m_cells[index];
+    PickerCell *cellAt(size_t index) override {
+        return m_cells.at(index);
     }
 
-    virtual const PickerCell *cellAt(int index) const {
-        return m_cells[index];
+    const PickerCell *constCellAt(size_t index) const override {
+        return m_cells.at(index);
     }
 
 //Add a new cell to this list.

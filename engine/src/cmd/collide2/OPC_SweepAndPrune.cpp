@@ -62,8 +62,8 @@ public:
     inline_                    ~SAP_Element() {
     }
 
-    uint32_t mID;
-    SAP_Element *mNext;
+    uint32_t mID{};
+    SAP_Element *mNext{};
 };
 
 class Opcode::SAP_Box {
@@ -177,20 +177,20 @@ void SAP_PairData::Release() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  *	Initializes.
- *	\param		nb_objects	[in] 
+ *	\param		nb_objects	[in]
  *	\return		true if success
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool SAP_PairData::Init(uint32_t nb_objects) {
     // Make sure everything has been released
     Release();
-    if (!nb_objects) {
+    if (nb_objects == 0u) {
         return false;
     }
 
     mArray = new SAP_Element *[nb_objects];
     CHECKALLOC(mArray);
-    ZeroMemory(mArray, nb_objects * sizeof(SAP_Element *));
+    ZeroMemory(mArray, sizeof(mArray));
     mNbObjects = nb_objects;
 
     return true;

@@ -66,13 +66,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
- * Updated by Stephen G. Tuggy 2021-07-03
- * Updated by Stephen G. Tuggy 2022-01-06
- */
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Precompiled Header
 #include "Stdafx.h"
 
@@ -140,7 +133,7 @@ bool AABBTreeOfTrianglesBuilder::ComputeGlobalBox(const uint32_t *primitives,
     Point Max(MIN_FLOAT, MIN_FLOAT, MIN_FLOAT);
 
     // Loop through triangles
-    VertexPointers VP;
+    VertexPointers VP{};
     while (nb_prims--) {
         // Get current triangle-vertices
         mIMesh->GetTriangle(VP, *primitives++);
@@ -172,7 +165,7 @@ float AABBTreeOfTrianglesBuilder::GetSplittingValue(uint32_t index, uint32_t axi
 //			+mVerts[mTriList[index].mVRef[1]][axis]
 //			+mVerts[mTriList[index].mVRef[2]][axis])*INV3;
 
-    VertexPointers VP;
+    VertexPointers VP{};
     mIMesh->GetTriangle(VP, index);
 
     // Compute correct component from center of triangle
@@ -198,7 +191,7 @@ float AABBTreeOfTrianglesBuilder::GetSplittingValue(const uint32_t *primitives,
     if (mSettings.mRules & SPLIT_GEOM_CENTER) {
         // Loop through triangles
         float SplitValue = 0.0f;
-        VertexPointers VP;
+        VertexPointers VP{};
         for (uint32_t i = 0; i < nb_prims; i++) {
             // Get current triangle-vertices
             mIMesh->GetTriangle(VP, primitives[i]);

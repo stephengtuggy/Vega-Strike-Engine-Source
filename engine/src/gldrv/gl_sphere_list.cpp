@@ -231,8 +231,14 @@ GFXSphereVertexList::GFXSphereVertexList(float radius, int detail, bool Insideou
 
 GFXSphereVertexList::~GFXSphereVertexList() {
     numVertices = 0;
-    data.vertices = 0;
-    data.colors = 0;
+    if (data.vertices) {
+        delete[] data.vertices;
+        data.vertices = nullptr;
+    }
+    if (data.colors) {
+        delete[] data.colors;
+        data.colors = nullptr;
+    }
     index.i = 0;
     mode = 0;
     numlists = 0;

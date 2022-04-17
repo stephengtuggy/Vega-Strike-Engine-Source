@@ -2,17 +2,17 @@
     Copyright (C) 1998,1999,2000 by Jorrit Tyberghein
     Largely rewritten by Ivan Avramovic <ivan@avramovic.com>
     Copyright (C) 2021-2022 Stephen G Tuggy
-  
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-  
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-  
+
     You should have received a copy of the GNU Library General Public
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -90,7 +90,7 @@ class csPlane3;
 /**
  * A bounding box in 3D space.
  * In order to operate correctly, this bounding box assumes that all values
- * entered or compared against lie within the range 
+ * entered or compared against lie within the range
  * (-CS_BOUNDINGBOX_MAXVALUE, CS_BOUNDINGBOX_MAXVALUE).  It is not
  * recommended to use points outside of this range.
  */
@@ -403,7 +403,7 @@ public:
     }
 
     /// Initialize this box with one point.
-    csBox3(const csVector3 &v) : minbox(v), maxbox(v) {
+    explicit csBox3(const csVector3 &v) : minbox(v), maxbox(v) {
     }
 
     /// Initialize this box with two points.

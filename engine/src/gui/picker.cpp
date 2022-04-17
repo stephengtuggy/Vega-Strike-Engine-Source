@@ -45,7 +45,7 @@ static const int SCROLL_EDGE_EXTRA = 1;
 
 //Find a cell by id.  Returns NULL if not found.
 PickerCell *PickerCells::cellWithId(const std::string &id) {
-    for (int i = 0; i < count(); i++) {
+    for (size_t i = 0; i < count(); ++i) {
         PickerCell *cell = cellAt(i);
         if (cell->id() == id) {
             //Found it.
@@ -60,8 +60,8 @@ bool PickerCells::saveOpenCategories(std::list<std::list<std::string> > &masterL
         const std::list<std::string> &parentHier,
         PickerCell *selectedCell) const {
     bool hasSelectedCell = false;
-    for (int i = 0; i < count(); i++) {
-        const PickerCell *cell = cellAt(i);
+    for (size_t i = 0; i < count(); ++i) {
+        const PickerCell *cell = constCellAt(i);
         if (cell == selectedCell) {
             hasSelectedCell = true;
         }
@@ -191,11 +191,11 @@ void Picker::draw() {
 int Picker::selectedItem() {
     if (m_cells != nullptr && m_selectedCell != nullptr) {
         //If we have a selection, find it in the list.  Won't find it if it's a child.
-        for (int i = 0; i < m_cells->count(); i++) {
+        for (size_t i = 0; i < m_cells->count(); i++) {
             PickerCell *cell = m_cells->cellAt(i);
             if (cell == m_selectedCell) {
                 //Found it.
-                return i;
+                return static_cast<int>(i);
             }
         }
     }
@@ -265,7 +265,7 @@ void Picker::selectCell(PickerCell *cell, bool scroll) {
 //of the cells and puts them on the display list.
 void Picker::addListToDisplay(PickerCells *list, int level) {
     //Go through all the cells in this list.
-    for (int i = 0; i < list->count(); i++) {
+    for (size_t i = 0; i < list->count(); ++i) {
         PickerCell *cell = list->cellAt(i);
         DisplayCell displayCell(cell, level);
         m_displayCells.push_back(displayCell);         //Add this cell to the list.

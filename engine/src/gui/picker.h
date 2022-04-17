@@ -79,11 +79,11 @@ public:
     }
 
 //Number of cells in this list.
-    virtual size_t count(void) const = 0;
+    virtual size_t count() const = 0;
 //Get a particular cell.
-    virtual PickerCell *cellAt(int index) = 0;
+    virtual PickerCell *cellAt(size_t index) = 0;
 //Get a particular cell (const).
-    virtual const PickerCell *cellAt(int index) const = 0;
+    virtual const PickerCell *constCellAt(size_t index) const = 0;
 //Find a cell by id.  Returns NULL if not found.
     virtual PickerCell *cellWithId(const std::string &id);
 

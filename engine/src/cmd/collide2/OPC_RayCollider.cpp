@@ -3,6 +3,8 @@
  *	OPCODE - Optimized Collision Detection
  *	Copyright (C) 2001 Pierre Terdiman
  *	Homepage: http://www.codercorner.com/Opcode.htm
+ *
+ *	Copyright (C) 2021-2022 Stephen G. Tuggy
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -77,7 +79,7 @@
  *
  *		- You can enable or disable backface culling with RayCollider::SetCulling().
  *		- If culling is enabled, ray will not hit back faces (only front faces).
- *		
+ *
  *
  *
  *	\class		RayCollider
@@ -111,13 +113,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
- * Updated by Stephen G. Tuggy 2021-07-03
- * Updated by Stephen G. Tuggy 2022-01-06
- */
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Precompiled Header
 #include "Stdafx.h"
 
@@ -129,7 +124,7 @@ using namespace Opcode;
 #define SET_CONTACT(prim_index, flag)                                                           \
     mNbIntersections++;                                                                         \
     /* Set contact status */                                                                    \
-    mFlags |= flag;                                                                             \
+    mFlags |= (flag);                                                                           \
     /* In any case the contact has been found and recorded in mStabbedFace  */                  \
     mStabbedFace.mFaceID = prim_index;
 
@@ -212,7 +207,7 @@ using namespace Opcode;
 RayCollider::RayCollider() :
 #ifdef OPC_RAYHIT_CALLBACK
         mHitCallback(nullptr),
-        mUserData(0),
+        mUserData(nullptr),
 #else
         mStabbedFaces		(nullptr),
 #endif
@@ -604,7 +599,8 @@ void RayCollider::_SegmentStab(const AABBQuantizedNoLeafNode *node) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void RayCollider::_SegmentStab(const AABBTreeNode *node, Container &box_indices) {
     // Test the box against the segment
-    Point Center, Extents;
+    Point Center;
+    Point Extents;
     node->GetAABB()->GetCenter(Center);
     node->GetAABB()->GetExtents(Extents);
     if (!SegmentAABBOverlap(Center, Extents)) {
@@ -754,7 +750,8 @@ void RayCollider::_RayStab(const AABBQuantizedNoLeafNode *node) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void RayCollider::_RayStab(const AABBTreeNode *node, Container &box_indices) {
     // Test the box against the ray
-    Point Center, Extents;
+    Point Center;
+    Point Extents;
     node->GetAABB()->GetCenter(Center);
     node->GetAABB()->GetExtents(Extents);
     if (!RayAABBOverlap(Center, Extents)) {

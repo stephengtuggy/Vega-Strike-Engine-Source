@@ -2,17 +2,17 @@
     Copyright (C) 1998 by Jorrit Tyberghein
     Largely rewritten by Ivan Avramovic <ivan@avramovic.com>
     Copyright (C) 2022 Stephen G. Tuggy
-  
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-  
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-  
+
     You should have received a copy of the GNU Library General Public
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -21,7 +21,6 @@
 
 #define MIN(a, b) ((a)<(b)?(a):(b))
 #define MAX(a, b) ((a)>(b)?(a):(b))
-#include <math.h>
 #include "cmd/collide2/opcodesysdef.h"
 #include "opbox.h"
 
@@ -32,7 +31,7 @@
 // We have a coordinate system around our box which is
 // divided into 27 regions. The center region at coordinate (1,1,1)
 // is the node itself. Every one of the 26 remaining regions
-// defines an number of vertices which are the convex outline
+// defines a number of vertices which are the convex outline
 // as seen from a camera view point in that region.
 // The numbers inside the outlines table are indices from 0 to
 // 7 which describe the 8 vertices outlining the node:
@@ -141,8 +140,9 @@ csVector3 csBox3::GetCorner(int corner) const {
             return csVector3(MaxX(), MaxY(), MinZ());
         case BOX_CORNER_XYZ:
             return Max();
+        default:
+            return csVector3(0, 0, 0);
     }
-    return csVector3(0, 0, 0);
 }
 
 void csBox3::SetCenter(const csVector3 &c) {
@@ -341,7 +341,7 @@ void csBox3::GetConvexOutline(const csVector3 &pos,
 }
 
 bool csBox3::Between(const csBox3 &box1, const csBox3 &box2) const {
-    // First the trival test to see if the coordinates are
+    // First the trivial test to see if the coordinates are
     // at least within the right intervals.
     if (((maxbox.x >= box1.minbox.x && minbox.x <= box2.maxbox.x) ||
             (maxbox.x >= box2.minbox.x && minbox.x <= box1.maxbox.x)) &&

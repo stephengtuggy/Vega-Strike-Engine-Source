@@ -110,7 +110,7 @@ public:
         orig = nullptr;
     }
 
-    OrigMeshContainer(Mesh *orig, float d, int passno) {
+    OrigMeshContainer(Mesh *orig, float d, size_t passno) {
         assert(passno < orig->technique->getNumPasses());
 
         const Pass &pass = orig->technique->getPass(passno);
@@ -521,7 +521,7 @@ void Mesh::Draw(float lod,
         origmesh->draw_queue[static_cast<size_t>(c.mesh_seq)].push_back(c);
         if (!(origmesh->will_be_drawn & (1 << c.mesh_seq))) {
             origmesh->will_be_drawn |= (1 << c.mesh_seq);
-            for (int passno = 0, npasses = origmesh->technique->getNumPasses(); passno < npasses; ++passno) {
+            for (size_t passno = 0, npasses = origmesh->technique->getNumPasses(); passno < npasses; ++passno) {
                 undrawn_meshes[static_cast<size_t>(c.mesh_seq)].push_back(OrigMeshContainer(origmesh,
                         toofar - rSize(),
                         passno));
@@ -534,7 +534,7 @@ void Mesh::Draw(float lod,
 void Mesh::DrawNow(float lod, bool centered, const Matrix &m, int cloak, float nebdist) {
     //short fix
     Mesh *o = getLOD(lod);
-    //fixme: cloaking not delt with.... not needed for backgroudn anyway
+    //fixme: cloaking not dealt with.... not needed for background anyway
     if (nebdist < 0) {
         Nebula *t = _Universe->AccessCamera()->GetNebula();
         if (t) {

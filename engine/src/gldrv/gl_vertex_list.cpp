@@ -130,22 +130,26 @@ void GFXVertexList::Init(enum POLYTYPE *poly,
     if (numVertices) {
         if (vertices) {
             if (!GFX_BUFFER_MAP_UNMAP) {
-                data.vertices = (GFXVertex *) malloc(sizeof(GFXVertex) * numVertices);
-                memcpy(data.vertices, vertices, sizeof(GFXVertex) * numVertices);
+                data.vertices = new GFXVertex[numVertices];
+                for (size_t n = 0; n < numVertices; ++n) {
+                    data.vertices[n] = vertices[n];
+                }
             } else {
                 data.vertices = const_cast< GFXVertex * > (vertices);                  //will *not* modify
             }
         } else if (colors) {
             if (!GFX_BUFFER_MAP_UNMAP) {
-                data.colors = (GFXColorVertex *) malloc(sizeof(GFXColorVertex) * numVertices);
-                memcpy(data.colors, colors, sizeof(GFXColorVertex) * numVertices);
+                data.colors = new GFXColorVertex[numVertices];
+                for (size_t n = 0; n < numVertices; ++n) {
+                    data.colors[n] = colors[n];
+                }
             } else {
                 data.colors = const_cast< GFXColorVertex * > (colors);
             }
         }
     } else {
-        data.vertices = NULL;
-        data.colors = NULL;
+        data.vertices = nullptr;
+        data.colors = nullptr;
     }
     this->offsets = new int[numlists];
     memcpy(this->offsets, offsets, sizeof(int) * numlists);
@@ -201,11 +205,15 @@ void GFXVertexList::Init(enum POLYTYPE *poly,
             //backstore required
             if (numVertices) {
                 if (vertices) {
-                    data.vertices = (GFXVertex *) malloc(sizeof(GFXVertex) * numVertices);
-                    memcpy(data.vertices, vertices, sizeof(GFXVertex) * numVertices);
+                    data.vertices = new GFXVertex[numVertices];
+                    for (size_t n = 0; n < numVertices; ++n) {
+                        data.vertices[n] = vertices[n];
+                    }
                 } else if (colors) {
-                    data.colors = (GFXColorVertex *) malloc(sizeof(GFXColorVertex) * numVertices);
-                    memcpy(data.colors, colors, sizeof(GFXColorVertex) * numVertices);
+                    data.colors = new GFXColorVertex[numVertices];
+                    for (size_t n = 0; n < numVertices; ++n) {
+                        data.colors[n] = colors[n];
+                    }
                 }
             }
         } else {
@@ -261,7 +269,9 @@ int GFXVertexList::numQuads() const {
 }
 
 void GFXVertexList::VtxCopy(GFXVertexList *thus, GFXVertex *dst, int offset, int howmany) {
-    memcpy(dst, &thus->data.vertices[offset], sizeof(GFXVertex) * howmany);
+    for (size_t n = 0; n < howmany; n++) {
+        dst[n] = thus->data.vertices[n + offset];
+    }
 }
 
 void GFXVertexList::ColVtxCopy(GFXVertexList *thus, GFXVertex *dst, int offset, int howmany) {
@@ -281,7 +291,7 @@ void GFXVertexList::ColVtxCopy(GFXVertexList *thus, GFXVertex *dst, int offset, 
 }
 
 void GFXVertexList::RenormalizeNormals() {
-    if (data.colors == 0 && data.vertices == 0) {
+    if (data.colors == nullptr && data.vertices == nullptr) {
         return;
     }          //
     if (numVertices > 0) {

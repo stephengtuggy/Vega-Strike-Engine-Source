@@ -4794,7 +4794,7 @@ void Unit::applyTechniqueOverrides(const std::map<std::string, std::string> &ove
         // Can't be any lower, or goto won't work
         TechniquePtr newtechnique;
 
-        for (int passno = 0; passno < technique->getNumPasses(); ++passno) {
+        for (size_t passno = 0; passno < technique->getNumPasses(); ++passno) {
             const Pass &pass = technique->getPass(passno);
             for (size_t paramno = 0; paramno < pass.getNumShaderParams(); ++paramno) {
                 if (overrides.count(pass.getShaderParam(paramno).name) > 0) {
@@ -4807,7 +4807,7 @@ void Unit::applyTechniqueOverrides(const std::map<std::string, std::string> &ove
         // (make sure the technique has been compiled though -
         // parameter values don't really need recompilation)
         newtechnique = TechniquePtr(new Technique(*technique));
-        for (int passno = 0; passno < technique->getNumPasses(); ++passno) {
+        for (size_t passno = 0; passno < technique->getNumPasses(); ++passno) {
             Pass &pass = technique->getPass(passno);
             for (size_t paramno = 0; paramno < pass.getNumShaderParams(); ++paramno) {
                 Pass::ShaderParam &param = pass.getShaderParam(paramno);

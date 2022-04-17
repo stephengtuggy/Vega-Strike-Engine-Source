@@ -31,9 +31,9 @@ struct Quaternion;
  */
 class csMatrix3 {
 public:
-    float m11, m12, m13;
-    float m21, m22, m23;
-    float m31, m32, m33;
+    float m11{}, m12{}, m13{};
+    float m21{}, m22{}, m23{};
+    float m31{}, m32{}, m33{};
 
 public:
     /// Construct a matrix, initialized to be the identity.
@@ -118,6 +118,7 @@ public:
     csMatrix3 &operator*=(float s);
 
     /// Divide this matrix by a scalar.
+    // Function 'operator/=' is not implemented anywhere, according to CLion
     csMatrix3 &operator/=(float s);
 
     /// Unary + operator.
@@ -202,7 +203,7 @@ public:
      * Return a rotation matrix around the X axis.
      * 'angle' is given in radians.
      */
-    csXRotMatrix3(float angle);
+    explicit csXRotMatrix3(float angle);
 };
 
 /// An instance of csMatrix3 that is initialized as a rotation about Y
@@ -212,7 +213,7 @@ public:
      * Return a rotation matrix around the Y axis.
      * 'angle' is given in radians.
      */
-    csYRotMatrix3(float angle);
+    explicit csYRotMatrix3(float angle);
 };
 
 /// An instance of csMatrix3 that is initialized as a rotation about Z
@@ -222,7 +223,7 @@ public:
      * Return a rotation matrix around the Z axis.
      * 'angle' is given in radians.
      */
-    csZRotMatrix3(float angle);
+    explicit csZRotMatrix3(float angle);
 };
 
 /// An instance of csMatrix3 that is initialized to scale the X dimension
@@ -231,7 +232,7 @@ public:
     /**
      * Return a matrix which scales in the X dimension.
      */
-    csXScaleMatrix3(float scaler) : csMatrix3(scaler, 0, 0, 0, 1, 0, 0, 0, 1) {
+    explicit csXScaleMatrix3(float scaler) : csMatrix3(scaler, 0, 0, 0, 1, 0, 0, 0, 1) {
     }
 };
 
@@ -241,7 +242,7 @@ public:
     /**
      * Return a matrix which scales in the Y dimension.
      */
-    csYScaleMatrix3(float scaler) : csMatrix3(1, 0, 0, 0, scaler, 0, 0, 0, 1) {
+    explicit csYScaleMatrix3(float scaler) : csMatrix3(1, 0, 0, 0, scaler, 0, 0, 0, 1) {
     }
 };
 
@@ -251,7 +252,7 @@ public:
     /**
      * Return a matrix which scales in the Z dimension.
      */
-    csZScaleMatrix3(float scaler) : csMatrix3(1, 0, 0, 0, 1, 0, 0, 0, scaler) {
+    explicit csZScaleMatrix3(float scaler) : csMatrix3(1, 0, 0, 0, 1, 0, 0, 0, scaler) {
     }
 };
 
