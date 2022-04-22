@@ -231,19 +231,22 @@ GFXSphereVertexList::GFXSphereVertexList(float radius, int detail, bool Insideou
 
 GFXSphereVertexList::~GFXSphereVertexList() {
     numVertices = 0;
-    if (data.vertices) {
-        delete[] data.vertices;
-        data.vertices = nullptr;
+    if (hasColor()) {
+        if (data.colors != nullptr) {
+            delete[] data.colors;
+            data.colors = nullptr;
+        }
+    } else {
+        if (data.vertices != nullptr) {
+            delete[] data.vertices;
+            data.vertices = nullptr;
+        }
     }
-    if (data.colors) {
-        delete[] data.colors;
-        data.colors = nullptr;
-    }
-    index.i = 0;
-    mode = 0;
+    index.i = nullptr;
+    mode = nullptr;
     numlists = 0;
     display_list = 0;
-    offsets = 0;
+    offsets = nullptr;
     vbo_data = 0;
 }
 

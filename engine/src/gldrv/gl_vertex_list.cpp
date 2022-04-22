@@ -110,7 +110,7 @@ void GFXVertexList::Init(enum POLYTYPE *poly,
 
     int stride = 0;
 
-    changed = HAS_COLOR * ((colors != NULL) ? 1 : 0);
+    changed = HAS_COLOR * ((colors != nullptr) ? 1 : 0);
     if (numlists > 0) {
         mode = new POLYTYPE[numlists];
         unique_mode = true;
@@ -296,7 +296,7 @@ void GFXVertexList::RenormalizeNormals() {
     }          //
     if (numVertices > 0) {
         Vector firstNormal;
-        if (changed & HAS_COLOR) {
+        if (hasColor()) {
             firstNormal = data.colors[0].GetNormal();
         } else {
             firstNormal = data.vertices[0].GetNormal();
@@ -309,12 +309,12 @@ void GFXVertexList::RenormalizeNormals() {
             firstNormal.Set(1, 0, 0);
         }
         firstNormal.Normalize();
-        if (changed & HAS_COLOR) {
+        if (hasColor()) {
             data.colors[0].SetNormal(firstNormal);
         } else {
             data.vertices[0].SetNormal(firstNormal);
         }
-        if (changed & HAS_COLOR) {
+        if (hasColor()) {
             for (int i = 0; i < numVertices; i++) {
                 //data.colors[i].SetNormal(data.colors[i].GetNormal().Normalize());
                 data.colors[i].i *= GFX_SCALE;
@@ -387,7 +387,7 @@ void GFXVertexList::GetPolys(GFXVertex **vert, int *numpolys, int *numtris) {
     }
     this->Map(true, false);
     void (*vtxcpy)(GFXVertexList *thus, GFXVertex *dst, int offset, int howmany);
-    vtxcpy = (changed & HAS_COLOR)
+    vtxcpy = hasColor()
             ? ((changed & HAS_INDEX)
                     ? ColIndVtxCopy
                     : ColVtxCopy)

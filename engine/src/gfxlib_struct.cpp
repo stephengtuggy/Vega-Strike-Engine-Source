@@ -24,7 +24,7 @@
 #include "gfxlib_struct.h"
 #include "gfxlib.h"
 #include "gldrv/gl_globals.h"
-#include <stdio.h>
+#include <cstdio>
 #include "xml_support.h"
 #include "config_xml.h"
 #include "vs_globals.h"
@@ -127,9 +127,17 @@ void GFXVertexList::RefreshDisplayList() {
     }
     if (vbo_data) {
         GFXBindBuffer(vbo_data);
-        (*glBufferDataARB_p)(GL_ARRAY_BUFFER_ARB, numVertices
-                        * ((changed & HAS_COLOR) ? sizeof(GFXColorVertex) : sizeof(GFXVertex)), data.vertices,
-                (changed & CHANGE_MUTABLE) ? GL_DYNAMIC_DRAW_ARB : GL_STATIC_DRAW_ARB);
+        if (hasColor()) {
+            (*glBufferDataARB_p)(GL_ARRAY_BUFFER_ARB,
+                    numVertices * sizeof(GFXColorVertex),
+                    data.colorVertices.data(),
+                    (changed & CHANGE_MUTABLE) ? GL_DYNAMIC_DRAW_ARB : GL_STATIC_DRAW_ARB);
+        } else {
+            (*glBufferDataARB_p)(GL_ARRAY_BUFFER_ARB,
+                    numVertices * sizeof(GFXVertex),
+                    data.vertices.data(),
+                    (changed & CHANGE_MUTABLE) ? GL_DYNAMIC_DRAW_ARB : GL_STATIC_DRAW_ARB);
+        }
         if (changed & HAS_INDEX) {
             GFXBindElementBuffer(display_list);
             unsigned int tot = 0;
@@ -155,10 +163,10 @@ void GFXVertexList::RefreshDisplayList() {
     }
     int offset = 0;
     display_list = GFXCreateList();
-    if (changed & HAS_COLOR) {
-        EnableArrays(data.colors);
+    if (hasColor()) {
+        EnableArrays(data.colorVertices.data());
     } else {
-        EnableArrays(data.vertices);
+        EnableArrays(data.vertices.data());
     }
     for (int i = 0; i < numlists; i++) {
         // Populate the display list with array data
@@ -204,18 +212,18 @@ void GFXVertexList::BeginDrawState(GFXBOOL lock) {
             print_gl_error("VBO18.5b Error %1%");
         }
 
-        if (changed & HAS_COLOR) {
-            EnableArrays((GFXColorVertex *) NULL);
+        if (hasColor()) {
+            EnableArrays((GFXColorVertex *) nullptr);
         } else {
-            EnableArrays((GFXVertex *) NULL);
+            EnableArrays((GFXVertex *) nullptr);
         }
     } else
 #endif
     if (display_list == 0) {
-        if (changed & HAS_COLOR) {
-            EnableArrays(data.colors);
+        if (hasColor()) {
+            EnableArrays(data.colorVertices.data());
         } else {
-            EnableArrays(data.vertices);
+            EnableArrays(data.vertices.data());
         }
 #ifndef NO_COMPILEDVERTEXARRAY_SUPPORT
         if (lock && glLockArraysEXT_p) {
@@ -250,7 +258,7 @@ void GFXVertexList::EndDrawState(GFXBOOL lock) {
         }
 #endif
     }
-    if (changed & HAS_COLOR) {
+    if (hasColor()) {
         GFXColor4f(1, 1, 1, 1);
     }
 }
@@ -524,39 +532,35 @@ GFXVertexList::~GFXVertexList() {
         delete[] mode;
         mode = nullptr;
     }
-    if (changed & HAS_COLOR) {
-        if (data.colors != nullptr) {
-            delete[] data.colors;
-            data.colors = nullptr;
-        }
-    } else if (data.vertices != nullptr) {
-        delete[] data.vertices;
-        data.vertices = nullptr;
+    if (hasColor()) {
+        data.colorVertices.clear();
+    } else {
+        data.vertices.clear();
     }
 }
 
-union GFXVertexList::VDAT *GFXVertexList::Map(bool read, bool write) {
+GFXVertexList::VDAT *GFXVertexList::Map(bool read, bool write) {
 #ifndef NO_VBO_SUPPORT
-    if (GFX_BUFFER_MAP_UNMAP) {
-        if (vbo_data) {
-            if (display_list) {
-                GFXBindElementBuffer(display_list);
-                index.b =
-                        (unsigned char *) (*glMapBufferARB_p)(GL_ELEMENT_ARRAY_BUFFER_ARB,
-                                read ? (write ? GL_READ_WRITE_ARB : GL_READ_ONLY_ARB)
-                                        : GL_WRITE_ONLY_ARB);
-            }
-            GFXBindBuffer(vbo_data);
-            void *ret =
-                    (*glMapBufferARB_p)(GL_ARRAY_BUFFER_ARB,
-                            read ? (write ? GL_READ_WRITE_ARB : GL_READ_ONLY_ARB) : GL_WRITE_ONLY_ARB);
-            if (changed & HAS_COLOR) {
-                data.colors = (GFXColorVertex *) ret;
-            } else {
-                data.vertices = (GFXVertex *) ret;
-            }
-        }
-    }
+//    if (GFX_BUFFER_MAP_UNMAP) {
+//        if (vbo_data) {
+//            if (display_list) {
+//                GFXBindElementBuffer(display_list);
+//                index.b =
+//                        (unsigned char *) (*glMapBufferARB_p)(GL_ELEMENT_ARRAY_BUFFER_ARB,
+//                                read ? (write ? GL_READ_WRITE_ARB : GL_READ_ONLY_ARB)
+//                                        : GL_WRITE_ONLY_ARB);
+//            }
+//            GFXBindBuffer(vbo_data);
+//            void *ret =
+//                    (*glMapBufferARB_p)(GL_ARRAY_BUFFER_ARB,
+//                            read ? (write ? GL_READ_WRITE_ARB : GL_READ_ONLY_ARB) : GL_WRITE_ONLY_ARB);
+//            if (hasColor()) {
+//                data.colorVertices. = (GFXColorVertex *) ret;
+//            } else {
+//                data.vertices = (GFXVertex *) ret;
+//            }
+//        }
+//    }
 
 #endif
 
@@ -565,25 +569,25 @@ union GFXVertexList::VDAT *GFXVertexList::Map(bool read, bool write) {
 
 void GFXVertexList::UnMap() {
 #ifndef NO_VBO_SUPPORT
-    if (GFX_BUFFER_MAP_UNMAP) {
-        if (vbo_data) {
-            if (display_list) {
-                GFXBindElementBuffer(display_list);
-                (*glUnmapBufferARB_p)(GL_ELEMENT_ARRAY_BUFFER_ARB);
-            }
-            GFXBindBuffer(vbo_data);
-            (*glUnmapBufferARB_p)(GL_ARRAY_BUFFER_ARB);
-            data.colors = nullptr;
-            data.vertices = nullptr;
-        }
-    }
+//    if (GFX_BUFFER_MAP_UNMAP) {
+//        if (vbo_data) {
+//            if (display_list) {
+//                GFXBindElementBuffer(display_list);
+//                (*glUnmapBufferARB_p)(GL_ELEMENT_ARRAY_BUFFER_ARB);
+//            }
+//            GFXBindBuffer(vbo_data);
+//            (*glUnmapBufferARB_p)(GL_ARRAY_BUFFER_ARB);
+//            data.colors = nullptr;
+//            data.vertices = nullptr;
+//        }
+//    }
 
 #endif
 
 }
 
 ///Returns the array of vertices to be mutated
-union GFXVertexList::VDAT *GFXVertexList::BeginMutate(int offset) {
+GFXVertexList::VDAT *GFXVertexList::BeginMutate(int offset) {
     return this->Map(false, true);
 }
 
@@ -644,7 +648,7 @@ void SetVector(const double factor, Vector *pv) {
 }
 
 void GFXSphereVertexList::ProceduralModification() {
-    GFXVertex *v = sphere->BeginMutate(0)->vertices;
+    GFXVertex *v = sphere->BeginMutate(0)->vertices.data();
     const int ROWS = 28;
     int row[ROWS];
     for (int i = 0; i < ROWS; i++) {

@@ -21,8 +21,8 @@
  */
 
 
-#ifndef _GFXLIB_STRUCT
-#define _GFXLIB_STRUCT
+#ifndef VEGA_GFXLIB_STRUCT
+#define VEGA_GFXLIB_STRUCT
 #include "gfx/vec.h"
 #include "endianness.h"
 
@@ -31,10 +31,10 @@
 #include <functional>
 
 #ifndef GFXBOOL
-#define GFXBOOL unsigned char
+#define GFXBOOL bool
 #endif
-#define GFXTRUE 1
-#define GFXFALSE 0
+#define GFXTRUE true
+#define GFXFALSE false
 
 const int INDEX_BYTE = sizeof(unsigned char);
 const int INDEX_SHORT = sizeof(unsigned short);
@@ -846,16 +846,18 @@ class /*GFXDRVAPI*/ GFXQuadList {
 ///Number of quads to be drawn packed first numQuads*4 vertices
     int numQuads;
 ///Assignments to packed data for quad modification
-    int *quadassignments{};
+    std::vector<int> quadAssignments{};
 ///all numVertices allocated vertices and color
-    union VCDAT {
-        GFXVertex *vertices;
-        GFXColorVertex *colors;
+    struct VCDAT {
+        ///The data either does not have color data
+        std::vector<GFXVertex> vertices{};
+        ///Or has color data
+        std::vector<GFXColorVertex> colorVertices{};
     }
             data{};
 ///Is color in this quad list
     GFXBOOL isColor;
-///number of "dirty" quads, hence gaps in quadassignments that must be assigned before more are allocated
+///number of "dirty" quads, hence gaps in quadAssignments that must be assigned before more are allocated
     int Dirty;
 public:
 ///Creates an initial Quad List
@@ -881,21 +883,21 @@ public:
 class /*GFXDRVAPI*/ GFXVertexList {
     friend class GFXSphereVertexList;
 protected:
-///Num vertices allocated
     const GFXVertex *GetVertex(int index) const;
     const GFXColorVertex *GetColorVertex(int index) const;
+    ///Num vertices allocated
     int numVertices{};
-///Vertices and colors stored
-    union VDAT {
+    ///Vertices and colors stored
+    struct VDAT {
         ///The data either does not have color data
-        GFXVertex *vertices;
+        std::vector<GFXVertex> vertices{};
         ///Or has color data
-        GFXColorVertex *colors;
+        std::vector<GFXColorVertex> colorVertices{};
 
-        VDAT() : vertices(nullptr) {
-        };
+//        VDAT() : vertices(nullptr) {
+//        };
     }
-            data;
+            data{};
     union INDEX {
         unsigned char *b; //stride 1
         unsigned short *s; //stride 2
@@ -918,7 +920,7 @@ protected:
  * 2 triangles 3 quads and 2 lines would be {6,12,4} as the offsets
  */
     int *offsets{};
-///If vertex list has been mutated since last draw.  Low 3 bits store the stride of the index list (if avail). another bit for if color is presnet
+///If vertex list has been mutated since last draw.  Low 3 bits store the stride of the index list (if avail). another bit for if color is present
     char changed{};
 ///copies nonindexed vertices to dst vertex array
     static void VtxCopy(GFXVertexList *thus, GFXVertex *dst, int offset, int howmany);
