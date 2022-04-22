@@ -44,7 +44,7 @@ struct DamageableObject {
 
     InflictedDamage DealDamage(const CoreVector &attack_vector, Damage &damage);
 
-    void Destroy();
+    virtual void Destroy();
     bool Destroyed();
 
     // Callbacks

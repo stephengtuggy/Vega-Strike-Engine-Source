@@ -634,7 +634,7 @@ void SystemFactory::processEnhancement(string element, Star_XML *xml, Object &ob
 
         unit->SetPosAndCumPos(R + S + xml->cursun.Cast() + xml->systemcentroid.Cast());
         unit->SetOwner(getTopLevelOwner());
-        xml->moons.push_back(static_cast<Planet *>(unit)); // Calling factory will call AddUnit using this
+        xml->moons.push_back(dynamic_cast<Planet *>(unit)); // Calling factory will call AddUnit using this
     } else {
         // Some kind of satellite.
         owner->AddSatellite(unit);

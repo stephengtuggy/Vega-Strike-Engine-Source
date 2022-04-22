@@ -69,12 +69,13 @@ public:
 
 protected:
     virtual ~Damageable() = default;
+
+public:
     // forbidden
     Damageable(const Damageable &) = delete;
     // forbidden
     Damageable &operator=(const Damageable &) = delete;
 
-public:
     // We follow the existing convention of GetX for the actual health value
     // because we are constrained by existing python interfaces, which cannot
     // be easily changed.
@@ -137,7 +138,7 @@ public:
             void *ownerDoNotDereference);
     void DamageRandomSystem(InflictedDamage inflicted_damage, bool player, Vector attack_vector);
     void DamageCargo(InflictedDamage inflicted_damage);
-    void Destroy(); //explodes then deletes
+    void Destroy() override; //explodes then deletes
 
     float FShieldData() const;
     float RShieldData() const;
