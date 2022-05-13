@@ -1592,7 +1592,7 @@ void BaseComputer::recalcTitle() {
             }
             break;
         case MISSIONS: {
-            const int count = guiMax(0, int(*activeMissions2().size())-1);
+            const int count = guiMax(0, int((*activeMissions2()).size())-1);
             if (showStardate) {
                 playerTitle = (boost::format("Stardate: %1$s      Credits: %2$.2f      Active missions: %3$d")
                         % stardate % playerCredits % count)
@@ -2360,7 +2360,7 @@ bool BaseComputer::isTransactionOK(const Cargo &originalItem, TransactionType tr
         case ACCEPT_MISSION:
             //Make sure the player doesn't take too many missions.
             if (item.GetCategory().find("Active_Missions") != string::npos
-                    || active_missions.size() < UniverseUtil::maxMissions()) {
+                    || (*activeMissions2()).size() < UniverseUtil::maxMissions()) {
                 return true;
             }
             break;

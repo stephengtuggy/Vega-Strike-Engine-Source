@@ -52,7 +52,7 @@
 //    return kActiveMissions;
 //}
 
-static std::shared_ptr<LeakVector2<Mission *>> activeMissions2() {
+std::shared_ptr<LeakVector2<Mission *>> activeMissions2() {
     static const std::shared_ptr<LeakVector2<Mission *>> kActiveMissions2 = std::make_shared<LeakVector2<Mission *>>(0, LeakAllocator<Mission *>());
     return kActiveMissions2;
 }

@@ -23,6 +23,7 @@
 #ifndef __VS_GLOBALS_H_
 #define __VS_GLOBALS_H_
 #include <vector>
+#include <memory>
 
 #include "command.h"
 
