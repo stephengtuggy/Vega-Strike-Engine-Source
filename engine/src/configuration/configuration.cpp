@@ -43,6 +43,7 @@ void Configuration::OverrideDefaultsWithUserConfiguration() {
     general_config_.pitch = GameConfig::GetVariable("general.pitch", 0.0F);
     general_config_.yaw = GameConfig::GetVariable("general.yaw", 0.0F);
     general_config_.roll = GameConfig::GetVariable("general.roll", 0.0F);
+    general_config_.force_anonymous_mission_names = GameConfig::GetVariable("general.force_anonymous_mission_names", true);
 
     data_config_.master_part_list = GameConfig::GetString("data.master_part_list", "master_part_list");
     data_config_.using_templates = GameConfig::GetVariable("data.usingtemplates", true);
@@ -111,6 +112,9 @@ void Configuration::OverrideDefaultsWithUserConfiguration() {
     graphics_config_.shield_detail = GameConfig::GetVariable("graphics.shield_detail", 16);
     graphics_config_.shield_texture = GameConfig::GetString("graphics.shield_texture", "shield.bmp");
     graphics_config_.shield_technique = GameConfig::GetString("graphics.shield_technique", "");
+    graphics_config_.fov = GameConfig::GetVariable("graphics.fov", 78.0F);
+    graphics_config_.reduced_vdus_width = GameConfig::GetVariable("graphics.reduced_vdus_width", 0.0F);
+    graphics_config_.reduced_vdus_height = GameConfig::GetVariable("graphics.reduced_vdus_height", 0.0F);
 
     graphics_config_.glow_flicker.flicker_time = GameConfig::GetVariable("graphics.glowflicker.time", 30.0F);
     graphics_config_.glow_flicker.flicker_off_time = GameConfig::GetVariable("graphics.glowflicker.off-time", 2.0F);
@@ -295,6 +299,7 @@ void Configuration::OverrideDefaultsWithUserConfiguration() {
     physics.neutral_auto_radius = GameConfig::GetVariable("physics.neutral_auto_radius", 0.0F) * physics.game_speed;
     physics.hostile_auto_radius = GameConfig::GetVariable("physics.hostile_auto_radius", 1000.0F) * physics.game_speed;
     physics.min_asteroid_distance = GameConfig::GetVariable("physics.min_asteroid_distance", -100.0F);
+    physics.steady_itts = GameConfig::GetVariable("physics.steady_itts", false);
 
     // These calculations depend on the physics.game_speed and physics.game_accel values to be set already;
     // that's why they're down here instead of with the other graphics settings
