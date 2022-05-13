@@ -650,12 +650,13 @@ void NavigationSystem::DrawMission() {
     displayname.SetSize(.42, -.7);
     displayname.SetPos(originx + (.1 * deltax) + .37, originy /*+(1*deltay)*/ );
     std::string text;
+    auto active_missions = *activeMissions2();
     if (active_missions.size() > 1) {
-        for (unsigned int i = 1; i < active_missions.size(); ++i) {
-            text += active_missions[i]->mission_name + ":\n";
-            for (unsigned int j = 0; j < active_missions[i]->objectives.size(); ++j) {
-                text += active_missions[i]->objectives[j].objective + ": "
-                        + XMLSupport::tostring((int) (active_missions[i]->objectives[j].completeness * 100)) + "%\n";
+        for (unsigned int j = 1; j < active_missions.size(); ++j) {
+            text += active_missions[j]->mission_name + ":\n";
+            for (auto & objective : active_missions[j]->objectives) {
+                text += objective.objective + ": "
+                        + XMLSupport::tostring((int) (objective.completeness * 100)) + "%\n";
             }
         }
         text += "\n";

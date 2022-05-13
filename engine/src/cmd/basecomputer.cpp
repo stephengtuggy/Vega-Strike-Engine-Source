@@ -1592,7 +1592,7 @@ void BaseComputer::recalcTitle() {
             }
             break;
         case MISSIONS: {
-            const int count = guiMax(0, int(active_missions.size())-1);
+            const int count = guiMax(0, int(*activeMissions2().size())-1);
             if (showStardate) {
                 playerTitle = (boost::format("Stardate: %1$s      Credits: %2$.2f      Active missions: %3$d")
                         % stardate % playerCredits % count)
@@ -3055,19 +3055,20 @@ void BaseComputer::loadMissionsMasterList(TransactionList &tlist) {
     }
     //Sort the list.  Better for display, easier to compile into categories, etc.
     std::sort(tlist.masterList.begin(), tlist.masterList.end(), CargoColorSort());
+    auto active_missions = *activeMissions2();
     if (active_missions.size()) {
         for (unsigned int i = 1; i < active_missions.size(); ++i) {
             CargoColor amission;
-            amission.cargo.content = XMLSupport::tostring(i) + " " + active_missions[i]->mission_name;
+            amission.cargo.content = XMLSupport::tostring(i) + " " + active_missions.at(i)->mission_name;
             amission.cargo.price = 0;
             amission.cargo.quantity = 1;
             amission.cargo.category = "Active_Missions";
             amission.cargo.description = "Objectives\\";
-            for (unsigned int j = 0; j < active_missions[i]->objectives.size(); ++j) {
+            for (unsigned int j = 0; j < active_missions.at(i)->objectives.size(); ++j) {
                 amission.cargo.description =
-                        amission.cargo.GetDescription() + active_missions[i]->objectives[j].objective + ": "
+                        amission.cargo.GetDescription() + active_missions.at(i)->objectives.at(j).objective + ": "
                                 + XMLSupport::tostring((int) (100
-                                        * active_missions[i]->objectives[j].completeness))
+                                        * active_missions.at(i)->objectives.at(j).completeness))
                                 + "%\\";
             }
             amission.color = DEFAULT_UPGRADE_COLOR();
@@ -3107,11 +3108,12 @@ bool BaseComputer::acceptMission(const EventCommandId &command, Control *control
     }
     if (item->GetCategory().find("Active_Missions") != string::npos) {
         unsigned int whichmission = atoi(item->GetContent().c_str());
+        auto active_missions = *activeMissions2();
         if (whichmission > 0 && whichmission < active_missions.size()) {
-            Mission *miss = active_missions[whichmission];
+            Mission *miss = active_missions.at(whichmission);
             miss->terminateMission();
             if (miss == mission) {
-                mission = active_missions[0];
+                mission = active_missions.at(0);
             }
             refresh();
 

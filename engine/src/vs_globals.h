@@ -89,6 +89,41 @@ extern VegaConfig *vs_config;
 
 class Mission;
 extern Mission *mission;
+
+//struct null_deleter
+//{
+//    void operator()(void const *) const
+//    {
+//    }
+//};
+
+template<typename T>
+class LeakAllocator : public std::allocator<T> {
+public:
+    typedef size_t size_type;
+    typedef T* pointer;
+    typedef const T* const_pointer;
+
+    template<typename Tp1>
+    struct rebind {
+        typedef LeakAllocator<Tp1> other;
+    };
+
+    pointer allocate(size_type n, const void* hint = 0) {
+        return std::allocator<T>::allocate(n, hint);
+    }
+    void deallocate(pointer p, size_type n) {
+        // Do nothing
+    }
+
+    LeakAllocator() : std::allocator<T>() {}
+    LeakAllocator(const LeakAllocator<T> &other) : std::allocator<T>(other) {}
+    ~LeakAllocator() = default;
+};
+
+template<class MyType>
+using LeakVector2 = std::vector<MyType, LeakAllocator<MyType>>;
+
 template<class MyType>
 class LeakVector {
 private:
@@ -128,7 +163,10 @@ public:
     }
 };
 
-extern LeakVector<Mission *> active_missions;
+extern std::shared_ptr<LeakVector2<Mission *>> activeMissions2();
+
+//extern LeakVector2<Mission *> active_missions;
+
 class ForceFeedback;
 extern ForceFeedback *forcefeedback;
 

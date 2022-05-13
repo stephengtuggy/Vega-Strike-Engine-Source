@@ -37,6 +37,7 @@
 #endif
 
 #include <assert.h>
+#include "vs_globals.h"
 #include "cmd/unit_generic.h"
 #include "mission.h"
 #include "flightgroup.h"
@@ -44,8 +45,17 @@
 #include "python/python_class.h"
 #include "savegame.h"
 #include "universe.h"
-// #include "vsfilesystem.h"   // Is this needed? -- stephengtuggy 2021-09-06
 #include "vs_logging.h"
+
+//static std::shared_ptr<std::vector<std::shared_ptr<Mission>>> activeMissions() {
+//    static const std::shared_ptr<std::vector<std::shared_ptr<Mission>>> kActiveMissions = std::make_shared<std::vector<std::shared_ptr<Mission>>>();
+//    return kActiveMissions;
+//}
+
+static std::shared_ptr<LeakVector2<Mission *>> activeMissions2() {
+    static const std::shared_ptr<LeakVector2<Mission *>> kActiveMissions2 = std::make_shared<LeakVector2<Mission *>>(0, LeakAllocator<Mission *>());
+    return kActiveMissions2;
+}
 
 /* *********************************************************** */
 Mission::~Mission() {
@@ -193,67 +203,84 @@ void Mission::wipeDeletedMissions() {
 int Mission::getPlayerMissionNumber() {
     int num = 0;
 
-    vector<Mission *> *active_missions = ::active_missions.Get();
-    vector<Mission *>::iterator pl = active_missions->begin();
-
-    if (pl == active_missions->end()) {
+    auto currently_active_missions = activeMissions2();
+    if (currently_active_missions->empty()) {
         return -1;
     }
-
-    for (; pl != active_missions->end(); ++pl) {
-        if ((*pl)->player_num == this->player_num) {
-            if (*pl == this) {
-                return (int) num;
-            } else {
-                num++;
-            }
+    for (const auto& item : *currently_active_missions) {
+        if (item->player_num == this->player_num && item == this) {
+            return num;
+        } else {
+            ++num;
         }
     }
 
     return -1;
+
+//    vector<Mission *> *active_missions = ::active_missions.Get();
+//    vector<Mission *>::iterator pl = active_missions->begin();
+//
+//    if (pl == active_missions->end()) {
+//        return -1;
+//    }
+//
+//    for (; pl != active_missions->end(); ++pl) {
+//        if ((*pl)->player_num == this->player_num) {
+//            if (*pl == this) {
+//                return (int) num;
+//            } else {
+//                num++;
+//            }
+//        }
+//    }
+//
+//    return -1;
 }
 
 Mission *Mission::getNthPlayerMission(int cp, int missionnum) {
-    vector<Mission *> *active_missions = ::active_missions.Get();
-    Mission *activeMis = NULL;
-    if (missionnum >= 0) {
-        int num = -1;
-        vector<Mission *>::iterator pl = active_missions->begin();
-        if (pl == active_missions->end()) {
-            return NULL;
+    if (missionnum < 0) {
+        return nullptr;
+    }
+    int num = -1;
+    Mission *activeMis = nullptr;
+    auto active_missions = *activeMissions2();
+    if (active_missions.empty()) {
+        return nullptr;
+    }
+    for (const auto& item : active_missions) {
+        if (item->player_num == static_cast<size_t>(cp)) {
+            ++num;
         }
-        for (; pl != active_missions->end(); ++pl) {
-            if ((*pl)->player_num == (unsigned int) cp) {
-                num++;
-            }
-            if (num == missionnum) {
-                //Found it!
-                activeMis = (*pl);
-                break;
-            }
+        if (num == missionnum) {
+            // Found it!
+            activeMis = item;
+            return activeMis;
         }
     }
-    return activeMis;
+    return activeMis;   //nullptr;
 }
 
 void Mission::terminateMission() {
-    vector<Mission *> *active_missions = ::active_missions.Get();
-    vector<Mission *>::iterator f;
+//    vector<Mission *> *active_missions = ::active_missions.Get();
+    auto active_missions = activeMissions2();
 
-    f = std::find(Mission_delqueue.begin(), Mission_delqueue.end(), this);
-    if (f != Mission_delqueue.end()) {
-        VS_LOG(info, (boost::format("Not deleting mission twice: %1%") % this->mission_name));
+    {
+        auto f = std::find(Mission_delqueue.begin(), Mission_delqueue.end(), this);
+        if (f != Mission_delqueue.end()) {
+            VS_LOG(info, (boost::format("Not deleting mission twice: %1%") % this->mission_name));
+            return;
+        }
     }
 
-    f = std::find(active_missions->begin(), active_missions->end(), this);
+    auto f = std::find(active_missions->begin(), active_missions->end(), this);
 
     // Debugging aid for persistent missions bug
     if (g_game.vsdebug >= 1) {
         int misnum = -1;
-        for (vector<Mission *>::iterator i = active_missions->begin(); i != active_missions->end(); ++i) {
-            if ((*i)->player_num == player_num) {
+        for (const auto& i: *active_missions) {
+            if (i->player_num == player_num) {
                 ++misnum;
-                VS_LOG(info, (boost::format("   Mission #%1%: %2%") % misnum % (*i)->mission_name));
+                VS_LOG(info, (boost::format("   Mission #%1%: %2%") % misnum % i->mission_name));
             }
         }
     }
@@ -267,11 +294,11 @@ void Mission::terminateMission() {
     if (this != (*active_missions)[0]) {        //Shouldn't this always be true?
         Mission_delqueue.push_back(this);
     }          //only delete if we arent' the base mission
-    //NETFIXME: This routine does not work properly yet.
+    // NET FIXME: This routine does not work properly yet.
     VS_LOG(info, (boost::format("Terminating mission %1% #%2%") % this->mission_name % queuenum));
     if (queuenum >= 0) {
         // queuenum - 1 since mission #0 is the base mission (main_menu) and is persisted
-        // in savegame.cpp:LoadSavedMissions, and it has no correspondin active_scripts/active_missions entry,
+        // in savegame.cpp:LoadSavedMissions, and it has no corresponding active_scripts/active_missions entry,
         // meaning the actual active_scripts index is offset by 1.
         unsigned int num = queuenum - 1;
 
@@ -293,7 +320,7 @@ void Mission::terminateMission() {
     if (runtime.pymissions) {
         runtime.pymissions->Destroy();
     }
-    runtime.pymissions = NULL;
+    runtime.pymissions = nullptr;
 }
 
 /* *********************************************************** */

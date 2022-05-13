@@ -264,9 +264,9 @@ void QuitNow() {
         if (game_options()->write_savegame_on_exit) {
             _Universe->WriteSaveGame(true);              //gotta do important stuff first
         }
-        for (size_t i = 0; i < active_missions.size(); ++i) {
-            if (active_missions[i]) {
-                active_missions[i]->DirectorEnd();
+        for (auto& iter : *activeMissions2()) {
+            if (iter != nullptr) {
+                iter->DirectorEnd();
             }
         }
         if (forcefeedback != nullptr) {

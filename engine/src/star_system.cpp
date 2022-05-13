@@ -1019,40 +1019,54 @@ extern float getTimeCompression();
 void ExecuteDirector() {
     unsigned int curcockpit = _Universe->CurrentCockpit();
     {
-        for (unsigned int i = 0; i < active_missions.size(); ++i) {
-            if (active_missions[i]) {
-                _Universe->SetActiveCockpit(active_missions[i]->player_num);
+        for (const auto& iter : *activeMissions2()) {
+            if (iter != nullptr) {
+                _Universe->SetActiveCockpit(iter->player_num);
                 StarSystem *ss = _Universe->AccessCockpit()->activeStarSystem;
                 if (ss) {
                     _Universe->pushActiveStarSystem(ss);
                 }
-                mission = active_missions[i];
-                active_missions[i]->DirectorLoop();
+                mission = iter;
+                mission->DirectorLoop();
                 if (ss) {
                     _Universe->popActiveStarSystem();
                 }
             }
         }
+//        for (unsigned int i = 0; i < active_missions.size(); ++i) {
+//            if (active_missions[i]) {
+//                _Universe->SetActiveCockpit(active_missions[i]->player_num);
+//                StarSystem *ss = _Universe->AccessCockpit()->activeStarSystem;
+//                if (ss) {
+//                    _Universe->pushActiveStarSystem(ss);
+//                }
+//                mission = active_missions[i];
+//                active_missions[i]->DirectorLoop();
+//                if (ss) {
+//                    _Universe->popActiveStarSystem();
+//                }
+//            }
+//        }
     }
     _Universe->SetActiveCockpit(curcockpit);
-    mission = active_missions[0];
+    mission = activeMissions2()->front();   // active_missions[0];
     processDelayedMissions();
 
     {
-        for (unsigned int i = 1; i < active_missions.size();) {
-            if (active_missions[i]) {
-                if (active_missions[i]->runtime.pymissions) {
+        for (size_t i = 1; i < activeMissions2()->size();) {
+            if (activeMissions2()->at(i)) {
+                if (activeMissions2()->at(i)->runtime.pymissions) {
                     ++i;
                 } else {
-                    unsigned int w = active_missions.size();
-                    active_missions[i]->terminateMission();
-                    if (w == active_missions.size()) {
+                    size_t w = activeMissions2()->size();
+                    activeMissions2()->at(i)->terminateMission();
+                    if (w == activeMissions2()->size()) {
                         VS_LOG(warning, "MISSION NOT ERASED");
                         break;
                     }
                 }
             } else {
-                active_missions.Get()->erase(active_missions.Get()->begin() + i);
+                activeMissions2()->erase(activeMissions2()->begin() + i);
             }
         }
     }
@@ -1135,9 +1149,8 @@ void StarSystem::Update(float priority, bool executeDirector) {
                         AUDRefreshSounds();
                     }
                 }
-                for (unsigned int i = 0; i < active_missions.size(); ++i) {
-                    //waste of frakkin time
-                    active_missions[i]->BriefingUpdate();
+                for (auto& iter : *activeMissions2()) {
+                    iter->BriefingUpdate();
                 }
                 current_stage = PROCESS_UNIT;
             } else if (current_stage == PROCESS_UNIT) {

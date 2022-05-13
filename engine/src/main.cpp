@@ -173,7 +173,7 @@ void cleanup(void) {
     delete[] CONFIGFILE;
 }
 
-LeakVector<Mission *> active_missions;
+//LeakVector2<Mission *> active_missions(0, LeakAllocator<Mission *>());
 
 char mission_name[1024];
 
@@ -555,7 +555,8 @@ void bootstrap_main_loop() {
     InitTime();
     if (LoadMission) {
         LoadMission = false;
-        active_missions.push_back(mission = new Mission(mission_name));
+        mission = new Mission(mission_name);
+        ::activeMissions2()->push_back(mission);
 
         mission->initMission();
 

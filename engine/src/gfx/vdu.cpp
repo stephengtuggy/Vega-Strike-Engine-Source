@@ -1647,6 +1647,7 @@ inline const char *GetColorFromSuccess(float suc) {
 void DrawObjectivesTextPlane(TextPlane *tp, int scrolloffset, Unit *parent) {
     std::string rez("\n");
     std::string rezcompleted("");
+    auto active_missions = *activeMissions2();
     for (unsigned int i = 0; i < active_missions.size(); ++i) {
         if (!active_missions[i]->objectives.empty()) {
             rez += "#FFFFFF";

@@ -421,7 +421,7 @@ class PythonMissionBaseClass;
 class Mission {
 public:
     enum MISSION_AUTO { AUTO_OFF = -1, AUTO_NORMAL = 0, AUTO_ON = 1 };
-    unsigned int player_num;
+    unsigned int player_num{};
     MISSION_AUTO player_autopilot;
     MISSION_AUTO global_autopilot;
     struct Objective {
@@ -450,7 +450,7 @@ public:
         unpickleData = dat;
     }
 
-    class Briefing *briefing;
+    class Briefing *briefing{};
     static double gametime;
     std::string mission_name;
     void terminateMission();
@@ -526,19 +526,19 @@ public:
 private:
 //std::string getVariable(easyDomNode *section, std::string name, std::string defaultval);
     void ConstructMission(const char *configfile, const std::string &pythonscript, bool loadscripts = true);
-    missionNode *top;
+    missionNode *top{};
 
-    easyDomNode *variables;
-    easyDomNode *origin_node;
+    easyDomNode *variables{};
+    easyDomNode *origin_node{};
 
 #ifndef VS_MIS_SEL
-    Unit *current_ai_unit;
-    Order *current_ai_order;
+    Unit *current_ai_unit{};
+    Order *current_ai_order{};
 
-    int debuglevel;
-    bool start_game;
-    bool do_trace;
-    int tracelevel; //unusued
+    int debuglevel{};
+    bool start_game{};
+    bool do_trace{};
+    int tracelevel{}; //unusued
 
     static int total_nr_frames;
 
@@ -546,11 +546,11 @@ private:
 
     parsemode_type parsemode;
 
-    missionNode *director;
-    easyDomFactory<missionNode> *importf;
+    missionNode *director{};
+    easyDomFactory<missionNode> *importf{};
 
     tagMap tagmap;
-    char *nextpythonmission;
+    char *nextpythonmission{};
     std::string unpickleData;
 public:
     struct Runtime {
@@ -568,8 +568,8 @@ private:
     friend void UnpickleMission(std::string pickled);
 //used only for parsing
     std::vector<missionNode *> scope_stack;
-    missionNode *current_module;
-    missionNode *current_script;
+    missionNode *current_module{};
+    missionNode *current_script{};
 
     std::vector<std::string> import_stack;
     vsUMap<std::string, callback_module_string_type> module_string_map;
@@ -750,9 +750,9 @@ private:
     void doCall_toxml(std::string module, varInst *ovi);
 
     varInst *newVarInst(scope_type scopetype);
-    int vi_counter, old_vi_counter;
-    int olist_counter, old_olist_counter;
-    int string_counter, old_string_counter;
+    int vi_counter{}, old_vi_counter{};
+    int olist_counter{}, old_olist_counter{};
+    int string_counter{}, old_string_counter{};
 
     void deleteVarMap(varInstMap *vmap);
 //pushes this mission onto a destruct queue for future destruction and removes from activeMission

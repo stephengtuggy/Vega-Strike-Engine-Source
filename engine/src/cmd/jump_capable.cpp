@@ -67,15 +67,16 @@ signed char ComputeAutoGuarantee(Unit *un) {
         return Mission::AUTO_ON;
     }
     size_t i = 0;
-    for (i = 0; i < active_missions.size(); ++i) {
-        if (active_missions[i]->player_num == cpnum && active_missions[i]->player_autopilot != Mission::AUTO_NORMAL) {
-            return active_missions[i]->player_autopilot;
+    auto active_missions = *activeMissions2();
+    for (const auto& active_mission : active_missions) {
+        if (active_mission->player_num == cpnum && active_mission->player_autopilot != Mission::AUTO_NORMAL) {
+            return active_mission->player_autopilot;
         }
     }
 
-    for (i = 0; i < active_missions.size(); ++i) {
-        if (active_missions[i]->global_autopilot != Mission::AUTO_NORMAL) {
-            return active_missions[i]->global_autopilot;
+    for (const auto& active_mission : active_missions) {
+        if (active_mission->global_autopilot != Mission::AUTO_NORMAL) {
+            return active_mission->global_autopilot;
         }
     }
 
