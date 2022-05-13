@@ -47,6 +47,7 @@ void Configuration::OverrideDefaultsWithUserConfiguration() {
     data_config_.master_part_list = GameConfig::GetString("data.master_part_list", "master_part_list");
     data_config_.using_templates = GameConfig::GetVariable("data.usingtemplates", true);
 
+    ai.always_obedient = GameConfig::GetVariable("AI.always_obedient", true);
     ai.assist_friend_in_need                            = GameConfig::GetVariable("AI.assist_friend_in_need", true);
     ai.ease_to_anger                                    = GameConfig::GetVariable("AI.EaseToAnger", -0.5F);
     ai.ease_to_appease                                  = GameConfig::GetVariable("AI.EaseToAppease", 0.5F);
@@ -290,6 +291,10 @@ void Configuration::OverrideDefaultsWithUserConfiguration() {
     physics.max_radar_lock_cone_damage = GameConfig::GetVariable("physics.max_radar_lockcone_damage", 0.95F);
     physics.max_radar_track_cone_damage = GameConfig::GetVariable("physics.max_radar_trackcone_damage", 0.98F);
     physics.thruster_hit_chance = GameConfig::GetVariable("physics.thruster_hit_chance", 0.25F);
+    physics.friendly_auto_radius = GameConfig::GetVariable("physics.friendly_auto_radius", 0.0F) * physics.game_speed;
+    physics.neutral_auto_radius = GameConfig::GetVariable("physics.neutral_auto_radius", 0.0F) * physics.game_speed;
+    physics.hostile_auto_radius = GameConfig::GetVariable("physics.hostile_auto_radius", 1000.0F) * physics.game_speed;
+    physics.min_asteroid_distance = GameConfig::GetVariable("physics.min_asteroid_distance", -100.0F);
 
     // These calculations depend on the physics.game_speed and physics.game_accel values to be set already;
     // that's why they're down here instead of with the other graphics settings
