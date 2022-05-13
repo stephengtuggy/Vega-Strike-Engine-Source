@@ -346,9 +346,14 @@ Vector Movable::ResolveForces(const Transformation &trans, const Matrix &transma
     }
 
     // stephengtuggy 2020-10-17: These need to be initialized here, because they depend on having an active mission.
-    auto active_missions = *activeMissions2();
-    air_res_coef = XMLSupport::parse_floatf(active_missions.at(0)->getVariable("air_resistance", "0"));
-    lateral_air_res_coef = XMLSupport::parse_floatf(active_missions.at(0)->getVariable("lateral_air_resistance", "0"));
+    auto active_missions = activeMissions2();
+    if (active_missions->empty()) {
+        air_res_coef = 0.0F;
+        lateral_air_res_coef = 0.0F;
+    } else {
+        air_res_coef = XMLSupport::parse_floatf(active_missions->at(0)->getVariable("air_resistance", "0"));
+        lateral_air_res_coef = XMLSupport::parse_floatf(active_missions->at(0)->getVariable("lateral_air_resistance", "0"));
+    }
 
     if (air_res_coef != 0.0F || lateral_air_res_coef != 0.0F) {
         float velmag = Velocity.Magnitude();

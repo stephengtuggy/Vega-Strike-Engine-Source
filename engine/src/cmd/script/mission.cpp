@@ -52,8 +52,9 @@
 //    return kActiveMissions;
 //}
 
-std::shared_ptr<LeakVector2<Mission *>> activeMissions2() {
-    static const std::shared_ptr<LeakVector2<Mission *>> kActiveMissions2 = std::make_shared<LeakVector2<Mission *>>(0, LeakAllocator<Mission *>());
+std::shared_ptr<LeakVector2<Mission>> activeMissions2() {
+//    static const LeakAllocator<Mission> alloc;
+    static const std::shared_ptr<LeakVector2<Mission>> kActiveMissions2 = std::make_shared<LeakVector2<Mission>>();
     return kActiveMissions2;
 }
 
@@ -243,11 +244,11 @@ Mission *Mission::getNthPlayerMission(int cp, int missionnum) {
     }
     int num = -1;
     Mission *activeMis = nullptr;
-    auto active_missions = *activeMissions2();
-    if (active_missions.empty()) {
+    auto active_missions = activeMissions2();
+    if (active_missions->empty()) {
         return nullptr;
     }
-    for (const auto& item : active_missions) {
+    for (const auto& item : *active_missions) {
         if (item->player_num == static_cast<size_t>(cp)) {
             ++num;
         }

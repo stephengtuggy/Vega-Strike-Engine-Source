@@ -97,7 +97,7 @@ struct FIREKEYBOARDTYPE {
         nearestdangeroushostilekey = missiletargetkey = rmissiletargetkey = nearestfriendlykey = nearestbasekey =
                 nearestplanetkey = nearestjumpkey = togglepausekey = UP;
         shieldpowerstate = 1;
-        doc = und = req = 0;
+        doc = und = req = false;
     }
 
     KBSTATE firekey;
@@ -146,9 +146,9 @@ struct FIREKEYBOARDTYPE {
     KBSTATE toggleautotracking;
     KBSTATE togglewarpdrive;
     KBSTATE toggleanimation;
-    KBSTATE commKeys[NUMCOMMKEYS];
-    KBSTATE saveTargetKeys[NUMSAVEDTARGETS];
-    KBSTATE restoreTargetKeys[NUMSAVEDTARGETS];
+    KBSTATE commKeys[NUMCOMMKEYS]{};
+    KBSTATE saveTargetKeys[NUMSAVEDTARGETS]{};
+    KBSTATE restoreTargetKeys[NUMSAVEDTARGETS]{};
     KBSTATE nearturrettargetkey;
     KBSTATE threatturrettargetkey;
     KBSTATE pickturrettargetkey;

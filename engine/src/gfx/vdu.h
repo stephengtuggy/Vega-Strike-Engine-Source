@@ -48,7 +48,7 @@ class VDU : public VSSprite {
 private:
     class Animation *comm_ani;
     UnitContainer communicating;
-    class Animation *webcam;
+    class Animation *webcam{};
     VIEWSTYLE viewStyle;
     float *StartArmor;
     float *maxhull;

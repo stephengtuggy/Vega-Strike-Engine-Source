@@ -34,13 +34,13 @@
 //all unified AI's should inherit from FireAt, so they can choose targets together.
 #define NUMSAVEDTARGETS 10
 class FireKeyboard : public Order {
-    bool itts;
+    bool itts{};
     bool cloaktoggle;
     bool refresh_target;
     float gunspeed;
     float gunrange;
-    float rxntime;
-    float delay;
+    float rxntime{};
+    float delay{};
     float autotrackingtoggle;
     bool ShouldFire(Unit *targ);
     std::list<CommunicationMessage> resp;
@@ -153,8 +153,8 @@ public:
     static void TogglePause(const KBData &, KBSTATE);
 
 protected:
-    void *savedTargets[NUMSAVEDTARGETS];
-    float distance;
+    void *savedTargets[NUMSAVEDTARGETS]{};
+    float distance{};
 #if 0
     void ChooseTargets( bool targetturrets ); //chooses n targets and puts the best to attack in unit's target container
     void ChooseRTargets( bool targetturrets ); //chooses n targets and puts the best to attack in unit's target container

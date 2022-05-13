@@ -287,7 +287,7 @@ void LoadMission(const char *nission_name, const std::string &script, bool loadF
     vector<Flightgroup *>::const_iterator siter;
     vector<Flightgroup *> fg = activeMissions2()->back()->flightgroups;
 
-    if (activeMissions2()->size() > 0) {
+    if (!activeMissions2()->empty()) {
         //Give the mission a name.
         activeMissions2()->back()->mission_name = friendly_mission_name;
     }

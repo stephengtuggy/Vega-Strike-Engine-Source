@@ -776,12 +776,12 @@ bool Cockpit::Update() {
                 if (k == _Universe->numPlayers()) {
                     k = 0;
                 }
-                auto active_missions = *activeMissions2();
-                if (active_missions.size() > 1) {
-                    for (int i = active_missions.size() - 1; i > 0;
+                auto active_missions = activeMissions2();
+                if (active_missions->size() > 1) {
+                    for (size_t i = active_missions->size() - 1; i > 0;
                             --i) {                          //don't terminate zeroth mission
-                        if (active_missions.at(i)->player_num == k) {
-                            active_missions.at(i)->terminateMission();
+                        if (active_missions->at(i)->player_num == k) {
+                            active_missions->at(i)->terminateMission();
                         }
                     }
                 }

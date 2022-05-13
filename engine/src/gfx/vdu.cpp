@@ -76,7 +76,7 @@ const std::string vdu_modes[] =
                 "Message"};
 
 string reformatName(string nam) {
-    nam = nam.substr(0, nam.find("."));
+    nam = nam.substr(0, nam.find('.'));
     if (nam.length()) {
         nam[0] = toupper(nam[0]);
     }
@@ -102,7 +102,7 @@ string getUnitNameAndFgNoBase(Unit *target) {
                     fgname += fg->name
                             + (print_ship_type ? ((print_fg_sub_id && (!fgnstring.empty())) ? " =" : " : ") : "");
                 }
-                if (print_fg_sub_id && ("" != fgnstring)) {
+                if (print_fg_sub_id && (!fgnstring.empty())) {
                     fgname += fgnstring + "= ";
                 }
                 if (print_ship_type) {
@@ -112,7 +112,7 @@ string getUnitNameAndFgNoBase(Unit *target) {
             } else if (fg->name == "Base") {
                 if (configuration()->graphics_config_.hud.basename_colon_basename == false || reformatName(target->name) == (reformatName(target->getFullname()))) {
                     std::string retval(reformatName(target->getFullname()));
-                    if (print_fg_sub_id && ("" != fgnstring)) {
+                    if (print_fg_sub_id && (!fgnstring.empty())) {
                         retval += " : " + fgnstring;
                     }
                     return retval;
@@ -120,7 +120,7 @@ string getUnitNameAndFgNoBase(Unit *target) {
                     if (reformatName(target->name) == (reformatName(target->getFullname()))) {
                         std::string retval(reformatName(
                                 target->name) + " "
-                                + ((print_fg_sub_id && ("" != fgnstring)) ? (": " + fgnstring) : ""));
+                                + ((print_fg_sub_id && (!fgnstring.empty())) ? (": " + fgnstring) : ""));
                         return retval;
                     } else {
                         std::string retval(reformatName(target->name) + " : " + target->getFullname());
@@ -176,12 +176,12 @@ VDU::VDU(const char *file, TextPlane *textp, unsigned short modes, short rwws, s
     if (_Universe->numPlayers() > 1) {
         posmodes &= (~VIEW);
     }
-    comm_ani = NULL;
+    comm_ani = nullptr;
     viewStyle = CP_TARGET;
     StartArmor = ma;
     maxhull = mh;
     got_target_info = true;
-    SwitchMode(NULL);
+    SwitchMode(nullptr);
 }
 
 GFXColor getDamageColor(float armor, bool gradient = false) {
@@ -565,7 +565,7 @@ struct retString128 {
 
 retString128 PrettyDistanceString(double distance) {
     //OVERRUN
-    struct retString128 qr;
+    struct retString128 qr{};
     static float game_speed = XMLSupport::parse_float(vs_config->getVariable("physics", "game_speed", "1"));
     static bool lie = XMLSupport::parse_bool(vs_config->getVariable("physics", "game_speed_lying", "true"));
     if (lie) {
@@ -656,9 +656,9 @@ void VDU::DrawTarget(GameCockpit *cp, Unit *parent, Unit *target) {
     }
 
     DrawHUDSprite(this,
-            ((target->isUnit() != Vega_UnitType::planet || target->getHudImage() != NULL) ? target->getHudImage()
+            ((target->isUnit() != Vega_UnitType::planet || target->getHudImage() != nullptr) ? target->getHudImage()
                     : (
-                            target->GetDestinations().size() != 0 ? getJumpImage()
+                            !target->GetDestinations().empty() ? getJumpImage()
                                     : (((Planet *) target)->hasLights() ? getSunImage()
                                     : (
                                             target->getFullname().find(
@@ -680,7 +680,7 @@ void VDU::DrawTarget(GameCockpit *cp, Unit *parent, Unit *target) {
     GFXDisable(TEXTURE0);
     //sprintf (t,"\n%4.1f %4.1f",target->FShieldData()*100,target->RShieldData()*100);
     double mm = 0;
-    string unitandfg = getUnitNameAndFgNoBase(target).c_str();
+    string unitandfg = getUnitNameAndFgNoBase(target);
     const bool out_of_cone_information = configuration()->graphics_config_.hud.out_of_cone_distance;
     bool inrange = parent->InRange(target, mm, out_of_cone_information == false && !UnitUtil::isSignificant(
             target), false, false);
@@ -806,9 +806,9 @@ void VDU::DrawMessages(GameCockpit *parentcp, Unit *target) {
     MessageCenter *mc = mission->msgcenter;
     int rows_used = rows_needed;
     vector<std::string> whoNOT;
-    whoNOT.push_back("briefing");
-    whoNOT.push_back("news");
-    whoNOT.push_back("bar");
+    whoNOT.emplace_back("briefing");
+    whoNOT.emplace_back("news");
+    whoNOT.emplace_back("bar");
 
     static float oldtime = XMLSupport::parse_float(vs_config->getVariable("graphics", "last_message_time", "5"));
     static int num_messages = XMLSupport::parse_int(vs_config->getVariable("graphics", "num_messages", "2"));
@@ -897,11 +897,11 @@ void VDU::DrawScanningMessage() {
 }
 
 bool VDU::SetCommAnimation(Animation *ani, Unit *un, bool force) {
-    if (comm_ani == NULL || force) {
+    if (comm_ani == nullptr || force) {
         if (posmodes & COMM) {
-            if (ani != NULL && comm_ani == NULL) {
+            if (ani != nullptr && comm_ani == nullptr) {
                 thismode.push_back(COMM);
-            } else if (comm_ani != NULL && thismode.size() > 1 && ani != NULL) {
+            } else if (comm_ani != nullptr && thismode.size() > 1 && ani != nullptr) {
                 thismode.back() = COMM;
             }
             if (ani) {
@@ -921,7 +921,7 @@ Unit *VDU::GetCommunicating() {
             return communicating.GetUnit();
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 void VDU::DrawNav(GameCockpit *cp, Unit *you, Unit *targ, const Vector &nav) {
@@ -951,10 +951,10 @@ void VDU::DrawNav(GameCockpit *cp, Unit *you, Unit *targ, const Vector &nav) {
     float delautotime = UniverseUtil::GetGameTime() - cp->autoMessageTime;
     bool draw_auto_message = (delautotime < auto_message_lim && cp->autoMessage.length() != 0);
     std::string msg = cp->autoMessage;
-    std::string::size_type where = msg.find("#");
+    std::string::size_type where = msg.find('#');
     while (where != std::string::npos) {
         msg = msg.substr(0, where) + msg.substr(where + 7);
-        where = msg.find("#");
+        where = msg.find('#');
     }
     msg = std::string("\n\n#ffff00     ") + msg;
     const float background_alpha = configuration()->graphics_config_.hud.text_background_alpha;
@@ -973,7 +973,7 @@ void VDU::DrawNav(GameCockpit *cp, Unit *you, Unit *targ, const Vector &nav) {
 }
 
 void VDU::DrawComm() {
-    if (comm_ani != NULL) {
+    if (comm_ani != nullptr) {
         GFXDisable(TEXTURE1);
         GFXEnable(TEXTURE0);
         GFXDisable(LIGHTING);
@@ -989,8 +989,8 @@ void VDU::DrawComm() {
                     thismode.back() = blah;
                 }
             }
-            communicating.SetUnit(NULL);
-            comm_ani = NULL;
+            communicating.SetUnit(nullptr);
+            comm_ani = nullptr;
         }
         GFXDisable(TEXTURE0);
     } else {
@@ -1201,7 +1201,7 @@ void VDU::DrawDamage(Unit *parent) {
     float armor[8];
     parent->ArmorData(armor);
     const bool draw_damage_sprite = configuration()->graphics_config_.hud.draw_damage_sprite;
-    DrawHUDSprite(this, draw_damage_sprite ? parent->getHudImage() : NULL, .6, x, y, w, h,
+    DrawHUDSprite(this, draw_damage_sprite ? parent->getHudImage() : nullptr, .6, x, y, w, h,
             (armor[0] + armor[2] + armor[4] + armor[6])
                     / (float) (StartArmor[0] + StartArmor[2] + StartArmor[4] + StartArmor[6]),
             (armor[0] + armor[1] + armor[4] + armor[5])
@@ -1528,7 +1528,7 @@ void VDU::DrawWeapon(Unit *parent) {
     string mbuf("\n#ffffffMissiles:#000000");
     string::size_type mlen = mbuf.length();
     GFXEnable(TEXTURE0);
-    DrawTargetSpr(draw_weapon_sprite ? parent->getHudImage() : NULL, percent, x, y, w, h);
+    DrawTargetSpr(draw_weapon_sprite ? parent->getHudImage() : nullptr, percent, x, y, w, h);
     GFXDisable(TEXTURE0);
     GFXDisable(LIGHTING);
     int nummounts = parent->getNumMounts();
@@ -1647,26 +1647,26 @@ inline const char *GetColorFromSuccess(float suc) {
 void DrawObjectivesTextPlane(TextPlane *tp, int scrolloffset, Unit *parent) {
     std::string rez("\n");
     std::string rezcompleted("");
-    auto active_missions = *activeMissions2();
-    for (unsigned int i = 0; i < active_missions.size(); ++i) {
-        if (!active_missions[i]->objectives.empty()) {
+    auto active_missions = activeMissions2();
+    for (unsigned int i = 0; i < active_missions->size(); ++i) {
+        auto& active_mission = active_missions->at(i);
+        if (!active_mission->objectives.empty()) {
             rez += "#FFFFFF";
             const bool force_anonymous_missions = configuration()->general_config_.force_anonymous_mission_names;
             const bool completed_objectives_last = configuration()->graphics_config_.hud.completed_objectives_last;
-            if (active_missions[i]->mission_name.empty() || force_anonymous_missions) {
+            if (active_mission->mission_name.empty() || force_anonymous_missions) {
                 rez += "Mission " + XMLSupport::tostring((int) i) + "\n";
             } else {
-                rez += active_missions[i]->mission_name + "\n";
+                rez += active_mission->mission_name + "\n";
             }
-            vector<Mission::Objective>::iterator j = active_missions[i]->objectives.begin();
-            for (; j != active_missions[i]->objectives.end(); ++j) {
-                if (j->getOwner() == NULL || j->getOwner() == parent) {
-                    if (j->objective.length()) {
+            for (auto & objective : active_mission->objectives) {
+                if (objective.getOwner() == nullptr || objective.getOwner() == parent) {
+                    if (objective.objective.length()) {
                         std::string tmp("");
-                        tmp += GetColorFromSuccess(j->completeness);
-                        tmp += j->objective;
+                        tmp += GetColorFromSuccess(objective.completeness);
+                        tmp += objective.objective;
                         tmp += '\n';
-                        if (j->completeness && completed_objectives_last) {
+                        if (objective.completeness && completed_objectives_last) {
                             rezcompleted += tmp;
                         } else {
                             rez += tmp;
@@ -1694,10 +1694,10 @@ void VDU::DrawVDUObjectives(Unit *parent) {
 }
 
 bool VDU::SetWebcamAnimation() {
-    if (comm_ani == NULL) {
+    if (comm_ani == nullptr) {
         if (posmodes & WEBCAM) {
             comm_ani = new Animation();
-            communicating.SetUnit(NULL);
+            communicating.SetUnit(nullptr);
             thismode.push_back(WEBCAM);
             comm_ani->Reset();
             return true;
@@ -1754,10 +1754,11 @@ void VDU::Draw(GameCockpit *parentcp, Unit *parent, const GFXColor &color) {
     tp->SetPos(x - w, y + h);
     tp->SetSize(x + w, y - h - .5 * fabs(w / cols));
     targ = parent->GetComputerData().target.GetUnit();
-    if (thismode.back() != COMM && comm_ani != NULL) {
+    if (thismode.back() != COMM && comm_ani != nullptr) {
         if (comm_ani->Done()) {
-            comm_ani = NULL;
-            communicating.SetUnit(NULL);
+            delete comm_ani;
+            comm_ani = nullptr;
+            communicating.SetUnit(nullptr);
         }
     }
     float delautotime = UniverseUtil::GetGameTime() - parentcp->autoMessageTime;
@@ -1891,7 +1892,7 @@ void VDU::SwitchMode(Unit *parent) {
 
 bool VDU::CheckCommAnimation(Unit *un) const {
     if (comm_ani && comm_ani->Done() == false) {
-        if (communicating == un || communicating == NULL) {
+        if (communicating == un || communicating == nullptr) {
             return true;
         }
     }

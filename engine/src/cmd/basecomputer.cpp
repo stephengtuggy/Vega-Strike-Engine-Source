@@ -3055,20 +3055,20 @@ void BaseComputer::loadMissionsMasterList(TransactionList &tlist) {
     }
     //Sort the list.  Better for display, easier to compile into categories, etc.
     std::sort(tlist.masterList.begin(), tlist.masterList.end(), CargoColorSort());
-    auto active_missions = *activeMissions2();
-    if (active_missions.size()) {
-        for (unsigned int i = 1; i < active_missions.size(); ++i) {
+    auto active_missions = activeMissions2();
+    if (!active_missions->empty()) {
+        for (unsigned int i = 1; i < active_missions->size(); ++i) {
             CargoColor amission;
-            amission.cargo.content = XMLSupport::tostring(i) + " " + active_missions.at(i)->mission_name;
+            amission.cargo.content = XMLSupport::tostring(i) + " " + active_missions->at(i)->mission_name;
             amission.cargo.price = 0;
             amission.cargo.quantity = 1;
             amission.cargo.category = "Active_Missions";
             amission.cargo.description = "Objectives\\";
-            for (unsigned int j = 0; j < active_missions.at(i)->objectives.size(); ++j) {
+            for (auto & objective : active_missions->at(i)->objectives) {
                 amission.cargo.description =
-                        amission.cargo.GetDescription() + active_missions.at(i)->objectives.at(j).objective + ": "
+                        amission.cargo.GetDescription() + objective.objective + ": "
                                 + XMLSupport::tostring((int) (100
-                                        * active_missions.at(i)->objectives.at(j).completeness))
+                                        * objective.completeness))
                                 + "%\\";
             }
             amission.color = DEFAULT_UPGRADE_COLOR();
@@ -3078,7 +3078,7 @@ void BaseComputer::loadMissionsMasterList(TransactionList &tlist) {
 }
 
 //Load the controls for the MISSIONS display.
-void BaseComputer::loadMissionsControls(void) {
+void BaseComputer::loadMissionsControls() {
     //Make sure there's nothing in the transaction lists.
     resetTransactionLists();
 
@@ -3108,12 +3108,12 @@ bool BaseComputer::acceptMission(const EventCommandId &command, Control *control
     }
     if (item->GetCategory().find("Active_Missions") != string::npos) {
         unsigned int whichmission = atoi(item->GetContent().c_str());
-        auto active_missions = *activeMissions2();
-        if (whichmission > 0 && whichmission < active_missions.size()) {
-            Mission *miss = active_missions.at(whichmission);
+        auto active_missions = activeMissions2();
+        if (whichmission > 0 && whichmission < active_missions->size()) {
+            Mission *miss = active_missions->at(whichmission);
             miss->terminateMission();
             if (miss == mission) {
-                mission = active_missions.at(0);
+                mission = active_missions->at(0);
             }
             refresh();
 

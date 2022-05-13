@@ -1775,24 +1775,34 @@ float Unit::ExplosionRadius() {
 }
 
 void Unit::ProcessDeleteQueue() {
-    while (!Unitdeletequeue.empty()) {
-#ifdef DESTRUCTDEBUG
-                                                                                                                                VS_LOG_AND_FLUSH(trace, (boost::format("Eliminatin' %1$x - %2$d") % Unitdeletequeue.back() % Unitdeletequeue.size()));
-        VS_LOG_AND_FLUSH(trace, (boost::format("Eliminatin' %1$s") % Unitdeletequeue.back()->name.get().c_str()));
-#endif
-#ifdef DESTRUCTDEBUG
-                                                                                                                                if ( Unitdeletequeue.back()->isSubUnit() ) {
-            VS_LOG(debug, "Subunit Deleting (related to double dipping)");
+    // Algorithm taken from https://www.fluentcpp.com/2018/09/18/how-to-remove-pointers-from-a-vector-in-cpp/
+    for (auto& unit_pointer : Unitdeletequeue) {
+        if (unit_pointer != nullptr && !unit_pointer->isSubUnit()) {
+            delete unit_pointer;
+            unit_pointer = nullptr;
         }
-#endif
-        Unit *mydeleter = Unitdeletequeue.back();
-        Unitdeletequeue.pop_back();
-        delete mydeleter;                        ///might modify unitdeletequeue
-
-#ifdef DESTRUCTDEBUG
-        VS_LOG_AND_FLUSH(trace, (boost::format("Completed %1$d") % Unitdeletequeue.size()));
-#endif
     }
+    Unitdeletequeue.erase(std::remove(Unitdeletequeue.begin(), Unitdeletequeue.end(), nullptr), Unitdeletequeue.end());
+
+    // Old implementation
+//    while (!Unitdeletequeue.empty()) {
+//#ifdef DESTRUCTDEBUG
+//                                                                                                                                VS_LOG_AND_FLUSH(trace, (boost::format("Eliminatin' %1$x - %2$d") % Unitdeletequeue.back() % Unitdeletequeue.size()));
+//        VS_LOG_AND_FLUSH(trace, (boost::format("Eliminatin' %1$s") % Unitdeletequeue.back()->name.get().c_str()));
+//#endif
+//#ifdef DESTRUCTDEBUG
+//                                                                                                                                if ( Unitdeletequeue.back()->isSubUnit() ) {
+//            VS_LOG(debug, "Subunit Deleting (related to double dipping)");
+//        }
+//#endif
+//        Unit *mydeleter = Unitdeletequeue.back();
+//        Unitdeletequeue.pop_back();
+//        delete mydeleter;                        ///might modify unitdeletequeue
+//
+//#ifdef DESTRUCTDEBUG
+//        VS_LOG_AND_FLUSH(trace, (boost::format("Completed %1$d") % Unitdeletequeue.size()));
+//#endif
+//    }
 }
 
 Unit *makeBlankUpgrade(string templnam, int faction) {
@@ -2406,7 +2416,7 @@ int Unit::ForceDock(Unit *utdw, unsigned int whichdockport) {
         arrested_list_do_not_dereference.erase(arrested);
         //do this for jail time
         for (unsigned int j = 0; j < 100000; ++j) {
-            for (unsigned int i = 0; i < (*activeMissions2()).size(); ++i) {
+            for (unsigned int i = 0; i < activeMissions2()->size(); ++i) {
                 ExecuteDirector();
             }
         }

@@ -123,48 +123,48 @@ public:
 };
 
 template<class MyType>
-using LeakVector2 = std::vector<MyType, LeakAllocator<MyType>>;
+using LeakVector2 = std::vector<MyType *, LeakAllocator<MyType>>;
 
-template<class MyType>
-class LeakVector {
-private:
-    std::vector<MyType> *internal_vector_p_;
-public:
-    bool empty() const {
-        return internal_vector_p_->empty();
-    }
+//template<class MyType>
+//class LeakVector {
+//private:
+//    std::vector<MyType> *internal_vector_p_;
+//public:
+//    bool empty() const {
+//        return internal_vector_p_->empty();
+//    }
+//
+//    void push_back(MyType mis) {
+//        internal_vector_p_->push_back(mis);
+//    }
+//
+//    MyType back() {
+//        return internal_vector_p_->back();
+//    }
+//
+//    LeakVector() {
+//        internal_vector_p_ = new std::vector<MyType>();
+//    }
+//
+//    size_t size() const {
+//        return (internal_vector_p_)->size();
+//    }
+//
+//    MyType operator[](size_t i) {
+//        // stephengtuggy 2020-10-17: Enforce bounds checking
+//        return internal_vector_p_->at(i);
+//    }
+//
+//    ~LeakVector() {
+//        /* DO NOTHING OR DIE INTENTIONAL LEAK We need this data after Exit*/
+//    }
+//
+//    std::vector<MyType> *Get() {
+//        return internal_vector_p_;
+//    }
+//};
 
-    void push_back(MyType mis) {
-        internal_vector_p_->push_back(mis);
-    }
-
-    MyType back() {
-        return internal_vector_p_->back();
-    }
-
-    LeakVector() {
-        internal_vector_p_ = new std::vector<MyType>();
-    }
-
-    size_t size() const {
-        return (internal_vector_p_)->size();
-    }
-
-    MyType operator[](size_t i) {
-        // stephengtuggy 2020-10-17: Enforce bounds checking
-        return internal_vector_p_->at(i);
-    }
-
-    ~LeakVector() {
-        /* DO NOTHING OR DIE INTENTIONAL LEAK We need this data after Exit*/
-    }
-
-    std::vector<MyType> *Get() {
-        return internal_vector_p_;
-    }
-};
-
-extern std::shared_ptr<LeakVector2<Mission *>> activeMissions2();
+extern std::shared_ptr<LeakVector2<Mission>> activeMissions2();
 
 //extern LeakVector2<Mission *> active_missions;
 
