@@ -374,10 +374,10 @@ Unit::~Unit() {
 #ifdef DESTRUCTDEBUG
     VS_LOG_AND_FLUSH(trace, (boost::format("%1$d") % 0));
 #endif
-    for (size_t meshcount = 0; meshcount < meshdata.size(); ++meshcount) {
-        if (meshdata[meshcount] != nullptr) {
-            delete meshdata[meshcount];
-            meshdata[meshcount] = nullptr;
+    for (auto & meshcount : meshdata) {
+        if (meshcount != nullptr) {
+            delete meshcount;
+            meshcount = nullptr;
         }
     }
     meshdata.clear();
