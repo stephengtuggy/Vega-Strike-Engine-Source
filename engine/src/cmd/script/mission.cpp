@@ -53,7 +53,7 @@
 //    return kActiveMissions;
 //}
 
-LeakVector2<Mission> & activeMissions2() {
+LeakVector2<Mission> & ActiveMissions() {
 //    static const LeakAllocator<Mission> alloc;
     static LeakVector2<Mission> kActiveMissions2{};
     return kActiveMissions2;
@@ -205,10 +205,10 @@ void Mission::wipeDeletedMissions() {
 int Mission::getPlayerMissionNumber() {
     int num = 0;
 
-    if (activeMissions2().empty()) {
+    if (ActiveMissions().empty()) {
         return -1;
     }
-    for (const auto& item : activeMissions2()) {
+    for (const auto& item : ActiveMissions()) {
         if (item->player_num == this->player_num && item == this) {
             return num;
         } else {
@@ -225,11 +225,11 @@ Mission *Mission::getNthPlayerMission(int cp, int missionnum) {
     }
     int num = -1;
     Mission *activeMis = nullptr;
-    if (activeMissions2().empty()) {
+    if (ActiveMissions().empty()) {
         return nullptr;
     }
     const size_t which_player = static_cast<size_t>(cp);
-    for (auto& item : activeMissions2()) {
+    for (auto& item : ActiveMissions()) {
         if (item->player_num == which_player) {
             ++num;
         }
@@ -252,12 +252,12 @@ void Mission::terminateMission() {
         }
     }
 
-    auto f = std::find(activeMissions2().begin(), activeMissions2().end(), this);
+    auto f = std::find(ActiveMissions().begin(), ActiveMissions().end(), this);
 
     // Debugging aid for persistent missions bug
     if (g_game.vsdebug >= 1) {
         int misnum = -1;
-        for (const auto& i : activeMissions2()) {
+        for (const auto& i : ActiveMissions()) {
             if (i->player_num == player_num) {
                 ++misnum;
                 VS_LOG(info, (boost::format("   Mission #%1%: %2%") % misnum % i->mission_name));
@@ -266,12 +266,12 @@ void Mission::terminateMission() {
     }
 
     int queuenum = -1;
-    if (f != activeMissions2().end()) {
+    if (f != ActiveMissions().end()) {
         queuenum = getPlayerMissionNumber();          //-1 used as error code, 0 is first player mission
 
-        activeMissions2().erase(f);
+        ActiveMissions().erase(f);
     }
-    if (this != activeMissions2().at(0)) {        //Shouldn't this always be true?
+    if (this != ActiveMissions().at(0)) {        //Shouldn't this always be true?
         Mission_delqueue.push_back(this);
     }          //only delete if we arent' the base mission
     // NET FIXME: This routine does not work properly yet.

@@ -176,7 +176,7 @@ using LeakVector2 = std::vector<MyType *, LeakAllocator<MyType *>>;
 //    }
 //};
 
-extern LeakVector2<Mission> & activeMissions2();
+extern LeakVector2<Mission> & ActiveMissions();
 
 class ForceFeedback;
 extern ForceFeedback *forcefeedback;

@@ -1018,7 +1018,7 @@ extern float getTimeCompression();
 //server
 void ExecuteDirector() {
     unsigned int curcockpit = _Universe->CurrentCockpit();
-    auto &active_missions = activeMissions2();
+    auto &active_missions = ActiveMissions();
     {
         for (const auto& iter : active_missions) {
             if (iter != nullptr) {
@@ -1130,7 +1130,7 @@ void StarSystem::Update(float priority, bool executeDirector) {
                         AUDRefreshSounds();
                     }
                 }
-                for (auto& iter : activeMissions2()) {
+                for (auto& iter : ActiveMissions()) {
                     iter->BriefingUpdate();
                 }
                 current_stage = PROCESS_UNIT;

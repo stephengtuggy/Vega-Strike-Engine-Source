@@ -650,7 +650,7 @@ void NavigationSystem::DrawMission() {
     displayname.SetSize(.42, -.7);
     displayname.SetPos(originx + (.1 * deltax) + .37, originy /*+(1*deltay)*/ );
     std::string text;
-    auto& active_missions = activeMissions2();
+    auto& active_missions = ActiveMissions();
     if (active_missions.size() > 1) {
         for (unsigned int j = 1; j < active_missions.size(); ++j) {
             text += active_missions.at(j)->mission_name + ":\n";

@@ -2360,7 +2360,7 @@ bool BaseComputer::isTransactionOK(const Cargo &originalItem, TransactionType tr
         case ACCEPT_MISSION:
             //Make sure the player doesn't take too many missions.
             if (item.GetCategory().find("Active_Missions") != string::npos
-                    || (activeMissions2()).size() < UniverseUtil::maxMissions()) {
+                    || (ActiveMissions()).size() < UniverseUtil::maxMissions()) {
                 return true;
             }
             break;
@@ -3055,15 +3055,15 @@ void BaseComputer::loadMissionsMasterList(TransactionList &tlist) {
     }
     //Sort the list.  Better for display, easier to compile into categories, etc.
     std::sort(tlist.masterList.begin(), tlist.masterList.end(), CargoColorSort());
-    if (!activeMissions2().empty()) {
-        for (unsigned int i = 1; i < activeMissions2().size(); ++i) {
+    if (!ActiveMissions().empty()) {
+        for (unsigned int i = 1; i < ActiveMissions().size(); ++i) {
             CargoColor amission;
-            amission.cargo.content = XMLSupport::tostring(i) + " " + activeMissions2().at(i)->mission_name;
+            amission.cargo.content = XMLSupport::tostring(i) + " " + ActiveMissions().at(i)->mission_name;
             amission.cargo.price = 0;
             amission.cargo.quantity = 1;
             amission.cargo.category = "Active_Missions";
             amission.cargo.description = "Objectives\\";
-            for (auto & objective : activeMissions2().at(i)->objectives) {
+            for (auto & objective : ActiveMissions().at(i)->objectives) {
                 amission.cargo.description =
                         amission.cargo.GetDescription() + objective.objective + ": "
                                 + XMLSupport::tostring((int) (100
@@ -3107,11 +3107,11 @@ bool BaseComputer::acceptMission(const EventCommandId &command, Control *control
     }
     if (item->GetCategory().find("Active_Missions") != string::npos) {
         unsigned int whichmission = atoi(item->GetContent().c_str());
-        if (whichmission > 0 && whichmission < activeMissions2().size()) {
-            Mission *miss = activeMissions2().at(whichmission);
+        if (whichmission > 0 && whichmission < ActiveMissions().size()) {
+            Mission *miss = ActiveMissions().at(whichmission);
             miss->terminateMission();
             if (miss == mission) {
-                mission = activeMissions2().at(0);
+                mission = ActiveMissions().at(0);
             }
             refresh();
 

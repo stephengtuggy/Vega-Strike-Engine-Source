@@ -2416,7 +2416,7 @@ int Unit::ForceDock(Unit *utdw, unsigned int whichdockport) {
         arrested_list_do_not_dereference.erase(arrested);
         //do this for jail time -- purposely inefficient
         for (unsigned int j = 0; j < 100000; ++j) {
-            for (unsigned int i = 0; i < activeMissions2().size(); ++i) {
+            for (unsigned int i = 0; i < ActiveMissions().size(); ++i) {
                 ExecuteDirector();
             }
         }

@@ -554,7 +554,7 @@ void bootstrap_main_loop() {
     if (LoadMission) {
         LoadMission = false;
         mission = new Mission(mission_name);
-        ::activeMissions2().emplace_back(mission);
+        ::ActiveMissions().emplace_back(mission);
 
         mission->initMission();
 

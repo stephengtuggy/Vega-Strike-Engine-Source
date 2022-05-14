@@ -472,7 +472,7 @@ public:
     static void wipeDeletedMissions();
     /// For the specified player, immediately deletes all but the zero'th mission
     inline static void terminateMissionsImmediately(size_t which_player) {
-        auto& active_missions = activeMissions2();
+        auto& active_missions = ActiveMissions();
         if (active_missions.size() > 1) {
             auto f = std::find_if(active_missions.begin(), active_missions.end(), [which_player](Mission * p_mission){ return p_mission->player_num == which_player; });
             // Algorithm taken from https://www.fluentcpp.com/2018/09/18/how-to-remove-pointers-from-a-vector-in-cpp/
