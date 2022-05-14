@@ -1084,8 +1084,10 @@ void StarSystem::Update(float priority) {
     time += GetElapsedTime();
     _Universe->pushActiveStarSystem(this);
     if (time > SIMULATION_ATOM * 2) {
+        VS_LOG(trace, (boost::format("void StarSystem::Update(float priority): time, %1$.6f, is more than twice SIMULATION_ATOM, %2$.6f")));
+        //Chew up all sim_atoms that have elapsed since last update
         while (time > SIMULATION_ATOM) {
-            //Chew up all sim_atoms that have elapsed since last update
+            //VS_LOG(trace, (boost::format("void StarSystem::Update(float priority): Chewing up a sim atom")));
             ExecuteDirector();
             TerrainCollide();
             Unit::ProcessDeleteQueue();
