@@ -641,8 +641,7 @@ Unit *getOwner(int which) {
 int numActiveMissions() {
     int num = 0;
     unsigned int cp = _Universe->CurrentCockpit();
-    auto active_missions = activeMissions2();
-    for (auto & active_mission : *active_missions) {
+    for (auto & active_mission : activeMissions2()) {
         if (active_mission->player_num == cp) {
             num++;
         }

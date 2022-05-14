@@ -71,7 +71,7 @@ void AImissionScript::Execute() {
     mission->setCurrentAIUnit(parent);
     mission->setCurrentAIOrder(this);
     if (first_run) {
-        for (auto& active_mission : *activeMissions2()) {
+        for (auto& active_mission : activeMissions2()) {
             if (mission->runScript(modulename, "initai", classid)) {
                 break;
             }

@@ -66,14 +66,13 @@ signed char ComputeAutoGuarantee(Unit *un) {
     } else {
         return Mission::AUTO_ON;
     }
-    auto active_missions = activeMissions2();
-    for (const auto& active_mission : *active_missions) {
+    for (const auto& active_mission : activeMissions2()) {
         if (active_mission->player_num == cpnum && active_mission->player_autopilot != Mission::AUTO_NORMAL) {
             return active_mission->player_autopilot;
         }
     }
 
-    for (const auto& active_mission : *active_missions) {
+    for (const auto& active_mission : activeMissions2()) {
         if (active_mission->global_autopilot != Mission::AUTO_NORMAL) {
             return active_mission->global_autopilot;
         }

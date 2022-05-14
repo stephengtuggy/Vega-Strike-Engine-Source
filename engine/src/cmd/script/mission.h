@@ -468,8 +468,19 @@ public:
 
 ///alex Please help me make this function...this is called between mission loops
     ~Mission();
-//deletes missions pushed back onto a delete queue at a *safe time*
+    /// Deletes missions pushed back onto a delete queue at a *safe time*
     static void wipeDeletedMissions();
+    /// For the specified player, immediately deletes all but the zero'th mission
+    inline static void terminateMissionsImmediately(size_t player_num) {
+        auto& active_missions = activeMissions2();
+        if (active_missions.size() > 1) {
+            // Algorithm taken from https://www.fluentcpp.com/2018/09/18/how-to-remove-pointers-from-a-vector-in-cpp/
+            auto first_to_remove = std::stable_partition(active_missions.begin() + 1, active_missions.end(), [&player_num](Mission * pi) { return pi->player_num == player_num; });
+            std::for_each(first_to_remove, active_missions.end(), [](Mission * pi) { pi->terminateMission(); delete pi; });
+            active_missions.erase(first_to_remove, active_missions.end());
+        }
+    }
+
     static int number_of_flightgroups;
     static int number_of_ships;
 

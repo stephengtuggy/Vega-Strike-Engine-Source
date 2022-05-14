@@ -1647,9 +1647,9 @@ inline const char *GetColorFromSuccess(float suc) {
 void DrawObjectivesTextPlane(TextPlane *tp, int scrolloffset, Unit *parent) {
     std::string rez("\n");
     std::string rezcompleted("");
-    auto active_missions = activeMissions2();
-    for (unsigned int i = 0; i < active_missions->size(); ++i) {
-        auto& active_mission = active_missions->at(i);
+    auto& active_missions = activeMissions2();
+    for (unsigned int i = 0; i < active_missions.size(); ++i) {
+        auto& active_mission = active_missions.at(i);
         if (!active_mission->objectives.empty()) {
             rez += "#FFFFFF";
             const bool force_anonymous_missions = configuration()->general_config_.force_anonymous_mission_names;

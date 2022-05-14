@@ -173,8 +173,6 @@ void cleanup(void) {
     delete[] CONFIGFILE;
 }
 
-//LeakVector2<Mission *> active_missions(0, LeakAllocator<Mission *>());
-
 char mission_name[1024];
 
 void bootstrap_main_loop();
@@ -556,7 +554,7 @@ void bootstrap_main_loop() {
     if (LoadMission) {
         LoadMission = false;
         mission = new Mission(mission_name);
-        ::activeMissions2()->push_back(mission);
+        ::activeMissions2().emplace_back(mission);
 
         mission->initMission();
 

@@ -98,9 +98,10 @@ extern Mission *mission;
 //    }
 //};
 
-template<typename T>
-class LeakAllocator : public std::allocator<T> {
+template<class T>
+struct LeakAllocator {
 public:
+    typedef T value_type;
     typedef size_t size_type;
     typedef T* pointer;
     typedef const T* const_pointer;
@@ -110,20 +111,25 @@ public:
         typedef LeakAllocator<Tp1> other;
     };
 
-    pointer allocate(size_type n, const void* hint = 0) {
+    pointer allocate(size_type n, const void* hint = nullptr) {
         return std::allocator<T>::allocate(n, hint);
     }
     void deallocate(pointer p, size_type n) {
         // Do nothing
     }
 
-    LeakAllocator() : std::allocator<T>() {}
-    LeakAllocator(const LeakAllocator<T> &other) : std::allocator<T>(other) {}
+    LeakAllocator() = default;
+    template <class U> constexpr explicit LeakAllocator(const LeakAllocator<U> &other) noexcept {}
     ~LeakAllocator() = default;
 };
 
+template <class T, class U>
+bool operator==(const LeakAllocator <T>&, const LeakAllocator <U>&) { return true; }
+template <class T, class U>
+bool operator!=(const LeakAllocator <T>&, const LeakAllocator <U>&) { return false; }
+
 template<class MyType>
-using LeakVector2 = std::vector<MyType *, LeakAllocator<MyType>>;
+using LeakVector2 = std::vector<MyType *, LeakAllocator<MyType *>>;
 
 //template<class MyType>
 //class LeakVector {
@@ -164,9 +170,7 @@ using LeakVector2 = std::vector<MyType *, LeakAllocator<MyType>>;
 //    }
 //};
 
-extern std::shared_ptr<LeakVector2<Mission>> activeMissions2();
-
-//extern LeakVector2<Mission *> active_missions;
+extern LeakVector2<Mission> & activeMissions2();
 
 class ForceFeedback;
 extern ForceFeedback *forcefeedback;
