@@ -29,7 +29,6 @@
 #include <vector>
 #include <iterator>
 #include <functional>
-#include <script/mission.h>
 
 #ifndef GFXBOOL
 #define GFXBOOL unsigned char
@@ -56,24 +55,24 @@ extern void /*GFXDRVAPI*/ GFXDeleteList(int list);
 /// Vertex, Normal, Texture, and (deprecated) Environment Mapping T2F_N3F_V3F format
 struct GFXVertex {
     //Texcoord
-    float s;
-    float t;
+    float s{};
+    float t{};
 
     //Normal
-    float i;
-    float j;
-    float k;
+    float i{};
+    float j{};
+    float k{};
 
     //Position
-    float x;
-    float y;
-    float z;
+    float x{};
+    float y{};
+    float z{};
 
     //Tangent
-    float tx;
-    float ty;
-    float tz;
-    float tw;
+    float tx{};
+    float ty{};
+    float tz{};
+    float tw{};
 
     GFXVertex() {
     }
@@ -218,7 +217,7 @@ inline GFXColor operator-(GFXColor &c0, const GFXColor &c1) {
     return GFXColor(c0.r - c1.r, c0.g - c1.g, c0.b - c1.b, c0.a - c1.a);
 }
 
-inline bool operator==(Mission *c0, const GFXColor &c1) {
+inline bool operator==(GFXColor &c0, const GFXColor &c1) {
     return (c0.r == c1.r) && (c0.g == c1.g) && (c0.b == c1.b) && (c0.a == c1.a);
 }
 

@@ -28,8 +28,8 @@
 #include "cmd/container.h"
 
 #include "gfx/vec.h"
-#include "gfxlib.h"
 #include "gfxlib_struct.h"
+#include "gfxlib.h"
 
 #include "star_xml.h"
 
