@@ -1592,7 +1592,7 @@ void BaseComputer::recalcTitle() {
             }
             break;
         case MISSIONS: {
-            const int count = guiMax(0, int((activeMissions2()).size())-1);
+            const int count = guiMax(0, int((ActiveMissions()).size())-1);
             if (showStardate) {
                 playerTitle = (boost::format("Stardate: %1$s      Credits: %2$.2f      Active missions: %3$d")
                         % stardate % playerCredits % count)
