@@ -1018,8 +1018,9 @@ extern float getTimeCompression();
 //server
 void ExecuteDirector() {
     unsigned int curcockpit = _Universe->CurrentCockpit();
+    auto &active_missions = activeMissions2();
     {
-        for (const auto& iter : *activeMissions2()) {
+        for (const auto& iter : active_missions) {
             if (iter != nullptr) {
                 _Universe->SetActiveCockpit(iter->player_num);
                 StarSystem *ss = _Universe->AccessCockpit()->activeStarSystem;
@@ -1033,42 +1034,20 @@ void ExecuteDirector() {
                 }
             }
         }
-//        for (unsigned int i = 0; i < active_missions.size(); ++i) {
-//            if (active_missions[i]) {
-//                _Universe->SetActiveCockpit(active_missions[i]->player_num);
-//                StarSystem *ss = _Universe->AccessCockpit()->activeStarSystem;
-//                if (ss) {
-//                    _Universe->pushActiveStarSystem(ss);
-//                }
-//                mission = active_missions[i];
-//                active_missions[i]->DirectorLoop();
-//                if (ss) {
-//                    _Universe->popActiveStarSystem();
-//                }
-//            }
-//        }
     }
     _Universe->SetActiveCockpit(curcockpit);
-    mission = activeMissions2()->front();   // active_missions[0];
+    mission = active_missions.front();
     processDelayedMissions();
 
     {
-        for (size_t i = 1; i < activeMissions2()->size();) {
-            if (activeMissions2()->at(i)) {
-                if (activeMissions2()->at(i)->runtime.pymissions) {
-                    ++i;
-                } else {
-                    size_t w = activeMissions2()->size();
-                    activeMissions2()->at(i)->terminateMission();
-                    if (w == activeMissions2()->size()) {
-                        VS_LOG(warning, "MISSION NOT ERASED");
-                        break;
-                    }
-                }
-            } else {
-                activeMissions2()->erase(activeMissions2()->begin() + i);
+        // Algorithm taken from https://www.fluentcpp.com/2018/09/18/how-to-remove-pointers-from-a-vector-in-cpp/
+        for (auto& iter : active_missions) {
+            if ((iter != nullptr) && (iter != active_missions.front()) && !iter->runtime.pymissions) {
+                delete iter;
+                iter = nullptr;
             }
         }
+        active_missions.erase(std::remove(active_missions.begin(), active_missions.end(), nullptr), active_missions.end());
     }
 }
 
@@ -1149,7 +1128,7 @@ void StarSystem::Update(float priority, bool executeDirector) {
                         AUDRefreshSounds();
                     }
                 }
-                for (auto& iter : *activeMissions2()) {
+                for (auto& iter : activeMissions2()) {
                     iter->BriefingUpdate();
                 }
                 current_stage = PROCESS_UNIT;

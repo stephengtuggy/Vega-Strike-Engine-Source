@@ -996,7 +996,7 @@ static bool isNotTurretOwner(Unit *parent, Unit *un) {
 }
 
 bool TargMission(Unit *me, Unit *target) {
-    for (auto active_mission : *activeMissions2()) {
+    for (auto& active_mission : activeMissions2()) {
         if (active_mission->runtime.pymissions) {
             vector<UnitContainer *> *relevant = &active_mission->runtime.pymissions->relevant_units;
             vector<UnitContainer *>::iterator ir = relevant->begin();

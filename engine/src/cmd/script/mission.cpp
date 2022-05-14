@@ -37,6 +37,7 @@
 #endif
 
 #include <assert.h>
+#include <vector>
 #include "vs_globals.h"
 #include "cmd/unit_generic.h"
 #include "mission.h"
@@ -52,9 +53,9 @@
 //    return kActiveMissions;
 //}
 
-std::shared_ptr<LeakVector2<Mission>> activeMissions2() {
+LeakVector2<Mission> & activeMissions2() {
 //    static const LeakAllocator<Mission> alloc;
-    static const std::shared_ptr<LeakVector2<Mission>> kActiveMissions2 = std::make_shared<LeakVector2<Mission>>();
+    static LeakVector2<Mission> kActiveMissions2{};
     return kActiveMissions2;
 }
 
@@ -204,11 +205,10 @@ void Mission::wipeDeletedMissions() {
 int Mission::getPlayerMissionNumber() {
     int num = 0;
 
-    auto currently_active_missions = activeMissions2();
-    if (currently_active_missions->empty()) {
+    if (activeMissions2().empty()) {
         return -1;
     }
-    for (const auto& item : *currently_active_missions) {
+    for (const auto& item : activeMissions2()) {
         if (item->player_num == this->player_num && item == this) {
             return num;
         } else {
@@ -217,25 +217,6 @@ int Mission::getPlayerMissionNumber() {
     }
 
     return -1;
-
-//    vector<Mission *> *active_missions = ::active_missions.Get();
-//    vector<Mission *>::iterator pl = active_missions->begin();
-//
-//    if (pl == active_missions->end()) {
-//        return -1;
-//    }
-//
-//    for (; pl != active_missions->end(); ++pl) {
-//        if ((*pl)->player_num == this->player_num) {
-//            if (*pl == this) {
-//                return (int) num;
-//            } else {
-//                num++;
-//            }
-//        }
-//    }
-//
-//    return -1;
 }
 
 Mission *Mission::getNthPlayerMission(int cp, int missionnum) {
@@ -244,12 +225,12 @@ Mission *Mission::getNthPlayerMission(int cp, int missionnum) {
     }
     int num = -1;
     Mission *activeMis = nullptr;
-    auto active_missions = activeMissions2();
-    if (active_missions->empty()) {
+    if (activeMissions2().empty()) {
         return nullptr;
     }
-    for (const auto& item : *active_missions) {
-        if (item->player_num == static_cast<size_t>(cp)) {
+    const size_t which_player = static_cast<size_t>(cp);
+    for (auto& item : activeMissions2()) {
+        if (item->player_num == which_player) {
             ++num;
         }
         if (num == missionnum) {
@@ -262,8 +243,6 @@ Mission *Mission::getNthPlayerMission(int cp, int missionnum) {
 }
 
 void Mission::terminateMission() {
-//    vector<Mission *> *active_missions = ::active_missions.Get();
-    auto active_missions = activeMissions2();
 
     {
         auto f = std::find(Mission_delqueue.begin(), Mission_delqueue.end(), this);
@@ -273,12 +252,12 @@ void Mission::terminateMission() {
         }
     }
 
-    auto f = std::find(active_missions->begin(), active_missions->end(), this);
+    auto f = std::find(activeMissions2().begin(), activeMissions2().end(), this);
 
     // Debugging aid for persistent missions bug
     if (g_game.vsdebug >= 1) {
         int misnum = -1;
-        for (const auto& i: *active_missions) {
+        for (const auto& i : activeMissions2()) {
             if (i->player_num == player_num) {
                 ++misnum;
                 VS_LOG(info, (boost::format("   Mission #%1%: %2%") % misnum % i->mission_name));
@@ -287,12 +266,12 @@ void Mission::terminateMission() {
     }
 
     int queuenum = -1;
-    if (f != active_missions->end()) {
+    if (f != activeMissions2().end()) {
         queuenum = getPlayerMissionNumber();          //-1 used as error code, 0 is first player mission
 
-        active_missions->erase(f);
+        activeMissions2().erase(f);
     }
-    if (this != (*active_missions)[0]) {        //Shouldn't this always be true?
+    if (this != activeMissions2().at(0)) {        //Shouldn't this always be true?
         Mission_delqueue.push_back(this);
     }          //only delete if we arent' the base mission
     // NET FIXME: This routine does not work properly yet.

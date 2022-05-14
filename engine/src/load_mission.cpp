@@ -132,8 +132,8 @@ void SaveGame::ReloadPickledData() {
                 int len = ReadIntSpace(lpd);
                 std::string pickled = lpd.substr(0, len);
                 lpd = lpd.substr(len, lpd.length() - len);
-                if (i < activeMissions2()->size()) {
-                    activeMissions2()->at(i)->UnPickle(PickledDataSansMissionName(pickled));
+                if (i < activeMissions2().size()) {
+                    activeMissions2().at(i)->UnPickle(PickledDataSansMissionName(pickled));
                 } else {
                     UnpickleMission(lpd);
                 }
@@ -146,9 +146,9 @@ void UnpickleMission(std::string pickled) {
     std::string file = PickledDataOnlyMissionName(pickled);
     pickled = PickledDataSansMissionName(pickled);
     if (pickled.length()) {
-        activeMissions2()->push_back(new Mission(file.c_str()));
-        activeMissions2()->back()->initMission();
-        activeMissions2()->back()->SetUnpickleData(pickled);
+        activeMissions2().emplace_back(new Mission(file.c_str()));
+        activeMissions2().back()->initMission();
+        activeMissions2().back()->SetUnpickleData(pickled);
     }
 }
 
@@ -161,9 +161,9 @@ std::string lengthify(std::string tp) {
 std::string PickleAllMissions() {
     std::string res;
     int count = 0;
-    for (auto& iter : *activeMissions2()) {
+    for (auto& iter : activeMissions2()) {
         string tmp = iter->Pickle();
-        if (tmp.length() || iter != *(activeMissions2()->begin())) {
+        if (tmp.length() || iter != *(activeMissions2().begin())) {
             count++;
             res += lengthify(tmp);
         }
@@ -218,8 +218,8 @@ std::string UnpickleAllMissions(FILE *fp) {
         temp[picklelength] = 0;
         VSFileSystem::vs_read(temp, picklelength, 1, fp);
         retval += temp;
-        if (i < activeMissions2()->size()) {
-            activeMissions2()->at(i)->SetUnpickleData(PickledDataSansMissionName(temp));
+        if (i < activeMissions2().size()) {
+            activeMissions2().at(i)->SetUnpickleData(PickledDataSansMissionName(temp));
         } else {
             UnpickleMission(temp);
         }
@@ -242,8 +242,8 @@ std::string UnpickleAllMissions(char *&buf) {
         buf += picklelength;
         //VSFileSystem::vs_read (temp,picklelength,1,fp);
         retval += temp;
-        if (i < activeMissions2()->size()) {
-            activeMissions2()->at(i)->SetUnpickleData(PickledDataSansMissionName(temp));
+        if (i < activeMissions2().size()) {
+            activeMissions2().at(i)->SetUnpickleData(PickledDataSansMissionName(temp));
         } else {
             UnpickleMission(temp);
         }
@@ -279,22 +279,22 @@ void LoadMission(const char *nission_name, const std::string &script, bool loadF
         pushSaveString(_Universe->CurrentCockpit(), "active_scripts", script);
         pushSaveString(_Universe->CurrentCockpit(), "active_missions", nission_name);
     }
-    activeMissions2()->push_back(new Mission(mission_name.c_str(), script));
+    activeMissions2().emplace_back(new Mission(mission_name.c_str(), script));
 
-    mission = activeMissions2()->back();
-    activeMissions2()->back()->initMission();
+    mission = activeMissions2().back();
+    activeMissions2().back()->initMission();
 
     vector<Flightgroup *>::const_iterator siter;
-    vector<Flightgroup *> fg = activeMissions2()->back()->flightgroups;
+    vector<Flightgroup *> fg = activeMissions2().back()->flightgroups;
 
-    if (!activeMissions2()->empty()) {
+    if (!activeMissions2().empty()) {
         //Give the mission a name.
-        activeMissions2()->back()->mission_name = friendly_mission_name;
+        activeMissions2().back()->mission_name = friendly_mission_name;
     }
-    activeMissions2()->back()->player_num = _Universe->CurrentCockpit();
+    activeMissions2().back()->player_num = _Universe->CurrentCockpit();
 
-    activeMissions2()->back()->DirectorInitgame();
-    mission = activeMissions2()->at(0);
+    activeMissions2().back()->DirectorInitgame();
+    mission = activeMissions2().at(0);
     //return true;
 }
 
