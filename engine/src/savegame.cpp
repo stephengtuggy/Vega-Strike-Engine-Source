@@ -856,19 +856,7 @@ void SaveGame::LoadSavedMissions() {
     PyRun_SimpleString(
             "import VS\nVS.loading_active_missions=True\nprint(\"Loading active missions \"+str(VS.loading_active_missions))\n");
     //kill any leftovers so they don't get loaded twice.
-    unsigned int current_player = _Universe->CurrentCockpit();
-    Mission *ignoreMission = Mission::getNthPlayerMission(current_player, 0);
-    auto &tmp = activeMissions2();
-    if (tmp.size() > 1) {
-        auto first_to_remove = std::stable_partition(tmp.begin() + 1, tmp.end(), [&current_player](Mission * pi) { return (pi->player_num != current_player); });
-        std::for_each(first_to_remove, tmp.end(), [](Mission * pi) { pi->terminateMission(); });
-    }
-    for (i = tmp.size() - 1; i > 0; --i) {      //don't terminate zeroth mission
-        if (tmp.at(i)->player_num == current_player
-                && tmp.at(i) != ignoreMission) {
-            tmp.at(i)->terminateMission();
-        }
-    }
+    Mission::terminateMissionsImmediately(_Universe->CurrentCockpit());
     for (i = 0; i < scripts.size() && i < missions.size(); ++i) {
         try {
             if (!missions[i].empty()) {             //Built-in/networking missions

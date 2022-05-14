@@ -146,9 +146,10 @@ void UnpickleMission(std::string pickled) {
     std::string file = PickledDataOnlyMissionName(pickled);
     pickled = PickledDataSansMissionName(pickled);
     if (pickled.length()) {
-        activeMissions2().emplace_back(new Mission(file.c_str()));
-        activeMissions2().back()->initMission();
-        activeMissions2().back()->SetUnpickleData(pickled);
+        Mission* new_mission = new Mission(file.c_str());
+        activeMissions2().emplace_back(new_mission);
+        new_mission->initMission();
+        new_mission->SetUnpickleData(pickled);
     }
 }
 
@@ -162,9 +163,9 @@ std::string PickleAllMissions() {
     std::string res;
     int count = 0;
     for (auto& iter : activeMissions2()) {
-        string tmp = iter->Pickle();
-        if (tmp.length() || iter != *(activeMissions2().begin())) {
-            count++;
+        std::string tmp = iter->Pickle();
+        if (!tmp.empty() || count == 0) {
+            ++count;
             res += lengthify(tmp);
         }
     }
@@ -275,26 +276,23 @@ void LoadMission(const char *nission_name, const std::string &script, bool loadF
         return;
     }
     f.Close();
-    if (Mission::getNthPlayerMission(_Universe->CurrentCockpit(), 0) != NULL) {
+    if (Mission::getNthPlayerMission(_Universe->CurrentCockpit(), 0) != nullptr) {
         pushSaveString(_Universe->CurrentCockpit(), "active_scripts", script);
         pushSaveString(_Universe->CurrentCockpit(), "active_missions", nission_name);
     }
-    activeMissions2().emplace_back(new Mission(mission_name.c_str(), script));
+    mission = new Mission(mission_name.c_str(), script);
+    activeMissions2().push_back(mission);
 
-    mission = activeMissions2().back();
-    activeMissions2().back()->initMission();
+    mission->initMission();
 
     vector<Flightgroup *>::const_iterator siter;
-    vector<Flightgroup *> fg = activeMissions2().back()->flightgroups;
+    vector<Flightgroup *> fg = mission->flightgroups;
 
-    if (!activeMissions2().empty()) {
-        //Give the mission a name.
-        activeMissions2().back()->mission_name = friendly_mission_name;
-    }
-    activeMissions2().back()->player_num = _Universe->CurrentCockpit();
+    //Give the mission a name.
+    mission->mission_name = friendly_mission_name;
+    mission->player_num = _Universe->CurrentCockpit();
 
-    activeMissions2().back()->DirectorInitgame();
-    mission = activeMissions2().at(0);
+    mission->DirectorInitgame();
     //return true;
 }
 

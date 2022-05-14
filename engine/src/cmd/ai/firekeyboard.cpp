@@ -999,12 +999,9 @@ bool TargMission(Unit *me, Unit *target) {
     for (auto& active_mission : activeMissions2()) {
         if (active_mission->runtime.pymissions) {
             vector<UnitContainer *> *relevant = &active_mission->runtime.pymissions->relevant_units;
-            vector<UnitContainer *>::iterator ir = relevant->begin();
-            vector<UnitContainer *>::iterator ie = relevant->end();
-            for (; ir != ie; ++ir) {
-                if (**ir == target) {
-                    return true;
-                }
+            auto f = std::find_if(relevant->cbegin(), relevant->cend(), [target](const UnitContainer * unit_container) { return *unit_container == target; });
+            if (f != relevant->cend()) {
+                return true;
             }
         }
     }

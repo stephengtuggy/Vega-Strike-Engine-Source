@@ -29,6 +29,7 @@
 #include <vector>
 #include <iterator>
 #include <functional>
+#include <script/mission.h>
 
 #ifndef GFXBOOL
 #define GFXBOOL unsigned char
@@ -217,7 +218,7 @@ inline GFXColor operator-(GFXColor &c0, const GFXColor &c1) {
     return GFXColor(c0.r - c1.r, c0.g - c1.g, c0.b - c1.b, c0.a - c1.a);
 }
 
-inline bool operator==(const GFXColor &c0, const GFXColor &c1) {
+inline bool operator==(Mission *c0, const GFXColor &c1) {
     return (c0.r == c1.r) && (c0.g == c1.g) && (c0.b == c1.b) && (c0.a == c1.a);
 }
 

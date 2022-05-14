@@ -112,7 +112,7 @@ public:
     };
 
     pointer allocate(size_type n, const void* hint = nullptr) {
-        return std::allocator<T>::allocate(n, hint);
+        return getStandardAllocator().allocate(n, hint);
     }
     void deallocate(pointer p, size_type n) {
         // Do nothing
@@ -121,6 +121,12 @@ public:
     LeakAllocator() = default;
     template <class U> constexpr explicit LeakAllocator(const LeakAllocator<U> &other) noexcept {}
     ~LeakAllocator() = default;
+
+private:
+    static inline std::allocator<T>& getStandardAllocator() {
+        static std::allocator<T> kStandardAllocator;
+        return kStandardAllocator;
+    }
 };
 
 template <class T, class U>

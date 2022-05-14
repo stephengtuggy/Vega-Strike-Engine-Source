@@ -2414,7 +2414,7 @@ int Unit::ForceDock(Unit *utdw, unsigned int whichdockport) {
     std::set<Unit *>::iterator arrested = arrested_list_do_not_dereference.find(this);
     if (arrested != arrested_list_do_not_dereference.end()) {
         arrested_list_do_not_dereference.erase(arrested);
-        //do this for jail time
+        //do this for jail time -- purposely inefficient
         for (unsigned int j = 0; j < 100000; ++j) {
             for (unsigned int i = 0; i < activeMissions2().size(); ++i) {
                 ExecuteDirector();

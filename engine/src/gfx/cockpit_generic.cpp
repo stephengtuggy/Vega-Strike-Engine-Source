@@ -776,8 +776,7 @@ bool Cockpit::Update() {
                 if (k == _Universe->numPlayers()) {
                     k = 0;
                 }
-                auto& active_missions = activeMissions2();
-                terminateMissionsForPlayer(k, active_missions);
+                Mission::terminateMissionsImmediately(k);
                 unsigned int whichcp = k;
                 string newsystem;
                 QVector pos;
@@ -877,15 +876,6 @@ bool Cockpit::Update() {
         }
     }
     return false;
-}
-
-void Cockpit::terminateMissionsForPlayer(size_t player_num, LeakVector2<Mission> &active_missions) {
-    if (active_missions.size() > 1) {
-        // Algorithm taken from https://www.fluentcpp.com/2018/09/18/how-to-remove-pointers-from-a-vector-in-cpp/
-        auto first_to_remove = std::stable_partition(active_missions.begin() + 1, active_missions.end(), [&player_num](Mission * pi) { return pi->player_num == player_num; });
-        std::for_each(first_to_remove, active_missions.end(), [](Mission * pi) { pi->terminateMission(); delete pi; });
-        active_missions.erase(first_to_remove, active_missions.end());
-    }
 }
 
 void visitSystemHelp(Cockpit *cp, string systemname, float num) {

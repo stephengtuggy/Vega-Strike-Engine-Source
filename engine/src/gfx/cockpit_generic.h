@@ -470,7 +470,6 @@ public:
 protected:
     /// Override to use a specific kind of sound implementation
     virtual SoundContainer *soundImpl(const SoundContainer &specs);
-    static void terminateMissionsForPlayer(size_t player_num, LeakVector2<Mission> &active_missions);
 };
 #endif
 
