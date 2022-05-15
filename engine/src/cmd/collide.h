@@ -32,8 +32,9 @@
 #include "gfx/vec.h"
 #include "linecollide.h"
 #include "star_system.h"
-#include "unit_collide.h"
+//#include "unit_collide.h"
 
+struct collideTrees;
 std::map<std::string, std::weak_ptr<collideTrees>> & UnitColliders();
 
 bool TableLocationChanged(const QVector &Mini, const QVector &minz);

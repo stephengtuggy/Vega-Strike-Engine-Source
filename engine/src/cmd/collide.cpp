@@ -116,6 +116,20 @@ std::shared_ptr<collideTrees> collideTrees::Create(const string &hk, csOPCODECol
     return ret_val;
 }
 
+collideTrees::~collideTrees() {
+    UnitColliders().erase(hash_key);
+    for (auto & rapidCollider : rapidColliders) {
+        if (rapidCollider) {
+            delete rapidCollider;
+            rapidCollider = nullptr;
+        }
+    }
+    if (colShield) {
+        delete colShield;
+        colShield = nullptr;
+    }
+}
+
 //void collideTrees::Dec() {
 //    refcount--;
 //    if (refcount == 0) {

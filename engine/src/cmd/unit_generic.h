@@ -1,7 +1,7 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
 /*
- * unit_generic.cpp
+ * unit_generic.h
  *
  * Copyright (C) 2001-2022 Daniel Horn, pyramid3d, Stephen G. Tuggy, Roy Falk,
  * and other Vega Strike contributors
@@ -78,7 +78,7 @@ void UncheckUnit( class Unit*un );
 
 #include "configuration/configuration.h"
 #include "configuration/game_config.h"
-#include "unit_collide.h"
+//#include "unit_collide.h"
 
 extern char *GetUnitDir(const char *filename);
 
@@ -97,6 +97,7 @@ class VSSprite;
 class Box;
 class StarSystem;
 struct colTrees;
+struct collideTrees;
 class Pilot;
 class Limits;
 class MissileGeneric;

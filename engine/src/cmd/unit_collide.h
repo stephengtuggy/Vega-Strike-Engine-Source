@@ -36,10 +36,15 @@
 #include "cmd/unit_generic.h"
 #include "vs_logging.h"
 #include <set>
-#define COLLIDETABLESIZE sizeof (CTSIZ)
-#define COLLIDETABLEACCURACY sizeof (CTACCURACY)
+
+const int kTableHuge = 27;
+const int kColTableAccuracy = 128;
+const int kColTableSize = 20;
+
+#define COLLIDETABLESIZE (sizeof (CTSIZ))
+#define COLLIDETABLEACCURACY (sizeof (CTACCURACY))
 ///objects that go over 16 sectors are considered huge and better to check against everything.
-#define HUGEOBJECT sizeof (CTHUGE)
+#define HUGEOBJECT (sizeof (CTHUGE))
 
 class StarSystem;
 /**
@@ -294,9 +299,6 @@ public:
     }
 };
 
-const int tablehuge = 27;
-const int coltableacc = 128;
-const int coltablesize = 20;
 class CollideTable {
     unsigned int blocupdate;
 public:
@@ -307,7 +309,7 @@ public:
         ++blocupdate;
     }
 
-    UnitHash3d<char[coltablesize], char[coltableacc], char[tablehuge]> c;
+    UnitHash3d<char[kColTableSize], char[kColTableAccuracy], char[kTableHuge]> c;
 };
 
 void AddCollideQueue(LineCollide &, StarSystem *ss);
@@ -335,7 +337,7 @@ struct collideTrees : public std::enable_shared_from_this<collideTrees> {
     //
     // Is it? -- Stephen G. Tuggy 2022-05-14
     // Yes, it is -- in unit_csv.cpp -- Stephen G. Tuggy 2022-05-15
-    csOPCODECollider *colShield;
+    csOPCODECollider *colShield{};
 
 //    int refcount;
 //    collideTrees(const std::string &hk, csOPCODECollider *cT, csOPCODECollider *cS);
@@ -345,6 +347,8 @@ struct collideTrees : public std::enable_shared_from_this<collideTrees> {
 //    }
 
 //    void Dec();
+
+    ~collideTrees();
 
     inline std::shared_ptr<collideTrees> GetPtr() {
         return shared_from_this();

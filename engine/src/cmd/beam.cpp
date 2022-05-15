@@ -810,10 +810,10 @@ void Beam::UpdatePhysics(const Transformation &trans,
         CollideInfo.hhuge =
                 (((CollideInfo.Maxi.i
                         - CollideInfo.Mini.i)
-                        / coltableacc)
-                        * ((CollideInfo.Maxi.j - CollideInfo.Mini.j) / coltableacc)
-                        * (CollideInfo.Maxi.k - CollideInfo.Mini.k) / coltableacc
-                        > tablehuge);
+                        / kColTableAccuracy)
+                        * ((CollideInfo.Maxi.j - CollideInfo.Mini.j) / kColTableAccuracy)
+                        * (CollideInfo.Maxi.k - CollideInfo.Mini.k) / kColTableAccuracy
+                        > kTableHuge);
         CollideInfo.Mini = tmpMini;
         CollideInfo.Maxi = tmpvec;
 #ifdef BEAMCOLQ
