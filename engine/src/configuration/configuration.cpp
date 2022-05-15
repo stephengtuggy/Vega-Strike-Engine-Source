@@ -300,6 +300,7 @@ void Configuration::OverrideDefaultsWithUserConfiguration() {
     physics.hostile_auto_radius = GameConfig::GetVariable("physics.hostile_auto_radius", 1000.0F) * physics.game_speed;
     physics.min_asteroid_distance = GameConfig::GetVariable("physics.min_asteroid_distance", -100.0F);
     physics.steady_itts = GameConfig::GetVariable("physics.steady_itts", false);
+    physics.no_unit_collisions = GameConfig::GetVariable("physics.no_unit_collisions", false);
 
     // These calculations depend on the physics.game_speed and physics.game_accel values to be set already;
     // that's why they're down here instead of with the other graphics settings
