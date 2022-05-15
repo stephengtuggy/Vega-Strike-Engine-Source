@@ -28,14 +28,13 @@
 #define __COLLIDE_FUNCS_H
 
 #include <memory>
-#include <map>
+#include <unordered_map>
 #include "gfx/vec.h"
 #include "linecollide.h"
 #include "star_system.h"
-//#include "unit_collide.h"
 
 struct collideTrees;
-std::map<std::string, std::weak_ptr<collideTrees>> & UnitColliders();
+std::unordered_map<std::string, std::weak_ptr<collideTrees>> & UnitColliders();
 
 bool TableLocationChanged(const QVector &Mini, const QVector &minz);
 bool TableLocationChanged(const LineCollide &lc, const QVector &minx, const QVector &maxx);

@@ -1071,9 +1071,6 @@ void Unit::LoadRow(CSVRow &row, string modification, bool saved_game) {
 
         std::string collideTreeHash = VSFileSystem::GetHashName(modification + "#" + row[0]);
         this->colTrees = collideTrees::Get(collideTreeHash);
-//        if (this->colTrees) {
-//            this->colTrees->Inc();
-//        }
         csOPCODECollider *colShield = nullptr;
         string tmpname = row[0];       //key
         if (!this->colTrees) {
@@ -1104,9 +1101,6 @@ void Unit::LoadRow(CSVRow &row, string modification, bool saved_game) {
                                 ? &polies : nullptr);
             }
             this->colTrees = collideTrees::Create(collideTreeHash, csrc, colShield);
-//            this->colTrees = new collideTrees(collideTreeHash,
-//                    csrc,
-//                    colShield);
             if (xml.rapidmesh && xml.hasColTree) {
                 //if we have a special rapid mesh we need to generate things now
                 for (unsigned int i = 1U; i < collideTreesMaxTrees; ++i) {

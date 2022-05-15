@@ -29,35 +29,20 @@
 #include "unit_generic.h"
 #include "beam.h"
 #include "bolt.h"
-#include "gfx/mesh.h"
+//#include "gfx/mesh.h"
 #include "unit_collide.h"
 #include "physics.h"
 #include "universe.h"
 
 #include "collide2/CSopcodecollider.h"
-#include "collide2/csgeom2/optransfrm.h"
-#include "collide2/basecollider.h"
+//#include "collide2/csgeom2/optransfrm.h"
+//#include "collide2/basecollider.h"
 
 #include "hashtable.h"
 #include <string>
 #include "vs_globals.h"
-#include "configxml.h"
+//#include "configxml.h"
 #include "vs_logging.h"
-
-//static Hashtable<std::string, collideTrees, 127> unitColliders;
-
-//collideTrees::collideTrees(const std::string &hk, csOPCODECollider *cT,
-//        csOPCODECollider *cS) : hash_key(hk), colShield(cS) {
-//    for (auto & rapidCollider : rapidColliders) {
-//        rapidCollider = nullptr;
-//    }
-//    rapidColliders[0] = cT;
-//
-//    UnitColliders()[hash_key] = shared_from_this();
-//
-////    refcount = 1;
-////    unitColliders.Put(hash_key, this);
-//}
 
 float loge2 = log(2.0f);
 
@@ -93,15 +78,16 @@ csOPCODECollider *collideTrees::colTree(Unit *un, const Vector &othervelocity) {
 }
 
 std::shared_ptr<collideTrees> collideTrees::Get(const std::string &hash_key) {
-    const std::weak_ptr<collideTrees> kWeakPtr = UnitColliders().at(hash_key);
-//    if (!kWeakPtr) {
-//        return nullptr;
-//    }
-    const std::shared_ptr<collideTrees> &kSharedPtr = kWeakPtr.lock();
-    if (!kSharedPtr) {
+    const auto& existing = UnitColliders().find(hash_key);
+    if (existing == UnitColliders().end()) {
         return nullptr;
     }
-    return kSharedPtr->shared_from_this();
+    std::weak_ptr<collideTrees> my_weak_ptr = existing->second;
+    std::shared_ptr<collideTrees> my_shared_ptr = my_weak_ptr.lock();
+    if (!my_shared_ptr) {
+        return nullptr;
+    }
+    return my_shared_ptr->shared_from_this();
 }
 
 std::shared_ptr<collideTrees> collideTrees::Create(const string &hk, csOPCODECollider *cT, csOPCODECollider *cS) {
@@ -129,25 +115,6 @@ collideTrees::~collideTrees() {
         colShield = nullptr;
     }
 }
-
-//void collideTrees::Dec() {
-//    refcount--;
-//    if (refcount == 0) {
-//        unitColliders.Delete(hash_key);
-//        for (unsigned int i = 0; i < collideTreesMaxTrees; ++i) {
-//            if (rapidColliders[i]) {
-//                delete rapidColliders[i];
-//                rapidColliders[i] = nullptr;
-//            }
-//        }
-//        if (colShield) {
-//            delete colShield;
-//            colShield = nullptr;
-//        }
-//        delete this;    // SGT 2021-07-09 ?!?
-//        return;
-//    }
-//}
 
 bool TableLocationChanged(const QVector &Mini, const QVector &minz) {
     return _Universe->activeStarSystem()->collide_table->c.hash_int(Mini.i)
@@ -196,8 +163,8 @@ bool lcwithin(const LineCollide &lc, const LineCollide &tmp) {
             && lc.Maxi.k > tmp.Mini.k;
 }
 
-map<std::string, std::weak_ptr<collideTrees>> & UnitColliders() {
-    static std::map<std::string, std::weak_ptr<collideTrees>> unit_colliders;
+std::unordered_map<std::string, std::weak_ptr<collideTrees>> & UnitColliders() {
+    static std::unordered_map<std::string, std::weak_ptr<collideTrees>> unit_colliders;
     return unit_colliders;
 }
 
