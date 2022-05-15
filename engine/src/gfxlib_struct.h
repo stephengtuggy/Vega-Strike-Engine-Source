@@ -36,14 +36,14 @@
 #define GFXTRUE 1
 #define GFXFALSE 0
 
-const int INDEX_BYTE = sizeof(unsigned char);
-const int INDEX_SHORT = sizeof(unsigned short);
-const int INDEX_INT = sizeof(unsigned int);
-const int CHANGE_MUTABLE = (sizeof(unsigned int) * 2);
-const int CHANGE_CHANGE = (sizeof(unsigned int) * 4);
-const int HAS_COLOR = (sizeof(unsigned int) * 8);
+const size_t INDEX_BYTE = sizeof(unsigned char);
+const size_t INDEX_SHORT = sizeof(unsigned short);
+const size_t INDEX_INT = sizeof(unsigned int);
+const size_t CHANGE_MUTABLE = (sizeof(unsigned int) * 2);
+const size_t CHANGE_CHANGE = (sizeof(unsigned int) * 4);
+const size_t HAS_COLOR = (sizeof(unsigned int) * 8);
 #define USE_DISPLAY_LISTS
-const int HAS_INDEX = sizeof(unsigned char) | sizeof(unsigned short) | sizeof(unsigned int);
+const size_t HAS_INDEX = sizeof(unsigned char) | sizeof(unsigned short) | sizeof(unsigned int);
 
 ///Creates a Display list. 0 is returned if no memory is avail for a display list
 extern int /*GFXDRVAPI*/ GFXCreateList();

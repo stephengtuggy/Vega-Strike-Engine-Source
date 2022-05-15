@@ -24,10 +24,10 @@
 #include "gfxlib_struct.h"
 #include "gfxlib.h"
 #include "gldrv/gl_globals.h"
-#include <stdio.h>
-#include "xml_support.h"
-#include "config_xml.h"
-#include "vs_globals.h"
+#include <cstdio>
+//#include "xml_support.h"
+//#include "config_xml.h"
+//#include "vs_globals.h"
 #include "vs_random.h"
 #include "vs_logging.h"
 
@@ -340,9 +340,9 @@ void GFXVertexList::Draw(enum POLYTYPE *mode, const INDEX index, const int numli
 
         ++gl_batches_this_frame;
     } else {
-        int totoffset = 0;
+        size_t totoffset = 0U;
         if (changed & HAS_INDEX) {
-            long stride = changed & HAS_INDEX;
+            size_t stride = changed & HAS_INDEX;
             GLenum indextype = (changed & INDEX_BYTE)
                     ? GL_UNSIGNED_BYTE
                     : ((changed & INDEX_SHORT)
@@ -363,19 +363,19 @@ void GFXVertexList::Draw(enum POLYTYPE *mode, const INDEX index, const int numli
                 }
                 #endif
             }
-            if (glMultiDrawElements_p != NULL && numlists > 1) {
+            if (glMultiDrawElements_p != nullptr && numlists > 1) {
                 static std::vector<bool> drawn;
                 static std::vector<const GLvoid *> glindices;
                 static std::vector<GLsizei> glcounts;
 
                 drawn.clear();
                 drawn.resize(numlists, false);
-                for (int i = 0; i < numlists; totoffset += offsets[i++]) {
+                for (size_t i = 0; i < numlists; totoffset += offsets[i++]) {
                     if (!drawn[i]) {
                         glindices.clear();
                         glcounts.clear();
                         int totcount = 0;
-                        for (long j = i, offs = totoffset; j < numlists; offs += offsets[j++]) {
+                        for (size_t j = i, offs = totoffset; j < numlists; offs += offsets[j++]) {
                             totcount += offsets[j];
                             if (!drawn[j] && (mode[j] == mode[i])) {
                                 glindices.push_back(use_vbo ? (GLvoid *) (stride * offs)

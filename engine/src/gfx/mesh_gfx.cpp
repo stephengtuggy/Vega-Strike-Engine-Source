@@ -54,6 +54,8 @@
 #include <signal.h>
 #include <sys/types.h>
 
+const size_t ONE_Z = static_cast<size_t>(1U);
+
 extern vector<Logo *> undrawn_logos;
 
 #include <exception>
@@ -1400,8 +1402,9 @@ void Mesh::ProcessShaderDrawQueue(size_t whichpass, int whichdrawqueue, bool zso
     }
     //Activate texture units
     size_t tui;
-    size_t tuimask = 0;
-    for (tui = 0; tui < pass.getNumTextureUnits(); ++tui) {
+    size_t tuimask = 0UL;
+    size_t num_texture_units = pass.getNumTextureUnits();
+    for (tui = 0UL; tui < num_texture_units; ++tui) {
         const Pass::TextureUnit &tu = pass.getTextureUnit(tui);
         if (tu.targetIndex < 0) {
             continue;
@@ -1413,52 +1416,52 @@ void Mesh::ProcessShaderDrawQueue(size_t whichpass, int whichdrawqueue, bool zso
         }
         try {
             activateTextureUnit(tu);
-            tuimask |= (1 << tu.targetIndex);
+            tuimask |= (ONE_Z << tu.targetIndex);
         }
-        catch (const MissingTexture &e) {
+        catch (const MissingTexture &ignored) {
             if (tu.defaultType == Pass::TextureUnit::Decal && tu.defaultIndex == 0) {
                 //Global default for decal 0 is white, this allows textureless objects
                 //that would otherwise not be possible
                 static Texture *white = new Texture("white.png");
                 white->MakeActive(tu.targetIndex);
-                tuimask |= (1 << tu.targetIndex);
+                tuimask |= (ONE_Z << tu.targetIndex);
             } else {
                 //Ok, this is an error - die horribly
-                throw e;
+                throw;
             }
         }
     }
     for (tui = 0; tui < gl_options.Multitexture; ++tui) {
-        GFXToggleTexture(((tuimask & (1 << tui)) != 0), tui, TEXTURE2D);
+        GFXToggleTexture(((tuimask & (ONE_Z << tui)) != 0), tui, TEXTURE2D);
     }
     //Render all instances, no specific order if not necessary
     //TODO: right now only meshes of same kind get drawn in correct order - should fix this.
-    static std::vector<int> indices;
+    static std::vector<size_t> indices;
     if (zsort) {
         indices.resize(cur_draw_queue.size());
-        for (int i = 0, n = cur_draw_queue.size(); i < n; ++i) {
+        for (size_t i = 0, n = cur_draw_queue.size(); i < n; ++i) {
             indices[i] = i;
         }
         std::sort(indices.begin(), indices.end(),
                 MeshDrawContextPainterSort(sortctr, cur_draw_queue));
     }
     vlist->BeginDrawState();
-    for (int i = 0, n = cur_draw_queue.size(); i < n; ++i) {
+    for (size_t i = 0, n = cur_draw_queue.size(); i < n; ++i) {
         //Making it static avoids frequent reallocations - although may be troublesome for thread safety
         //but... WTH... nothing is thread safe in VS.
         //Also: Be careful with reentrancy... right now, this section is not reentrant.
-        static vector<int> lights;
+        static std::vector<int> lights;
         MeshDrawContext &c = cur_draw_queue[zsort ? indices[i] : i];
         if (c.mesh_seq == whichdrawqueue) {
             lights.clear();
             //Dynamic lights
             if (whichdrawqueue != MESH_SPECIAL_FX_ONLY) {
-                int maxPerPass = pass.perLightIteration ? pass.perLightIteration : 1;
-                int maxPassCount = pass.perLightIteration ? (pass.maxIterations ? pass.maxIterations : 32) : 1;
+                unsigned int maxPerPass = pass.perLightIteration ? pass.perLightIteration : 1;
+                unsigned int maxPassCount = pass.perLightIteration ? (pass.maxIterations ? pass.maxIterations : 32) : 1;
                 GFXPickLights(Vector(c.mat.p.i, c.mat.p.j, c.mat.p.k),
                         rSize(),
                         lights,
-                        maxPerPass * maxPassCount,
+                        static_cast<int>(maxPerPass * maxPassCount),
                         true);
             }
             //FX lights
@@ -1625,7 +1628,8 @@ void Mesh::ProcessFixedDrawQueue(size_t techpass, int whichdrawqueue, bool zsort
     //Map texture units
     Texture *Decal[NUM_PASSES];
     memset(Decal, 0, sizeof(Decal));
-    for (unsigned int tui = 0; tui < pass.getNumTextureUnits(); ++tui) {
+    size_t num_texture_units = pass.getNumTextureUnits();
+    for (size_t tui = 0UL; tui < num_texture_units; ++tui) {
         const Pass::TextureUnit &tu = pass.getTextureUnit(tui);
         switch (tu.sourceType) {
             case Pass::TextureUnit::File:

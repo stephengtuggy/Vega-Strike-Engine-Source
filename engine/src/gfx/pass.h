@@ -370,12 +370,12 @@ public:
     }
 
     /** Get the specified texture unit */
-    const TextureUnit &getTextureUnit(int index) const {
+    const TextureUnit &getTextureUnit(size_t index) const {
         return textureUnits[index];
     }
 
     /** Get the specified texture unit */
-    TextureUnit &getTextureUnit(int index) {
+    TextureUnit &getTextureUnit(size_t index) {
         return textureUnits[index];
     }
 
@@ -385,12 +385,12 @@ public:
     }
 
     /** Get the specified shader param */
-    const ShaderParam &getShaderParam(int index) const {
+    const ShaderParam &getShaderParam(size_t index) const {
         return shaderParams[index];
     }
 
     /** Get the specified shader param */
-    ShaderParam &getShaderParam(int index) {
+    ShaderParam &getShaderParam(size_t index) {
         return shaderParams[index];
     }
 

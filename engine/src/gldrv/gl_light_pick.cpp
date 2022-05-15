@@ -65,9 +65,9 @@ static priority_queue<light_key> lightQ;
 
 //pickedlights was a list, but lists imply heavy reallocation, which is bad in critical sections
 //( and pickedlights is used in the most critical section: just before GFXVertexList::Draw() )
-static vector<int> pickedlights[2];
-static vector<int> *newpicked = &pickedlights[0];
-static vector<int> *oldpicked = &pickedlights[1];
+static std::vector<int> pickedlights[2];
+static std::vector<int> *newpicked = &pickedlights[0];
+static std::vector<int> *oldpicked = &pickedlights[1];
 
 void removelightfromnewpick(int index) {
     std::vector<int>::iterator where;
@@ -94,23 +94,23 @@ static void swappicked() {
 }
 
 void unpicklights() {
-    for (std::vector<int>::iterator i = newpicked->begin(); i != newpicked->end(); i++) {
-        if (*i >= (int) _llights->size()) {
+    for (int & elem : *newpicked) {
+        if (elem >= _llights->size()) {
             VS_LOG(error,
-                    (boost::format("GFXLIGHT FAILURE %1% is beyond array of size %2%") % ((int) *i)
-                            % ((int) _llights->size())));
+                    (boost::format("GFXLIGHT FAILURE %1% is beyond array of size %2%") % ((uintmax_t) elem)
+                            % ((uintmax_t) _llights->size())));
         }
-        if (GLLights[(*_llights)[*i].Target()].index != *i) {
+        if (GLLights[(*_llights)[elem].Target()].index != elem) {
             VS_LOG(error, "GFXLIGHT uh oh");
-            (*_llights)[*i].Target() = -1;
+            (*_llights)[elem].Target() = -1;
             continue;             //a lengthy operation... Since picked lights may have been smashed
         }
-        int targ = (*_llights)[*i].Target();
+        int targ = (*_llights)[elem].Target();
         if (GLLights[targ].options & OpenGLL::GL_ENABLED) {
             glDisable(GL_LIGHT0 + targ);
             GLLights[targ].options = OpenGLL::GLL_LOCAL;
             GLLights[targ].index = -1;
-            (*_llights)[*i].Target() = -1;               //unref
+            (*_llights)[elem].Target() = -1;               //unref
         }
     }
     newpicked->clear();
@@ -122,7 +122,7 @@ static float occludedIntensity(const gfx_light &light, const Vector &center, con
 }
 
 static float attenuatedIntensity(const gfx_light &light, const Vector &center, const float rad) {
-    float intensity = (1.0 / 3.0) * (
+    float intensity = (1.0F / 3.0F) * (
             light.diffuse[0] + light.specular[0]
                     + light.diffuse[1] + light.specular[1]
                     + light.diffuse[2] + light.specular[2]);
@@ -132,7 +132,7 @@ static float attenuatedIntensity(const gfx_light &light, const Vector &center, c
     float qf = light.attenuate[2];     //quadratic factor
     float att = (cf + lf * distance + qf * distance * distance);
     if ((distance <= 0) || (att <= 0)) {
-        return 1.f;
+        return 1.0F;
     } else {
         return (intensity / att) >= light.cutoff;
     }
@@ -168,7 +168,7 @@ struct lightsort {
 
 typedef vector<LineCollideStar> veclinecol;
 
-void GFXGlobalLights(vector<int> &lights, const Vector &center, const float radius) {
+void GFXGlobalLights(std::vector<int> &lights, const Vector &center, const float radius) {
     for (int i = 0; i < GFX_MAX_LIGHTS; ++i) {
         if ((GLLights[i].options & (OpenGLL::GL_ENABLED | OpenGLL::GLL_LOCAL)) == OpenGLL::GL_ENABLED) {
             // It's global and enabled
@@ -179,7 +179,7 @@ void GFXGlobalLights(vector<int> &lights, const Vector &center, const float radi
     }
 }
 
-void GFXGlobalLights(vector<int> &lights) {
+void GFXGlobalLights(std::vector<int> &lights) {
     for (int i = 0; i < GFX_MAX_LIGHTS; ++i) {
         if ((GLLights[i].options & (OpenGLL::GL_ENABLED | OpenGLL::GLL_LOCAL)) == OpenGLL::GL_ENABLED) {
             // It's global and enabled
@@ -190,7 +190,7 @@ void GFXGlobalLights(vector<int> &lights) {
 
 void GFXPickLights(const Vector &center,
         const float radius,
-        vector<int> &lights,
+        std::vector<int> &lights,
         const int maxlights,
         const bool pickglobals) {
     QVector tmp;
@@ -206,11 +206,11 @@ void GFXPickLights(const Vector &center,
     veclinecol *tmppickt[2];
     lighttable.Get(center.Cast(), tmppickt);
 
-    for (int j = 0; j < 2; j++) {
+    for (auto & j : tmppickt) {
         veclinecol::iterator i;
         float attenuated = 0, occlusion = 0;
 
-        for (i = tmppickt[j]->begin(); i != tmppickt[j]->end(); i++) {
+        for (i = j->begin(); i != j->end(); i++) {
             if (picklight(*i->lc, center, radius, lightsenabled, i->GetIndex(), attenuated, occlusion)) {
                 int ix = i->GetIndex();
                 gfx_light &l = (*_llights)[ix];
@@ -261,8 +261,8 @@ void gfx_light::dopickenables() {
     for (traverse = newpicked->begin(); traverse != newpicked->end(); ++traverse) {
         if (*traverse >= (int) _llights->size()) {
             VS_LOG(error,
-                    (boost::format("GFXLIGHT FAILURE %1% is beyond array of size %2%") % ((int) *traverse)
-                            % ((int) _llights->size())));
+                    (boost::format("GFXLIGHT FAILURE %1% is beyond array of size %2%") % ((uintmax_t) *traverse)
+                            % ((uintmax_t) _llights->size())));
             continue;
         }
         if ((*_llights)[*traverse].target == -1) {
@@ -304,111 +304,4 @@ void gfx_light::dopickenables() {
     }
     oldpicked->clear();
 }
-
-#ifdef MIRACLESAVESDAY
-
-void /*GFXDRVAPI*/ GFXPickLights( const float *transform )
-{
-    //picks 1-5 lights to use
-    //glMatrixMode(GL_MODELVIEW);
-    //glPushMatrix();
-    //float tm [16]={1,0,0,1000,0,1,0,1000,0,0,1,1000,0,0,0,1};
-    //glLoadIdentity();
-    //GFXLoadIdentity(MODEL);
-    if (!GFXLIGHTING) return;
-    Vector loc( transform[12], transform[13], transform[14] );
-    SetLocalCompare( loc );
-    newQsize = 0;
-    unsigned int i;
-    light_key    tmpvar;
-    unsigned int lightQsize = lightQ.size();
-    for (i = 0; i < lightQsize; i++) {
-        tmpvar = lightQ.top();
-        if (i < GFX_MAX_LIGHTS) {
-            //do more stuff with intensity before hacking it to hell
-            if (i > GFX_OPTIMAL_LIGHTS) {
-                if ( (tmpvar.intensity_key-optintense)*(GFX_MAX_LIGHTS-GFX_OPTIMAL_LIGHTS)
-                    < (i-GFX_OPTIMAL_LIGHTS)*(optsat-optintense) )
-                    break;                      //no new lights
-            } else {
-                if (i == GFX_OPTIMAL_LIGHTS-2 && tmpvar.intensity_key < .25*optintense)
-                    break;                      //no new lights
-                if (i == GFX_OPTIMAL_LIGHTS-1 && tmpvar.intensity_key < .5*optintense)
-                    break;                      //no new lights
-                if (i == GFX_OPTIMAL_LIGHTS && tmpvar.intensity_key < optintense)
-                    break;
-            }
-            newQsize++;
-#ifdef PER_MESH_ATTENUATE
-            if ( (*_llights)[i].vect[3] ) {
-                //intensity now has become the attenuation factor
-                newQ[i] = tmpvar.number;
-                AttenuateQ[i] = tmpvar.intensity_key/(*_llights)[i].intensity;
-            } else {
-#endif
-            newQ[i] = tmpvar.number;
-#ifdef PER_MESH_ATTENUATE
-            AttenuateQ[i] = 0;
-        }
-#endif
-        } else
-            break;
-        lightQ.pop();
-    }
-    unsigned int light;
-    for (i = 0; i < newQsize; i++) {
-        light = newQ[i];
-        if ( (*_llights)[light].target >= 0 ) {
-#ifdef PER_MESH_ATTENUATE
-            if (AttenuateQ[i])
-                EnableExistingAttenuated( light, AttenuateQ[i] );
-            else
-#endif
-            EnableExisting( newQ[i] );
-            /***daniel 081901
-             *  AttTmp[0]=(*_llights)[light].vect[0]-loc.i;
-             *  AttTmp[1]=(*_llights)[light].vect[1]-loc.j;
-             *  AttTmp[2]=(*_llights)[light].vect[2]-loc.k;
-             *  VecT[3]=0;
-             *  VecT[0]=AttTmp[0]*transform[0]+AttTmp[1]*transform[1]+AttTmp[2]*transform[2];
-             *  VecT[1]=AttTmp[0]*transform[4]+AttTmp[1]*transform[5]+AttTmp[2]*transform[6];
-             *  VecT[2]=AttTmp[0]*transform[8]+AttTmp[1]*transform[9]+AttTmp[2]*transform[10];
-             *
-             *  glLightfv (GL_LIGHT0+(*_llights)[light].target, GL_POSITION, VecT);
-             ****/
-        }
-    }
-    for (i = 0; i < GFX_MAX_LIGHTS; i++)
-        DisableExisting( i );
-    //go through newQ and tag all existing lights for enablement
-    //disable rest of lights
-    //ForceActivate the rest.
-    unsigned int tmp     = 0;     //where to start looking for disabled lights
-    unsigned int newtarg = 0;
-    for (i = 0; i < newQsize; i++) {
-        light = newQ[i];
-        if ( (*_llights)[light].target == -1 ) {
-            if (AttenuateQ[i])
-                ForceEnableAttenuated( light, AttenuateQ[i], tmp, newtarg );
-            else
-                ForceEnable( light, tmp, newtarg );
-            AttTmp[0] = (*_llights)[light].vect[0]-loc.i;
-            AttTmp[1] = (*_llights)[light].vect[1]-loc.j;
-            AttTmp[2] = (*_llights)[light].vect[2]-loc.k;
-            AttTmp[3] = 0;
-            VecT[0]   = AttTmp[0]*transform[0]+AttTmp[1]*transform[1]+AttTmp[2]*transform[2];
-            VecT[1]   = AttTmp[0]*transform[4]+AttTmp[1]*transform[5]+AttTmp[2]*transform[6];
-            VecT[2]   = AttTmp[0]*transform[8]+AttTmp[1]*transform[9]+AttTmp[2]*transform[10];
-            glLightfv( GL_LIGHT0+(*_llights)[light].target, GL_POSITION, VecT );
-
-            //glLightfv (GL_LIGHT0+(*llight_dat)[newQ[i]].target, GL_POSITION, /*wrong*/(*_llights)[light].vect);
-        }
-    }
-    //glPopMatrix();
-}
-
-/*
- *     curlightloc.intensity=(curlight.specular[0]+curlight.specular[1]+curlight.specular[2]+curlight.diffuse[0]+curlight.diffuse[1]+curlight.diffuse[2]+curlight.ambient[0]+curlight.ambient[1]+curlight.ambient[2])*.333333333333333333333333;//calculate new cuttof val for light 'caching'
- */
-#endif
 
