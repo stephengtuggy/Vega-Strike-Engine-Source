@@ -126,9 +126,13 @@ void Unit::UpdateCollideQueue(StarSystem *ss, CollideMap::iterator hint[NUM_COLL
 }
 
 void Unit::CollideAll() {
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "ConstantConditionsOC"
     if (isSubUnit() || killed || configuration()->physics.no_unit_collisions) {
         return;
     }
+#pragma clang diagnostic pop
+//    VS_LOG(trace, (boost::format("%1% %2%: Unit::CollideAll() reached") % __FILE__ % __LINE__));
     for (unsigned int locind = 0; locind < NUM_COLLIDE_MAPS; ++locind) {
         if (is_null(this->location[locind])) {
             this->location[locind] = this->getStarSystem()->collide_map[locind]->insert(Collidable(this));

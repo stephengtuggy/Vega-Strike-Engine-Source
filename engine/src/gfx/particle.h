@@ -44,13 +44,21 @@ struct ParticlePoint {
     float size;
 };
 
+struct Particle {
+    Vector velocity{};
+    QVector location{};
+    GFXColor color{};
+    float size{};
+};
+
 /**
  * Particle system class, contains regularly updated geometry for all active
- * particles of the same kind. 
- * 
+ * particles of the same kind.
+ *
  * Can be instantiated statically.
  */
 class ParticleTrail {
+//    std::vector<Particle, aligned_allocator<Particle>> particles;
     std::vector<Vector, aligned_allocator<Vector> > particleVel;
     std::vector<QVector, aligned_allocator<QVector> > particleLoc;
     std::vector<GFXColor, aligned_allocator<GFXColor> > particleColor;
@@ -59,7 +67,7 @@ class ParticleTrail {
     std::vector<float> distances;
     std::vector<unsigned short> pointIndices;
     std::vector<unsigned short> indices;
-    unsigned int maxparticles;
+    unsigned int maxparticles{};
     BLENDFUNC blendsrc, blenddst;
     float alphaMask;
     bool writeDepth, fadeColor;
@@ -137,15 +145,15 @@ public:
 
     /**
      * Launches (maybe) a particle, according to:
-     * 
+     *
      * @param pos Emitter center
      * @param rSize Emitter radial size
-     * @param percent Emitter rate relative to configured rate (inverse rate, effective_rate = rate/percent) 
+     * @param percent Emitter rate relative to configured rate (inverse rate, effective_rate = rate/percent)
      * @param basevelocity Emitter velocity directly translated to particle velocity
      * @param velocity Particle velocity relative to emitter velocity
      * @param pSize Particle size - ignored if emitter configured with fixed particle size
      * @param color Particle color
-     * 
+     *
      */
     void doParticles(const QVector &pos,
             float rSize,

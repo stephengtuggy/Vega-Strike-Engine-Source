@@ -124,9 +124,9 @@ static GFXColor getTerrainColor() {
 }
 
 void Terrain::CollideAll() {
-    for (unsigned int i = 0; i < allterrains.size(); i++) {
-        if (allterrains[i]->draw & TERRAINRENDER) {
-            allterrains[i]->Collide();
+    for (auto & terrain : allterrains) {
+        if (terrain->draw & TERRAINRENDER) {
+            terrain->Collide();
         }
     }
 }
