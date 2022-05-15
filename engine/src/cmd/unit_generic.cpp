@@ -1674,10 +1674,11 @@ void Unit::DamageRandSys(float dam, const Vector &vec, float randnum, float degr
 }
 
 void Unit::Kill(bool erasefromsave, bool quitting) {
-    if (this->colTrees) {
-        this->colTrees->Dec();
-    }           //might delete
-    this->colTrees = NULL;
+//    if (this->colTrees) {
+//        this->colTrees->Dec();
+//    }           //might delete
+//    this->colTrees = NULL;
+    this->colTrees.reset(); // might delete
     killSounds();
     ClearMounts();
 

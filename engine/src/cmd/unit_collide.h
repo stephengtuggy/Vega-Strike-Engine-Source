@@ -1,6 +1,7 @@
 /*
- * Copyright (C) 2001-2022 Daniel Horn, pyramid3d, Stephen G. Tuggy,
- * and other Vega Strike contributors.
+ * Copyright (C) 2001-2022 Daniel Horn, safemode, surfdargent, griwodz,
+ * ace123, pheonixstorm, dan_w, pyramid3d, Roy Falk, Stephen G. Tuggy
+ * and other Vega Strike contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -317,13 +318,13 @@ bool EradicateCollideTable(LineCollide *lc, StarSystem *ss);
 
 class csOPCODECollider;
 const unsigned int collideTreesMaxTrees = 16;
-struct collideTrees {
+struct collideTrees : public std::enable_shared_from_this<collideTrees> {
     std::string hash_key;
 
-    csOPCODECollider *rapidColliders[collideTreesMaxTrees];
+    csOPCODECollider *rapidColliders[collideTreesMaxTrees]{};
 
     bool usingColTree() const {
-        return rapidColliders[0] != NULL;
+        return rapidColliders[0] != nullptr;
     }
 
     csOPCODECollider *colTree(Unit *un,
@@ -331,17 +332,29 @@ struct collideTrees {
 
     // Not sure at the moment where we decide to collide to the shield ...since all we ever compare to is colTree in Collide()
     // Yet, this is used somewhere.
+    //
+    // Is it? -- Stephen G. Tuggy 2022-05-14
+    // Yes, it is -- in unit_csv.cpp -- Stephen G. Tuggy 2022-05-15
     csOPCODECollider *colShield;
 
-    int refcount;
-    collideTrees(const std::string &hk, csOPCODECollider *cT, csOPCODECollider *cS);
+//    int refcount;
+//    collideTrees(const std::string &hk, csOPCODECollider *cT, csOPCODECollider *cS);
 
-    void Inc() {
-        refcount++;
+//    void Inc() {
+//        refcount++;
+//    }
+
+//    void Dec();
+
+    inline std::shared_ptr<collideTrees> GetPtr() {
+        return shared_from_this();
     }
 
-    void Dec();
-    static collideTrees *Get(const std::string &hash_key);
+    static std::shared_ptr<collideTrees> Get(const std::string &hash_key);
+    static std::shared_ptr<collideTrees> Create(const std::string &hk, csOPCODECollider *cT, csOPCODECollider *cS);
+
+private:
+    collideTrees() = default;
 };
 
 #endif

@@ -85,7 +85,7 @@ void LaunchOneParticle(const Matrix &mat, const Vector &vel, unsigned int seed, 
         back.Normalize();
         back *= -game_options()->sparkleabsolutespeed;
 
-        collideTrees *colTrees = mush->colTrees;
+        std::shared_ptr<collideTrees> colTrees = mush->colTrees;
         if (colTrees) {
             if (colTrees->usingColTree()) {
                 csOPCODECollider *colTree = colTrees->rapidColliders[0];

@@ -1,8 +1,9 @@
 /*
  * collide.cpp
  *
- * Copyright (C) 2020-2021 Roy Falk, Stephen G. Tuggy and other Vega Strike contributors
- * Copyright (C) 2022 Stephen G. Tuggy
+ * Copyright (C) 2001-2022 Daniel Horn, safemode, surfdargent, griwodz,
+ * ace123, pheonixstorm, dan_w, pyramid3d, Roy Falk, Stephen G. Tuggy
+ * and other Vega Strike contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -43,20 +44,22 @@
 #include "configxml.h"
 #include "vs_logging.h"
 
-static Hashtable<std::string, collideTrees, 127> unitColliders;
+//static Hashtable<std::string, collideTrees, 127> unitColliders;
 
-collideTrees::collideTrees(const std::string &hk, csOPCODECollider *cT,
-        csOPCODECollider *cS) : hash_key(hk), colShield(cS) {
-    for (unsigned int i = 0; i < collideTreesMaxTrees; ++i) {
-        rapidColliders[i] = nullptr;
-    }
-    rapidColliders[0] = cT;
+//collideTrees::collideTrees(const std::string &hk, csOPCODECollider *cT,
+//        csOPCODECollider *cS) : hash_key(hk), colShield(cS) {
+//    for (auto & rapidCollider : rapidColliders) {
+//        rapidCollider = nullptr;
+//    }
+//    rapidColliders[0] = cT;
+//
+//    UnitColliders()[hash_key] = shared_from_this();
+//
+////    refcount = 1;
+////    unitColliders.Put(hash_key, this);
+//}
 
-    refcount = 1;
-    unitColliders.Put(hash_key, this);
-}
-
-float loge2 = log(2.f);
+float loge2 = log(2.0f);
 
 csOPCODECollider *collideTrees::colTree(Unit *un, const Vector &othervelocity) {
     const float const_factor = 1;
@@ -89,28 +92,48 @@ csOPCODECollider *collideTrees::colTree(Unit *un, const Vector &othervelocity) {
     return rapidColliders[pow];
 }
 
-collideTrees *collideTrees::Get(const std::string &hash_key) {
-    return unitColliders.Get(hash_key);
+std::shared_ptr<collideTrees> collideTrees::Get(const std::string &hash_key) {
+    const std::weak_ptr<collideTrees> kWeakPtr = UnitColliders().at(hash_key);
+//    if (!kWeakPtr) {
+//        return nullptr;
+//    }
+    const std::shared_ptr<collideTrees> &kSharedPtr = kWeakPtr.lock();
+    if (!kSharedPtr) {
+        return nullptr;
+    }
+    return kSharedPtr->shared_from_this();
 }
 
-void collideTrees::Dec() {
-    refcount--;
-    if (refcount == 0) {
-        unitColliders.Delete(hash_key);
-        for (unsigned int i = 0; i < collideTreesMaxTrees; ++i) {
-            if (rapidColliders[i]) {
-                delete rapidColliders[i];
-                rapidColliders[i] = nullptr;
-            }
-        }
-        if (colShield) {
-            delete colShield;
-            colShield = nullptr;
-        }
-        delete this;    // SGT 2021-07-09 ?!?
-        return;
+std::shared_ptr<collideTrees> collideTrees::Create(const string &hk, csOPCODECollider *cT, csOPCODECollider *cS) {
+    std::shared_ptr<collideTrees> ret_val = std::shared_ptr<collideTrees>(new collideTrees());
+    for (auto & rapidCollider : ret_val->rapidColliders) {
+        rapidCollider = nullptr;
     }
+    ret_val->rapidColliders[0] = cT;
+    ret_val->colShield = cS;
+    std::weak_ptr<collideTrees> weak_ptr_to_ret_val(ret_val);
+    UnitColliders()[hk] = weak_ptr_to_ret_val;
+    return ret_val;
 }
+
+//void collideTrees::Dec() {
+//    refcount--;
+//    if (refcount == 0) {
+//        unitColliders.Delete(hash_key);
+//        for (unsigned int i = 0; i < collideTreesMaxTrees; ++i) {
+//            if (rapidColliders[i]) {
+//                delete rapidColliders[i];
+//                rapidColliders[i] = nullptr;
+//            }
+//        }
+//        if (colShield) {
+//            delete colShield;
+//            colShield = nullptr;
+//        }
+//        delete this;    // SGT 2021-07-09 ?!?
+//        return;
+//    }
+//}
 
 bool TableLocationChanged(const QVector &Mini, const QVector &minz) {
     return _Universe->activeStarSystem()->collide_table->c.hash_int(Mini.i)
@@ -159,6 +182,11 @@ bool lcwithin(const LineCollide &lc, const LineCollide &tmp) {
             && lc.Maxi.k > tmp.Mini.k;
 }
 
+map<std::string, std::weak_ptr<collideTrees>> & UnitColliders() {
+    static std::map<std::string, std::weak_ptr<collideTrees>> unit_colliders;
+    return unit_colliders;
+}
+
 bool usehuge_table() {
     const unsigned int A = 9301;
     const unsigned int C = 49297;
@@ -171,8 +199,3 @@ bool usehuge_table() {
 bool Bolt::Collide(Collidable::CollideRef index) {
     return _Universe->activeStarSystem()->collide_map[Unit::UNIT_BOLT]->CheckCollisions(this, **location);
 }
-
-
-
-
-

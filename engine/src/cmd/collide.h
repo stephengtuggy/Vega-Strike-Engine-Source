@@ -1,9 +1,9 @@
-/**
+/*
  * collide.h
  *
- * Copyright (C) 2020 Roy Falk, Stephen G. Tuggy and other Vega Strike
- * contributors
- * Copyright (C) 2022 Stephen G. Tuggy
+ * Copyright (C) 2001-2022 Daniel Horn, safemode, surfdargent, griwodz,
+ * ace123, pheonixstorm, dan_w, pyramid3d, Roy Falk, Stephen G. Tuggy
+ * and other Vega Strike contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -27,9 +27,14 @@
 #ifndef __COLLIDE_FUNCS_H
 #define __COLLIDE_FUNCS_H
 
+#include <memory>
+#include <map>
 #include "gfx/vec.h"
 #include "linecollide.h"
 #include "star_system.h"
+#include "unit_collide.h"
+
+std::map<std::string, std::weak_ptr<collideTrees>> & UnitColliders();
 
 bool TableLocationChanged(const QVector &Mini, const QVector &minz);
 bool TableLocationChanged(const LineCollide &lc, const QVector &minx, const QVector &maxx);

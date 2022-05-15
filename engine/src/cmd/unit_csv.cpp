@@ -1071,14 +1071,14 @@ void Unit::LoadRow(CSVRow &row, string modification, bool saved_game) {
 
         std::string collideTreeHash = VSFileSystem::GetHashName(modification + "#" + row[0]);
         this->colTrees = collideTrees::Get(collideTreeHash);
-        if (this->colTrees) {
-            this->colTrees->Inc();
-        }
-        csOPCODECollider *colShield = NULL;
+//        if (this->colTrees) {
+//            this->colTrees->Inc();
+//        }
+        csOPCODECollider *colShield = nullptr;
         string tmpname = row[0];       //key
         if (!this->colTrees) {
             string val;
-            xml.hasColTree = 1;
+            xml.hasColTree = true;
             if ((val = UnitCSVFactory::GetVariable(unit_key, "Use_Rapid", std::string())).length()) {
                 xml.hasColTree = XMLSupport::parse_bool(val);
             }
@@ -1091,26 +1091,27 @@ void Unit::LoadRow(CSVRow &row, string modification, bool saved_game) {
             if (xml.rapidmesh_str.length()) {
                 addRapidMesh(&xml, xml.rapidmesh_str.c_str(), xml.unitscale, faction, getFlightgroup());
             } else {
-                xml.rapidmesh = NULL;
+                xml.rapidmesh = nullptr;
             }
             polies.clear();
             if (xml.rapidmesh) {
                 xml.rapidmesh->GetPolys(polies);
             }
-            csOPCODECollider *csrc = NULL;
+            csOPCODECollider *csrc = nullptr;
             if (xml.hasColTree) {
                 csrc = getCollideTree(Vector(1, 1, 1),
                         xml.rapidmesh
-                                ? &polies : NULL);
+                                ? &polies : nullptr);
             }
-            this->colTrees = new collideTrees(collideTreeHash,
-                    csrc,
-                    colShield);
+            this->colTrees = collideTrees::Create(collideTreeHash, csrc, colShield);
+//            this->colTrees = new collideTrees(collideTreeHash,
+//                    csrc,
+//                    colShield);
             if (xml.rapidmesh && xml.hasColTree) {
                 //if we have a special rapid mesh we need to generate things now
-                for (unsigned int i = 1; i < collideTreesMaxTrees; ++i) {
+                for (unsigned int i = 1U; i < collideTreesMaxTrees; ++i) {
                     if (!this->colTrees->rapidColliders[i]) {
-                        unsigned int which = 1 << i;
+                        unsigned int which = 1U << i;
                         this->colTrees->rapidColliders[i] =
                                 getCollideTree(Vector(1, 1, which),
                                         &polies);

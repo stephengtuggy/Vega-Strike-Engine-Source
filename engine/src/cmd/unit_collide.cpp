@@ -191,7 +191,7 @@ bool Unit::InsideCollideTree(Unit *smaller,
         Vector &smallNormal,
         bool bigasteroid,
         bool smallasteroid) {
-    if (smaller->colTrees == NULL || this->colTrees == NULL) {
+    if (smaller->colTrees == nullptr || this->colTrees == nullptr) {
         return false;
     }
     if (Destroyed()) {
@@ -339,10 +339,8 @@ bool Unit::Collide(Unit *target) {
         bigger = this;
         smaller = target;
     }
-    bool usecoltree = (this->colTrees && target->colTrees)
-            ? this->colTrees->colTree(this, Vector(0, 0, 0))
-                    && target->colTrees->colTree(this, Vector(0, 0, 0))
-            : false;
+    bool usecoltree = (this->colTrees && target->colTrees) && this->colTrees->colTree(this, Vector(0, 0, 0))
+            && target->colTrees->colTree(this, Vector(0, 0, 0));
     if (usecoltree) {
         QVector bigpos, smallpos;
         Vector bigNormal, smallNormal;

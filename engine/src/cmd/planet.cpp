@@ -443,7 +443,7 @@ void Planet::InitPlanet(QVector x,
     SetAI(new PlanetaryOrbit(this, vely, pos, x, y, orbitcent, parent));     //behavior
     terraintrans = nullptr;
 
-    colTrees = nullptr;
+    colTrees.reset();
     SetAngularVelocity(rotvel);
     // The docking port is 20% bigger than the planet
     // TODO: Make these part of configuration()

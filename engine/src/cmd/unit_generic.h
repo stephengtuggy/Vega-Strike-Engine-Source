@@ -1,8 +1,5 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#ifndef __UNIT_GENERIC_H__
-#define __UNIT_GENERIC_H__
-
 /*
  * unit_generic.cpp
  *
@@ -26,6 +23,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+#ifndef __UNIT_GENERIC_H__
+#define __UNIT_GENERIC_H__
 
 /***** Unit is the Unit class without GFX/Sound with AI *****/
 
@@ -78,6 +78,7 @@ void UncheckUnit( class Unit*un );
 
 #include "configuration/configuration.h"
 #include "configuration/game_config.h"
+#include "unit_collide.h"
 
 extern char *GetUnitDir(const char *filename);
 
@@ -836,7 +837,7 @@ public:
     // This used to be initialized by set_null (see collide_map)
     // Right now, there's an ifdef that assigns NULL but it could be something else.
     CollideMap::iterator location[2] = {nullptr, nullptr};
-    struct collideTrees *colTrees = nullptr;
+    std::shared_ptr<collideTrees> colTrees = nullptr;
 //Sets the parent to be this unit. Unit never dereferenced for this operation
     void SetCollisionParent(Unit *name);
 //won't collide with ownery
