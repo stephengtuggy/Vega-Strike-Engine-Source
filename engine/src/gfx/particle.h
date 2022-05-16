@@ -58,16 +58,16 @@ struct Particle {
  * Can be instantiated statically.
  */
 class ParticleTrail {
-//    std::vector<Particle, aligned_allocator<Particle>> particles;
-    std::vector<Vector, aligned_allocator<Vector> > particleVel;
-    std::vector<QVector, aligned_allocator<QVector> > particleLoc;
-    std::vector<GFXColor, aligned_allocator<GFXColor> > particleColor;
-    std::vector<float, aligned_allocator<float> > particleSize;
+    std::vector<Particle, aligned_allocator<Particle>> particles;
+//    std::vector<Vector, aligned_allocator<Vector> > particleVel;
+//    std::vector<QVector, aligned_allocator<QVector> > particleLoc;
+//    std::vector<GFXColor, aligned_allocator<GFXColor> > particleColor;
+//    std::vector<float, aligned_allocator<float> > particleSize;
     std::vector<float> particleVert;
     std::vector<float> distances;
     std::vector<unsigned short> pointIndices;
     std::vector<unsigned short> indices;
-    unsigned int maxparticles{};
+    unsigned int max_particles{};
     BLENDFUNC blendsrc, blenddst;
     float alphaMask;
     bool writeDepth, fadeColor;
@@ -134,7 +134,7 @@ public:
         float relSize;
 
         void init(const std::string &prefix);
-    } config;
+    } config{};
 
     explicit ParticleEmitter(ParticleTrail *particleType) : particles(particleType) {
     }
@@ -161,7 +161,7 @@ public:
             const Vector &basevelocity,
             const Vector &velocity,
             float pSize,
-            const GFXColor &color);
+            const GFXColor &color) const;
 };
 
 extern ParticleTrail particleTrail;
