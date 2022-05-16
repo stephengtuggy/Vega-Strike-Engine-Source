@@ -961,8 +961,8 @@ void StarSystem::UpdateUnitsPhysics(bool firstframe) {
         totalprocessed += theunitcounter;
         theunitcounter = 0;
     }
-    VS_LOG(trace, (boost::format("%1% %2%: collidetime: %3%") % __FILE__ % __LINE__ % collidetime));
-    VS_LOG(trace, (boost::format("%1% %2%: bolttime: %3%") % __FILE__ % __LINE__ % bolttime));
+//    VS_LOG(trace, (boost::format("%1% %2%: collidetime: %3%") % __FILE__ % __LINE__ % collidetime));
+//    VS_LOG(trace, (boost::format("%1% %2%: bolttime: %3%") % __FILE__ % __LINE__ % bolttime));
 }
 
 void StarSystem::UpdateUnitPhysics(bool firstframe, Unit *unit) {
