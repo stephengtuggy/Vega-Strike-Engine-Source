@@ -50,11 +50,11 @@ inline const TargetType* vega_dynamic_const_cast_ptr(const SourceType* from) {
     try {
         ret_val = dynamic_cast<TargetType*>(from);
     } catch (std::bad_cast& e) {
-        VS_LOG_AND_FLUSH(fatal, (boost::format("Fatal Error '%1%' casting type %2%* to %3%*") % e.what() % typeid(SourceType).name() % typeid(TargetType).name()));
+        VS_LOG_AND_FLUSH(fatal, (boost::format("Fatal Error '%1%' casting type const %2%* to const %3%*") % e.what() % typeid(SourceType).name() % typeid(TargetType).name()));
         VSExit(-422);
     }
     if (ret_val == nullptr) {
-        VS_LOG_AND_FLUSH(fatal, (boost::format("Fatal Failure to Cast type %1%* to %2%* -- nullptr encountered") % typeid(SourceType).name() % typeid(TargetType).name()));
+        VS_LOG_AND_FLUSH(fatal, (boost::format("Fatal Failure to Cast type const %1%* to const %2%* -- nullptr encountered") % typeid(SourceType).name() % typeid(TargetType).name()));
         VSExit(-422);
     }
     return ret_val;
