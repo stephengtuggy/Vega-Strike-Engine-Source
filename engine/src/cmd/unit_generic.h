@@ -32,6 +32,9 @@
 #ifndef _UNIT_H_
 #define _UNIT_H_
 
+#include <boost/smart_ptr/intrusive_ref_counter.hpp>
+#include <boost/smart_ptr/intrusive_ptr.hpp>
+
 #include "armed.h"
 #include "audible.h"
 #include "damageable.h"
@@ -133,11 +136,19 @@ struct PlanetaryOrbitData;
  */
 
 // TODO: move Armed to subclasses
-class Unit : public Armed, public Audible, public Drawable, public Damageable, public Energetic,
-        public Intelligent, public Movable, public JumpCapable, public Carrier {
+class Unit : boost::intrusive_ref_counter<Unit, boost::thread_safe_counter>,
+        public Armed,
+        public Audible,
+        public Drawable,
+        public Damageable,
+        public Energetic,
+        public Intelligent,
+        public Movable,
+        public JumpCapable,
+        public Carrier {
 protected:
 //How many lists are referencing us
-    int ucref = 0;
+//    int ucref = 0;
     StringPool::Reference csvRow;
 public:
 
@@ -998,10 +1009,10 @@ public:
         return Vega_UnitType::unit;
     }
 
-    void Ref();
+//    void Ref();
 //Low level list function to reference the unit as being the target of a UnitContainer or Colleciton
 //Releases the unit from this reference of UnitContainer or Collection
-    void UnRef();
+//    void UnRef();
 //0 in additive is reaplce  1 is add 2 is mult
 //Put that in NetUnit & AcctUnit with string and with Unit
     UnitImages<void> &GetImageInformation();

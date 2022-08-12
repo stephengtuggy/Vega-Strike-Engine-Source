@@ -185,12 +185,12 @@ void Unit::RestoreGodliness() {
     _Universe->AccessCockpit()->RestoreGodliness();
 }
 
-void Unit::Ref() {
-#ifdef CONTAINER_DEBUG
-    CheckUnit( this );
-#endif
-    ++ucref;
-}
+//void Unit::Ref() {
+//#ifdef CONTAINER_DEBUG
+//    CheckUnit( this );
+//#endif
+//    ++ucref;
+//}
 
 #define INVERSEFORCEDISTANCE 5400
 extern void abletodock(int dock);
@@ -330,37 +330,37 @@ Unit::~Unit() {
         // stephengtuggy 2020-08-03 - Maybe not.
         VS_LOG(error, (boost::format("Assumed exit on unit %1%(if not quitting, report error)") % name));
     }
-    if (ucref) {
-        VS_LOG_AND_FLUSH(fatal, "DISASTER AREA!!!!");
-    }
-    VS_LOG(trace, (boost::format("Deallocating unit %1$s addr=%2$x refs=%3$d")
-            % name.get().c_str() % this % ucref));
-#ifdef DESTRUCTDEBUG
-    VS_LOG_AND_FLUSH(trace, (boost::format("stage %1$d %2$x %3$d") % 0 % this % ucref));
-#endif
-#ifdef DESTRUCTDEBUG
-    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d %2$x") % 2 % pImage->pHudImage));
-#endif
+//    if (ucref) {
+//        VS_LOG_AND_FLUSH(fatal, "DISASTER AREA!!!!");
+//    }
+//    VS_LOG(trace, (boost::format("Deallocating unit %1$s addr=%2$x refs=%3$d")
+//            % name.get().c_str() % this % ucref));
+//#ifdef DESTRUCTDEBUG
+//    VS_LOG_AND_FLUSH(trace, (boost::format("stage %1$d %2$x %3$d") % 0 % this % ucref));
+//#endif
+//#ifdef DESTRUCTDEBUG
+//    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d %2$x") % 2 % pImage->pHudImage));
+//#endif
     if (pImage->unitwriter) {
         delete pImage->unitwriter;
         pImage->unitwriter = nullptr;
     }
     delete pImage;
-#ifdef DESTRUCTDEBUG
-    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d %2$x") % 3 % pImage));
-#endif
+//#ifdef DESTRUCTDEBUG
+//    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d %2$x") % 3 % pImage));
+//#endif
     pImage = nullptr;
     delete pilot;
-#ifdef DESTRUCTDEBUG
-    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d") % 5));
-#endif
-#ifdef DESTRUCTDEBUG
-    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d %2$x") % 6 % &mounts);
-#endif
-
-#ifdef DESTRUCTDEBUG
-    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d %2$x") % 1 % &mounts));
-#endif
+//#ifdef DESTRUCTDEBUG
+//    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d") % 5));
+//#endif
+//#ifdef DESTRUCTDEBUG
+//    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d %2$x") % 6 % &mounts);
+//#endif
+//
+//#ifdef DESTRUCTDEBUG
+//    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d %2$x") % 1 % &mounts));
+//#endif
 #ifndef NO_MOUNT_STAR
                                                                                                                             for (vector< Mount* >::iterator jj = mounts.begin(); jj != mounts.end(); ++jj) {
         //Free all mounts elements
@@ -371,9 +371,9 @@ Unit::~Unit() {
     }
 #endif
     mounts.clear();
-#ifdef DESTRUCTDEBUG
-    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d") % 0));
-#endif
+//#ifdef DESTRUCTDEBUG
+//    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d") % 0));
+//#endif
     for (size_t meshcount = 0; meshcount < meshdata.size(); ++meshcount) {
         if (meshdata[meshcount] != nullptr) {
             delete meshdata[meshcount];
@@ -1736,38 +1736,38 @@ void Unit::Kill(bool erasefromsave, bool quitting) {
     //    VS_LOG(info, (boost::format("UNIT HAS DIED: %1% %2% (file %3%)") % name.get() % fullname % filename.get()));
     //}
 
-    if (ucref == 0) {
-        VS_LOG(trace, (boost::format("UNIT DELETION QUEUED: %1$s %2$s (file %3$s, addr 0x%4$08x)")
-                % name.get().c_str() % fullname.c_str() % filename.get().c_str() % this));
-        Unitdeletequeue.push_back(this);
-        if (flightgroup) {
-            if (flightgroup->leader.GetUnit() == this) {
-                flightgroup->leader.SetUnit(NULL);
-            }
-        }
+//    if (ucref == 0) {
+//        VS_LOG(trace, (boost::format("UNIT DELETION QUEUED: %1$s %2$s (file %3$s, addr 0x%4$08x)")
+//                % name.get().c_str() % fullname.c_str() % filename.get().c_str() % this));
+//        Unitdeletequeue.push_back(this);
+//        if (flightgroup) {
+//            if (flightgroup->leader.GetUnit() == this) {
+//                flightgroup->leader.SetUnit(NULL);
+//            }
+//        }
+//
+////#ifdef DESTRUCTDEBUG
+////        VS_LOG(trace, (boost::format("%s 0x%x - %d") % name.get().c_str() % this % Unitdeletequeue.size()));
+////#endif
+//    }
+}
 
-//#ifdef DESTRUCTDEBUG
-//        VS_LOG(trace, (boost::format("%s 0x%x - %d") % name.get().c_str() % this % Unitdeletequeue.size()));
+//void Unit::UnRef() {
+//#ifdef CONTAINER_DEBUG
+//    CheckUnit( this );
 //#endif
-    }
-}
-
-void Unit::UnRef() {
-#ifdef CONTAINER_DEBUG
-    CheckUnit( this );
-#endif
-    ucref--;
-    if (killed && ucref == 0) {
-#ifdef CONTAINER_DEBUG
-        deletedUn.Put( (uintmax_t) this, this );
-#endif
-        //delete
-        Unitdeletequeue.push_back(this);
-#ifdef DESTRUCTDEBUG
-        VS_LOG(trace, (boost::format("%1$s %2$x - %3$d") % name.get().c_str() % this % Unitdeletequeue.size()));
-#endif
-    }
-}
+//    ucref--;
+//    if (killed && ucref == 0) {
+//#ifdef CONTAINER_DEBUG
+//        deletedUn.Put( (uintmax_t) this, this );
+//#endif
+//        //delete
+//        Unitdeletequeue.push_back(this);
+//#ifdef DESTRUCTDEBUG
+//        VS_LOG(trace, (boost::format("%1$s %2$x - %3$d") % name.get().c_str() % this % Unitdeletequeue.size()));
+//#endif
+//    }
+//}
 
 float Unit::ExplosionRadius() {
     static float expsize = XMLSupport::parse_float(vs_config->getVariable("graphics", "explosion_size", "3"));
@@ -1776,22 +1776,22 @@ float Unit::ExplosionRadius() {
 
 void Unit::ProcessDeleteQueue() {
     while (!Unitdeletequeue.empty()) {
-#ifdef DESTRUCTDEBUG
-                                                                                                                                VS_LOG_AND_FLUSH(trace, (boost::format("Eliminatin' %1$x - %2$d") % Unitdeletequeue.back() % Unitdeletequeue.size()));
-        VS_LOG_AND_FLUSH(trace, (boost::format("Eliminatin' %1$s") % Unitdeletequeue.back()->name.get().c_str()));
-#endif
-#ifdef DESTRUCTDEBUG
-                                                                                                                                if ( Unitdeletequeue.back()->isSubUnit() ) {
-            VS_LOG(debug, "Subunit Deleting (related to double dipping)");
-        }
-#endif
+//#ifdef DESTRUCTDEBUG
+//                                                                                                                                VS_LOG_AND_FLUSH(trace, (boost::format("Eliminatin' %1$x - %2$d") % Unitdeletequeue.back() % Unitdeletequeue.size()));
+//        VS_LOG_AND_FLUSH(trace, (boost::format("Eliminatin' %1$s") % Unitdeletequeue.back()->name.get().c_str()));
+//#endif
+//#ifdef DESTRUCTDEBUG
+//                                                                                                                                if ( Unitdeletequeue.back()->isSubUnit() ) {
+//            VS_LOG(debug, "Subunit Deleting (related to double dipping)");
+//        }
+//#endif
         Unit *mydeleter = Unitdeletequeue.back();
         Unitdeletequeue.pop_back();
         delete mydeleter;                        ///might modify unitdeletequeue
 
-#ifdef DESTRUCTDEBUG
-        VS_LOG_AND_FLUSH(trace, (boost::format("Completed %1$d") % Unitdeletequeue.size()));
-#endif
+//#ifdef DESTRUCTDEBUG
+//        VS_LOG_AND_FLUSH(trace, (boost::format("Completed %1$d") % Unitdeletequeue.size()));
+//#endif
     }
 }
 
