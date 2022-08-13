@@ -136,7 +136,7 @@ struct PlanetaryOrbitData;
  */
 
 // TODO: move Armed to subclasses
-class Unit : boost::intrusive_ref_counter<Unit, boost::thread_safe_counter>,
+class Unit : public boost::intrusive_ref_counter<Unit, boost::thread_safe_counter>,
         public Armed,
         public Audible,
         public Drawable,
@@ -151,6 +151,7 @@ protected:
 //    int ucref = 0;
     StringPool::Reference csvRow;
 public:
+    typedef boost::intrusive_ref_counter<Unit, boost::thread_safe_counter> IntrusiveUnitRefCounter;
 
     /// Radar and related systems
     // TODO: take a deeper look at this much later...
@@ -1009,10 +1010,10 @@ public:
         return Vega_UnitType::unit;
     }
 
-//    void Ref();
+    void Ref();
 //Low level list function to reference the unit as being the target of a UnitContainer or Colleciton
 //Releases the unit from this reference of UnitContainer or Collection
-//    void UnRef();
+    void UnRef();
 //0 in additive is reaplce  1 is add 2 is mult
 //Put that in NetUnit & AcctUnit with string and with Unit
     UnitImages<void> &GetImageInformation();
@@ -1041,6 +1042,8 @@ public:
     float temporary_upgrade_float_variable;
 
 };
+
+typedef boost::intrusive_ptr<Unit> UnitPointer;
 
 Unit *findUnitInStarsystem(const void *unitDoNotDereference);
 
@@ -1085,13 +1088,13 @@ inline Unit *UnitContainer::GetUnit() {
     return unit;
 }
 
-#ifdef USE_OLD_COLLECTION
-inline void UnitCollection::UnitIterator::GetNextValidUnit()
-{
-    while (pos->next->unit ? pos->next->unit->Killed() : false)
-        remove();
-}
-#endif
+//#ifdef USE_OLD_COLLECTION
+//inline void UnitCollection::UnitIterator::GetNextValidUnit()
+//{
+//    while (pos->next->unit ? pos->next->unit->Killed() : false)
+//        remove();
+//}
+//#endif
 
 extern std::set<std::string> GetListOfDowngrades();
 extern void ClearDowngradeMap();

@@ -185,12 +185,9 @@ void Unit::RestoreGodliness() {
     _Universe->AccessCockpit()->RestoreGodliness();
 }
 
-//void Unit::Ref() {
-//#ifdef CONTAINER_DEBUG
-//    CheckUnit( this );
-//#endif
-//    ++ucref;
-//}
+void Unit::Ref() {
+    intrusive_ptr_add_ref(this);
+}
 
 #define INVERSEFORCEDISTANCE 5400
 extern void abletodock(int dock);
@@ -1709,7 +1706,7 @@ void Unit::Kill(bool erasefromsave, bool quitting) {
             dockedun.pop_back();
         }
     }
-    //eraticate everything. naturally (see previous line) we won't erraticate beams erraticated above
+    //eradicate everything. naturally (see previous line) we won't eradicate beams eradicated above
     if (!isSubUnit()) {
         RemoveFromSystem();
     }
@@ -1732,42 +1729,30 @@ void Unit::Kill(bool erasefromsave, bool quitting) {
         un->Kill();
     }
 
-    //if (isUnit() != Vega_UnitType::missile) {
-    //    VS_LOG(info, (boost::format("UNIT HAS DIED: %1% %2% (file %3%)") % name.get() % fullname % filename.get()));
-    //}
+    if (isUnit() != Vega_UnitType::missile) {
+        VS_LOG(info, (boost::format("UNIT HAS DIED: %1% %2% (file %3%)") % name.get() % fullname % filename.get()));
+    }
 
-//    if (ucref == 0) {
-//        VS_LOG(trace, (boost::format("UNIT DELETION QUEUED: %1$s %2$s (file %3$s, addr 0x%4$08x)")
-//                % name.get().c_str() % fullname.c_str() % filename.get().c_str() % this));
-//        Unitdeletequeue.push_back(this);
-//        if (flightgroup) {
-//            if (flightgroup->leader.GetUnit() == this) {
-//                flightgroup->leader.SetUnit(NULL);
-//            }
-//        }
-//
-////#ifdef DESTRUCTDEBUG
-////        VS_LOG(trace, (boost::format("%s 0x%x - %d") % name.get().c_str() % this % Unitdeletequeue.size()));
-////#endif
-//    }
+    if (use_count() == 0U) {
+        VS_LOG(trace, (boost::format("UNIT DELETION QUEUED: %1$s %2$s (file %3$s, addr 0x%4$08x)")
+                % name.get() % fullname % filename.get() % this));
+        Unitdeletequeue.push_back(this);
+        if (flightgroup) {
+            if (flightgroup->leader.GetUnit() == this) {
+                flightgroup->leader.SetUnit(NULL);
+            }
+        }
+
+    }
 }
 
-//void Unit::UnRef() {
-//#ifdef CONTAINER_DEBUG
-//    CheckUnit( this );
-//#endif
-//    ucref--;
-//    if (killed && ucref == 0) {
-//#ifdef CONTAINER_DEBUG
-//        deletedUn.Put( (uintmax_t) this, this );
-//#endif
-//        //delete
-//        Unitdeletequeue.push_back(this);
-//#ifdef DESTRUCTDEBUG
-//        VS_LOG(trace, (boost::format("%1$s %2$x - %3$d") % name.get().c_str() % this % Unitdeletequeue.size()));
-//#endif
-//    }
-//}
+void Unit::UnRef() {
+    intrusive_ptr_release(this);
+    if (killed && use_count() == 0U) {
+        //delete
+        Unitdeletequeue.push_back(this);
+    }
+}
 
 float Unit::ExplosionRadius() {
     static float expsize = XMLSupport::parse_float(vs_config->getVariable("graphics", "explosion_size", "3"));
