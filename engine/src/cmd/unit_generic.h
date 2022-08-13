@@ -147,8 +147,6 @@ class Unit : public boost::intrusive_ref_counter<Unit, boost::thread_safe_counte
         public JumpCapable,
         public Carrier {
 protected:
-//How many lists are referencing us
-//    int ucref = 0;
     StringPool::Reference csvRow;
 public:
     typedef boost::intrusive_ref_counter<Unit, boost::thread_safe_counter> IntrusiveUnitRefCounter;

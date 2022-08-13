@@ -327,37 +327,37 @@ Unit::~Unit() {
         // stephengtuggy 2020-08-03 - Maybe not.
         VS_LOG(error, (boost::format("Assumed exit on unit %1%(if not quitting, report error)") % name));
     }
-//    if (ucref) {
-//        VS_LOG_AND_FLUSH(fatal, "DISASTER AREA!!!!");
-//    }
-//    VS_LOG(trace, (boost::format("Deallocating unit %1$s addr=%2$x refs=%3$d")
-//            % name.get().c_str() % this % ucref));
-//#ifdef DESTRUCTDEBUG
-//    VS_LOG_AND_FLUSH(trace, (boost::format("stage %1$d %2$x %3$d") % 0 % this % ucref));
-//#endif
-//#ifdef DESTRUCTDEBUG
-//    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d %2$x") % 2 % pImage->pHudImage));
-//#endif
+    if (use_count() > 0U) {
+        VS_LOG_AND_FLUSH(fatal, "DISASTER AREA!!!!");
+    }
+    VS_LOG(trace, (boost::format("Deallocating unit %1$s addr=%2$x refs=%3$d")
+            % name.get() % this % use_count()));
+#ifdef DESTRUCTDEBUG
+    VS_LOG_AND_FLUSH(trace, (boost::format("stage %1$d %2$x %3$d") % 0 % this % use_count()));
+#endif
+#ifdef DESTRUCTDEBUG
+    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d %2$x") % 2 % pImage->pHudImage));
+#endif
     if (pImage->unitwriter) {
         delete pImage->unitwriter;
         pImage->unitwriter = nullptr;
     }
     delete pImage;
-//#ifdef DESTRUCTDEBUG
-//    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d %2$x") % 3 % pImage));
-//#endif
+#ifdef DESTRUCTDEBUG
+    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d %2$x") % 3 % pImage));
+#endif
     pImage = nullptr;
     delete pilot;
-//#ifdef DESTRUCTDEBUG
-//    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d") % 5));
-//#endif
-//#ifdef DESTRUCTDEBUG
-//    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d %2$x") % 6 % &mounts);
-//#endif
-//
-//#ifdef DESTRUCTDEBUG
-//    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d %2$x") % 1 % &mounts));
-//#endif
+#ifdef DESTRUCTDEBUG
+    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d") % 5));
+#endif
+#ifdef DESTRUCTDEBUG
+    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d %2$x") % 6 % &mounts);
+#endif
+
+#ifdef DESTRUCTDEBUG
+    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d %2$x") % 1 % &mounts));
+#endif
 #ifndef NO_MOUNT_STAR
                                                                                                                             for (vector< Mount* >::iterator jj = mounts.begin(); jj != mounts.end(); ++jj) {
         //Free all mounts elements
@@ -368,9 +368,9 @@ Unit::~Unit() {
     }
 #endif
     mounts.clear();
-//#ifdef DESTRUCTDEBUG
-//    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d") % 0));
-//#endif
+#ifdef DESTRUCTDEBUG
+    VS_LOG_AND_FLUSH(trace, (boost::format("%1$d") % 0));
+#endif
     for (size_t meshcount = 0; meshcount < meshdata.size(); ++meshcount) {
         if (meshdata[meshcount] != nullptr) {
             delete meshdata[meshcount];
