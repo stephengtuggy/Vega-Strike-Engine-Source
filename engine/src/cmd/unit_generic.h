@@ -149,7 +149,7 @@ class Unit : public boost::intrusive_ref_counter<Unit, boost::thread_safe_counte
 protected:
     StringPool::Reference csvRow;
 public:
-    typedef boost::intrusive_ref_counter<Unit, boost::thread_safe_counter> IntrusiveUnitRefCounter;
+    using IntrusiveUnitRefCounter = boost::intrusive_ref_counter<Unit, boost::thread_safe_counter>;
 
     /// Radar and related systems
     // TODO: take a deeper look at this much later...
@@ -1041,7 +1041,7 @@ public:
 
 };
 
-typedef boost::intrusive_ptr<Unit> UnitPointer;
+using UnitPtr = boost::intrusive_ptr<Unit>;
 
 Unit *findUnitInStarsystem(const void *unitDoNotDereference);
 

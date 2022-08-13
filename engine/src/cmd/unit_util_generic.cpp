@@ -23,6 +23,7 @@
 
 
 #include <string>
+#include <utility>
 #include "cmd/unit_generic.h"
 #include "cmd/unit_util.h"
 #include "configxml.h"
@@ -476,7 +477,7 @@ void addCredits(const Unit *my_unit, float credits) {
     }
 }
 
-const string &getFlightgroupNameCR(const Unit *my_unit) {
+const string &getFlightgroupNameCR(const boost::shared_ptr<Unit> my_unit) {
     static const string empty_string("");
     if (!my_unit) {
         return empty_string;
@@ -489,8 +490,8 @@ const string &getFlightgroupNameCR(const Unit *my_unit) {
     }
 }
 
-string getFlightgroupName(const Unit *my_unit) {
-    return getFlightgroupNameCR(my_unit);
+string getFlightgroupName(boost::shared_ptr<Unit> my_unit) {
+    return getFlightgroupNameCR(std::move(my_unit));
 }
 
 Unit *getFlightgroupLeader(Unit *my_unit) {
@@ -748,7 +749,7 @@ Cargo GetCargo(const Unit *my_unit, std::string cargname) {
     return ret;
 }
 
-bool isDockableUnit(const Unit *my_unit) {
+bool isDockableUnit(boost::shared_ptr<Unit> my_unit) {
     if (!my_unit) {
         return false;
     }

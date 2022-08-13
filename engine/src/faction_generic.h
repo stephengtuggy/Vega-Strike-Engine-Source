@@ -24,13 +24,13 @@
 #define __FACTIONGENERIC_H
 #include <string>
 #include <boost/shared_ptr.hpp>
+#include "unit_generic.h"
 //#include <gnuhash.h>
 
 #include "xml_support.h"
 
 class FSM;
 class Animation;
-class Unit;
 class Texture;
 typedef vsUMap<std::string, float> MapStringFloat;
 
@@ -121,7 +121,7 @@ namespace FactionUtil {
 extern int upgradefac;
 extern int neutralfac;
 extern int planetfac;
-std::vector<class Animation *> *GetRandCommAnimation(int faction, Unit *unit, unsigned char &sex);
+std::vector<class Animation *> *GetRandCommAnimation(int faction, boost::shared_ptr<Unit> unit, unsigned char &sex);
 void SerializeFaction(FILE *file);
 std::string SerializeFaction();
 void LoadSerializedFaction(FILE *file);

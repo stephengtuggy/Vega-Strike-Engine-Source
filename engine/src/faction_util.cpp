@@ -91,9 +91,9 @@ std::vector<Animation *> *FactionUtil::GetAnimation(int faction, int n, unsigned
     return &factions[faction]->comm_faces[n].animations;
 }
 
-std::vector<Animation *> *FactionUtil::GetRandCommAnimation(int faction, Unit *un, unsigned char &sex) {
-    bool dockable = UnitUtil::isDockableUnit(un);
-    bool base = UnitUtil::getFlightgroupName(un) == "Base";
+std::vector<Animation *> *FactionUtil::GetRandCommAnimation(int faction, boost::shared_ptr<Unit> unit, unsigned char &sex) {
+    bool dockable = UnitUtil::isDockableUnit(unit);
+    bool base = UnitUtil::getFlightgroupName(unit) == "Base";
     int siz = factions[faction]->comm_faces.size();
     if (siz > 0) {
         for (int i = 0; i < 8 + siz; ++i) {

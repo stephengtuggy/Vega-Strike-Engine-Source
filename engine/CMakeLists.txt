@@ -1631,7 +1631,7 @@ IF (USE_GTEST)
         ${LIBRESOURCE}
         ${LIBCMD_SOURCES}
         ${LIBVS_LOGGING}
-    )
+            src/cmd/tests/unit_ptr_tests.cpp)
 
     TARGET_LINK_LIBRARIES(
         ${TEST_NAME}

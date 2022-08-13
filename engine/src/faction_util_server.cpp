@@ -31,7 +31,7 @@ Faction::~Faction() {
     }
 }
 
-std::vector<Animation *> *FactionUtil::GetRandCommAnimation(int faction, Unit *, unsigned char &sex) {
+std::vector<Animation *> *FactionUtil::GetRandCommAnimation(int faction, boost::shared_ptr<Unit> unit, unsigned char &sex) {
     return NULL;
 }
 
