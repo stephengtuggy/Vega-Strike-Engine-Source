@@ -107,10 +107,10 @@ void Mission::ConstructMission(const char *configfile, const std::string &script
 #endif
 }
 
-Unit *Mission::Objective::getOwner() {
-    Unit *Nawl = NULL;
+UnitPtr Mission::Objective::getOwner() {
+    UnitPtr Nawl = NULL;
     if (Owner != Nawl) {
-        Unit *ret = Owner.GetUnit();
+        UnitPtr ret = Owner.GetUnit();
         if (ret == NULL) {
             objective = "";
         }              //unit died

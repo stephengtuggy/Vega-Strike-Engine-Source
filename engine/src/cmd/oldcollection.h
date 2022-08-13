@@ -43,15 +43,15 @@ private:
         friend void Iterate( UnitCollection &c );
 #endif
     public:
-        Unit *unit;
+        UnitPtr unit;
         UnitListNode *next;
 
-        UnitListNode(Unit *unit);
+        UnitListNode(UnitPtr unit);
 ///These are functions for iterator use only
-        void PostInsert(Unit *un);
+        void PostInsert(UnitPtr un);
 /// iterator use only
         void Remove();
-        UnitListNode(Unit *unit, UnitListNode *next);
+        UnitListNode(UnitPtr unit, UnitListNode *next);
         ~UnitListNode();
 
     private:
@@ -119,20 +119,20 @@ public:
         void moveBefore(UnitCollection &otherList);
 
 ///inserts in front of current
-        void preinsert(Unit *unit) {
+        void preinsert(UnitPtr unit) {
             pos->next = new UnitListNode(unit, pos->next);
         }
 
 /// inserts after current
-        void postinsert(Unit *unit);
+        void postinsert(UnitPtr unit);
 
 ///returns the unit pos is pointing at or NULL if all dead or end of list.
-        Unit *current() {
+        UnitPtr current() {
             return pos->next->unit;
         }
 
 ///advances the counter
-        Unit *next() {
+        UnitPtr next() {
             advance();
             return current();
         }
@@ -142,18 +142,18 @@ public:
             GetNextValidUnit();
         }
 
-        inline Unit *operator++(int) {
-            Unit *un = current();
+        inline UnitPtr operator++(int) {
+            UnitPtr un = current();
             advance();
             return un;
         }
 
-        inline Unit *operator++() {
+        inline UnitPtr operator++() {
             advance();
             return current();
         }
 
-        inline Unit *operator*() {
+        inline UnitPtr operator*() {
             return current();
         }
     };
@@ -181,12 +181,12 @@ public:
             pos = NULL;
         }
 
-        const Unit *next() {
+        const UnitPtr next() {
             advance();
             return current();
         }
 
-        const Unit *current() const {
+        const UnitPtr current() const {
             return pos->next->unit;
         }
 
@@ -199,18 +199,18 @@ public:
             GetNextValidUnit();
         }
 
-        inline const Unit *operator++() {
+        inline const UnitPtr operator++() {
             advance();
             return current();
         }
 
-        inline const Unit *operator++(int) {
-            const Unit *un = current();
+        inline const UnitPtr operator++(int) {
+            const UnitPtr un = current();
             advance();
             return un;
         }
 
-        inline const Unit *operator*() const {
+        inline const UnitPtr operator*() const {
             return current();
         }
     };
@@ -232,7 +232,7 @@ public:
             pos = NULL;
         }
 
-        const Unit *current() const {
+        const UnitPtr current() const {
             return pos->next->unit;
         }
 
@@ -240,22 +240,22 @@ public:
             pos = pos->next;
         }
 
-        inline const Unit *operator++() {
+        inline const UnitPtr operator++() {
             advance();
             return current();
         }
 
-        inline const Unit *operator++(int) {
-            const Unit *un = current();
+        inline const UnitPtr operator++(int) {
+            const UnitPtr un = current();
             advance();
             return un;
         }
 
-        inline const Unit *operator*() const {
+        inline const UnitPtr operator*() const {
             return current();
         }
 
-        const Unit *next() {
+        const UnitPtr next() {
             advance();
             return current();
         }
@@ -277,12 +277,12 @@ public:
         void remove();
 
 ///inserts in front of current
-        void preinsert(Unit *unit) {
+        void preinsert(UnitPtr unit) {
             pos->next = new UnitListNode(unit, pos->next);
         }
 
 /// inserts after current
-        void postinsert(Unit *unit);
+        void postinsert(UnitPtr unit);
 
         FastIterator() : pos(NULL) {
         }
@@ -297,7 +297,7 @@ public:
             pos = NULL;
         }
 
-        Unit *current() {
+        UnitPtr current() {
             return pos->next->unit;
         }
 
@@ -305,22 +305,22 @@ public:
             pos = pos->next;
         }
 
-        inline Unit *operator++(int) {
-            Unit *un = current();
+        inline UnitPtr operator++(int) {
+            UnitPtr un = current();
             advance();
             return un;
         }
 
-        inline Unit *operator++() {
+        inline UnitPtr operator++() {
             advance();
             return current();
         }
 
-        inline Unit *operator*() {
+        inline UnitPtr operator*() {
             return current();
         }
 
-        Unit *next() {
+        UnitPtr next() {
             advance();
             return current();
         }
@@ -359,7 +359,7 @@ public:
         return ConstFastIterator(u);
     }
 
-    void insert_unique(Unit *un) {
+    void insert_unique(UnitPtr un) {
         for (UnitListNode *i = u->next; i != NULL; i = i->next) {
             if (i->unit == un) {
                 return;
@@ -368,7 +368,7 @@ public:
         prepend(un);
     }
 
-    void prepend(Unit *unit) {
+    void prepend(UnitPtr unit) {
         u->next = new UnitListNode(unit, u->next);
     }
 
@@ -378,7 +378,7 @@ public:
     }
 
     void prepend(UnitIterator *iter);
-    void append(Unit *unit);
+    void append(UnitPtr unit);
     void append(UnitIterator *iter);
 
     void clear() {
@@ -386,15 +386,15 @@ public:
         init();
     }
 
-    bool contains(const Unit *unit) const;
-    bool remove(const Unit *unit);
+    bool contains(const UnitPtr unit) const;
+    bool remove(const UnitPtr unit);
     void cleanup();
 
-    Unit *front() {
+    UnitPtr front() {
         return *createIterator();
     }
 
-    const Unit *front() const {
+    const UnitPtr front() const {
         return *constIterator();
     }
 

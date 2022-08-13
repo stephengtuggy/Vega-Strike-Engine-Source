@@ -82,7 +82,7 @@ void Audible::addSound(string soundString, SoundType type) {
 }
 
 void Audible::adjustSound(SoundType type) {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
     AUDAdjustSound(sounds[type], unit->cumulative_transformation.position, unit->cumulative_velocity);
 }
 
@@ -116,7 +116,7 @@ void Audible::playHullDamageSound(const Vector &pnt) {
 }
 
 void Audible::playEngineSound() {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
     AUDPlay(sounds[SoundType::engine], unit->Position(), unit->GetVelocity(), 1);
 }
 
@@ -135,7 +135,7 @@ void Audible::killSounds() {
 }
 
 void Audible::playSound(const Vector &pnt, int sound, int playerSound) {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     if (AUDIsPlaying(sound)) {
         AUDStopPlaying(sound);
@@ -153,7 +153,7 @@ void Audible::playSound(const Vector &pnt, int sound, int playerSound) {
 // TODO: this is just a name I gave the method based on the fact it modifies
 // the sound based on the velocity and location
 void Audible::playDopplerSound(const Vector &pnt, int sound) {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     QVector position = unit->ToWorldCoordinates(pnt).Cast() +
             unit->cumulative_transformation.position;

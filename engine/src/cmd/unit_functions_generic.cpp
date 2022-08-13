@@ -65,9 +65,9 @@ int cloakVal(int cloak, int cloakmin, int cloakrate, bool cloakglass) {
     return cloak;
 }
 
-const Unit *getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0) {
+const UnitPtr getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0) {
     const char *name = upgradeName.c_str();
-    const Unit *partUnit = UnitConstCache::getCachedConst(StringIntKey(name, FactionUtil::GetUpgradeFaction()));
+    const UnitPtr partUnit = UnitConstCache::getCachedConst(StringIntKey(name, FactionUtil::GetUpgradeFaction()));
     if (!partUnit) {
         partUnit = UnitConstCache::setCachedConst(StringIntKey(name,
                         FactionUtil::GetUpgradeFaction()),
@@ -83,7 +83,7 @@ const Unit *getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction 
     return partUnit;
 }
 
-int SelectDockPort(Unit *utdw, Unit *parent) {
+int SelectDockPort(UnitPtr utdw, UnitPtr parent) {
     const vector<DockingPorts> *dp = &utdw->DockingPortLocations();
     float dist = FLT_MAX;
     int num = -1;
@@ -101,12 +101,12 @@ int SelectDockPort(Unit *utdw, Unit *parent) {
 }
 
 //From unit_customize.cpp
-Unit *CreateGameTurret(std::string tur, int faction) {
+UnitPtr CreateGameTurret(std::string tur, int faction) {
     return new Unit(tur.c_str(), true, faction);
 }
 
 //un scored a faction kill
-void ScoreKill(Cockpit *cp, Unit *un, Unit *killedUnit) {
+void ScoreKill(Cockpit *cp, UnitPtr un, UnitPtr killedUnit) {
     if (un->isUnit() != Vega_UnitType::unit || killedUnit->isUnit() != Vega_UnitType::unit) {
         return;
     }
@@ -148,7 +148,7 @@ void ScoreKill(Cockpit *cp, Unit *un, Unit *killedUnit) {
         killlist->back()++;
     } else if (UnitUtil::getRelationToFaction(un, faction) < 0 && faction != upgrades && faction != planets) {
         int whichcp = rand() % _Universe->numPlayers();
-        Unit *whichrecv = _Universe->AccessCockpit(whichcp)->GetParent();
+        UnitPtr whichrecv = _Universe->AccessCockpit(whichcp)->GetParent();
         if (whichrecv != NULL) {
             if (UnitUtil::getUnitSystemFile(whichrecv) == UnitUtil::getUnitSystemFile(un)) {
                 if (un->getAIState() && whichrecv->getAIState()) {
@@ -166,7 +166,7 @@ void ScoreKill(Cockpit *cp, Unit *un, Unit *killedUnit) {
 //From unit_physics.cpp
 
 
-float getAutoRSize(Unit *orig, Unit *un, bool ignore_friend = false) {
+float getAutoRSize(UnitPtr orig, UnitPtr un, bool ignore_friend = false) {
     const float friendly_autodist = configuration()->physics_config.friendly_auto_radius;
     const float neutral_autodist = configuration()->physics_config.neutral_auto_radius;
     const float hostile_autodist = configuration()->physics_config.hostile_auto_radius;
@@ -199,7 +199,7 @@ float getAutoRSize(Unit *orig, Unit *un, bool ignore_friend = false) {
 }
 
 //From unit_weapon.cpp
-bool AdjustMatrix(Matrix &mat, const Vector &vel, Unit *target, float speed, bool lead, float cone) {
+bool AdjustMatrix(Matrix &mat, const Vector &vel, UnitPtr target, float speed, bool lead, float cone) {
     if (target) {
         QVector pos(mat.p);
         Vector R(mat.getR());
@@ -250,7 +250,7 @@ int parseMountSizes(const char *str) {
     return ans;
 }
 
-void DealPossibleJumpDamage(Unit *un) {
+void DealPossibleJumpDamage(UnitPtr un) {
 
     float speed = un->GetVelocity().Magnitude();
     float jump_damage = un->GetJumpStatus().damage + (rand() % 100 < 1) ? (rand() % 20) : 0;
@@ -275,7 +275,7 @@ void DealPossibleJumpDamage(Unit *un) {
     }
 }
 
-void Enslave(Unit *parent, bool enslave) {
+void Enslave(UnitPtr parent, bool enslave) {
     unsigned int i;
     vector<Cargo> ToBeChanged;
     unsigned int numcargo = parent->numCargo();

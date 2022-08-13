@@ -331,11 +331,9 @@ public:
         return program;
     }
 
-    /** Add a texture unit
-     * @param source A string of the form [type]:[path or index] that specifies
+    /** Add a texture UnitPtr @param source A string of the form [type]:[path or index] that specifies
      *      the texture unit's data source.
-     * @param target The target texturing unit
-     * @param deflt A string of the form [type]:[path or index] that specifies
+     * @param target The target texturing UnitPtr @param deflt A string of the form [type]:[path or index] that specifies
      *      the texture unit's default data source if the mesh lacks
      *      the specified decal in 'source'
      * @param paramName The shader parameter name (for a shader pass) that is to be
@@ -369,12 +367,12 @@ public:
         return textureUnits.size();
     }
 
-    /** Get the specified texture unit */
+    /** Get the specified texture UnitPtr/
     const TextureUnit &getTextureUnit(int index) const {
         return textureUnits[index];
     }
 
-    /** Get the specified texture unit */
+    /** Get the specified texture UnitPtr/
     TextureUnit &getTextureUnit(int index) {
         return textureUnits[index];
     }

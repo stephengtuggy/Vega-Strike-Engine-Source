@@ -58,7 +58,7 @@ collideTrees::collideTrees(const std::string &hk, csOPCODECollider *cT,
 
 float loge2 = log(2.f);
 
-csOPCODECollider *collideTrees::colTree(Unit *un, const Vector &othervelocity) {
+csOPCODECollider *collideTrees::colTree(UnitPtr un, const Vector &othervelocity) {
     const float const_factor = 1;
     float magsqr = un->GetVelocity().MagnitudeSquared();
     float newmagsqr = (un->GetVelocity() - othervelocity).MagnitudeSquared();

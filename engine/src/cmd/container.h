@@ -34,10 +34,10 @@ class Unit;
 
 class UnitContainer {
 protected:
-    Unit *unit;
+    UnitPtr unit;
 public:
     UnitContainer();
-    UnitContainer(Unit *);
+    UnitContainer(UnitPtr);
 
     UnitContainer(const UnitContainer &un) {
         VSCONSTRUCT1('U')
@@ -50,11 +50,11 @@ public:
         return a;
     }
 
-    bool operator==(const Unit *oth) const {
+    bool operator==(const UnitPtr oth) const {
         return unit == oth;
     }
 
-    bool operator!=(const Unit *oth) const {
+    bool operator!=(const UnitPtr oth) const {
         return unit != oth;
     }
 
@@ -67,10 +67,10 @@ public:
     }
 
     ~UnitContainer();
-    void SetUnit(Unit *);
-    Unit *GetUnit();
+    void SetUnit(UnitPtr);
+    UnitPtr GetUnit();
 
-    const Unit *GetConstUnit() const {
+    const UnitPtr GetConstUnit() const {
         return unit;
     }
 };

@@ -64,7 +64,7 @@ class Sensor;
 #include "cmd/images.h"
 #include "soundcontainer_generic.h"
 /**
- * The Cockpit Contains all displayable information about a particular Unit *
+ * The Cockpit Contains all displayable information about a particular UnitPtr
  * Gauges are used to indicate analog controls, and some diagital ones
  * The ones starting from KPS are digital with text readout
  */
@@ -210,7 +210,7 @@ protected:
     }
 
     ///draws the target box around targetted unit
-    virtual float computeLockingSymbol(Unit *par) {
+    virtual float computeLockingSymbol(UnitPtr par) {
         return 1;
     }
 
@@ -248,7 +248,7 @@ public:
         return autopilot_time > 0;
     }
 
-    bool unitInAutoRegion(Unit *un);
+    bool unitInAutoRegion(UnitPtr un);
 
     ///Sets the current viewstyle
     void SetView(const enum VIEWSTYLE tmp) {
@@ -265,7 +265,7 @@ public:
     }
 
     float godliness;
-    virtual int Autopilot(Unit *target);
+    virtual int Autopilot(UnitPtr target);
     void RestoreGodliness();
 
     ///Restores the view from the IDentity Matrix needed to draw sprites
@@ -299,7 +299,7 @@ public:
 
     void RemoveUnit(unsigned int which = 0);
 
-    static std::string MakeBaseName(const Unit *base);
+    static std::string MakeBaseName(const UnitPtr base);
 
     std::string GetUnitModifications() {
         return unitmodname;
@@ -318,11 +318,11 @@ public:
 
     ///How far away chasecam and pan cam is
     float zoomfactor;
-    Cockpit(const char *file, Unit *parent, const std::string &pilotname);
+    Cockpit(const char *file, UnitPtr parent, const std::string &pilotname);
     virtual ~Cockpit();
 
     ///Looks up a particular Gauge stat on target unit
-    virtual float LookupTargetStat(int stat, Unit *target) {
+    virtual float LookupTargetStat(int stat, UnitPtr target) {
         return 1;
     }
 
@@ -334,13 +334,13 @@ public:
     //unsigned int whichcockpit;//0 is the first player, 1 is the second and so forth
     class Flightgroup *fg;
     class StarSystem *activeStarSystem; //used for context switch in Universe
-    virtual void SetParent(Unit *unit, const char *filename, const char *unitmodname, const QVector &startloc);
+    virtual void SetParent(UnitPtr unit, const char *filename, const char *unitmodname, const QVector &startloc);
 
-    Unit *GetParent() {
+    UnitPtr GetParent() {
         return parent.GetUnit();
     }
 
-    Unit *GetSaveParent();
+    UnitPtr GetSaveParent();
 
     ///Draws Cockpit then restores viewport
     virtual void Draw() {
@@ -390,7 +390,7 @@ public:
     static void TurretControl(const KBData &, KBSTATE) {
     }
 
-    virtual void SetCommAnimation(Animation *ani, Unit *un) {
+    virtual void SetCommAnimation(Animation *ani, UnitPtr un) {
     }
 
     virtual void SetStaticAnimation() {
@@ -447,7 +447,7 @@ public:
         return false;
     }
 
-    virtual bool CheckCommAnimation(Unit *un) {
+    virtual bool CheckCommAnimation(UnitPtr un) {
         return false;
     }
 
@@ -458,13 +458,13 @@ public:
     virtual void OnPauseEnd() {
     }
 
-    virtual void OnDockEnd(Unit *, Unit *) {
+    virtual void OnDockEnd(UnitPtr, UnitPtr) {
     }
 
-    virtual void OnJumpBegin(Unit *) {
+    virtual void OnJumpBegin(UnitPtr) {
     }
 
-    virtual void OnJumpEnd(Unit *) {
+    virtual void OnJumpEnd(UnitPtr) {
     }
 
 protected:

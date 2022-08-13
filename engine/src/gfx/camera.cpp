@@ -155,7 +155,7 @@ void Camera::GetView(Matrix &vw) {
 }
 
 void Camera::SetNebula(Nebula *neb) {
-    nebula.SetUnit((Unit *) neb);
+    nebula.SetUnit((UnitPtr) neb);
 }
 
 Nebula *Camera::GetNebula() //this function can't be const, as it must return a non-const ptr

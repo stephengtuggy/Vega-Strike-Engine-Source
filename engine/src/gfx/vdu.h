@@ -36,7 +36,7 @@
 class Unit;
 class TextPlane;
 
-void DrawObjectivesTextPlane(TextPlane *tp, int scrolloffset, Unit *parent);
+void DrawObjectivesTextPlane(TextPlane *tp, int scrolloffset, UnitPtr parent);
 
 /**
  * Holds information for dedicated computer output
@@ -65,32 +65,32 @@ private:
 //DrawVDUObjective is outdated
 //int DrawVDUObjective (void * obj, int offset);//obj is of type Mission::Objective
     bool SetWebcamAnimation();
-    void DrawWebcam(Unit *parent);
+    void DrawWebcam(UnitPtr parent);
 ///Draws all of the objectives created by missions.
-    void DrawVDUObjectives(Unit *parent);
+    void DrawVDUObjectives(UnitPtr parent);
 ///Draws a shield display in the VDU
-    void DrawVDUShield(Unit *parent);
-///Draws the target display of Unit *target (only call with nonNULL)
-    void DrawTarget(GameCockpit *parentcp, Unit *parent, Unit *target);
+    void DrawVDUShield(UnitPtr parent);
+///Draws the target display of UnitPtr target (only call with nonNULL)
+    void DrawTarget(GameCockpit *parentcp, UnitPtr parent, UnitPtr target);
 ///Draws a list of cargo contents
-    void DrawManifest(Unit *parent, Unit *target);
+    void DrawManifest(UnitPtr parent, UnitPtr target);
 ///Draws the message from the messagecenter
-    void DrawMessages(GameCockpit *parentcp, Unit *target);
+    void DrawMessages(GameCockpit *parentcp, UnitPtr target);
     void DrawScanningMessage();
 ///Draws the nav point this unit is heading to
-    void DrawNav(GameCockpit *parentcp, Unit *parent, Unit *target, const Vector &navPoint);
+    void DrawNav(GameCockpit *parentcp, UnitPtr parent, UnitPtr target, const Vector &navPoint);
 ///Draws the comm screen this unit can use to communicate
     void DrawComm();
 ///Draws a "scanning target" message
     void DrawSanningMessage();
 ///Draws the damage this unit has sustained
-    void DrawDamage(Unit *parent);
+    void DrawDamage(UnitPtr parent);
 ///Draws the weapons activated on current unit
-    void DrawWeapon(Unit *parent);
+    void DrawWeapon(UnitPtr parent);
 ///Draws the sprite representing the current starship. Returns proper location and size for future use (with weaps and damage display)
     void DrawTargetSpr(VSSprite *s, float percent, float &x, float &y, float &w, float &h);
 ///draws the target camera
-    void DrawStarSystemAgain(float x, float y, float w, float h, VIEWSTYLE viewStyle, Unit *parent, Unit *target);
+    void DrawStarSystemAgain(float x, float y, float w, float h, VIEWSTYLE viewStyle, UnitPtr parent, UnitPtr target);
 public:
     void ReceivedTargetData() {
         got_target_info = true;
@@ -128,14 +128,14 @@ public:
             float *MaxArmor,
             float *maxhull);
 ///Draws the entire VDU, all data, etc
-    void Draw(GameCockpit *parentcp, Unit *parent, const GFXColor &c);
+    void Draw(GameCockpit *parentcp, UnitPtr parent, const GFXColor &c);
 ///Changes the mode of the current VDU to another legal mode
-    void SwitchMode(Unit *parent);
+    void SwitchMode(UnitPtr parent);
     void SetViewingStyle(VIEWSTYLE vm);
     void Scroll(int howmuch);
-    bool SetCommAnimation(Animation *ani, Unit *unit, bool force);
-    Unit *GetCommunicating();
-    bool CheckCommAnimation(Unit *un) const; //returns true if unit is talkin or uninterruptable going on
+    bool SetCommAnimation(Animation *ani, UnitPtr unit, bool force);
+    UnitPtr GetCommunicating();
+    bool CheckCommAnimation(UnitPtr un) const; //returns true if unit is talkin or uninterruptable going on
 };
 
 int parse_vdu_type(const char *s);

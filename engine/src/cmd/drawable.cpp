@@ -166,7 +166,7 @@ extern double calc_blend_factor(double frac,
         unsigned int cur_simulation_frame);
 
 void Drawable::Draw(const Transformation &parent, const Matrix &parentMatrix) {
-    Unit *unit = vega_dynamic_cast_ptr<Unit>(this);
+    UnitPtr unit = vega_dynamic_cast_ptr<Unit>(this);
 
     //Quick shortcut for camera setup phase
     bool myparent = (unit == _Universe->AccessCockpit()->GetParent());
@@ -301,7 +301,7 @@ void Drawable::Draw(const Transformation &parent, const Matrix &parentMatrix) {
             Unit_On_Screen = true;
         }
         if (Unit_On_Screen && unit->hasSubUnits()) {
-            Unit *un;
+            UnitPtr un;
             double backup = interpolation_blend_factor;
             int cur_sim_frame = _Universe->activeStarSystem()->getCurrentSimFrame();
             for (un_iter iter = unit->getSubUnits(); (un = *iter); ++iter) {
@@ -383,7 +383,7 @@ void Drawable::AnimationStep() {
 }
 
 void Drawable::DrawNow(const Matrix &mato, float lod) {
-    Unit *unit = vega_dynamic_cast_ptr<Unit>(this);
+    UnitPtr unit = vega_dynamic_cast_ptr<Unit>(this);
 
     static const void *rootunit = NULL;
     if (rootunit == NULL) {
@@ -427,7 +427,7 @@ void Drawable::DrawNow(const Matrix &mato, float lod) {
             this->meshdata[i]->Draw(lod, mat, d, cloak);
         }
     }
-    Unit *un;
+    UnitPtr un;
     /*for (un_iter iter = this->getSubUnits(); (un = *iter); ++iter) {
         Matrix temp;
         un->curr_physical_state.to_matrix( temp );
@@ -513,7 +513,7 @@ void Drawable::DrawNow(const Matrix &mato, float lod) {
 }
 
 void Drawable::UpdateFrames() {
-    std::map<string, Unit *>::iterator pos;
+    std::map<string, UnitPtr>::iterator pos;
     for (pos = Units.begin(); pos != Units.end(); ++pos) {
         pos->second->curtime += GetElapsedTime();
         if (pos->second->curtime >= pos->second->timePerFrame()) {
@@ -618,7 +618,7 @@ bool Drawable::animationRuns() const {
     return !done;
 }
 
-Matrix *GetCumulativeTransformationMatrix(Unit *unit, const Matrix &parentMatrix, Matrix invview) {
+Matrix *GetCumulativeTransformationMatrix(UnitPtr unit, const Matrix &parentMatrix, Matrix invview) {
     Matrix *ctm = &unit->cumulative_transformation_matrix;
 
     if (unit->graphicOptions.FaceCamera == 1) {
@@ -640,7 +640,7 @@ Matrix *GetCumulativeTransformationMatrix(Unit *unit, const Matrix &parentMatrix
  * @brief Drawable::Sparkle caused damaged units to emit sparks
  */
 void Drawable::Sparkle(bool on_screen, Matrix *ctm) {
-    Unit *unit = vega_dynamic_cast_ptr<Unit>(this);
+    UnitPtr unit = vega_dynamic_cast_ptr<Unit>(this);
     const Vector velocity = unit->GetVelocity();
 
     // Docked units don't sparkle
@@ -706,7 +706,7 @@ void Drawable::Sparkle(bool on_screen, Matrix *ctm) {
 }
 
 void Drawable::DrawHalo(bool on_screen, float apparent_size, Matrix wmat, int cloak) {
-    Unit *unit = vega_dynamic_cast_ptr<Unit>(this);
+    UnitPtr unit = vega_dynamic_cast_ptr<Unit>(this);
 
     // Units not shown don't emit a halo
     if (!on_screen) {
@@ -750,7 +750,7 @@ void Drawable::DrawHalo(bool on_screen, float apparent_size, Matrix wmat, int cl
 }
 
 void Drawable::DrawSubunits(bool on_screen, Matrix wmat, int cloak, float average_scale, unsigned char char_damage) {
-    Unit *unit = vega_dynamic_cast_ptr<Unit>(this);
+    UnitPtr unit = vega_dynamic_cast_ptr<Unit>(this);
     Transformation *ct = &unit->cumulative_transformation;
 
     for (int i = 0; (int) i < unit->getNumMounts(); i++) {
@@ -836,7 +836,7 @@ void Drawable::DrawSubunits(bool on_screen, Matrix wmat, int cloak, float averag
 }
 
 void Drawable::Split(int level) {
-    Unit *unit = vega_dynamic_cast_ptr<Unit>(this);
+    UnitPtr unit = vega_dynamic_cast_ptr<Unit>(this);
 
     if (game_options()->split_dead_subunits) {
         for (un_iter su = unit->getSubUnits(); *su; ++su) {
@@ -932,7 +932,7 @@ void Drawable::Split(int level) {
     unsigned int k = 0;
     vector<Mesh *> tempmeshes;
     for (vector<Mesh *>::size_type i = 0; i < meshsizes.size(); i++) {
-        Unit *splitsub;
+        UnitPtr splitsub;
         tempmeshes.clear();
         tempmeshes.reserve(meshsizes[i]);
         for (unsigned int j = 0; j < meshsizes[i] && k < old.size(); ++j, ++k) {
@@ -965,7 +965,7 @@ void Drawable::Split(int level) {
 }
 
 void Drawable::LightShields(const Vector &pnt, const Vector &normal, float amt, const GFXColor &color) {
-    Unit *unit = vega_dynamic_cast_ptr<Unit>(this);
+    UnitPtr unit = vega_dynamic_cast_ptr<Unit>(this);
 
     // Not sure about shield percentage - more variance for more damage?
     // TODO: figure out the above comment
@@ -985,7 +985,7 @@ void Drawable::LightShields(const Vector &pnt, const Vector &normal, float amt, 
 }
 
 Matrix Drawable::WarpMatrix(const Matrix &ctm) const {
-    const Unit *unit = vega_dynamic_const_cast_ptr<const Unit>(this);
+    const UnitPtr unit = vega_dynamic_const_cast_ptr<const Unit>(this);
 
     if (unit->GetWarpVelocity().MagnitudeSquared()
             < (static_cast<double>(game_options()->warp_stretch_cutoff) * game_options()->warp_stretch_cutoff * game_options()->game_speed
@@ -1023,7 +1023,7 @@ Matrix Drawable::WarpMatrix(const Matrix &ctm) const {
 }
 
 void Drawable::UpdateHudMatrix(int whichcam) {
-    Unit *unit = vega_dynamic_cast_ptr<Unit>(this);
+    UnitPtr unit = vega_dynamic_cast_ptr<Unit>(this);
 
     Matrix m;
     Matrix ctm = unit->cumulative_transformation_matrix;
@@ -1041,6 +1041,6 @@ void Drawable::UpdateHudMatrix(int whichcam) {
 }
 
 VSSprite *Drawable::getHudImage() const {
-    const Unit *unit = vega_dynamic_const_cast_ptr<const Unit>(this);
+    const UnitPtr unit = vega_dynamic_const_cast_ptr<const Unit>(this);
     return unit->pImage->pHudImage;
 }

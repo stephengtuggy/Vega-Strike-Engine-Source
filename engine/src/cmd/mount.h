@@ -48,7 +48,7 @@ public:
     float zscale;
     float ComputeAnimatedFrame(Mesh *gun);
 //pass inunit so it can update gunspeed
-    void ReplaceMounts(Unit *unit, const Mount *other);
+    void ReplaceMounts(UnitPtr unit, const Mount *other);
     double Percentage(const Mount *newammo) const;
 //Gotta look at that, if we can make Beam a string in AcctUnit and a Beam elsewhere
     union REF {
@@ -112,17 +112,17 @@ public:
  */
 //Uses Sound Forcefeedback and other stuff
     void PhysicsAlignedUnfire();
-    bool PhysicsAlignedFire(Unit *caller,
+    bool PhysicsAlignedFire(UnitPtr caller,
             const Transformation &Cumulative,
             const Matrix &mat,
             const Vector &Velocity,
             void *owner,
-            Unit *target,
+            UnitPtr target,
             signed char autotrack,
             float trackingcone,
             CollideMap::iterator hint[]);
-    bool NextMountCloser(Mount *nextmount, Unit *);
-    bool Fire(Unit *firer, void *owner, bool Missile = false, bool collide_only_with_target = false);
+    bool NextMountCloser(Mount *nextmount, UnitPtr);
+    bool Fire(UnitPtr firer, void *owner, bool Missile = false, bool collide_only_with_target = false);
 
     bool IsEmpty() const {
         return !(status == ACTIVE || status == INACTIVE);

@@ -64,7 +64,7 @@ string KillQuadZeros(string inp) {
     return inp;
 }
 
-string MakeUnitXMLPretty(string str, Unit *un) {
+string MakeUnitXMLPretty(string str, UnitPtr un) {
     string writestr;
     if (un) {
         writestr += "Name: " + un->name;
@@ -131,7 +131,7 @@ int GetModeFromName(const char *input_buffer) {
     return 0;
 }
 
-extern bool CheckAccessory(Unit *);
+extern bool CheckAccessory(UnitPtr);
 
 void addShieldMesh(Unit::XML *xml, const char *filename, const float scale, int faction, class Flightgroup *fg) {
     static bool forceit = XMLSupport::parse_bool(vs_config->getVariable("graphics", "forceOneOneShieldBlend", "true"));

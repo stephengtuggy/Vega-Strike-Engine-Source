@@ -201,7 +201,7 @@ public:
             const Vector &CumulativeVelocity,
             bool ResolveLast,
             UnitCollection *uc,
-            Unit *superunit);
+            UnitPtr superunit);
     virtual void UpdatePhysics2(const Transformation &trans,
             const Transformation &old_physical_state,
             const Vector &accel,
@@ -246,7 +246,7 @@ public:
             const Matrix &transmat,
             bool lastframe,
             UnitCollection *uc,
-            Unit *superunit) = 0;
+            UnitPtr superunit) = 0;
 };
 
 #endif // MOVABLE_H

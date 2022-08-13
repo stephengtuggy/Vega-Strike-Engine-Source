@@ -45,7 +45,7 @@ class Cockpit;
 class Collision {
     // Stage 1
     Cockpit *cockpit;
-    Unit *unit;
+    UnitPtr unit;
     Vega_UnitType unit_type;
     bool is_player_ship;
     const QVector &location;
@@ -56,21 +56,21 @@ class Collision {
     bool apply_force = false;
     bool deal_damage = false;
 
-    Collision(Unit *unit, const QVector &location, const Vector &normal);
+    Collision(UnitPtr unit, const QVector &location, const Vector &normal);
     //pre-process based on colliding unit types to determine if force/damage should actually occur (e.g. virtual units, jump points, etc. may react differently)
-    void shouldApplyForceAndDealDamage(Unit *other_unit);
+    void shouldApplyForceAndDealDamage(UnitPtr other_unit);
     // Interpenetration kludge that moves the position of the colliding objects (to a hopefully non-interpenetrating location) BEFORE applying the force that puts them on the correct trajectory
     void adjustInterpenetration(QVector &new_velocity, QVector &new_angular_velocity, const Vector &normal);
     // needs force and location-relative-to-center-of-mass to apply torque
     void applyForce(QVector &force, QVector &location);
     // pass change in kinetic energy of entire system - collision can decide what to do with the energy values
     void dealDamage(Collision other_collision, double deltaKE_linear, double deltaKE_angular);
-    bool crashLand(Unit *base);
+    bool crashLand(UnitPtr base);
 public:
-    static void collide(Unit *unit1,
+    static void collide(UnitPtr unit1,
             const QVector &location1,
             const Vector &normal1,
-            Unit *unit2,
+            UnitPtr unit2,
             const QVector &location2,
             const Vector &normal2,
             float distance);

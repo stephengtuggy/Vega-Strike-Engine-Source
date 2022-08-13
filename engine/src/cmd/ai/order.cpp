@@ -127,7 +127,7 @@ Order *Order::ReplaceOrder(Order *ord) {
     return this;
 }
 
-bool Order::AttachOrder(Unit *targets1) {
+bool Order::AttachOrder(UnitPtr targets1) {
     if (!(subtype & STARGET)) {
         if (subtype & SSELF) {
             return AttachSelfOrder(targets1);
@@ -139,7 +139,7 @@ bool Order::AttachOrder(Unit *targets1) {
     return true;
 }
 
-bool Order::AttachSelfOrder(Unit *targets1) {
+bool Order::AttachSelfOrder(UnitPtr targets1) {
     if (!(subtype & SSELF)) {
         return false;
     }
@@ -272,7 +272,7 @@ void ExecuteFor::Execute() {
     }
 }
 
-Join::Join(Unit *parent, Order *first, Order *second)
+Join::Join(UnitPtr parent, Order *first, Order *second)
         : Order(first->getType() | second->getType(),
         first->getSubType()),
         first(first),
@@ -294,7 +294,7 @@ void Join::Execute() {
     }
 }
 
-Sequence::Sequence(Unit *parent, Order *order, unsigned int excludeTypes)
+Sequence::Sequence(UnitPtr parent, Order *order, unsigned int excludeTypes)
         : Order(order->getType() | excludeTypes,
         order->getSubType()),
         order(order) {

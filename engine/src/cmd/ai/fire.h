@@ -30,12 +30,12 @@
 #include "comm_ai.h"
 #include "event_xml.h"
 //all unified AI's should inherit from FireAt, so they can choose targets together.
-bool RequestClearence(class Unit *parent, class Unit *targ, unsigned char sex);
-Unit *getAtmospheric(Unit *targ);
+bool RequestClearence(UnitPtr parent, UnitPtr targ, unsigned char sex);
+UnitPtr getAtmospheric(UnitPtr targ);
 namespace Orders {
 class FireAt : public CommunicatingAI {
 protected:
-    bool ShouldFire(Unit *targ, bool &missilelock);
+    bool ShouldFire(UnitPtr targ, bool &missilelock);
     float missileprobability{};
     float lastmissiletime{};
     float delay{};
@@ -46,7 +46,7 @@ protected:
     void FireWeapons(bool shouldfire, bool lockmissile);
     virtual void ChooseTargets(int num,
             bool force = false); //chooses n targets and puts the best to attack in unit's target container
-    bool isJumpablePlanet(Unit *);
+    bool isJumpablePlanet(UnitPtr);
     void ReInit(float agglevel);
     virtual void SignalChosenTarget();
 public:
@@ -56,7 +56,7 @@ public:
     }
 
     void PossiblySwitchTarget(bool istargetjumpableplanet);
-    virtual bool PursueTarget(Unit *, bool leader);
+    virtual bool PursueTarget(UnitPtr, bool leader);
     void AddReplaceLastOrder(bool replace);
     void ExecuteLastScriptFor(float time);
     void FaceTarget(bool end);
@@ -74,11 +74,11 @@ public:
     void XMLScript(std::string script);
     void LastPythonScript();
 
-    virtual void SetParent(Unit *parent) {
+    virtual void SetParent(UnitPtr parent) {
         CommunicatingAI::SetParent(parent);
     }
 
-    Unit *GetParent() {
+    UnitPtr GetParent() {
         return CommunicatingAI::GetParent();
     }
 

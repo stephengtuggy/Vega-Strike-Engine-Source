@@ -33,13 +33,13 @@
 #include "unit_generic.h"
 #endif
 
-UnitCollection::UnitListNode::UnitListNode(Unit *unit) : unit(unit), next(NULL) {
+UnitCollection::UnitListNode::UnitListNode(UnitPtr unit) : unit(unit), next(NULL) {
     if (unit) {
         unit->Ref();
     }
 }
 
-UnitCollection::UnitListNode::UnitListNode(Unit *unit, UnitListNode *next) : unit(unit), next(next) {
+UnitCollection::UnitListNode::UnitListNode(UnitPtr unit, UnitListNode *next) : unit(unit), next(next) {
     if (unit) {
         unit->Ref();
     }
@@ -106,7 +106,7 @@ void UnitCollection::UnitIterator::moveBefore(UnitCollection &otherList) {
 
 void UnitCollection::prepend(UnitIterator *iter) {
     UnitListNode *n = u;
-    Unit *tmp;
+    UnitPtr tmp;
     while ((tmp = iter->current())) {
         //iter->current checks for killed()
         n->next = new UnitListNode(tmp, n->next);
@@ -119,7 +119,7 @@ void UnitCollection::append(UnitIterator *iter) {
     while (n->next->unit != NULL) {
         n = n->next;
     }
-    Unit *tmp;
+    UnitPtr tmp;
     while ((tmp = iter->current())) {
         n->next = new UnitListNode(tmp, n->next);
         n = n->next;
@@ -127,7 +127,7 @@ void UnitCollection::append(UnitIterator *iter) {
     }
 }
 
-void UnitCollection::append(Unit *unit) {
+void UnitCollection::append(UnitPtr unit) {
     UnitListNode *n = u;
     while (n->next->unit != NULL) {
         n = n->next;
@@ -135,7 +135,7 @@ void UnitCollection::append(Unit *unit) {
     n->next = new UnitListNode(unit, n->next);
 }
 
-void UnitCollection::UnitListNode::PostInsert(Unit *unit) {
+void UnitCollection::UnitListNode::PostInsert(UnitPtr unit) {
     if (next->unit != NULL) {
         next->next = new UnitListNode(unit, next->next);
     } else {
@@ -143,11 +143,11 @@ void UnitCollection::UnitListNode::PostInsert(Unit *unit) {
     }
 }
 
-void UnitCollection::UnitIterator::postinsert(Unit *unit) {
+void UnitCollection::UnitIterator::postinsert(UnitPtr unit) {
     pos->PostInsert(unit);
 }
 
-void UnitCollection::FastIterator::postinsert(Unit *unit) {
+void UnitCollection::FastIterator::postinsert(UnitPtr unit) {
     pos->PostInsert(unit);
 }
 
@@ -208,7 +208,7 @@ UnitCollection::UnitCollection(const UnitCollection &uc) : u(NULL) {
     }
 }
 
-bool UnitCollection::contains(const Unit *unit) const {
+bool UnitCollection::contains(const UnitPtr unit) const {
     if (empty()) {
         return false;
     }
@@ -223,7 +223,7 @@ bool UnitCollection::contains(const Unit *unit) const {
     return false;
 }
 
-bool UnitCollection::remove(const Unit *unit) {
+bool UnitCollection::remove(const UnitPtr unit) {
     bool res = false;
     if (empty()) {
         return false;

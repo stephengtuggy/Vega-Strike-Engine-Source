@@ -37,7 +37,7 @@ Vector MouseCoordinate(int mouseX, int mouseY) {
     return GFXDeviceToEye(mouseX, mouseY);
 }
 
-bool ClickList::queryShip(int mouseX, int mouseY, Unit *ship) {
+bool ClickList::queryShip(int mouseX, int mouseY, UnitPtr ship) {
     Vector mousePoint = MouseCoordinate(mouseX, mouseY);
 
     //mousePoint.k= -mousePoint.k;
@@ -90,7 +90,7 @@ UnitCollection *ClickList::requestIterator(int minX, int minY, int maxX, int max
     _Universe->AccessCamera()->GetView(view);
     double frustum[6][4];
     GFXCalculateFrustum(frustum, view, frustmat);
-    Unit *un;
+    UnitPtr un;
     for (un_iter myParent = parentIter->createIterator(); (un = *myParent) != NULL; ++myParent) {
         if ((un)->queryFrustum(frustum)) {
             uc->prepend(un);
@@ -102,7 +102,7 @@ UnitCollection *ClickList::requestIterator(int minX, int minY, int maxX, int max
 UnitCollection *ClickList::requestIterator(int mouseX, int mouseY) {
     perplines = vector<Vector>();
     UnitCollection *uc = new UnitCollection();
-    Unit *un;
+    UnitPtr un;
     for (un_iter myParent = parentIter->createIterator(), UAye = uc->createIterator(); (un = *myParent) != NULL;
             ++myParent) {
         if (queryShip(mouseX, mouseY, un)) {
@@ -112,13 +112,13 @@ UnitCollection *ClickList::requestIterator(int mouseX, int mouseY) {
     return uc;
 }
 
-Unit *ClickList::requestShip(int mouseX, int mouseY) {
+UnitPtr ClickList::requestShip(int mouseX, int mouseY) {
     bool equalCheck = false;
     UnitCollection *uc = requestIterator(mouseX, mouseY);
     if (lastCollection != NULL) {
         equalCheck = true;
-        Unit *lastun;
-        Unit *un;
+        UnitPtr lastun;
+        UnitPtr un;
         for (un_iter lastiter = lastCollection->createIterator(), UAye = uc->createIterator();
                 (lastun = *lastiter) && (un = *UAye) && equalCheck;
                 ++lastiter, ++UAye) {
@@ -130,12 +130,12 @@ Unit *ClickList::requestShip(int mouseX, int mouseY) {
     }
     float minDistance = 1e+10;
     float tmpdis;
-    Unit *targetUnit = NULL;
+    UnitPtr targetUnit = NULL;
     if (equalCheck && lastSelected) {
         //the person clicked the same place and wishes to cycle through units from front to back
         float morethan = lastSelected->getMinDis(_Universe->AccessCamera()
                 ->GetPosition());         //parent system for access cam
-        Unit *un;
+        UnitPtr un;
         for (un_iter UAye = uc->createIterator(); (un = *UAye) != NULL; ++UAye) {
             tmpdis = un->getMinDis(_Universe->AccessCamera()
                     ->GetPosition());             //parent_system? FIXME (for access cam
@@ -148,7 +148,7 @@ Unit *ClickList::requestShip(int mouseX, int mouseY) {
     if (targetUnit == NULL) {
         //ok the click location is either different, or
         //he clicked on the back of the list and wishes to start over
-        Unit *un;
+        UnitPtr un;
         for (un_iter UAye = uc->createIterator(); (un = *UAye) != NULL; ++UAye) {
             tmpdis = un->getMinDis(_Universe->AccessCamera()->GetPosition());             //parent_system FIXME
             if (tmpdis < minDistance) {

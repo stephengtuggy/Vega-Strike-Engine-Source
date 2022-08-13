@@ -75,7 +75,7 @@ public:
 //virtual bool processWindowCommand(const EventCommandId& command, Control* control);
 
 //CONSTRUCTION
-    BaseComputer(Unit *player, Unit *base, const vector<DisplayMode> &modes);
+    BaseComputer(UnitPtr player, UnitPtr base, const vector<DisplayMode> &modes);
     virtual ~BaseComputer(void);
 
 //These are the transactions that can happen using this object.
@@ -290,7 +290,7 @@ protected:
     GFXColor getColorForGroup(std::string id);
 
 //Get a filtered list of items from a unit.
-    void loadMasterList(Unit *un,
+    void loadMasterList(UnitPtr un,
             const vector<string> &filterthis,
             const vector<string> &invfilterthis,
             bool removezero,
@@ -322,8 +322,8 @@ protected:
     friend class BuyUpgradeOperation;
     friend class SellUpgradeOperation;
 };
-bool buyShip(Unit *base, Unit *player, std::string, bool myfleet, bool force_base_inventory, BaseComputer *);
-bool sellShip(Unit *base, Unit *player, std::string, BaseComputer *);
+bool buyShip(UnitPtr base, UnitPtr player, std::string, bool myfleet, bool force_base_inventory, BaseComputer *);
+bool sellShip(UnitPtr base, UnitPtr player, std::string, BaseComputer *);
 
 #endif   //__BASECOMPUTER_H__
 

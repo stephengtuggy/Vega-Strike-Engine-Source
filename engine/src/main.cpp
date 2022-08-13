@@ -231,7 +231,7 @@ extern void InitUnitTables();
 extern void CleanupUnitTables();
 bool isVista = false;
 
-Unit *TheTopLevelUnit;
+UnitPtr TheTopLevelUnit;
 
 int main(int argc, char *argv[]) {
     // Change to program directory if not already
@@ -475,7 +475,7 @@ void bootstrap_draw(const std::string &message, Animation *newSplashScreen) {
     reentryWatchdog = false;
 }
 
-extern Unit **fighters;
+extern UnitPtr*fighters;
 
 bool SetPlayerLoc(QVector &sys, bool set) {
     static QVector mysys;

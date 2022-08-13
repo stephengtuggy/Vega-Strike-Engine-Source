@@ -29,9 +29,9 @@
 #define _IKARUS_H_
 namespace Orders {
 class Ikarus : public AggressiveAI {
-    void ExecuteStrategy(Unit *target);
+    void ExecuteStrategy(UnitPtr target);
     void DecideTarget();
-    void WillFire(Unit *target);
+    void WillFire(UnitPtr target);
     double last_time;
     double cur_time;
 public:

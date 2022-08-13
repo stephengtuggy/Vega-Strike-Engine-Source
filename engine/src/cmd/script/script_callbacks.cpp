@@ -704,8 +704,8 @@ int Mission::getIntArg(missionNode *node, int mode, int arg_nr) {
     return res;
 }
 
-Unit *Mission::getUnitArg(missionNode *node, int mode, int arg_nr) {
-    Unit *ret = NULL;
+UnitPtr Mission::getUnitArg(missionNode *node, int mode, int arg_nr) {
+    UnitPtr ret = NULL;
 
     missionNode *unit_node = getArgument(node, mode, arg_nr);
     varInst *unit_vi = checkObjectExpr(unit_node, mode);

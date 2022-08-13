@@ -73,8 +73,8 @@ public:
     //resets average gun speed (in event of weapon change
     void setAverageGunSpeed();
 
-    bool TargetLocked(const Unit *checktarget = nullptr) const;
-    bool TargetTracked(const Unit *checktarget = nullptr);
+    bool TargetLocked(const UnitPtr checktarget = nullptr) const;
+    bool TargetTracked(const UnitPtr checktarget = nullptr);
 
     void ToggleWeapon(bool Missile, bool forward = true);
     float TrackingGuns(bool &missileLock);

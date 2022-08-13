@@ -1508,7 +1508,7 @@ void Base::Room::BaseVSSprite::Draw(Base *base) {
 
 void Base::Room::BaseShip::Draw(Base *base) {
     /*
-     *  Unit *un=base->caller.GetUnit();
+     *  UnitPtr un=base->caller.GetUnit();
      *  if (un) {
      *       GFXHudMode (GFXFALSE);
      *       GFXEnable (DEPTHTEST);

@@ -56,7 +56,7 @@ class MoveToParent {
     unsigned char terminatingY;
     unsigned char terminatingZ;
     Vector last_velocity;
-    bool OptimizeSpeed(Unit *parent, float v, float &a, float max_speed);
+    bool OptimizeSpeed(UnitPtr parent, float v, float &a, float max_speed);
     bool Done(const Vector &);
     bool selfterminating;
 public:
@@ -74,7 +74,7 @@ public:
             selfterminating(terminating) {
     }
 
-    bool Execute(Unit *parent, const QVector &targetlocation);
+    bool Execute(UnitPtr parent, const QVector &targetlocation);
 };
 class MoveTo : public Order {
     MoveToParent m;
@@ -185,12 +185,12 @@ class AutoLongHaul : public ChangeHeading {
     bool inside_landing_zone;
 
     void MakeLinearVelocityOrder();
-    bool InsideLandingPort(const Unit *obstacle) const;
+    bool InsideLandingPort(const UnitPtr obstacle) const;
     QVector NewDestination(const QVector &curnewdestination, double magnitude);
 public:
     AutoLongHaul(bool fini = false, int accuracy = 1);
     virtual void Execute();
-    virtual void SetParent(Unit *parent1);
+    virtual void SetParent(UnitPtr parent1);
 
     virtual string getOrderDescription() {
         return "ASAP";
@@ -222,7 +222,7 @@ class FormUp : public MoveTo {
 public:
     FormUp(const QVector &Position);
     void SetPos(const QVector &);
-    virtual void SetParent(Unit *parent1);
+    virtual void SetParent(UnitPtr parent1);
     virtual void Execute();
 
     virtual string getOrderDescription() {
@@ -236,7 +236,7 @@ class FormUpToOwner : public MoveTo {
 public:
     FormUpToOwner(const QVector &Position);
     void SetPos(const QVector &);
-    virtual void SetParent(Unit *parent1);
+    virtual void SetParent(UnitPtr parent1);
     virtual void Execute();
 
     virtual string getOrderDescription() {
@@ -250,7 +250,7 @@ class FaceDirection : public ChangeHeading {
     float dist;
 public:
     FaceDirection(float distToMatchFacing, bool fini = false, int accuracy = 3);
-    virtual void SetParent(Unit *parent1);
+    virtual void SetParent(UnitPtr parent1);
     virtual void Execute();
 
     virtual string getOrderDescription() {

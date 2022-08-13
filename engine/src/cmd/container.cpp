@@ -31,7 +31,7 @@ UnitContainer::UnitContainer() : unit(nullptr) {
     VSCONSTRUCT1('U')
 }
 
-UnitContainer::UnitContainer(Unit *un) : unit(nullptr) {
+UnitContainer::UnitContainer(UnitPtr un) : unit(nullptr) {
     SetUnit(un);
     VSCONSTRUCT1('U');
 }
@@ -44,7 +44,7 @@ UnitContainer::~UnitContainer() {
     //bad idea...arrgh!
 }
 
-void UnitContainer::SetUnit(Unit *un) {
+void UnitContainer::SetUnit(UnitPtr un) {
     //if the unit is null then go here otherwise if the unit is killed then go here
     if (un != NULL ? un->Killed() == true : true) {
         if (unit) {

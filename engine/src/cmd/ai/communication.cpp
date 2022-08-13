@@ -329,7 +329,7 @@ float FSM::getDeltaRelation(int prevstate, unsigned int current_state) const {
     return nodes[current_state].messagedelta;
 }
 
-void CommunicationMessage::Init(Unit *send, Unit *recv) {
+void CommunicationMessage::Init(UnitPtr send, UnitPtr recv) {
     if (send == NULL) {
         return;
     }
@@ -381,8 +381,8 @@ void CommunicationMessage::SetCurrentState(int msg, std::vector<Animation *> *an
     assert(this->curstate >= 0);
 }
 
-CommunicationMessage::CommunicationMessage(Unit *send,
-        Unit *recv,
+CommunicationMessage::CommunicationMessage(UnitPtr send,
+        UnitPtr recv,
         int messagechoice,
         std::vector<Animation *> *ani,
         unsigned char sex) {
@@ -396,8 +396,8 @@ CommunicationMessage::CommunicationMessage(Unit *send,
     assert(this->curstate >= 0);
 }
 
-CommunicationMessage::CommunicationMessage(Unit *send,
-        Unit *recv,
+CommunicationMessage::CommunicationMessage(UnitPtr send,
+        UnitPtr recv,
         int laststate,
         int thisstate,
         std::vector<Animation *> *ani,
@@ -409,14 +409,14 @@ CommunicationMessage::CommunicationMessage(Unit *send,
     assert(this->curstate >= 0);
 }
 
-CommunicationMessage::CommunicationMessage(Unit *send, Unit *recv, std::vector<Animation *> *ani, unsigned char sex) {
+CommunicationMessage::CommunicationMessage(UnitPtr send, UnitPtr recv, std::vector<Animation *> *ani, unsigned char sex) {
     Init(send, recv);
     SetAnimation(ani, sex);
     assert(this->curstate >= 0);
 }
 
-CommunicationMessage::CommunicationMessage(Unit *send,
-        Unit *recv,
+CommunicationMessage::CommunicationMessage(UnitPtr send,
+        UnitPtr recv,
         const CommunicationMessage &prevstate,
         int curstate,
         std::vector<Animation *> *ani,
@@ -488,7 +488,7 @@ RGBstring GetRelationshipRGBstring(float rel) {
     return colToString(col);
 }
 
-unsigned int DoSpeech(Unit *un, Unit *player_un, const FSM::Node &node) {
+unsigned int DoSpeech(UnitPtr un, UnitPtr player_un, const FSM::Node &node) {
     const float scale_rel_color = configuration()->graphics_config.hud.scale_relationship_color;
     static std::string
             ownname_RGBstr = colToString(vs_config->getColor("player_name", GFXColor(0.0, 0.2, 1.0))).str; // bluish
@@ -518,10 +518,10 @@ unsigned int DoSpeech(Unit *un, Unit *player_un, const FSM::Node &node) {
     return dummy;
 }
 
-void LeadMe(Unit *un, string directive, string speech, bool changetarget) {
+void LeadMe(UnitPtr un, string directive, string speech, bool changetarget) {
     if (un != NULL) {
         for (unsigned int i = 0; i < _Universe->numPlayers(); i++) {
-            Unit *pun = _Universe->AccessCockpit(i)->GetParent();
+            UnitPtr pun = _Universe->AccessCockpit(i)->GetParent();
             if (pun) {
                 if (pun->getFlightgroup() == un->getFlightgroup()) {
                     DoSpeech(un, pun, FSM::Node::MakeNode(speech, .1));

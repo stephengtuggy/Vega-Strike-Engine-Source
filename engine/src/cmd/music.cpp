@@ -86,7 +86,7 @@ static void print_check_err(int errorcode, const char *str) {
 //where func is the evaluation of func, and #func is the string form.
 #define checkerr(func) do{print_check_err(((func)),#func);}while(0)
 
-Music::Music(Unit *parent) : random(false), p(parent), song(-1), thread_initialized(false) {
+Music::Music(UnitPtr parent) : random(false), p(parent), song(-1), thread_initialized(false) {
     loopsleft = 0;
     socketw = socketr = -1;
     music_load_info = NULL;
@@ -681,7 +681,7 @@ void decmusicvol(const KBData &, KBSTATE a) {
     }
 }
 
-void Music::SetParent(Unit *parent) {
+void Music::SetParent(UnitPtr parent) {
     p = parent;
 }
 

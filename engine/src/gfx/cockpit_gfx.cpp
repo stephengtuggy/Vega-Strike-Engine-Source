@@ -50,7 +50,7 @@ extern float rand01();
 #define SCATTER_CUBE \
     QVector( rand()/RAND_MAX -.5, rand()/RAND_MAX -.5, rand()/RAND_MAX -.5 )
 
-float LookupTargetStat( int stat, Unit *target );
+float LookupTargetStat( int stat, UnitPtr target );
 
 inline void DrawOneTargetBox( const QVector &Loc,
                               float rSize,
@@ -118,7 +118,7 @@ inline void DrawOneTargetBox( const QVector &Loc,
 }
 
 
-inline void DrawDockingBoxes( Unit *un, const Unit *target, const Vector &CamP, const Vector &CamQ, const Vector &CamR )
+inline void DrawDockingBoxes( UnitPtr un, const UnitPtr target, const Vector &CamP, const Vector &CamQ, const Vector &CamR )
 {
     if ( target->IsCleared( un ) ) {
         GFXBlendMode( SRCALPHA, INVSRCALPHA );
@@ -206,11 +206,11 @@ inline void DrawITTSMark( float Size, QVector p, QVector q, QVector aimLoc, GFXC
 #define TARGET_ARROW_SIN_THETA (0.34202014332566873304409961468226)
 #define TARGET_ARROW_SIZE (0.05)
 
-void DrawArrowToTarget(const Radar::Sensor& sensor, Unit *target,
+void DrawArrowToTarget(const Radar::Sensor& sensor, UnitPtr target,
                        float  projection_limit_x, float projection_limit_y,
                        float inv_screen_aspect_ratio)
 {
-    Unit *player = sensor.GetPlayer();
+    UnitPtr player = sensor.GetPlayer();
     if (player && target) {
         Radar::Track track = sensor.CreateTrack(target);
         GFXColorf(sensor.GetColor(track));
@@ -302,7 +302,7 @@ void DrawCommunicatingBoxes(std::vector< VDU* >vdu)
     _Universe->AccessCamera()->GetPQR( CamP, CamQ, CamR );
     //Vector Loc (un->ToLocalCoordinates(target->Position()-un->Position()));
     for (unsigned int i = 0; i < vdu.size(); ++i) {
-        Unit *target = vdu[i]->GetCommunicating();
+        UnitPtr target = vdu[i]->GetCommunicating();
         if (target) {
             static GFXColor black_and_white = vs_config->getColor( "communicating" );
             QVector Loc( target->Position()-_Universe->AccessCamera()->GetPosition() );
@@ -320,7 +320,7 @@ void DrawCommunicatingBoxes(std::vector< VDU* >vdu)
 }
 
 
-void DrawGauges( GameCockpit *cockpit, Unit *un, Gauge *gauges[],
+void DrawGauges( GameCockpit *cockpit, UnitPtr un, Gauge *gauges[],
                  float gauge_time[], float cockpit_time, TextPlane *text,
                  GFXColor textcol) {
     int i;
@@ -576,7 +576,7 @@ void DrawTacticalTargetBox(const Radar::Sensor& sensor)
         return;
     if (sensor.GetPlayer()->getFlightgroup() == NULL)
         return;
-    Unit *target = sensor.GetPlayer()->getFlightgroup()->target.GetUnit();
+    UnitPtr target = sensor.GetPlayer()->getFlightgroup()->target.GetUnit();
     if (target) {
         Vector  CamP, CamQ, CamR;
         _Universe->AccessCamera()->GetPQR( CamP, CamQ, CamR );
@@ -639,8 +639,8 @@ void DrawTargetBoxes(const Radar::Sensor& sensor)
     GFXDisable( DEPTHWRITE );
     GFXBlendMode( SRCALPHA, INVSRCALPHA );
     GFXDisable( LIGHTING );
-    const Unit *target;
-    Unit *player = sensor.GetPlayer();
+    const UnitPtr target;
+    UnitPtr player = sensor.GetPlayer();
     assert(player);
     for (un_kiter uiter = unitlist->constIterator(); (target=*uiter)!=NULL; ++uiter) {
         if (target != player) {
@@ -678,9 +678,9 @@ void DrawTargetBox(const Radar::Sensor& sensor, bool draw_line_to_target, bool d
 {
     if (sensor.InsideNebula())
         return;
-    Unit *player = sensor.GetPlayer();
+    UnitPtr player = sensor.GetPlayer();
     assert(player);
-    Unit *target = player->Target();
+    UnitPtr target = player->Target();
     if (!target)
         return;
 
@@ -709,7 +709,7 @@ void DrawTargetBox(const Radar::Sensor& sensor, bool draw_line_to_target, bool d
         GFXEnable( SMOOTH );
         QVector myLoc( _Universe->AccessCamera()->GetPosition() );
 
-        Unit *targets_target = target->Target();
+        UnitPtr targets_target = target->Target();
         if (draw_line_to_targets_target && targets_target != NULL) {
             QVector ttLoc = targets_target->Position();
             const float verts[3 * 3] = {
@@ -830,12 +830,12 @@ void DrawTurretTargetBoxes(const Radar::Sensor& sensor)
     static VertexBuilder<> verts;
 
     //This avoids rendering the same target box more than once
-    Unit *subunit;
-    std::set<Unit *> drawn_targets;
+    UnitPtr subunit;
+    std::set<UnitPtr> drawn_targets;
     for (un_iter iter = sensor.GetPlayer()->getSubUnits(); (subunit=*iter)!=NULL; ++iter) {
         if (!subunit)
             return;
-        Unit *target = subunit->Target();
+        UnitPtr target = subunit->Target();
         if (!target || (drawn_targets.find(target) != drawn_targets.end()))
             continue;
         drawn_targets.insert(target);
@@ -882,7 +882,7 @@ void DrawTurretTargetBoxes(const Radar::Sensor& sensor)
 }
 
 
-void DrawTargetGauges( Unit *target, Gauge *gauges[] )
+void DrawTargetGauges( UnitPtr target, Gauge *gauges[] )
 {
     int i;
     for (i = UnitImages< void >::TARGETSHIELDF; i < UnitImages< void >::KPS; i++) {
@@ -893,7 +893,7 @@ void DrawTargetGauges( Unit *target, Gauge *gauges[] )
 }
 
 
-float LookupTargetStat( int stat, Unit *target )
+float LookupTargetStat( int stat, UnitPtr target )
 {
     switch (stat)
     {

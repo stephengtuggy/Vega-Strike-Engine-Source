@@ -43,7 +43,7 @@ protected:
     UnitContainer contraband_searchee;
     Vector SpeedAndCourse;
     int which_cargo_item{};
-    void GetMadAt(Unit *which, int howMad);
+    void GetMadAt(UnitPtr which, int howMad);
 protected:
 public:
     virtual void Destroy();
@@ -52,7 +52,7 @@ public:
         return mood;
     }
 
-    Unit *GetRandomUnit(float PlayerProbability, float TargetProbability);
+    UnitPtr GetRandomUnit(float PlayerProbability, float TargetProbability);
     void RandomInitiateCommunication(float PlayerProbability, float TargetProbability);
     void TerminateContrabandSearch(bool foundcontraband);
     void InitiateContrabandSearch(float PlayerProbability, float TargetProbability);
@@ -65,13 +65,13 @@ public:
             float moodswingyness = 666 /*.2*/,
             float randomnessresponse = 666 /*.8*/ );
     virtual void ProcessCommMessage(class CommunicationMessage &c);
-    virtual void AdjustRelationTo(Unit *un, float factor);
+    virtual void AdjustRelationTo(UnitPtr un, float factor);
     virtual ~CommunicatingAI();
-    virtual int selectCommunicationMessage(class CommunicationMessage &c, Unit *);
+    virtual int selectCommunicationMessage(class CommunicationMessage &c, UnitPtr);
     virtual int selectCommunicationMessageMood(CommunicationMessage &c, float mood);
 };
 
-void AllUnitsCloseAndEngage(Unit *un, int faction);
+void AllUnitsCloseAndEngage(UnitPtr un, int faction);
 
 #endif
 

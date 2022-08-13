@@ -58,7 +58,7 @@ public:
     std::vector<class varInst *> *orderlist;
 
 //removes a ship from the flightgroup below
-    void Decrement(Unit *trashed) {
+    void Decrement(UnitPtr trashed) {
         nr_ships--;
         nr_ships_left--;
         if (leader.GetUnit() == trashed) {

@@ -64,7 +64,7 @@ using std::endl;
 
 extern float ScaleJumpRadius(float);
 extern Flightgroup *getStaticBaseFlightgroup(int faction);
-extern bool CrashForceDock(Unit *thus, Unit *dockingUn, bool force);
+extern bool CrashForceDock(UnitPtr thus, UnitPtr dockingUn, bool force);
 extern void abletodock(int dock);
 
 //////////////////////////////////////////////
@@ -216,7 +216,7 @@ Planet::Planet(QVector x,
         BLENDFUNC blendDst,
         const vector<string> &dest,
         const QVector &orbitcent,
-        Unit *parent,
+        UnitPtr parent,
         const GFXMaterial &ourmat,
         const std::vector<GFXLightLocal> &ligh,
         int faction,
@@ -249,12 +249,12 @@ Planet::Planet(QVector x,
         }
         string wormholename = wormhole_unit + stab;
         string wormholeneutralname = wormhole_unit + ".neutral" + stab;
-        Unit *jum = new Unit(wormholename.c_str(), true, faction);
+        UnitPtr jum = new Unit(wormholename.c_str(), true, faction);
         int neutralfaction = FactionUtil::GetNeutralFaction();
         faction = neutralfaction;
 
-        Unit *neujum = new Unit(wormholeneutralname.c_str(), true, neutralfaction);
-        Unit *jump = jum;
+        UnitPtr neujum = new Unit(wormholeneutralname.c_str(), true, neutralfaction);
+        UnitPtr jump = jum;
         bool anytrue = false;
         while (jump != nullptr) {
             if (jump->name != "LOAD_FAILED") {
@@ -398,7 +398,7 @@ void Planet::InitPlanet(QVector x,
         const string &unitname,
         const vector<string> &dest,
         const QVector &orbitcent,
-        Unit *parent,
+        UnitPtr parent,
         int faction,
         string fullname,
         bool inside_out,
@@ -452,7 +452,7 @@ void Planet::InitPlanet(QVector x,
     if (UniverseUtil::LookupUnitStat(tempname, FactionUtil::GetFactionName(faction), "Cargo_Import").length() == 0) {
         tmpfac = FactionUtil::GetPlanetFaction();
     }
-    Unit *un = new Unit(tempname.c_str(), true, tmpfac);
+    UnitPtr un = new Unit(tempname.c_str(), true, tmpfac);
 
     const bool smartplanets = configuration()->physics_config.planets_can_have_subunits;
     if (un->name != string("LOAD_FAILED")) {
@@ -565,7 +565,7 @@ void Planet::AddFog(const std::vector<AtmosphericFogMesh> &v, bool opticalillusi
         Mesh *fog = MakeFogMesh(v[i], rSize());
         fogs.push_back(fog);
     }
-    Unit *fawg;
+    UnitPtr fawg;
     if (opticalillusion) {
         fawg = new AtmosphereHalo(this->rSize(), fogs, 0);
     } else {
@@ -619,7 +619,7 @@ void Planet::AddRing(const std::string &texture,
     meshdata.push_back(shield);
 }
 
-void Planet::AddSatellite(Unit *orbiter) {
+void Planet::AddSatellite(UnitPtr orbiter) {
     satellites.prepend(orbiter);
     orbiter->SetOwner(this);
 }
@@ -666,7 +666,7 @@ Vector Planet::AddSpaceElevator(const std::string &name, const std::string &fact
         } else {
             ElevatorLoc.p.Set(-dir.i * mn.i, -dir.j * mn.j, -dir.k * mn.k);
         }
-        Unit *un = new Unit(name.c_str(), true, FactionUtil::GetFactionIndex(faction), "", nullptr);
+        UnitPtr un = new Unit(name.c_str(), true, FactionUtil::GetFactionIndex(faction), "", nullptr);
         if (pImage->dockingports.back().GetPosition().MagnitudeSquared() < 10) {
             pImage->dockingports.clear();
         }
@@ -765,7 +765,7 @@ void Planet::DrawTerrain() {
 
 ///////////////////////////////////////////////////////////////////////
 
-Unit *Planet::beginElement(QVector x,
+UnitPtr Planet::beginElement(QVector x,
         QVector y,
         float vely,
         const Vector &rotvel,
@@ -786,7 +786,7 @@ Unit *Planet::beginElement(QVector x,
         string fullname,
         bool inside_out) {
     //this function is OBSOLETE
-    Unit *un = nullptr;
+    UnitPtr un = nullptr;
     if (level > 2) {
         un_iter satiterator = satellites.createIterator();
         assert(*satiterator);
@@ -806,7 +806,7 @@ Unit *Planet::beginElement(QVector x,
         }
     } else {
         if (isunit == true) {
-            Unit *sat_unit = nullptr;
+            UnitPtr sat_unit = nullptr;
             Flightgroup *fg = getStaticBaseFlightgroup(faction);
             satellites.prepend(sat_unit = new Unit(filename.c_str(), false, faction, "", fg, fg->nr_ships - 1));
             sat_unit->setFullname(fullname);
@@ -884,7 +884,7 @@ Planet *Planet::GetTopPlanet(int level) {
 }
 
 void Planet::Kill(bool erasefromsave) {
-    Unit *tmp;
+    UnitPtr tmp;
     for (un_iter iter = satellites.createIterator(); (tmp = *iter) != nullptr; ++iter) {
         tmp->SetAI(new Order);
     }

@@ -36,7 +36,7 @@
 
 namespace Radar {
 
-Track::Track(Unit *player, const Unit *target)
+Track::Track(UnitPtr player, const UnitPtr target)
         : player(player),
         target(target),
         distance(0.0) {
@@ -45,7 +45,7 @@ Track::Track(Unit *player, const Unit *target)
     type = IdentifyType();
 }
 
-Track::Track(Unit *player, const Unit *target, const Vector &position)
+Track::Track(UnitPtr player, const UnitPtr target, const Vector &position)
         : player(player),
         target(target),
         position(position) {
@@ -53,7 +53,7 @@ Track::Track(Unit *player, const Unit *target, const Vector &position)
     type = IdentifyType();
 }
 
-Track::Track(Unit *player, const Unit *target, const Vector &position, float distance)
+Track::Track(UnitPtr player, const UnitPtr target, const Vector &position, float distance)
         : player(player),
         target(target),
         position(position),

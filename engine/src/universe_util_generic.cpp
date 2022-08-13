@@ -155,7 +155,7 @@ std::string vsConfig(std::string category, std::string option, std::string def) 
     return vs_config->getVariable(category, option, def);
 }
 
-Unit *launchJumppoint(string name_string,
+UnitPtr launchJumppoint(string name_string,
         string faction_string,
         string type_string,
         string unittype_string,
@@ -189,7 +189,7 @@ Unit *launchJumppoint(string name_string,
     cf.nr_ships = nr_of_ships;
     cf.fg->pos = pos;
     cf.rot[0] = cf.rot[1] = cf.rot[2] = 0.0f;
-    Unit *tmp = mission->call_unit_launch(&cf, clstype, destinations);
+    UnitPtr tmp = mission->call_unit_launch(&cf, clstype, destinations);
     mission->number_of_ships += nr_of_ships;
 
     return tmp;
@@ -197,7 +197,7 @@ Unit *launchJumppoint(string name_string,
 
 Cargo getRandCargo(int quantity, string category) {
     Cargo *ret = NULL;
-    Unit *mpl = &GetUnitMasterPartList();
+    UnitPtr mpl = &GetUnitMasterPartList();
     unsigned int max = mpl->numCargo();
     if (!category.empty()) {
         size_t Begin, End;
@@ -246,15 +246,15 @@ void SetTimeCompression() {
 static UnitContainer scratch_unit;
 static QVector scratch_vector;
 
-Unit *GetMasterPartList() {
+UnitPtr GetMasterPartList() {
     return getMasterPartList();
 }
 
-Unit *getScratchUnit() {
+UnitPtr getScratchUnit() {
     return scratch_unit.GetUnit();
 }
 
-void setScratchUnit(Unit *un) {
+void setScratchUnit(UnitPtr un) {
     scratch_unit.SetUnit(un);
 }
 
@@ -293,9 +293,9 @@ string getSystemName() {
 void TargetEachOther(string fgname, string faction, string enfgname, string enfaction) {
     int fac = FactionUtil::GetFactionIndex(faction);
     int enfac = FactionUtil::GetFactionIndex(enfaction);
-    Unit *un;
-    Unit *en = NULL;
-    Unit *al = NULL;
+    UnitPtr un;
+    UnitPtr en = NULL;
+    UnitPtr al = NULL;
     for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = *i) && ((!en) || (!al));
             ++i) {
         if (un->faction == enfac && UnitUtil::getFlightgroupName(un) == enfgname) {
@@ -323,7 +323,7 @@ void TargetEachOther(string fgname, string faction, string enfgname, string enfa
 void StopTargettingEachOther(string fgname, string faction, string enfgname, string enfaction) {
     int fac = FactionUtil::GetFactionIndex(faction);
     int enfac = FactionUtil::GetFactionIndex(enfaction);
-    Unit *un;
+    UnitPtr un;
     int clear = 0;
     for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator(); (un = *i) && clear != 3; ++i) {
         if ((un->faction == enfac && UnitUtil::getFlightgroupName(un) == enfgname)) {
@@ -351,7 +351,7 @@ float GetRelation(std::string myfaction, std::string theirfaction) {
     int myfac = FactionUtil::GetFactionIndex(myfaction);
     int theirfac = FactionUtil::GetFactionIndex(theirfaction);
     int cp = _Universe->CurrentCockpit();
-    Unit *un = _Universe->AccessCockpit()->GetParent();
+    UnitPtr un = _Universe->AccessCockpit()->GetParent();
     if (!un) {
         return FactionUtil::GetIntRelation(myfac, theirfac);
     }
@@ -371,7 +371,7 @@ void AdjustRelation(std::string myfaction, std::string theirfaction, float facto
     int theirfac = FactionUtil::GetFactionIndex(theirfaction);
     float realfactor = factor * rank;
     int cp = _Universe->CurrentCockpit();
-    Unit *un = _Universe->AccessCockpit()->GetParent();
+    UnitPtr un = _Universe->AccessCockpit()->GetParent();
     if (!un) {
         return;
     }
@@ -448,9 +448,9 @@ UniverseUtil::PythonUnitIter getUnitList() {
     return activeSys->getUnitList().createIterator();
 }
 
-Unit *getUnit(int index) {
+UnitPtr getUnit(int index) {
     un_iter iter = activeSys->getUnitList().createIterator();
-    Unit *un = NULL;
+    UnitPtr un = NULL;
     for (int i = -1; (un = *iter) && i < index; ++iter) {
         if (!un->Destroyed()) {
             ++i;
@@ -462,12 +462,12 @@ Unit *getUnit(int index) {
     return un;
 }
 
-Unit *getUnitByPtr(void *ptr, Unit *finder, bool allowslowness) {
+UnitPtr getUnitByPtr(void *ptr, UnitPtr finder, bool allowslowness) {
     if (finder) {
-        UnitPtrLocator unitLocator(ptr);
+        UnitPtr Locator unitLocator(ptr);
         findObjects(activeSys->collide_map[Unit::UNIT_ONLY], finder->location[Unit::UNIT_ONLY], &unitLocator);
         if (unitLocator.retval) {
-            return reinterpret_cast< Unit * > (ptr);
+            return reinterpret_cast< UnitPtr > (ptr);
         } else if (!finder->isSubUnit()) {
             return 0;
         }
@@ -475,10 +475,10 @@ Unit *getUnitByPtr(void *ptr, Unit *finder, bool allowslowness) {
     if (!allowslowness) {
         return 0;
     }
-    return ((activeSys->getUnitList().contains((Unit *) ptr)) ? reinterpret_cast< Unit * > (ptr) : NULL);
+    return ((activeSys->getUnitList().contains((UnitPtr) ptr)) ? reinterpret_cast< UnitPtr > (ptr) : NULL);
 }
 
-Unit *getUnitByName(std::string name) {
+UnitPtr getUnitByName(std::string name) {
     un_iter iter = activeSys->getUnitList().createIterator();
     while (!iter.isDone() && UnitUtil::getName(*iter) != name) {
         ++iter;
@@ -624,13 +624,13 @@ void clearObjectives() {
     }
 }
 
-void setOwnerII(int which, Unit *owner) {
+void setOwnerII(int which, UnitPtr owner) {
     if (which < (int) mission->objectives.size()) {
         mission->objectives[which].setOwner(owner);
     }
 }
 
-Unit *getOwner(int which) {
+UnitPtr getOwner(int which) {
     if (which < (int) mission->objectives.size()) {
         return mission->objectives[which].getOwner();
     } else {
@@ -659,7 +659,7 @@ void IOmessage(int delay, string from, string to, string message) {
     }
 }
 
-Unit *GetContrabandList(string faction) {
+UnitPtr GetContrabandList(string faction) {
     return FactionUtil::GetContraband(FactionUtil::GetFactionIndex(faction));
 }
 
@@ -697,7 +697,7 @@ QVector SafeStarSystemEntrancePoint(StarSystem *sts, QVector pos, float radial_s
         radial_size = game_options()->respawn_unit_size;
     }
     for (unsigned int k = 0; k < 10; ++k) {
-        Unit *un;
+        UnitPtr un;
         bool collision = false;
         {
             //fixme, make me faster, use collide map
@@ -737,7 +737,7 @@ QVector SafeEntrancePoint(QVector pos, float radial_size) {
     return SafeStarSystemEntrancePoint(_Universe->activeStarSystem(), pos, radial_size);
 }
 
-Unit *launch(string name_string,
+UnitPtr launch(string name_string,
         string type_string,
         string faction_string,
         string unittype,
@@ -767,13 +767,13 @@ string LookupUnitStat(const string &unitname, const string &faction, const strin
     }
 }
 
-static std::vector<Unit *> cachedUnits;
+static std::vector<UnitPtr> cachedUnits;
 
 void precacheUnit(string type_string, string faction_string) {
     cachedUnits.push_back(new Unit(type_string.c_str(), true, FactionUtil::GetFactionIndex(faction_string)));
 }
 
-Unit *getPlayer() {
+UnitPtr getPlayer() {
     return _Universe->AccessCockpit()->GetParent();
 }
 
@@ -815,7 +815,7 @@ int getNumPlayers() {
     return _Universe->numPlayers();
 }
 
-Unit *getPlayerX(int which) {
+UnitPtr getPlayerX(int which) {
     if (which >= getNumPlayers()) {
         return NULL;
     }

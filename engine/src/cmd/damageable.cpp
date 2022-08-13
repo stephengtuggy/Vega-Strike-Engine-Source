@@ -90,18 +90,18 @@ float Damageable::DealDamageToShield(const Vector &pnt, float &damage) {
 }
 
 // TODO: deal with this
-extern void ScoreKill(Cockpit *cp, Unit *killer, Unit *killedUnit);
+extern void ScoreKill(Cockpit *cp, UnitPtr killer, UnitPtr killedUnit);
 
 void Damageable::ApplyDamage(const Vector &pnt,
         const Vector &normal,
         Damage damage,
-        Unit *affected_unit,
+        UnitPtr affected_unit,
         const GFXColor &color,
         void *ownerDoNotDereference) {
     InflictedDamage inflicted_damage(3);
 
     const Damageable *const_damagable = static_cast<const Damageable *>(this);
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     //We also do the following lock on client side in order not to display shield hits
     const bool no_dock_damage = configuration()->physics_config.no_damage_to_docked_ships;
@@ -151,7 +151,7 @@ void Damageable::ApplyDamage(const Vector &pnt,
         // If we damage the armor, we do this 10 times by default
         for (int i = 0; i < anger; ++i) {
             //now we can dereference it because we checked it against the parent
-            CommunicationMessage c(reinterpret_cast< Unit * > (ownerDoNotDereference), unit, nullptr, 0);
+            CommunicationMessage c(reinterpret_cast< UnitPtr > (ownerDoNotDereference), unit, nullptr, 0);
             c.SetCurrentState(c.fsm->GetHitNode(), nullptr, 0);
             if (unit->getAIState()) {
                 unit->getAIState()->Communicate(c);
@@ -159,7 +159,7 @@ void Damageable::ApplyDamage(const Vector &pnt,
         }
 
         //the dark danger is real!
-        unit->Threaten(reinterpret_cast< Unit * > (ownerDoNotDereference), 10);
+        unit->Threaten(reinterpret_cast< UnitPtr > (ownerDoNotDereference), 10);
     } else {
         //if only the damage contained which faction it belonged to
         unit->pilot->DoHit(unit, ownerDoNotDereference, FactionUtil::GetNeutralFaction());
@@ -174,9 +174,9 @@ void Damageable::ApplyDamage(const Vector &pnt,
         unit->ClearMounts();
 
         if (shooter_is_player) {
-            ScoreKill(shooter_cockpit, reinterpret_cast< Unit * > (ownerDoNotDereference), unit);
+            ScoreKill(shooter_cockpit, reinterpret_cast< UnitPtr > (ownerDoNotDereference), unit);
         } else {
-            Unit *tmp;
+            UnitPtr tmp;
             if ((tmp = findUnitInStarsystem(ownerDoNotDereference)) != nullptr) {
                 if ((nullptr != (shooter_cockpit = _Universe->isPlayerStarshipVoid(tmp->owner)))
                         && (shooter_cockpit->GetParent() != nullptr)) {
@@ -288,8 +288,8 @@ void Damageable::ApplyDamage(const Vector &pnt,
     if (previous_hull_percent >= configuration()->ai.hull_percent_for_comm &&
             GetHullPercent() < configuration()->ai.hull_percent_for_comm &&
             (shooter_is_player || shot_at_is_player)) {
-        Unit *computer_ai = nullptr;
-        Unit *player = nullptr;
+        UnitPtr computer_ai = nullptr;
+        UnitPtr player = nullptr;
         if (shot_at_is_player) {
             computer_ai = findUnitInStarsystem(ownerDoNotDereference);
             player = unit;
@@ -349,10 +349,10 @@ void Damageable::ApplyDamage(const Vector &pnt,
 extern bool DestroySystem(float hull, float maxhull, float numhits);
 extern bool DestroyPlayerSystem(float hull, float maxhull, float numhits);
 extern float rand01();
-extern const Unit *loadUnitByCache(std::string name, int faction);
+extern const UnitPtr loadUnitByCache(std::string name, int faction);
 
 void Damageable::DamageRandomSystem(InflictedDamage inflicted_damage, bool player, Vector attack_vector) {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     bool hull_damage = inflicted_damage.inflicted_damage_by_layer[0] > 0;
     bool armor_damage = inflicted_damage.inflicted_damage_by_layer[0] > 0;
@@ -402,7 +402,7 @@ void Damageable::DamageCargo(InflictedDamage inflicted_damage) {
         return;
     }
 
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     // If nothing to damage, exit
     if (unit->numCargo() == 0) {
@@ -438,7 +438,7 @@ void Damageable::DamageCargo(InflictedDamage inflicted_damage) {
         return;
     }
 
-    const Unit *downgrade = loadUnitByCache(cargo.content, FactionUtil::GetFactionIndex("upgrades"));
+    const UnitPtr downgrade = loadUnitByCache(cargo.content, FactionUtil::GetFactionIndex("upgrades"));
     if (!downgrade) {
         return;
     }
@@ -454,7 +454,7 @@ extern void DestroyMount(Mount *);
 
 // TODO: a lot of this should be handled by RAII
 void Damageable::Destroy() {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     DamageableObject::Destroy();
 
@@ -542,7 +542,7 @@ void Damageable::RegenerateShields(const float difficulty, const bool player_shi
     const float min_shield_discharge = configuration()->physics_config.min_shield_speeding_discharge;
     const float nebshields = configuration()->physics_config.nebula_shield_recharge;
 
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     const bool in_warp = unit->graphicOptions.InWarp;
     const int shield_facets = unit->shield->number_of_facets;

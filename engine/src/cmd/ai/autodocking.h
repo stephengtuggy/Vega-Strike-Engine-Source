@@ -79,30 +79,30 @@ namespace Orders {
 //    not do that.
 
 class AutoDocking : public Order {
-    typedef void (AutoDocking::*StateFunction)(Unit *, Unit *);
+    typedef void (AutoDocking::*StateFunction)(UnitPtr, UnitPtr);
 
 public:
     typedef std::deque<int> DockingPath;
 
-    AutoDocking(Unit *destination);
+    AutoDocking(UnitPtr destination);
 
     void Execute();
 
-    static bool CanDock(Unit *player, Unit *station);
+    static bool CanDock(UnitPtr player, UnitPtr station);
 
 protected:
     // States
-    void InitialState(Unit *player, Unit *station);
-    void SelectionState(Unit *, Unit *);
-    void ApproachState(Unit *, Unit *);
-    void DockingState(Unit *, Unit *);
-    void DockedState(Unit *, Unit *);
-    void UndockingState(Unit *, Unit *);
-    void DepartureState(Unit *, Unit *);
-    void AbortState(Unit *, Unit *);
-    void EndState(Unit *, Unit *);
+    void InitialState(UnitPtr player, UnitPtr station);
+    void SelectionState(UnitPtr, UnitPtr);
+    void ApproachState(UnitPtr, UnitPtr);
+    void DockingState(UnitPtr, UnitPtr);
+    void DockedState(UnitPtr, UnitPtr);
+    void UndockingState(UnitPtr, UnitPtr);
+    void DepartureState(UnitPtr, UnitPtr);
+    void AbortState(UnitPtr, UnitPtr);
+    void EndState(UnitPtr, UnitPtr);
 
-    void EnqueuePort(Unit *, Unit *, size_t);
+    void EnqueuePort(UnitPtr, UnitPtr, size_t);
     void EraseOrders();
 
 private:

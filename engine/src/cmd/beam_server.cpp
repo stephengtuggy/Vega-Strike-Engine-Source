@@ -32,7 +32,7 @@
 //#include "unit_collide.h"
 #include "images.h"
 
-Beam::Beam(const Transformation &trans, const weapon_info &clne, void *own, Unit *self, int sound)
+Beam::Beam(const Transformation &trans, const weapon_info &clne, void *own, UnitPtr self, int sound)
         : vlist(NULL), Col(clne.r, clne.g, clne.b, clne.a) {
     VSCONSTRUCT2('B')
     listen_to_owner = false;     //warning this line of code is also present in beam.cpp change one, change ALL
@@ -50,7 +50,7 @@ Beam::~Beam() {
 //delete vlist;  // Do not delete shared vlist.
 }
 
-void Beam::Draw(const Transformation &trans, const Matrix &m, Unit *targ, float tracking_cone) {
+void Beam::Draw(const Transformation &trans, const Matrix &m, UnitPtr targ, float tracking_cone) {
     //hope that the correct transformation is on teh stack
 }
 

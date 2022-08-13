@@ -240,7 +240,7 @@ void NavigationSystem::DrawSystem() {
  *       UniverseUtil::IOmessage (0,"game","all",mystrcy);
  */
 
-    Unit *ThePlayer = (UniverseUtil::getPlayerX(UniverseUtil::getCurrentPlayer()));
+    UnitPtr ThePlayer = (UniverseUtil::getPlayerX(UniverseUtil::getCurrentPlayer()));
 
     //Enlist the items and attributes
     //**********************************
@@ -389,7 +389,7 @@ void NavigationSystem::DrawSystem() {
         } else {
             tests_in_range = TestIfInRangeRad(the_x, the_y, insert_size, mouse_x_current, mouse_y_current);
         }
-        Unit *myunit = (*blah);
+        UnitPtr myunit = (*blah);
 
         ++blah;
         DisplayOrientationLines(the_x, the_y, the_x_flat, the_y_flat, 1);

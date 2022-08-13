@@ -133,9 +133,9 @@ Mount::Mount(const string &filename, int am, int vol, float xyscale, float zscal
     }
 }
 
-extern bool AdjustMatrix(Matrix &mat, const Vector &velocity, Unit *target, float speed, bool lead, float cone);
+extern bool AdjustMatrix(Matrix &mat, const Vector &velocity, UnitPtr target, float speed, bool lead, float cone);
 
-void AdjustMatrixToTrackTarget(Matrix &mat, const Vector &velocity, Unit *target, float speed, bool lead, float cone) {
+void AdjustMatrixToTrackTarget(Matrix &mat, const Vector &velocity, UnitPtr target, float speed, bool lead, float cone) {
     AdjustMatrix(mat, velocity, target, speed, lead, cone);
 }
 
@@ -147,7 +147,7 @@ void Mount::UnFire() {
     ref.gun->Destabilize();
 }
 
-void Mount::ReplaceMounts(Unit *un, const Mount *other) {
+void Mount::ReplaceMounts(UnitPtr un, const Mount *other) {
     int thisvol = volume;     //short fix
     int thissize = size;     //short fix
     float xyscale = this->xyscale;
@@ -228,15 +228,15 @@ double Mount::Percentage(const Mount *newammo) const {
     }
 }
 
-extern void GetMadAt(Unit *un, Unit *parent, int numhits = 0);
+extern void GetMadAt(UnitPtr un, UnitPtr parent, int numhits = 0);
 
 //bool returns whether to refund the cost of firing
-bool Mount::PhysicsAlignedFire(Unit *caller,
+bool Mount::PhysicsAlignedFire(UnitPtr caller,
         const Transformation &Cumulative,
         const Matrix &m,
         const Vector &velocity,
         void *owner,
-        Unit *target,
+        UnitPtr target,
         signed char autotrack,
         float trackingcone,
         CollideMap::iterator hint[]) {
@@ -258,7 +258,7 @@ bool Mount::PhysicsAlignedFire(Unit *caller,
             return true;
         }              //Not ready to refire yet.  But don't stop firing.
 
-        Unit *temp;
+        UnitPtr temp;
         Transformation tmp(orient, pos.Cast());
         tmp.Compose(Cumulative, m);
         Matrix mat;
@@ -409,7 +409,7 @@ bool Mount::PhysicsAlignedFire(Unit *caller,
                     temp->EnqueueAI(new Orders::MatchLinearVelocity(Vector(0, 0, 100000), true, false));
                     temp->EnqueueAI(new Orders::FireAllYouGot);
                 }
-                temp->SetOwner((Unit *) owner);
+                temp->SetOwner((UnitPtr) owner);
                 temp->Velocity = velocity + adder;
                 temp->curr_physical_state = temp->prev_physical_state = temp->cumulative_transformation = tmp;
                 CopyMatrix(temp->cumulative_transformation_matrix, m);
@@ -497,8 +497,8 @@ bool Mount::PhysicsAlignedFire(Unit *caller,
     return true;
 }
 
-bool Mount::NextMountCloser(Mount *nextmount, Unit *firer) {
-    Unit *target;
+bool Mount::NextMountCloser(Mount *nextmount, UnitPtr firer) {
+    UnitPtr target;
     if (nextmount && (target = firer->Target())) {
         Matrix mat;
         nextmount->orient.to_matrix(mat);
@@ -514,7 +514,7 @@ bool Mount::NextMountCloser(Mount *nextmount, Unit *firer) {
     return false;
 }
 
-bool Mount::Fire(Unit *firer, void *owner, bool Missile, bool listen_to_owner) {
+bool Mount::Fire(UnitPtr firer, void *owner, bool Missile, bool listen_to_owner) {
     if (ammo == 0) {
         processed = UNFIRED;
     }

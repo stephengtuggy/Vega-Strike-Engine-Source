@@ -89,11 +89,11 @@
 #define KEYDOWN(name, key) (name[key]&0x80)
 
 static Texture *tmpcockpittexture;
-Unit **fighters;
-Unit *carrier = NULL;
-Unit *fighter = NULL;
-Unit *fighter2 = NULL;
-Unit *midway = NULL;
+UnitPtr*fighters;
+UnitPtr carrier = NULL;
+UnitPtr fighter = NULL;
+UnitPtr fighter2 = NULL;
+UnitPtr midway = NULL;
 GFXBOOL capture;
 GFXBOOL quit = GFXFALSE;
 bool _Slew = true;
@@ -105,7 +105,7 @@ int allexcept = FE_DIVBYZERO; //|FE_INVALID;//|FE_OVERFLOW|FE_UNDERFLOW;
 int allexcept = 0;
 #endif
 int shiftup(int);
-string getUnitNameAndFgNoBase(Unit *target);
+string getUnitNameAndFgNoBase(UnitPtr target);
 ContinuousTerrain *myterrain;
 int numf = 0;
 CoordinateSelect *locSel = NULL;
@@ -477,7 +477,7 @@ void Inside(const KBData &, KBSTATE newState) {
         if (_Universe->AccessCockpit()->GetParent()) {
             cockpit = _Universe->AccessCockpit()->GetParent()->getCockpit();
         }
-        Unit *u = nullptr;
+        UnitPtr u = nullptr;
         if ((_Universe->AccessCockpit()->GetParent() != nullptr)
                 && (_Universe->AccessCockpit()->GetParent()->name == "return_to_cockpit")
                 && (_Universe->AccessCockpit()->GetParent()->owner != nullptr)
@@ -812,7 +812,7 @@ void createObjects(std::vector<std::string> &fighter0name,
 
     int numf = mission->number_of_ships;
 
-    fighters = new Unit *[numf];
+    fighters = new UnitPtr[numf];
     int *tmptarget = new int[numf];
 
     GFXEnable(TEXTURE0);
@@ -875,7 +875,7 @@ void createObjects(std::vector<std::string> &fighter0name,
                         vector<std::string> *dat = &cp->savegame->getMissionStringData("jump_from");
                         if (dat->size()) {
                             std::string srcsys = (*dat)[0];
-                            Unit *grav;
+                            UnitPtr grav;
                             for (un_iter ui = cp->activeStarSystem->gravitationalUnits().createIterator();
                                     (grav = *ui) != NULL;
                                     ++ui) {
@@ -983,7 +983,7 @@ void createObjects(std::vector<std::string> &fighter0name,
 }
 
 void AddUnitToSystem(const SavedUnits *su) {
-    Unit *un = NULL;
+    UnitPtr un = NULL;
     switch (su->type) {
         case Vega_UnitType::enhancement:
             un =

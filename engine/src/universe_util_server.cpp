@@ -112,7 +112,7 @@ void loadGame(const string &savename) {
     unsigned int num = 0;
     sscanf(savename.c_str(), "%u", &num);
     if (num != UINT_MAX && num < _Universe->numPlayers()) {
-        Unit *un = _Universe->AccessCockpit(num)->GetParent();
+        UnitPtr un = _Universe->AccessCockpit(num)->GetParent();
         if (un) {
             un->hull = 0;
             un->Destroy();

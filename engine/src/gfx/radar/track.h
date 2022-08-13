@@ -100,15 +100,15 @@ public:
 protected:
     // Produced by Sensor::CreateTrack
     friend class Sensor;
-    Track(Unit *, const Unit *);
-    Track(Unit *, const Unit *, const Vector &);
-    Track(Unit *, const Unit *, const Vector &, float);
+    Track(UnitPtr, const UnitPtr);
+    Track(UnitPtr, const UnitPtr, const Vector &);
+    Track(UnitPtr, const UnitPtr, const Vector &, float);
 
     Type::Value IdentifyType() const;
 
 protected:
-    Unit *player;
-    const Unit *target;
+    UnitPtr player;
+    const UnitPtr target;
     Vector position;
     float distance;
     Type::Value type;

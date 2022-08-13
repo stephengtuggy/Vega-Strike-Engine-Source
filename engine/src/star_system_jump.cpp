@@ -109,7 +109,7 @@ void StarSystem::DrawJumpStars() {
     for (unsigned int kk = 0; kk < pendingjump.size(); ++kk) {
         int k = pendingjump[kk]->animation;
         if (k != -1) {
-            Unit *un = pendingjump[kk]->un.GetUnit();
+            UnitPtr un = pendingjump[kk]->un.GetUnit();
             if (un) {
                 Vector p, q, r;
                 un->GetOrientation(p, q, r);
@@ -147,14 +147,14 @@ void StarSystem::DrawJumpStars() {
     }
 }
 
-void StarSystem::DoJumpingComeSightAndSound(Unit *un) {
+void StarSystem::DoJumpingComeSightAndSound(UnitPtr un) {
     Vector p, q, r;
     un->GetOrientation(p, q, r);
     unsigned int myani = AddJumpAnimation(un->LocalPosition(), un->rSize() * game_options()->jumpgatesize, true);
     VolatileJumpAnimations[myani].a->SetOrientation(p, q, r);
 }
 
-int StarSystem::DoJumpingLeaveSightAndSound(Unit *un) {
+int StarSystem::DoJumpingLeaveSightAndSound(UnitPtr un) {
     int ani;
     Vector p, q, r;
     un->GetOrientation(p, q, r);

@@ -103,13 +103,13 @@ public:
     Texture *getLightMap();
 
 // Player Ship
-    Cockpit *isPlayerStarship(const Unit *fighter);
+    Cockpit *isPlayerStarship(const UnitPtr fighter);
 
     Cockpit *isPlayerStarshipVoid(const void *pointercompare) {
-        return isPlayerStarship((const Unit *) pointercompare);
+        return isPlayerStarship((const UnitPtr) pointercompare);
     }
 
-    int whichPlayerStarship(const Unit *fighter);
+    int whichPlayerStarship(const UnitPtr fighter);
 
 // Script System - whatever that is
     StarSystem *scriptStarSystem();

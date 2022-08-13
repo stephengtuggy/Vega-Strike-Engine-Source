@@ -72,7 +72,7 @@ public:
 
     typedef std::set<WeaponGroup, WeaponComparator<FORWARD> > WeaponGroupSet;
 
-    static bool checkmount(Unit *un, int i, bool missile) {
+    static bool checkmount(UnitPtr un, int i, bool missile) {
         return un->mounts[i].status < Mount::DESTROYED && (un->mounts[i].type->isMissile() == missile)
                 && un->mounts[i].ammo != 0;
     }
@@ -85,9 +85,9 @@ public:
         return !isSpecial(mount);
     }
 
-    static void ToggleWeaponSet(Unit *un, bool missile) {
+    static void ToggleWeaponSet(UnitPtr un, bool missile) {
         if (un->mounts.size() == 0) {
-            Unit *tur = NULL;
+            UnitPtr tur = NULL;
             for (un_iter i = un->getSubUnits(); (tur = *i) != NULL; ++i) {
                 ToggleWeaponSet(tur, missile);
             }
@@ -197,7 +197,7 @@ void Armed::ActivateGuns(const WeaponInfo *sz, bool ms) {
 }
 
 void Armed::Fire(unsigned int weapon_type_bitmask, bool listen_to_owner) {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     if ((unit->cloaking >= 0 && !configuration()->weapons.can_fire_in_cloak) ||
             (unit->graphicOptions.InWarp && !configuration()->weapons.can_fire_in_spec)) {
@@ -325,7 +325,7 @@ int Armed::LockMissile() const {
 }
 
 void Armed::LockTarget(bool myboo) {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
     unit->computer.radar.locked = myboo;
     if (myboo && unit->computer.radar.canlock == false && false == UnitUtil::isSignificant(unit->Target())) {
         unit->computer.radar.locked = false;
@@ -333,7 +333,7 @@ void Armed::LockTarget(bool myboo) {
 }
 
 QVector Armed::PositionITTS(const QVector &absposit, Vector velocity, float speed, bool steady_itts) const {
-    const Unit *unit = static_cast<const Unit *>(this);
+    const UnitPtr unit = static_cast<const UnitPtr>(this);
     if (speed == FLT_MAX) {
         return unit->Position();
     }
@@ -411,16 +411,16 @@ void Armed::setAverageGunSpeed() {
     this->gunspeed = speed;
 }
 
-bool Armed::TargetLocked(const Unit *checktarget) const {
-    const Unit *unit = static_cast<const Unit *>(this);
+bool Armed::TargetLocked(const UnitPtr checktarget) const {
+    const UnitPtr unit = static_cast<const UnitPtr>(this);
     if (!unit->computer.radar.locked) {
         return false;
     }
     return (checktarget == NULL) || (unit->computer.target == checktarget);
 }
 
-bool Armed::TargetTracked(const Unit *checktarget) {
-    Unit *unit = static_cast<Unit *>(this);
+bool Armed::TargetTracked(const UnitPtr checktarget) {
+    UnitPtr unit = static_cast<UnitPtr>(this);
     static bool must_lock_to_autotrack = XMLSupport::parse_bool(
             vs_config->getVariable("physics", "must_lock_to_autotrack", "true"));
     bool we_do_track = unit->computer.radar.trackingactive
@@ -440,7 +440,7 @@ bool Armed::TargetTracked(const Unit *checktarget) {
 }
 
 void Armed::ToggleWeapon(bool missile, bool forward) {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
     if (forward) {
         WeaponComparator<true>::ToggleWeaponSet(unit, missile);
     } else {
@@ -449,7 +449,7 @@ void Armed::ToggleWeapon(bool missile, bool forward) {
 }
 
 float Armed::TrackingGuns(bool &missilelock) {
-    const Unit *unit = static_cast<const Unit *>(this);
+    const UnitPtr unit = static_cast<const UnitPtr>(this);
     float trackingcone = 0;
     missilelock = false;
     for (int i = 0; i < getNumMounts(); ++i) {
@@ -464,10 +464,10 @@ float Armed::TrackingGuns(bool &missilelock) {
 }
 
 void Armed::UnFire() {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     if (this->getNumMounts() == 0) {
-        Unit *tur = NULL;
+        UnitPtr tur = NULL;
         for (un_iter i = unit->getSubUnits(); (tur = *i) != NULL; ++i) {
             tur->UnFire();
         }

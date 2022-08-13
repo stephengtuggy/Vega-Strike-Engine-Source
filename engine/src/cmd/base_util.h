@@ -175,7 +175,7 @@ Dictionary &_GetEventData();
 float GetTextHeight(std::string text, Vector widheimult);
 float GetTextWidth(std::string text, Vector widheimult);
 void LoadBaseInterface(std::string name);
-void LoadBaseInterfaceAtDock(std::string name, Unit *dockat, Unit *dockee);
+void LoadBaseInterfaceAtDock(std::string name, UnitPtr dockat, UnitPtr dockee);
 void refreshBaseComputerUI(const class Cargo *dirtyCarg);
 void ExitGame();
 }

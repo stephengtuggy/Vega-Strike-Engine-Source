@@ -220,7 +220,7 @@ public:
         PYTHONCALLBACK(void, this->self, "ChooseTarget");
     }
 
-    virtual void SetParent(Unit *parent) {
+    virtual void SetParent(UnitPtr parent) {
         SuperClass::SetParent(parent);
         PYTHONCALLBACK2(void, this->self, "init", parent);
     }
@@ -233,7 +233,7 @@ public:
         (self_).SuperClass::ChooseTarget();
     }
 
-    static void default_SetParent(SuperClass &self_, Unit *parent) {
+    static void default_SetParent(SuperClass &self_, UnitPtr parent) {
     }
 
     static PythonClass<SuperClass> *LastPythonClass() {

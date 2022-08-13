@@ -64,9 +64,9 @@ public:
     };
 
 public:
-    Sensor(Unit *player);
+    Sensor(UnitPtr player);
 
-    Unit *GetPlayer() const;
+    UnitPtr GetPlayer() const;
     float GetCloseRange() const;
     float GetMaxRange() const;
     float GetMaxCone() const;
@@ -78,8 +78,8 @@ public:
     // Can the sensor detect harmful ships
     bool UseThreatAssessment() const;
 
-    Track CreateTrack(const Unit *) const;
-    Track CreateTrack(const Unit *, const Vector &) const;
+    Track CreateTrack(const UnitPtr) const;
+    Track CreateTrack(const UnitPtr, const Vector &) const;
 
     // I am tracking target
     bool IsTracking(const Track &) const;
@@ -93,7 +93,7 @@ public:
     GFXColor GetColor(const Track &) const;
 
 protected:
-    Unit *player;
+    UnitPtr player;
     float closeRange;
     mutable TrackCollection collection;
     bool useThreatAssessment;

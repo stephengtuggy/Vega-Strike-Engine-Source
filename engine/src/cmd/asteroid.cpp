@@ -31,7 +31,7 @@
 #include "gfx/quaternion.h"
 #include "gfx/matrix.h"
 
-static void RecursiveSetSchedule(Unit *un) {
+static void RecursiveSetSchedule(UnitPtr un) {
     if (un) {
         if (un->SubUnits.empty()) {
             un->schedule_priority = Unit::scheduleRoid;

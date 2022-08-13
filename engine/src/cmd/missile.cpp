@@ -54,7 +54,7 @@ MissileEffect::MissileEffect(const QVector &pos, float dam, float pdam, float ra
     this->ownerDoNotDereference = owner;
 }
 
-void MissileEffect::ApplyDamage(Unit *smaller) {
+void MissileEffect::ApplyDamage(UnitPtr smaller) {
     QVector norm = pos - smaller->Position();
     float smaller_rsize = smaller->rSize();
     float distance = norm.Magnitude() - smaller_rsize;            // no better check than the bounding sphere for now
@@ -96,7 +96,7 @@ float MissileEffect::GetRadius() const {
     return radius;
 }
 
-void MissileEffect::DoApplyDamage(Unit *parent, Unit *un, float distance, float damage_fraction) {
+void MissileEffect::DoApplyDamage(UnitPtr parent, UnitPtr un, float distance, float damage_fraction) {
     QVector norm = pos - un->Position();
     norm.Normalize();
     float damage_left = 1.0F;
@@ -108,7 +108,7 @@ void MissileEffect::DoApplyDamage(Unit *parent, Unit *un, float distance, float 
         double total_area = 0.0;
         {
             un_kiter ki = un->viewSubUnits();
-            for (const Unit *subun; (subun = *ki); ++ki) {
+            for (const UnitPtr subun; (subun = *ki); ++ki) {
                 if (subun->Killed()) {
                     continue;
                 }
@@ -131,7 +131,7 @@ void MissileEffect::DoApplyDamage(Unit *parent, Unit *un, float distance, float 
         }
 
         un_iter i = un->getSubUnits();
-        for (Unit *subun; (subun = *i); ++i) {
+        for (UnitPtr subun; (subun = *i); ++i) {
             if (subun->Killed()) {
                 continue;
             }
@@ -196,7 +196,7 @@ Missile::Missile(const char *filename,
 
 void Missile::Discharge() {
     if ((damage != 0 || phasedamage != 0) && !discharged) {
-        Unit *target = Unit::Target();
+        UnitPtr target = Unit::Target();
         VS_LOG(info, (boost::format("Missile discharged (target %1%)")
                 % ((target != NULL) ? target->name.get() : "NULL")));
         _Universe->activeStarSystem()->AddMissileToQueue(
@@ -228,7 +228,7 @@ void Missile::UpdatePhysics2(const Transformation &trans,
 
 
     // Get the target
-    Unit *target = Target();
+    UnitPtr target = Target();
 
     // We have a valid target - we mark this as it affects fuel and TTL
     if (target != nullptr) {
@@ -249,7 +249,7 @@ void Missile::UpdatePhysics2(const Transformation &trans,
             target->graphicOptions.missilelock = true;
             un_iter i = target->getSubUnits();
 
-            Unit *su;
+            UnitPtr su;
             for (; (su = *i) != nullptr; ++i) {
                 if (su->getAttackPreferenceChar() == pointdef) {
                     if (su->Target() == nullptr) {
@@ -289,7 +289,7 @@ void Missile::UpdatePhysics2(const Transformation &trans,
     }
 }
 
-Unit *Missile::breakECMLock(Unit *target) {
+UnitPtr Missile::breakECMLock(UnitPtr target) {
     if (target == nullptr) {
         return nullptr;
     }
@@ -315,7 +315,7 @@ Unit *Missile::breakECMLock(Unit *target) {
     return target;
 }
 
-bool Missile::proximityFuse(Unit *target) {
+bool Missile::proximityFuse(UnitPtr target) {
     // Don't explode if have no lock or already exploded/exploding
     if (target == nullptr || discharged) {
         return false;
@@ -342,7 +342,7 @@ bool Missile::proximityFuse(Unit *target) {
     return false;
 }
 
-bool Missile::useFuel(Unit *target, bool had_target) {
+bool Missile::useFuel(UnitPtr target, bool had_target) {
     // An previous dev marked this as BROKEN
     // If we had a target but it's now gone, limit the missile's fuel
     // If we didn't have a target (dumbfire?), keep original fuel

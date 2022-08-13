@@ -64,7 +64,7 @@ navdrawnode::navdrawnode(int type_,
         float size_,
         float x_,
         float y_,
-        Unit *source_,
+        UnitPtr source_,
         navdrawnode *nextitem_)     //new node into list
 {
     type = type_;
@@ -114,7 +114,7 @@ void navdrawlist::insert(int type, float size, float x, float y)        //insert
     n_contents += 1;
 }
 
-void navdrawlist::insert(int type, float size, float x, float y, Unit *source)  //insert iteam at head of list
+void navdrawlist::insert(int type, float size, float x, float y, UnitPtr source)  //insert iteam at head of list
 {
     if (head == NULL) {
         head = new navdrawnode(type, size, x, y, source, NULL);
@@ -153,9 +153,9 @@ void navdrawlist::rotate()      //take the head and stick it in the back
     }
 }
 
-string getUnitNameAndFgNoBase(Unit *target);
+string getUnitNameAndFgNoBase(UnitPtr target);
 
-void drawdescription(Unit *source,
+void drawdescription(UnitPtr source,
         float x_,
         float y_,
         float size_x,
@@ -215,7 +215,7 @@ void drawdescription(string text,
     displayname.bgcol = tpbg;
 }
 
-Unit *navdrawlist::gettailunit() {
+UnitPtr navdrawlist::gettailunit() {
     return tail->source;
 }
 
@@ -242,7 +242,7 @@ void drawlistitem(int type,
         float size,
         float x,
         float y,
-        Unit *source,
+        UnitPtr source,
         navscreenoccupied *screenoccupation,
         bool inmouserange,
         bool currentistail,

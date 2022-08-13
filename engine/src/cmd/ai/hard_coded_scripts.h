@@ -28,7 +28,7 @@
 #ifndef HARD_CODED_SCRIPTS_H_
 #define HARD_CODED_SCRIPTS_H_
 
-typedef void CCScript(Order *script, Unit *un);
+typedef void CCScript(Order *script, UnitPtr un);
 
 CCScript AfterburnerSlide;
 CCScript FlyStraight;

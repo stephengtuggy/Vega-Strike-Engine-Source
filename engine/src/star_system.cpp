@@ -237,8 +237,8 @@ class UnitDrawer {
     struct empty {};
     vsUMap<void *, struct empty> gravunits;
 public:
-    Unit *parent;
-    Unit *parenttarget;
+    UnitPtr parent;
+    UnitPtr parenttarget;
 
     UnitDrawer() {
         parent = nullptr;
@@ -247,7 +247,7 @@ public:
 
     // can't remove redundant distance parameter, as function acquire is overloaded
     // by template in UnitWithinRangeLocator
-    bool acquire(Unit *unit, float distance) {
+    bool acquire(UnitPtr unit, float distance) {
         if (gravunits.find(unit) == gravunits.end()) {
             return draw(unit);
         } else {
@@ -271,7 +271,7 @@ public:
         }
     }
 
-    bool draw(Unit *unit) {
+    bool draw(UnitPtr unit) {
         if (parent == unit || (parent && parent->isSubUnit() && parent->owner == unit)) {
             parent = nullptr;
         }
@@ -293,7 +293,7 @@ public:
         return true;
     }
 
-    bool grav_acquire(Unit *unit) {
+    bool grav_acquire(UnitPtr unit) {
         gravunits[unit] = empty();
         return draw(unit);
     }
@@ -313,7 +313,7 @@ void StarSystem::Draw(bool DrawCockpit) {
     for (unsigned int i = 0; i < continuous_terrains.size(); ++i) {
         continuous_terrains[i]->AdjustTerrain(this);
     }
-    Unit *par;
+    UnitPtr par;
     if ((par = _Universe->AccessCockpit()->GetParent()) == nullptr) {
         _Universe->AccessCamera()->UpdateGFX(GFXTRUE);
     } else if (!par->isSubUnit()) {
@@ -321,7 +321,7 @@ void StarSystem::Draw(bool DrawCockpit) {
         par->cumulative_transformation = linear_interpolate(par->prev_physical_state,
                 par->curr_physical_state,
                 interpolation_blend_factor);
-        Unit *targ = par->Target();
+        UnitPtr targ = par->Target();
         if (targ && !targ->isSubUnit()) {
             targ->cumulative_transformation = linear_interpolate(targ->prev_physical_state,
                     targ->curr_physical_state,
@@ -333,18 +333,18 @@ void StarSystem::Draw(bool DrawCockpit) {
     {
         cam_setup_phase = true;
 
-        Unit *saveparent = _Universe->AccessCockpit()->GetSaveParent();
-        Unit *targ = nullptr;
+        UnitPtr saveparent = _Universe->AccessCockpit()->GetSaveParent();
+        UnitPtr targ = nullptr;
         if (saveparent) {
             targ = saveparent->Target();
         }
         //Array containing the two interesting units, so as not to have to copy-paste code
-        Unit *camunits[2] = {saveparent, targ};
+        UnitPtr camunits[2] = {saveparent, targ};
         float backup = simulation_atom_var;
         //VS_LOG(trace, (boost::format("StarSystem::Draw(): simulation_atom_var as backed up  = %1%") % simulation_atom_var));
         unsigned int cur_sim_frame = _Universe->activeStarSystem()->getCurrentSimFrame();
         for (int i = 0; i < 2; ++i) {
-            Unit *unit = camunits[i];
+            UnitPtr unit = camunits[i];
             //Make sure unit is not null;
             if (unit && !unit->isSubUnit()) {
                 interpolation_blend_factor = calc_blend_factor(saved_interpolation_blend_factor,
@@ -383,7 +383,7 @@ void StarSystem::Draw(bool DrawCockpit) {
     Collidable key_iterator(0, 1, drawstartpos);
     UnitWithinRangeOfPosition<UnitDrawer> drawer(game_options()->precull_dist, 0, key_iterator);
     //Need to draw really big stuff (i.e. planets, deathstars, and other mind-bogglingly big things that shouldn't be culled despited extreme distance
-    Unit *unit;
+    UnitPtr unit;
     if ((drawer.action.parent = _Universe->AccessCockpit()->GetParent()) != nullptr) {
         drawer.action.parenttarget = drawer.action.parent->Target();
     }
@@ -549,7 +549,7 @@ using namespace XMLSupport;
 vector<Vector> perplines;
 extern vector<unorigdest *> pendingjump;
 
-void TentativeJumpTo(StarSystem *ss, Unit *un, Unit *jumppoint, const std::string &system) {
+void TentativeJumpTo(StarSystem *ss, UnitPtr un, UnitPtr jumppoint, const std::string &system) {
     for (unsigned int i = 0; i < pendingjump.size(); ++i) {
         if (pendingjump[i]->un.GetUnit() == un) {
             return;
@@ -627,7 +627,7 @@ string StarSystem::getName() {
     return name;
 }
 
-void StarSystem::AddUnit(Unit *unit) {
+void StarSystem::AddUnit(UnitPtr unit) {
     if (stats.system_faction == FactionUtil::GetNeutralFaction()) {
         stats.CheckVitals(this);
     }
@@ -646,7 +646,7 @@ void StarSystem::AddUnit(Unit *unit) {
     stats.AddUnit(unit);
 }
 
-bool StarSystem::RemoveUnit(Unit *un) {
+bool StarSystem::RemoveUnit(UnitPtr un) {
     for (unsigned int locind = 0; locind < Unit::NUM_COLLIDE_MAPS; ++locind) {
         if (!is_null(un->location[locind])) {
             collide_map[locind]->erase(un->location[locind]);
@@ -669,7 +669,7 @@ bool StarSystem::RemoveUnit(Unit *un) {
 
 void StarSystem::ExecuteUnitAI() {
     try {
-        Unit *unit = nullptr;
+        UnitPtr unit = nullptr;
         for (un_iter iter = getUnitList().createIterator(); (unit = *iter); ++iter) {
             unit->ExecuteAI();
             unit->ResetThreatLevel();
@@ -703,14 +703,14 @@ void StarSystem::ExecuteUnitAI() {
 
 
 
-extern Unit *TheTopLevelUnit;
+extern UnitPtr TheTopLevelUnit;
 
 //sorry boyz...I'm just a tourist with a frag nav console--could you tell me where I am?
-Unit *getTopLevelOwner() {
+UnitPtr getTopLevelOwner() {
     return (TheTopLevelUnit);  // Now we return a pointer to a new game unit created in main(), outside of any lists
 }
 
-void CarSimUpdate(Unit *un, float height) {
+void CarSimUpdate(UnitPtr un, float height) {
     un->SetVelocity(Vector(un->GetVelocity().i, 0, un->GetVelocity().k));
     un->curr_physical_state.position = QVector(un->curr_physical_state.position.i,
             height,
@@ -771,7 +771,7 @@ void Statistics::CheckVitals(StarSystem *ss) {
     for (; checkIter < counter && checkIter < sortedsize; ++checkIter) {
         Collidable *collide = &ss->collide_map[Unit::UNIT_ONLY]->sorted[checkIter];
         if (collide->radius > 0) {
-            Unit *un = collide->ref.unit;
+            UnitPtr un = collide->ref.unit;
             float rel = UnitUtil::getRelationFromFaction(un, sysfac);
             if (FactionUtil::isCitizenInt(un->faction)) {
                 ++newcitizencount;
@@ -801,7 +801,7 @@ void Statistics::CheckVitals(StarSystem *ss) {
     }
 }
 
-void Statistics::AddUnit(Unit *un) {
+void Statistics::AddUnit(UnitPtr un) {
     float rel = UnitUtil::getRelationFromFaction(un, system_faction);
     if (FactionUtil::isCitizenInt(un->faction)) {
         ++citizencount;
@@ -833,7 +833,7 @@ void Statistics::AddUnit(Unit *un) {
     }
 }
 
-void Statistics::RemoveUnit(Unit *un) {
+void Statistics::RemoveUnit(UnitPtr un) {
     float rel = UnitUtil::getRelationFromFaction(un, system_faction);
     if (FactionUtil::isCitizenInt(un->faction)) {
         --citizencount;
@@ -877,8 +877,8 @@ double aggfire = 0;
 int numprocessed = 0;
 double targetpick = 0;
 
-void StarSystem::RequestPhysics(Unit *un, unsigned int queue) {
-    Unit *unit = nullptr;
+void StarSystem::RequestPhysics(UnitPtr un, unsigned int queue) {
+    UnitPtr unit = nullptr;
     un_iter iter = this->physics_buffer[queue].createIterator();
     while ((unit = *iter) && *iter != un) {
         ++iter;
@@ -914,7 +914,7 @@ void StarSystem::UpdateUnitsPhysics(bool firstframe) {
         try {
             UnitCollection col = physics_buffer[current_sim_location];
             un_iter iter = physics_buffer[current_sim_location].createIterator();
-            Unit *unit = nullptr;
+            UnitPtr unit = nullptr;
             for (; (unit = *iter); ++iter) {
                 UpdateUnitPhysics(firstframe, unit);
             }
@@ -936,7 +936,7 @@ void StarSystem::UpdateUnitsPhysics(bool firstframe) {
         if (Unit::NUM_COLLIDE_MAPS > 1) {
             collide_map[Unit::UNIT_ONLY]->flatten(*collide_map[Unit::UNIT_BOLT]);
         }
-        Unit *unit;
+        UnitPtr unit;
         for (un_iter iter = physics_buffer[current_sim_location].createIterator(); (unit = *iter);) {
             unsigned int priority = unit->sim_atom_multiplier;
             float backup = simulation_atom_var;
@@ -963,7 +963,7 @@ void StarSystem::UpdateUnitsPhysics(bool firstframe) {
     }
 }
 
-void StarSystem::UpdateUnitPhysics(bool firstframe, Unit *unit) {
+void StarSystem::UpdateUnitPhysics(bool firstframe, UnitPtr unit) {
     int priority = UnitUtil::getPhysicsPriority(unit);
     //Doing spreading here and only on priority changes, so as to make AI easier
     int predprior = unit->predicted_priority;
@@ -1058,12 +1058,12 @@ void ExecuteDirector() {
     }
 }
 
-Unit *StarSystem::nextSignificantUnit() {
+UnitPtr StarSystem::nextSignificantUnit() {
     return (*sigIter);
 }
 
 void StarSystem::Update(float priority) {
-    Unit *unit;
+    UnitPtr unit;
     bool firstframe = true;
     //No time compression here
     float normal_simulation_atom = SIMULATION_ATOM;
@@ -1262,9 +1262,9 @@ bool PendingJumpsEmpty() {
 
 void StarSystem::ProcessPendingJumps() {
     for (unsigned int kk = 0; kk < pendingjump.size(); ++kk) {
-        Unit *un = pendingjump[kk]->un.GetUnit();
+        UnitPtr un = pendingjump[kk]->un.GetUnit();
         if (pendingjump[kk]->delay >= 0) {
-            Unit *jp = pendingjump[kk]->jumppoint.GetUnit();
+            UnitPtr jp = pendingjump[kk]->jumppoint.GetUnit();
             if (un && jp) {
                 QVector delta = (jp->LocalPosition() - un->LocalPosition());
                 float dist = delta.Magnitude();
@@ -1353,14 +1353,14 @@ double calc_blend_factor(double frac,
 
 }
 
-void ActivateAnimation(Unit *jumppoint) {
+void ActivateAnimation(UnitPtr jumppoint) {
     jumppoint->graphicOptions.Animating = 1;
     for (un_iter i = jumppoint->getSubUnits(); !i.isDone(); ++i) {
         ActivateAnimation(*i);
     }
 }
 
-static bool isJumping(const vector<unorigdest *> &pending, Unit *un) {
+static bool isJumping(const vector<unorigdest *> &pending, UnitPtr un) {
     for (size_t i = 0; i < pending.size(); ++i) {
         if (pending[i]->un == un) {
             return true;
@@ -1389,7 +1389,7 @@ QVector ComputeJumpPointArrival(QVector pos, std::string origin, std::string des
     return QVector(0, 0, 0);
 }
 
-bool StarSystem::JumpTo(Unit *un, Unit *jumppoint, const std::string &system, bool force, bool save_coordinates) {
+bool StarSystem::JumpTo(UnitPtr un, UnitPtr jumppoint, const std::string &system, bool force, bool save_coordinates) {
     if ((un->DockedOrDocking() & (~Unit::DOCKING_UNITS)) != 0) {
         return false;
     }
@@ -1471,7 +1471,7 @@ void StarSystem::UpdateMissiles() {
     if (!discharged_missiles.empty()) {
         if (discharged_missiles.back()->GetRadius()
                 > 0) {           //we can avoid this iterated check for kinetic projectiles even if they "discharge" on hit
-            Unit *un;
+            UnitPtr un;
             for (un_iter ui = getUnitList().createIterator();
                     NULL != (un = (*ui));
                     ++ui) {

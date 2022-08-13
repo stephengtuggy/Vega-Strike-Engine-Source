@@ -126,7 +126,7 @@ void GameUnit::Thrust(const Vector &amt1, bool afterburn) {
         static float
                 buzzingdistance = XMLSupport::parse_float(vs_config->getVariable("audio", "buzzing_distance", "5"));
         static float lastbuzz = getNewTime();
-        Unit *playa = _Universe->AccessCockpit()->GetParent();
+        UnitPtr playa = _Universe->AccessCockpit()->GetParent();
         if (playa) {
             if (UnitUtil::getDistance(this,
                     playa) < buzzingdistance && playa->owner != this && this->owner != playa

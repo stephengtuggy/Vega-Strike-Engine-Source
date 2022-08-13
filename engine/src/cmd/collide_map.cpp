@@ -272,7 +272,7 @@ void CollideArray::checkSet() {
     }
 }
 
-Collidable::Collidable(Unit *un) {
+Collidable::Collidable(UnitPtr un) {
     radius = un->rSize();
     if (radius <= FLT_MIN || !FINITE(radius)) {
         radius = 2 * FLT_MIN;
@@ -424,7 +424,7 @@ public:
         return false;
     }
 
-    static bool ComputeMaxLookMinLook(Unit *un,
+    static bool ComputeMaxLookMinLook(UnitPtr un,
             CollideMap *cm,
             CollideMap::iterator collider,
             CollideMap::iterator begin,
@@ -504,7 +504,7 @@ public:
         return true;
     }
 
-    static bool doUpdateKey(Unit *un) {
+    static bool doUpdateKey(UnitPtr un) {
         return false;
     }
 
@@ -512,7 +512,7 @@ public:
         return true;
     }
 
-    static bool endAfterCollide(Unit *un, unsigned int location_index) {
+    static bool endAfterCollide(UnitPtr un, unsigned int location_index) {
         return is_null(un->location[location_index]);
     }
 
@@ -538,14 +538,14 @@ public:
         return (tempx + tempy + tempz) > radiussum * radiussum;
     }
 
-    static bool CheckCollision(Unit *a, const Collidable &aiter, Unit *b, const Collidable &biter) {
+    static bool CheckCollision(UnitPtr a, const Collidable &aiter, UnitPtr b, const Collidable &biter) {
         if (!ApartPositive(aiter, biter)) {
             return a->Collide(b);
         }
         return false;
     }
 
-    static bool CheckCollision(Bolt *a, const Collidable &aiter, Unit *b, const Collidable &biter) {
+    static bool CheckCollision(Bolt *a, const Collidable &aiter, UnitPtr b, const Collidable &biter) {
         if (!ApartNeg(aiter, biter)) {
             if (a->Collide(b)) {
                 a->Destroy(nondecal_index(aiter.ref));
@@ -559,7 +559,7 @@ public:
         return true;
     }
 
-    static bool BoltType(Unit *a) {
+    static bool BoltType(UnitPtr a) {
         return false;
     }
 
@@ -567,7 +567,7 @@ public:
         return false;
     }
 
-    static bool CheckCollision(Unit *un, const Collidable &aiter, Collidable::CollideRef b, const Collidable &biter) {
+    static bool CheckCollision(UnitPtr un, const Collidable &aiter, Collidable::CollideRef b, const Collidable &biter) {
         if (!ApartNeg(biter, aiter)) {
             return Bolt::CollideAnon(b, un);
         }
@@ -583,7 +583,7 @@ bool CollideMap::CheckUnitCollisions(Bolt *bol, const Collidable &updated) {
     return CollideChecker<Bolt, false>::CheckCollisions(this, bol, updated, Unit::UNIT_ONLY);
 }
 
-bool CollideMap::CheckCollisions(Unit *un, const Collidable &updated) {
+bool CollideMap::CheckCollisions(UnitPtr un, const Collidable &updated) {
     //need to check beams
     if (un->activeStarSystem == NULL) {
         un->activeStarSystem = _Universe->activeStarSystem();
@@ -592,7 +592,7 @@ bool CollideMap::CheckCollisions(Unit *un, const Collidable &updated) {
     return CollideChecker<Unit, true>::CheckCollisions(this, un, updated, Unit::UNIT_BOLT);
 }
 
-bool CollideMap::CheckUnitCollisions(Unit *un, const Collidable &updated) {
+bool CollideMap::CheckUnitCollisions(UnitPtr un, const Collidable &updated) {
     //need to check beams
     if (un->activeStarSystem == NULL) {
         un->activeStarSystem = _Universe->activeStarSystem();

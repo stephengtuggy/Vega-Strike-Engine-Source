@@ -48,15 +48,15 @@ void TurretAI::getAverageGunSpeed(float &speed, float &range, float &mrange) con
     mrange = this->mrange;
 }
 
-extern unsigned int FireBitmask(Unit *parent, bool shouldfire, bool firemissile);
+extern unsigned int FireBitmask(UnitPtr parent, bool shouldfire, bool firemissile);
 
 void TurretAI::Execute() {
-    Unit *targ = parent->Target();
+    UnitPtr targ = parent->Target();
     if (range == -1) {
         range = mrange = speed = 0;
         parent->getAverageGunSpeed(speed, range, mrange);
         float tspeed, trange, tmrange;
-        Unit *gun;
+        UnitPtr gun;
         if (parent->getNumMounts() == 0) {
             speed = 1;
             range = 1;
@@ -96,9 +96,9 @@ void TurretAI::Execute() {
                             && dot > dot_cutoff)
                             && (isplayerstarship == false || targ->faction == upg
                                     || (isplayerstarship
-                                            && (targ->getRelation((Unit *) parent->owner)
+                                            && (targ->getRelation((UnitPtr) parent->owner)
                                                     < 0 /*now that it is a player, we know it's dereferencable*/
-                                                    || targ->Target() == (Unit *) parent->owner)))
+                                                    || targ->Target() == (UnitPtr) parent->owner)))
                             && targ->faction != neu);
 
             //FIXME - rand() is not going to be in the expected range here - stephengtuggy 2020-07-25

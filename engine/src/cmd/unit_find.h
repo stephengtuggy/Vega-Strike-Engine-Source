@@ -282,7 +282,7 @@ public:
     void init(CollideMap *cm, CollideMap::iterator parent) {
     }
 };
-class UnitPtrLocator {
+class UnitPtr Locator {
     const void *unit;
 public:
     bool retval;
@@ -299,7 +299,7 @@ public:
         return false;
     }
 
-    UnitPtrLocator(const void *unit) {
+    UnitPtr Locator(const void *unit) {
         retval = false;
         this->unit = unit;
     }

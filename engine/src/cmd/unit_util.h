@@ -1,10 +1,8 @@
-/**
+/*
  * unit_util.h
  *
- * Copyright (c) 2001-2002 Daniel Horn
- * Copyright (c) 2002-2019 pyramid3d and other Vega Strike Contributors
- * Copyright (c) 2019-2021 Stephen G. Tuggy, and other Vega Strike Contributors
- * Copyright (C) 2022 Stephen G. Tuggy
+ * Copyright (C) 2001-2022 Daniel Horn, pyramid3d, Stephen G. Tuggy,
+ * and other Vega Strike Contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -34,63 +32,63 @@
 using std::string;
 
 namespace UnitUtil {
-void setMissionRelevant(Unit *my_unit);
-void unsetMissionRelevant(Unit *my_unit);
-string getFactionName(const Unit *my_unit);
-int getFactionIndex(const Unit *my_unit);
-void setFactionIndex(Unit *my_unit, int factionname);
-void RecomputeUnitUpgrades(Unit *my_unit);
-void setFactionName(Unit *my_unit, string factionname);
-float getFactionRelation(const Unit *my_unit, const Unit *their_unit);
-float getRelationToFaction(const Unit *my_unit, int other_faction);
-float getRelationFromFaction(const Unit *their_unit, int my_faction);
-string getName(const Unit *my_unit);
-void setName(Unit *my_unit, string name);
-void SetHull(Unit *my_unit, float hull);
+void setMissionRelevant(UnitPtr my_unit);
+void unsetMissionRelevant(UnitPtr my_unit);
+string getFactionName(const UnitPtr my_unit);
+int getFactionIndex(const UnitPtr my_unit);
+void setFactionIndex(UnitPtr my_unit, int factionname);
+void RecomputeUnitUpgrades(UnitPtr my_unit);
+void setFactionName(UnitPtr my_unit, string factionname);
+float getFactionRelation(const UnitPtr my_unit, const UnitPtr their_unit);
+float getRelationToFaction(const UnitPtr my_unit, int other_faction);
+float getRelationFromFaction(const UnitPtr their_unit, int my_faction);
+string getName(const UnitPtr my_unit);
+void setName(UnitPtr my_unit, string name);
+void SetHull(UnitPtr my_unit, float hull);
 string getFlightgroupName(boost::shared_ptr<Unit> my_unit);
 const string &getFlightgroupNameCR(const boost::shared_ptr<Unit> my_unit);
-Unit *getFlightgroupLeader(Unit *my_unit);
-void orbit(Unit *my_unit, Unit *orbitee, float speed, QVector R, QVector S, QVector center);
-bool setFlightgroupLeader(Unit *my_unit, Unit *un);
-string getFgDirective(const Unit *my_unit);
-bool setFgDirective(Unit *my_unit, string inp);
-int getPhysicsPriority(Unit *un);
-int getFgSubnumber(const Unit *my_unit);
-int removeCargo(Unit *my_unit, string s, int quantity, bool erasezero);
-bool repair(Unit *my_unit);
-int removeWeapon(Unit *my_unit, string weapon, int mountoffset, bool loop_through_mounts); // -1 tells no weapon removed
-float upgrade(Unit *my_unit, string file, int mountoffset, int subunitoffset, bool force, bool loop_through_mounts);
-int addCargo(Unit *my_unit, Cargo carg);
-int forceAddCargo(Unit *my_unit, Cargo carg);
-bool incrementCargo(Unit *my_unit, float percentagechange, int quantity);
-bool decrementCargo(Unit *my_unit, float percentagechange);
-float getDistance(const Unit *my_unit, const Unit *un);
-float getSignificantDistance(const Unit *un, const Unit *sig);
-int hasCargo(const Unit *my_unit, std::string mycarg);
-Cargo GetCargoIndex(const Unit *my_unit, int index);
-Cargo GetCargo(const Unit *my_unit, std::string cargname);
-string getUnitSystemFile(const Unit *my_unit);
-float getCredits(const Unit *my_unit);
-void addCredits(const Unit *my_unit, float credits);
-bool isSignificant(const Unit *my_unit);
-bool isCloseEnoughToDock(const Unit *my_unit, const Unit *un);
-bool isCapitalShip(const Unit *my_unit);
-bool isDockableUnit(boost::shared_ptr<Unit> my_unit);
-bool isAsteroid(const Unit *my_unit);
-bool isSun(const Unit *my_unit);
-void switchFg(Unit *my_unit, string arg);
-int communicateTo(Unit *my_unit, Unit *other_unit, float mood);
-bool commAnimation(Unit *my_unit, string anim);
-bool JumpTo(Unit *unit, string system);
-int isPlayerStarship(const Unit *un);
-void setECM(Unit *un, int NewECM);  //short fix
-int getECM(const Unit *un); //short fix
-void setSpeed(Unit *un, float speed);
-Unit *owner(const Unit *un);
-float maxSpeed(const Unit *un);
-float maxAfterburnerSpeed(const Unit *un);
-void performDockingOperations(Unit *un, Unit *unitToDockWith, int actuallyDockP);
-float PercentOperational(Unit *un, string, string category, bool countHullAndArmorAsFull);
+UnitPtr getFlightgroupLeader(UnitPtr my_unit);
+void orbit(UnitPtr my_unit, UnitPtr orbitee, float speed, QVector R, QVector S, QVector center);
+bool setFlightgroupLeader(UnitPtr my_unit, UnitPtr un);
+string getFgDirective(const UnitPtr my_unit);
+bool setFgDirective(UnitPtr my_unit, string inp);
+int getPhysicsPriority(UnitPtr un);
+int getFgSubnumber(const UnitPtr my_unit);
+int removeCargo(UnitPtr my_unit, string s, int quantity, bool erasezero);
+bool repair(UnitPtr my_unit);
+int removeWeapon(UnitPtr my_unit, string weapon, int mountoffset, bool loop_through_mounts); // -1 tells no weapon removed
+float upgrade(UnitPtr my_unit, string file, int mountoffset, int subunitoffset, bool force, bool loop_through_mounts);
+int addCargo(UnitPtr my_unit, Cargo carg);
+int forceAddCargo(UnitPtr my_unit, Cargo carg);
+bool incrementCargo(UnitPtr my_unit, float percentagechange, int quantity);
+bool decrementCargo(UnitPtr my_unit, float percentagechange);
+float getDistance(const UnitPtr my_unit, const UnitPtr un);
+float getSignificantDistance(const UnitPtr un, const UnitPtr sig);
+int hasCargo(const UnitPtr my_unit, std::string mycarg);
+Cargo GetCargoIndex(const UnitPtr my_unit, int index);
+Cargo GetCargo(const UnitPtr my_unit, std::string cargname);
+string getUnitSystemFile(const UnitPtr my_unit);
+float getCredits(const UnitPtr my_unit);
+void addCredits(const UnitPtr my_unit, float credits);
+bool isSignificant(const UnitPtr my_unit);
+bool isCloseEnoughToDock(const UnitPtr my_unit, const UnitPtr un);
+bool isCapitalShip(const UnitPtr my_unit);
+bool isDockableUnit(const UnitPtr my_unit);
+bool isAsteroid(const UnitPtr my_unit);
+bool isSun(UnitPtr my_unit);
+void switchFg(UnitPtr my_unit, string arg);
+int communicateTo(UnitPtr my_unit, UnitPtr other_unit, float mood);
+bool commAnimation(UnitPtr my_unit, string anim);
+bool JumpTo(UnitPtr unit, string system);
+int isPlayerStarship(const UnitPtr un);
+void setECM(UnitPtr un, int NewECM);  //short fix
+int getECM(const UnitPtr un); //short fix
+void setSpeed(UnitPtr un, float speed);
+UnitPtr owner(const UnitPtr un);
+float maxSpeed(const UnitPtr un);
+float maxAfterburnerSpeed(const UnitPtr un);
+void performDockingOperations(UnitPtr un, UnitPtr unitToDockWith, int actuallyDockP);
+float PercentOperational(UnitPtr un, string, string category, bool countHullAndArmorAsFull);
 }
 
 #endif

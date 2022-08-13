@@ -132,7 +132,7 @@ public:
     void ApplyDamage(const Vector &pnt,
             const Vector &normal,
             Damage damage,
-            Unit *affected_unit,
+            UnitPtr affected_unit,
             const GFXColor &color,
             void *ownerDoNotDereference);
     void DamageRandomSystem(InflictedDamage inflicted_damage, bool player, Vector attack_vector);

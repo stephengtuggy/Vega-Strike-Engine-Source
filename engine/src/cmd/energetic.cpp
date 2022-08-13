@@ -69,7 +69,7 @@ void Energetic::decreaseWarpEnergy(bool insys, float time) {
 }
 
 void Energetic::DecreaseWarpEnergyInWarp() {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     const bool in_warp = unit->graphicOptions.InWarp;
 
@@ -232,7 +232,7 @@ float Energetic::warpEnergyData() const {
 
 // Basically max or current shield x 0.2
 float Energetic::totalShieldEnergyCapacitance() {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
     DamageableLayer *shield = unit->shield;
 
     float total_max_shield_value = shield->TotalMaxLayerValue();
@@ -281,7 +281,7 @@ void Energetic::ExpendFuel() {
 }
 
 void Energetic::MaintainECM() {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     if (!unit->computer.ecmactive) {
         return;
@@ -292,7 +292,7 @@ void Energetic::MaintainECM() {
 }
 
 void Energetic::MaintainShields() {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     const bool in_warp = unit->graphicOptions.InWarp;
     const int shield_facets = unit->shield->number_of_facets;
@@ -318,7 +318,7 @@ void Energetic::MaintainShields() {
 }
 
 void Energetic::ExpendEnergyToRechargeShields() {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     const bool in_warp = unit->graphicOptions.InWarp;
 
@@ -366,7 +366,7 @@ void Energetic::RechargeWarpCapacitors(const bool player_ship) {
 }
 
 float Energetic::WarpEnergyMultiplier(const bool player_ship) {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
     bool player = player_ship;
 
     // We also apply player multiplier to wing members

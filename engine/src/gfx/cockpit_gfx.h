@@ -46,7 +46,7 @@ class VDU;
 
 
 // TODO: remove
-inline void DrawDockingBoxes( Unit *un, const Unit *target, const Vector &CamP, const Vector &CamQ, const Vector &CamR );
+inline void DrawDockingBoxes( UnitPtr un, const UnitPtr target, const Vector &CamP, const Vector &CamQ, const Vector &CamR );
 inline void DrawOneTargetBox( const QVector &Loc,
                               float rSize,
                               const Vector &CamP,
@@ -57,7 +57,7 @@ inline void DrawOneTargetBox( const QVector &Loc,
                               bool Diamond = false);
 
 //Draw the arrow pointing to the target.
-void DrawArrowToTarget(const Radar::Sensor&, Unit*,
+void DrawArrowToTarget(const Radar::Sensor&, UnitPtr,
                        float  projection_limit_x, float projection_limit_y,
                        float inv_screen_aspect_ratio);
 void DrawArrowToTarget(const Radar::Sensor&, Vector LocalCoordinates,
@@ -67,7 +67,7 @@ void DrawArrowToTarget(const Radar::Sensor&, Vector LocalCoordinates,
 void DrawCommunicatingBoxes(std::vector< VDU* >vdu);
 
 ///Draws unit gauges
-void DrawGauges( GameCockpit *cockpit, Unit *un, Gauge *gauges[],
+void DrawGauges( GameCockpit *cockpit, UnitPtr un, Gauge *gauges[],
                  float gauge_time[], float cockpit_time, TextPlane *text,
                  GFXColor textcol);
 
@@ -94,9 +94,9 @@ void DrawTargetBox(const Radar::Sensor&, bool draw_line_to_target, bool draw_lin
 void DrawTurretTargetBoxes(const Radar::Sensor&);
 
 ///Draws target gauges
-void DrawTargetGauges( Unit *target, Gauge *gauges[] );
+void DrawTargetGauges( UnitPtr target, Gauge *gauges[] );
 
 
-float computeLockingSymbol( Unit *par );
+float computeLockingSymbol( UnitPtr par );
 
 #endif // COCKPITGFX_H

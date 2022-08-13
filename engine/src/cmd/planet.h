@@ -81,7 +81,7 @@ public:
             BLENDFUNC blenddst,
             const std::vector<std::string> &dest,
             const QVector &orbitcent,
-            Unit *parent,
+            UnitPtr parent,
             const GFXMaterial &ourmat,
             const std::vector<GFXLightLocal> &,
             int faction,
@@ -100,7 +100,7 @@ public:
             const string &unitname,
             const vector<string> &dest,
             const QVector &orbitcent,
-            Unit *parent,
+            UnitPtr parent,
             int faction,
             string fullname,
             bool inside_out,
@@ -139,11 +139,11 @@ public:
             int numwrapy,
             BLENDFUNC blendSrc,
             BLENDFUNC blendDst);
-    void AddSatellite(Unit *orbiter);
+    void AddSatellite(UnitPtr orbiter);
 
     Vector AddSpaceElevator(const std::string &name, const std::string &faction, char direction);
 
-    Unit *beginElement(QVector x,
+    UnitPtr beginElement(QVector x,
             QVector y,
             float vely,
             const Vector &rotvel,
@@ -208,11 +208,11 @@ public:
         ~PlanetIterator() {
         }
 
-        void preinsert(Unit *unit) {
+        void preinsert(UnitPtr unit) {
             abort();
         }
 
-        void postinsert(Unit *unit) {
+        void postinsert(UnitPtr unit) {
             abort();
         }
 
@@ -220,7 +220,7 @@ public:
             abort();
         }
 
-        inline Unit *current() {
+        inline UnitPtr current() {
             if (!pos.isDone()) {
                 return *pos;
             }
@@ -229,7 +229,7 @@ public:
 
         void advance() {
             if (current() != NULL) {
-                Unit *cur = *pos;
+                UnitPtr cur = *pos;
                 if (cur->isUnit() == Vega_UnitType::planet) {
                     for (un_iter tmp(((Planet *) cur)->satellites.createIterator()); !tmp.isDone(); ++tmp) {
                         localCollection.append((*tmp));
@@ -244,7 +244,7 @@ public:
             return *this;
         }
 
-        inline Unit *operator*() {
+        inline UnitPtr operator*() {
             return current();
         }
 

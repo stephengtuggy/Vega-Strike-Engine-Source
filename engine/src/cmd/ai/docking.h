@@ -38,14 +38,14 @@ class DockingOps : public MoveTo {
     bool facedtarget;
     bool keeptrying;
 public:
-    QVector Movement(Unit *utdw);
-    DockingOps(Unit *unitToDockWith, Order *oldstate, bool physicallyDock, bool keeptrying);
-    virtual void SetParent(Unit *par);
+    QVector Movement(UnitPtr utdw);
+    DockingOps(UnitPtr unitToDockWith, Order *oldstate, bool physicallyDock, bool keeptrying);
+    virtual void SetParent(UnitPtr par);
     void Execute();
-    bool RequestClearence(Unit *);
-    bool DockToTarget(Unit *);
-    bool PerformDockingOperations(Unit *);
-    bool Undock(Unit *);
+    bool RequestClearence(UnitPtr);
+    bool DockToTarget(UnitPtr);
+    bool PerformDockingOperations(UnitPtr);
+    bool Undock(UnitPtr);
     virtual void Destroy();
     void RestoreOldAI();
 };

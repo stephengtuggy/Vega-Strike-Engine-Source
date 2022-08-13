@@ -37,7 +37,7 @@ class Bolt;
 struct LineCollide {
 private:
     union OBJECT {
-        Unit *u;
+        UnitPtr u;
         Beam *b;
         Bolt *blt;
         int i;
@@ -71,7 +71,7 @@ public:
 
     LineCollide(void *objec, collidables typ, const QVector &st, const QVector &en) :
             Mini(st), Maxi(en), lastchecked(NULL), type(typ), hhuge(false) {
-        this->object.u = (Unit *) objec;
+        this->object.u = (UnitPtr) objec;
     }
 
     LineCollide(const LineCollide &l) :

@@ -445,7 +445,7 @@ void WriteSaveGame(Cockpit *cp, bool auto_save) {
             player_num = kk;
         }
     }
-    Unit *un = cp->GetSaveParent();
+    UnitPtr un = cp->GetSaveParent();
     if (!un) {
         return;
     }

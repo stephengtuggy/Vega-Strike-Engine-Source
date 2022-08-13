@@ -33,8 +33,7 @@
 #include "configxml.h"
 
 /**
- * The computer holds all data in the navigation computer of the current unit
- * It is outside modifyable with GetComputerData() and holds only volatile
+ * The computer holds all data in the navigation computer of the current UnitPtr It is outside modifyable with GetComputerData() and holds only volatile
  * Information inside containers so that destruction of containers will not
  * result in segfaults.
  * Maximum speeds and turning restrictions are merely facts of the computer

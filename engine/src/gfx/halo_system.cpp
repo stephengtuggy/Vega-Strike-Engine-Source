@@ -78,7 +78,7 @@ void DoParticles(QVector pos,
     );
 }
 
-void LaunchOneParticle(const Matrix &mat, const Vector &vel, unsigned int seed, Unit *mush, float hull, int faction) {
+void LaunchOneParticle(const Matrix &mat, const Vector &vel, unsigned int seed, UnitPtr mush, float hull, int faction) {
     if (mush) {
         bool done = false;
         Vector back = vel;

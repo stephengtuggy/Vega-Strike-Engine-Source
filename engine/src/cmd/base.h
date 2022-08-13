@@ -409,7 +409,7 @@ public:
     static void ActiveMouseOverWin(int x, int y);
     static void ProcessKeyboardBuffer();
     void MouseOver(int x, int y);
-    BaseInterface(const char *basefile, Unit *base, Unit *un);
+    BaseInterface(const char *basefile, UnitPtr base, UnitPtr un);
     ~BaseInterface();
     void Draw();
 

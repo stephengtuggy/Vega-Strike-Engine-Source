@@ -40,6 +40,6 @@ public:
 
 std::map<std::string, std::string> parseTurretSizes();
 std::string getTurretSize(const std::string &size);
-Unit *CreateGenericTurret(std::string tur, int faction);
+UnitPtr CreateGenericTurret(std::string tur, int faction);
 
 #endif // TURRET_H

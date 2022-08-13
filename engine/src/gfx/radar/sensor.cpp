@@ -34,17 +34,17 @@
 #include "sensor.h"
 #include "universe.h"
 
-extern Unit *getTopLevelOwner(); // WTF... located in star_system_generic.cpp
+extern UnitPtr getTopLevelOwner(); // WTF... located in star_system_generic.cpp
 
 namespace Radar {
 
-Sensor::Sensor(Unit *player)
+Sensor::Sensor(UnitPtr player)
         : player(player),
         closeRange(30000.0),
         useThreatAssessment(false) {
 }
 
-Unit *Sensor::GetPlayer() const {
+UnitPtr Sensor::GetPlayer() const {
     return player;
 }
 
@@ -88,13 +88,13 @@ float Sensor::GetLockCone() const {
     return player->GetComputerData().radar.lockcone;
 }
 
-Track Sensor::CreateTrack(const Unit *target) const {
+Track Sensor::CreateTrack(const UnitPtr target) const {
     assert(player);
 
     return Track(player, target);
 }
 
-Track Sensor::CreateTrack(const Unit *target, const Vector &position) const {
+Track Sensor::CreateTrack(const UnitPtr target, const Vector &position) const {
     assert(player);
 
     return Track(player, target, position);
@@ -126,13 +126,13 @@ public:
             collection(NULL) {
     }
 
-    void init(const Sensor *sensor, Sensor::TrackCollection *collection, Unit *player) {
+    void init(const Sensor *sensor, Sensor::TrackCollection *collection, UnitPtr player) {
         this->sensor = sensor;
         this->collection = collection;
         this->player = player;
     }
 
-    bool acquire(const Unit *target, float distance) {
+    bool acquire(const UnitPtr target, float distance) {
         assert(sensor);
         assert(collection);
         assert(player);
@@ -163,7 +163,7 @@ public:
                 collection->push_back(sensor->CreateTrack(target));
             }
             if (target->isPlanet() == Vega_UnitType::planet && target->radial_size > 0) {
-                const Unit *sub = NULL;
+                const UnitPtr sub = NULL;
                 for (un_kiter i = target->viewSubUnits(); (sub = *i) != NULL; ++i) {
                     if (target->rSize() > min_radar_blip_size) {
                         collection->push_back(sensor->CreateTrack(sub));
@@ -176,7 +176,7 @@ public:
 
 private:
     const Sensor *sensor;
-    Unit *player;
+    UnitPtr player;
     Sensor::TrackCollection *collection;
 };
 
@@ -198,8 +198,8 @@ const Sensor::TrackCollection &Sensor::FindTracksInRange() const {
                 &unitLocator);
     }
     if (kDrawGravitationalObjects) {
-        Unit *target = player->Target();
-        const Unit *gravUnit;
+        UnitPtr target = player->Target();
+        const UnitPtr gravUnit;
         bool foundtarget = false;
         for (un_kiter i = _Universe->activeStarSystem()->gravitationalUnits().constIterator();
                 (gravUnit = *i) != NULL;

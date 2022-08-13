@@ -49,7 +49,7 @@ class NavigationSystem;
 using namespace XMLSupport;   // DONT PUT THIS ABOVE HEADERS
 #define NUM_CAM CP_NUMVIEWS
 /**
- * The Cockpit Contains all displayable information about a particular Unit *
+ * The Cockpit Contains all displayable information about a particular UnitPtr
  * Gauges are used to indicate analog controls, and some diagital ones
  * The ones starting from KPS are digital with text readout
  */
@@ -162,7 +162,7 @@ class GameCockpit : public Cockpit {
     /// Used to display the arrow pointing to the currently selected target.
     float projection_limit_x, projection_limit_y;
     float inv_screen_aspect_ratio; //Precomputed division 1 / g_game.aspect.
-    virtual void SetParent(Unit *unit, const char *filename, const char *unitmodname, const QVector &startloc);
+    virtual void SetParent(UnitPtr unit, const char *filename, const char *unitmodname, const QVector &startloc);
     void LoadXML(const char *file);
     void LoadXML(VSFileSystem::VSFile &f);
     void beginElement(const string &name, const AttributeList &attributes);
@@ -170,9 +170,9 @@ class GameCockpit : public Cockpit {
     ///Destructs cockpit info for new loading
     void Delete();
     ///Trigger scripted events
-    void TriggerEvents(Unit *un);
+    void TriggerEvents(UnitPtr un);
     NavigationSystem ThisNav;
-    void updateRadar(Unit *un);
+    void updateRadar(UnitPtr un);
 public:
     std::string textMessage;
     bool editingTextMessage;
@@ -186,15 +186,15 @@ public:
     static string getsoundfile(string filename);
     void InitStatic();
     void Shake(float amt, int level /*0= shield 1=armor 2=hull*/ );
-    int Autopilot(Unit *target);
+    int Autopilot(UnitPtr target);
     ///Restores the view from the IDentity Matrix needed to draw sprites
     void RestoreViewPort();
-    GameCockpit(const char *file, Unit *parent, const std::string &pilotname);
+    GameCockpit(const char *file, UnitPtr parent, const std::string &pilotname);
     ~GameCockpit();
     ///Looks up a particular Gauge stat on target unit
-    float LookupTargetStat(int stat, Unit *target);
+    float LookupTargetStat(int stat, UnitPtr target);
     ///Looks up a particular Gauge stat on unit
-    float LookupUnitStat(int stat, Unit *target);
+    float LookupUnitStat(int stat, UnitPtr target);
     ///Loads cockpit info...just as constructor
     void Init(const char *file);
     ///Draws Cockpit then restores viewport
@@ -221,7 +221,7 @@ public:
         return soundfile;
     }
 
-    void SetCommAnimation(Animation *ani, Unit *un);
+    void SetCommAnimation(Animation *ani, UnitPtr un);
     void SetStaticAnimation();
 
     ///Accesses the current navigationsystem
@@ -248,10 +248,10 @@ public:
 
     virtual bool SetDrawNavSystem(bool);
     virtual bool CanDrawNavSystem();
-    virtual bool CheckCommAnimation(Unit *un);
+    virtual bool CheckCommAnimation(UnitPtr un);
     virtual void visitSystem(std::string systemName);
     void AutoLanding();
-    void DoAutoLanding(Unit *, Unit *);
+    void DoAutoLanding(UnitPtr, UnitPtr);
 
     virtual void SetInsidePanYawSpeed(float speed);
     virtual void SetInsidePanPitchSpeed(float speed);
@@ -261,10 +261,10 @@ public:
     void OnPauseBegin();
     void OnPauseEnd();
     // Ship has undocked from station
-    void OnDockEnd(Unit *station, Unit *unit);
+    void OnDockEnd(UnitPtr station, UnitPtr unit);
     // Ship is jumping
-    void OnJumpBegin(Unit *unit);
-    void OnJumpEnd(Unit *unit);
+    void OnJumpBegin(UnitPtr unit);
+    void OnJumpEnd(UnitPtr unit);
 
 protected:
     /// Override to use a specific kind of sound implementation

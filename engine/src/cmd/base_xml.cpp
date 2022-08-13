@@ -62,7 +62,7 @@ void BaseInterface::Load(const char *filename, const char *time_of_day_hint, con
     FILE *inFile = getFullFile(string("bases/") + filename, time_of_day_hint, faction);
     if (!inFile) {
         bool planet = false;
-        Unit *baseun = this->baseun.GetUnit();
+        UnitPtr baseun = this->baseun.GetUnit();
         if (baseun) {
             planet = (baseun->isUnit() == Vega_UnitType::planet);
         }

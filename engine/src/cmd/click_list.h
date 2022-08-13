@@ -39,10 +39,10 @@ private:
     UnitCollection *parentIter;
     StarSystem *parentSystem;
     UnitCollection *lastCollection;
-    Unit *lastSelected;
+    UnitPtr lastSelected;
 public:
 //gets passed in unnormalized mouse values btw 0 and g_game.x_resolution&& g_game.y_resolution
-    bool queryShip(int mouseX, int mouseY, Unit *); //returns if the ship's in iterator utilizes
+    bool queryShip(int mouseX, int mouseY, UnitPtr); //returns if the ship's in iterator utilizes
     ClickList(StarSystem *parSystem, UnitCollection *parentIter);
 
     ~ClickList() {
@@ -50,7 +50,7 @@ public:
 
     UnitCollection *requestIterator(int mouseX, int mouseY);
     UnitCollection *requestIterator(int minX, int minY, int maxX, int maxY);
-    Unit *requestShip(int mouseX, int mouseY);
+    UnitPtr requestShip(int mouseX, int mouseY);
 };
 #endif
 

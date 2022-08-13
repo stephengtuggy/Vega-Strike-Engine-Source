@@ -135,7 +135,7 @@ void MoveTo::SetDest(const QVector &target) {
     done = false;
 }
 
-bool MoveToParent::OptimizeSpeed(Unit *parent, float v, float &a, float max_speed) {
+bool MoveToParent::OptimizeSpeed(UnitPtr parent, float v, float &a, float max_speed) {
     v += (a / parent->getMass()) * simulation_atom_var;
     if ((!max_speed) || fabs(v) <= max_speed) {
         return true;
@@ -161,7 +161,7 @@ void MoveTo::Execute() {
     done = done || m.Execute(parent, targetlocation);
 }
 
-bool MoveToParent::Execute(Unit *parent, const QVector &targetlocation) {
+bool MoveToParent::Execute(UnitPtr parent, const QVector &targetlocation) {
     bool done = false;
     Vector local_vel(parent->UpCoordinateLevel(parent->GetVelocity()));
     //local location is ued for storing the last velocity;
@@ -447,7 +447,7 @@ FaceTargetITTS::~FaceTargetITTS() {
 }
 
 void FaceTargetITTS::Execute() {
-    Unit *target = parent->Target();
+    UnitPtr target = parent->Target();
     if (target == NULL) {
         done = finish;
         return;
@@ -474,7 +474,7 @@ FaceTarget::FaceTarget(bool fini, int accuracy) : ChangeHeading(QVector(0, 0, 1)
 }
 
 void FaceTarget::Execute() {
-    Unit *target = parent->Target();
+    UnitPtr target = parent->Target();
     if (target == NULL) {
         done = finish;
         return;
@@ -517,14 +517,14 @@ void AutoLongHaul::MakeLinearVelocityOrder() {
     Order::EnqueueOrder(temp);
 }
 
-void AutoLongHaul::SetParent(Unit *parent1) {
+void AutoLongHaul::SetParent(UnitPtr parent1) {
     ChangeHeading::SetParent(parent1);
     group.SetUnit(parent1->Target());
     inside_landing_zone = false;
     MakeLinearVelocityOrder();
 }
 
-extern bool DistanceWarrantsWarpTo(Unit *parent, float dist, bool following);
+extern bool DistanceWarrantsWarpTo(UnitPtr parent, float dist, bool following);
 
 QVector AutoLongHaul::NewDestination(const QVector &curnewdestination, double magnitude) {
     return curnewdestination;
@@ -538,7 +538,7 @@ static float mymin(float a, float b) {
     return a < b ? a : b;
 }
 
-inline void WarpRampOff(Unit *un, bool rampdown) {
+inline void WarpRampOff(UnitPtr un, bool rampdown) {
     if (un->graphicOptions.InWarp == 1) {
         un->graphicOptions.InWarp = 0;
         if (rampdown) {
@@ -547,7 +547,7 @@ inline void WarpRampOff(Unit *un, bool rampdown) {
     }
 }
 
-inline void CautiousWarpRampOn(Unit *un) {
+inline void CautiousWarpRampOn(UnitPtr un) {
     if ((un->graphicOptions.InWarp == 0)
             && (un->graphicOptions.RampCounter == 0)) { // don't restart warp during ramp-down - avoid shaking
         un->graphicOptions.InWarp = 1;
@@ -555,7 +555,7 @@ inline void CautiousWarpRampOn(Unit *un) {
     }
 }
 
-bool useJitteryAutopilot(Unit *parent, Unit *target, float minaccel) {
+bool useJitteryAutopilot(UnitPtr parent, UnitPtr target, float minaccel) {
     static float specInterdictionLimit =
             XMLSupport::parse_float(vs_config->getVariable("physics",
                     "min_spec_interdiction_for_jittery_autopilot",
@@ -582,7 +582,7 @@ bool useJitteryAutopilot(Unit *parent, Unit *target, float minaccel) {
     return false;
 }
 
-bool AutoLongHaul::InsideLandingPort(const Unit *obstacle) const {
+bool AutoLongHaul::InsideLandingPort(const UnitPtr obstacle) const {
     static float landing_port_limit =
             XMLSupport::parse_float(vs_config->getVariable("physics", "auto_landing_port_unclamped_seconds", "120"));
     return UnitUtil::getSignificantDistance(parent,
@@ -591,7 +591,7 @@ bool AutoLongHaul::InsideLandingPort(const Unit *obstacle) const {
 }
 
 void AutoLongHaul::Execute() {
-    Unit *target = group.GetUnit();
+    UnitPtr target = group.GetUnit();
     if (target == NULL) {
         group.SetUnit(parent->Target());
         done = finish;
@@ -623,7 +623,7 @@ void AutoLongHaul::Execute() {
     if ((parent->graphicOptions.WarpFieldStrength < enough_warp_for_cruise)
             && (parent->graphicOptions.RampCounter == 0)) {
         //face target unless warp ramping is done and warp is less than some intolerable ammt
-        Unit *obstacle = NULL;
+        UnitPtr obstacle = NULL;
         float maxmultiplier = parent->CalculateNearestWarpUnit(FLT_MAX,
                 &obstacle,
                 compensate_for_interdiction);         //find the unit affecting our spec
@@ -771,7 +771,7 @@ AutoLongHaul::~AutoLongHaul() {
 #endif
 }
 
-void FaceDirection::SetParent(Unit *un) {
+void FaceDirection::SetParent(UnitPtr un) {
     if (un->getFlightgroup()) {
         AttachSelfOrder(un->getFlightgroup()->leader.GetUnit());
     }
@@ -786,7 +786,7 @@ FaceDirection::FaceDirection(float dist, bool fini, int accuracy) : ChangeHeadin
 }
 
 void FaceDirection::Execute() {
-    Unit *target = group.GetUnit();
+    UnitPtr target = group.GetUnit();
     if (target == NULL) {
         done = finish;
         return;
@@ -809,7 +809,7 @@ FaceDirection::~FaceDirection() {
 #endif
 }
 
-void FormUp::SetParent(Unit *un) {
+void FormUp::SetParent(UnitPtr un) {
     if (un->getFlightgroup()) {
         AttachSelfOrder(un->getFlightgroup()->leader.GetUnit());
     }
@@ -825,7 +825,7 @@ void FormUp::SetPos(const QVector &v) {
 }
 
 void FormUp::Execute() {
-    Unit *targ = group.GetUnit();
+    UnitPtr targ = group.GetUnit();
     if (targ) {
         MoveTo::SetDest(Transform(targ->GetTransformation(), Pos));
         static bool can_warp_to = XMLSupport::parse_bool(vs_config->getVariable("AI", "warp_to_wingmen", "true"));
@@ -839,9 +839,9 @@ void FormUp::Execute() {
 FormUp::~FormUp() {
 }
 
-void FormUpToOwner::SetParent(Unit *un) {
-    Unit *ownerDoNotDereference = NULL;
-    Unit *temp;
+void FormUpToOwner::SetParent(UnitPtr un) {
+    UnitPtr ownerDoNotDereference = NULL;
+    UnitPtr temp;
     for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator();
             (temp = *i) != NULL;
             ++i) {
@@ -865,7 +865,7 @@ void FormUpToOwner::SetPos(const QVector &v) {
 }
 
 void FormUpToOwner::Execute() {
-    Unit *targ = group.GetUnit();
+    UnitPtr targ = group.GetUnit();
     if (targ) {
         MoveTo::SetDest(Transform(targ->GetTransformation(), Pos));
         static bool can_warp_to = XMLSupport::parse_bool(vs_config->getVariable("AI", "warp_to_wingmen", "true"));

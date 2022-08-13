@@ -35,7 +35,7 @@
 
 Briefing::Ship::Ship(const char *filename, int faction, const Vector &position) {
     VSCONSTRUCT2('s')
-    Unit *tmp = new Unit(filename, true, faction);
+    UnitPtr tmp = new Unit(filename, true, faction);
     meshdata = tmp->StealMeshes();
     tmp->Kill();
     cloak = 1;

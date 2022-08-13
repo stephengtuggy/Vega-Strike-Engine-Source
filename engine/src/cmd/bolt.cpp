@@ -376,10 +376,10 @@ void Bolt::UpdatePhysics(StarSystem *ss) {
     vsalg::for_each(cm->toflattenhints.begin(), cm->toflattenhints.end(), UpdateBolts(ss, cm));
 }
 
-bool Bolt::Collide(Unit *target) {
+bool Bolt::Collide(UnitPtr target) {
     Vector normal;
     float distance;
-    Unit *affectedSubUnit;
+    UnitPtr affectedSubUnit;
     if ((affectedSubUnit = target->rayCollide(prev_position, cur_position, normal, distance))) {
         //ignore return
         if (target == owner) {
@@ -426,7 +426,7 @@ Bolt *Bolt::BoltFromIndex(Collidable::CollideRef b) {
     }
 }
 
-bool Bolt::CollideAnon(Collidable::CollideRef b, Unit *un) {
+bool Bolt::CollideAnon(Collidable::CollideRef b, UnitPtr un) {
     Bolt *tmp = BoltFromIndex(b);
     if (tmp->Collide(un)) {
         tmp->Destroy(nondecal_index(b));

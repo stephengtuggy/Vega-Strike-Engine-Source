@@ -32,7 +32,7 @@
 void AddAnimation(Cockpit *cp, std::string anim) {
 }
 
-bool PlanetHasLights(Unit *un) {
+bool PlanetHasLights(UnitPtr un) {
     return ((Planet *) un)->hasLights();
 }
 

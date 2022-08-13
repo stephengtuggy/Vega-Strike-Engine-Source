@@ -42,8 +42,8 @@ public:
     virtual ~Pilot() {
     }
 
-    void SetComm(Unit *comm_unit); //so we can specialize base sort of people
-    Animation *getCommFace(Unit *parent, float moon, unsigned char &gender);
+    void SetComm(UnitPtr comm_unit); //so we can specialize base sort of people
+    Animation *getCommFace(UnitPtr parent, float moon, unsigned char &gender);
 
     float getReactionTime() {
         return reaction_time;
@@ -59,18 +59,18 @@ public:
     typedef vsUMap<const void *, float> relationmap; //non dereferencable Unit to float
     relationmap effective_relationship;
     std::vector<Animation *> *comm_face;
-    float getAnger(const Unit *parent, const Unit *un) const;
+    float getAnger(const UnitPtr parent, const UnitPtr un) const;
 
     std::vector<Animation *> *getCommFaces(unsigned char &sex) {
         sex = gender;
         return comm_face;
     }
 
-    float GetEffectiveRelationship(const Unit *parent, const Unit *target) const;
-    float adjustSpecificRelationship(Unit *parent,
+    float GetEffectiveRelationship(const UnitPtr parent, const UnitPtr target) const;
+    float adjustSpecificRelationship(UnitPtr parent,
             void *aggressor,
             float value,
             int guessedFaction /*pass in neutral otherwise*/ );
-    void DoHit(Unit *parent, void *aggressor, int guessedFaction /*pass in neutral otherwise*/ );
+    void DoHit(UnitPtr parent, void *aggressor, int guessedFaction /*pass in neutral otherwise*/ );
 };
 

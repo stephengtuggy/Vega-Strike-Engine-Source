@@ -156,7 +156,7 @@ void FlyByKeyboard::Execute(bool resetangvelocity) {
 #define SSCK (starshipcontrolkeys[whichplayer])
     if (SSCK.setunvel) {
         SSCK.setunvel = false;
-        Unit *t = parent->Target();
+        UnitPtr t = parent->Target();
         int neu = FactionUtil::GetNeutralFaction();
         int upg = FactionUtil::GetUpgradeFaction();
         static bool allowanyreference =
@@ -194,7 +194,7 @@ void FlyByKeyboard::Execute(bool resetangvelocity) {
                     XMLSupport::parse_bool(vs_config->getVariable("test", "autodocker", "false"));
             Order *autoNavigator = NULL;
             if (autodock) {
-                Unit *station = parent->Target();
+                UnitPtr station = parent->Target();
                 if (Orders::AutoDocking::CanDock(parent, station)) {
                     autoNavigator = new Orders::AutoDocking(station);
                 }
@@ -440,7 +440,7 @@ void FlyByKeyboard::Execute(bool resetangvelocity) {
     }
     if (SSCK.matchspeed) {
         SSCK.matchspeed = false;
-        Unit *targ = parent->Target();
+        UnitPtr targ = parent->Target();
         if (targ) {
             MatchSpeed(targ->GetVelocity());
         }

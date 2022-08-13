@@ -87,7 +87,7 @@ public:
 };
 
 class CommunicationMessage {
-    void Init(Unit *send, Unit *recv);
+    void Init(UnitPtr send, UnitPtr recv);
     void SetAnimation(std::vector<class Animation *> *ani, unsigned char sex);
 public:
     FSM *fsm; //the finite state that this communcation stage is in
@@ -97,15 +97,15 @@ public:
     int curstate;
     int edgenum; //useful for server validation, -1 = did not move via an edge.
     UnitContainer sender;
-    CommunicationMessage(Unit *send, Unit *recv, std::vector<class Animation *> *ani, unsigned char sex);
-    CommunicationMessage(Unit *send, Unit *recv, int curstate, std::vector<class Animation *> *ani, unsigned char sex);
-    CommunicationMessage(Unit *send,
-            Unit *recv,
+    CommunicationMessage(UnitPtr send, UnitPtr recv, std::vector<class Animation *> *ani, unsigned char sex);
+    CommunicationMessage(UnitPtr send, UnitPtr recv, int curstate, std::vector<class Animation *> *ani, unsigned char sex);
+    CommunicationMessage(UnitPtr send,
+            UnitPtr recv,
             int prevvstate,
             int curstate,
             std::vector<class Animation *> *ani,
             unsigned char sex);
-    CommunicationMessage(Unit *send, Unit *recv, const CommunicationMessage &prevsvtate, int curstate,
+    CommunicationMessage(UnitPtr send, UnitPtr recv, const CommunicationMessage &prevsvtate, int curstate,
             std::vector<class Animation *> *ani, unsigned char sex);
     void SetCurrentState(int message, std::vector<class Animation *> *ani, unsigned char sex);
 
@@ -140,7 +140,7 @@ inline std::string GetRelationshipColorString(float rel) {
     return GetRelationshipRGBstring(rel).str;
 }
 
-unsigned int DoSpeech(Unit *un, Unit *player_un, const FSM::Node &node);
+unsigned int DoSpeech(UnitPtr un, UnitPtr player_un, const FSM::Node &node);
 
 #endif
 

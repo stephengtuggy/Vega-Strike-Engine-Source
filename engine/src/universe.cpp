@@ -172,9 +172,9 @@ static void UpdateTimeCompressionSounds() {
     }
 }
 
-Unit *DockToSavedBases(int playernum, QVector &safevec) {
+UnitPtr DockToSavedBases(int playernum, QVector &safevec) {
     string str = game_options()->startDockedTo;
-    Unit *plr = _Universe->AccessCockpit(playernum)->GetParent();
+    UnitPtr plr = _Universe->AccessCockpit(playernum)->GetParent();
     if (!plr || !plr->getStarSystem()) {
         safevec = QVector(0, 0, 0);
         return NULL;
@@ -183,10 +183,10 @@ Unit *DockToSavedBases(int playernum, QVector &safevec) {
     if (strs.size()) {
         str = strs[0];
     }
-    Unit *closestUnit = NULL;
+    UnitPtr closestUnit = NULL;
     float lastdist = 0;
     float dist = 0;
-    Unit *un;
+    UnitPtr un;
     QVector dock_position(plr->curr_physical_state.position);
     for (un_iter iter = plr->getStarSystem()->getUnitList().createIterator(); (un = *iter); ++iter) {
         if (un->name == str || un->getFullname() == str) {
@@ -544,7 +544,7 @@ Texture *Universe::getLightMap() {
 }
 
 // Player Ship
-Cockpit *Universe::isPlayerStarship(const Unit *doNotDereference) {
+Cockpit *Universe::isPlayerStarship(const UnitPtr doNotDereference) {
     using std::vector;
     if (!doNotDereference) {
         return NULL;
@@ -557,7 +557,7 @@ Cockpit *Universe::isPlayerStarship(const Unit *doNotDereference) {
     return NULL;
 }
 
-int Universe::whichPlayerStarship(const Unit *doNotDereference) {
+int Universe::whichPlayerStarship(const UnitPtr doNotDereference) {
     if (!doNotDereference) {
         return -1;
     }

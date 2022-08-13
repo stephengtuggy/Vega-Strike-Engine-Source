@@ -130,7 +130,7 @@ int numnums(const char *str);
 ///returns the index of the faction with that name
 //int GetFaction (const char *factionname);
 int GetNumAnimation(int faction);
-class Unit *GetContraband(int faction);
+UnitPtr GetContraband(int faction);
 
 const char *GetFaction(int faction);
 
@@ -177,7 +177,7 @@ Texture *createTexture(const char *tex, bool force = false);
 std::vector<class Animation *> *GetAnimation(int faction, int n, unsigned char &sex);
 Animation *GetRandExplosionAnimation(int whichfaction, std::string &which);
 void LoadFactionPlaylists();
-/** Still in faction_xml.cpp because createUnit **/
+/** Still in faction_xml.cpp because createUnitPtr*/
 void LoadContrabandLists();
 };
 

@@ -103,14 +103,14 @@ void UnitCollection::UnitIterator::moveBefore(UnitCollection &otherlist) {
     }
 }
 
-void UnitCollection::UnitIterator::preinsert(Unit *unit) {
+void UnitCollection::UnitIterator::preinsert(UnitPtr unit) {
     if (col && unit) {
         col->insert(it, unit);
     }
 }
 
-void UnitCollection::UnitIterator::postinsert(Unit *unit) {
-    list<Unit *>::iterator tmp = it;
+void UnitCollection::UnitIterator::postinsert(UnitPtr unit) {
+    list<UnitPtr>::iterator tmp = it;
     if (col && unit && it != col->u.end()) {
         ++tmp;
         col->insert(tmp, unit);
@@ -135,7 +135,7 @@ void UnitCollection::UnitIterator::advance() {
     }
 }
 
-Unit *UnitCollection::UnitIterator::next() {
+UnitPtr UnitCollection::UnitIterator::next() {
     advance();
     return *it;
 }
@@ -167,7 +167,7 @@ UnitCollection::ConstIterator::ConstIterator(const UnitCollection *orig) {
 UnitCollection::ConstIterator::~ConstIterator() {
 }
 
-Unit *UnitCollection::ConstIterator::next() {
+UnitPtr UnitCollection::ConstIterator::next() {
     advance();
     if (col && it != col->u.end()) {
         return *it;
@@ -213,14 +213,14 @@ UnitCollection::UnitCollection() {
 }
 
 UnitCollection::UnitCollection(const UnitCollection &uc) {
-    list<Unit *>::const_iterator in = uc.u.begin();
+    list<UnitPtr>::const_iterator in = uc.u.begin();
     while (in != uc.u.end()) {
         append(*in);
         ++in;
     }
 }
 
-void UnitCollection::prepend(Unit *unit) {
+void UnitCollection::prepend(UnitPtr unit) {
     if (unit) {
         unit->Ref();
         u.push_front(unit);
@@ -228,11 +228,11 @@ void UnitCollection::prepend(Unit *unit) {
 }
 
 void UnitCollection::prepend(UnitIterator *it) {
-    Unit *tmp = NULL;
+    UnitPtr tmp = NULL;
     if (!it) {
         return;
     }
-    list<Unit *>::iterator tmpI = u.begin();
+    list<UnitPtr>::iterator tmpI = u.begin();
     while ((tmp = **it)) {
         tmp->Ref();
         u.insert(tmpI, tmp);
@@ -241,7 +241,7 @@ void UnitCollection::prepend(UnitIterator *it) {
     }
 }
 
-void UnitCollection::append(Unit *un) {
+void UnitCollection::append(UnitPtr un) {
     if (un) {
         un->Ref();
         u.push_back(un);
@@ -252,7 +252,7 @@ void UnitCollection::append(UnitIterator *it) {
     if (!it) {
         return;
     }
-    Unit *tmp = NULL;
+    UnitPtr tmp = NULL;
     while ((tmp = **it)) {
         tmp->Ref();
         u.push_back(tmp);
@@ -260,7 +260,7 @@ void UnitCollection::append(UnitIterator *it) {
     }
 }
 
-void UnitCollection::insert(list<Unit *>::iterator &temp, Unit *unit) {
+void UnitCollection::insert(list<UnitPtr>::iterator &temp, UnitPtr unit) {
     if (unit) {
         unit->Ref();
         temp = u.insert(temp, unit);
@@ -274,7 +274,7 @@ void UnitCollection::clear() {
         return;
     }
 
-    for (list<Unit *>::iterator it = u.begin(); it != u.end(); ++it) {
+    for (list<UnitPtr>::iterator it = u.begin(); it != u.end(); ++it) {
         (*it)->UnRef();
         (*it) = NULL;
     }
@@ -282,7 +282,7 @@ void UnitCollection::clear() {
 }
 
 void UnitCollection::destr() {
-    for (list<Unit *>::iterator it = u.begin(); it != u.end(); ++it) {
+    for (list<UnitPtr>::iterator it = u.begin(); it != u.end(); ++it) {
         if (*it) {
             (*it)->UnRef();
             (*it) = NULL;
@@ -293,11 +293,11 @@ void UnitCollection::destr() {
     }
 }
 
-bool UnitCollection::contains(const Unit *unit) const {
+bool UnitCollection::contains(const UnitPtr unit) const {
     if (u.empty() || !unit) {
         return false;
     }
-    for (list<Unit *>::const_iterator it = u.begin(); it != u.end(); ++it) {
+    for (list<UnitPtr>::const_iterator it = u.begin(); it != u.end(); ++it) {
         if ((*it) == unit && !(*it)->Killed()) {
             return true;
         }
@@ -305,7 +305,7 @@ bool UnitCollection::contains(const Unit *unit) const {
     return false;
 }
 
-inline void UnitCollection::erase(list<Unit *>::iterator &it2) {
+inline void UnitCollection::erase(list<UnitPtr>::iterator &it2) {
     if (!(*it2)) {
         ++it2;
         return;
@@ -340,11 +340,11 @@ inline void UnitCollection::erase(list<Unit *>::iterator &it2) {
     it2 = u.erase(it2);
 }
 
-bool UnitCollection::remove(const Unit *unit) {
+bool UnitCollection::remove(const UnitPtr unit) {
     if (u.empty() || !unit) {
         return false;
     }
-    for (list<Unit *>::iterator it = u.begin(); it != u.end(); ++it) {
+    for (list<UnitPtr>::iterator it = u.begin(); it != u.end(); ++it) {
         if ((*it) == unit) {
             erase(it);
             return (true);
@@ -355,7 +355,7 @@ bool UnitCollection::remove(const Unit *unit) {
 
 const UnitCollection &UnitCollection::operator=(const UnitCollection &uc) {
     destr();
-    list<Unit *>::const_iterator in = uc.u.begin();
+    list<UnitPtr>::const_iterator in = uc.u.begin();
     while (in != uc.u.end()) {
         append(*in);
         ++in;

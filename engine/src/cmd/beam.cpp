@@ -42,9 +42,9 @@ using std::vector;
  * Externs
  */
 extern double interpolation_blend_factor;
-extern void AdjustMatrixToTrackTarget(Matrix &mat, const Vector &vel, Unit *target, float speed, bool lead, float cone);
+extern void AdjustMatrixToTrackTarget(Matrix &mat, const Vector &vel, UnitPtr target, float speed, bool lead, float cone);
 extern Cargo *GetMasterPartList(const char *);
-extern bool AdjustMatrix(Matrix &mat, const Vector &velocity, Unit *target, float speed, bool lead, float cone);
+extern bool AdjustMatrix(Matrix &mat, const Vector &velocity, UnitPtr target, float speed, bool lead, float cone);
 
 /*
  * Internal variables and structs
@@ -243,7 +243,7 @@ void Beam::RecalculateVertices(const Matrix &trans) {
 
 #undef V
 
-void Beam::CollideHuge(const LineCollide &lc, Unit *targetToCollideWith, Unit *firer, Unit *superunit) {
+void Beam::CollideHuge(const LineCollide &lc, UnitPtr targetToCollideWith, UnitPtr firer, UnitPtr superunit) {
     QVector x0 = center;
     QVector v = direction * curlength;
     if (is_null(superunit->location[Unit::UNIT_ONLY]) && curlength) {
@@ -289,7 +289,7 @@ void Beam::CollideHuge(const LineCollide &lc, Unit *targetToCollideWith, Unit *f
                 }
                 if ((*curcheck)->radius > 0) {
                     if (beamCheckCollision(center, curlength, (**curcheck))) {
-                        Unit *tmp = (**curcheck).ref.unit;
+                        UnitPtr tmp = (**curcheck).ref.unit;
                         this->Collide(tmp, firer, superunit);
                         targcheck = (targcheck || tmp == targetToCollideWith);
                     }
@@ -303,7 +303,7 @@ void Beam::CollideHuge(const LineCollide &lc, Unit *targetToCollideWith, Unit *f
             //greater traversal
             while (tmore != cm->end() && (*tmore)->getKey() <= maxlook) {
                 if ((*tmore)->radius > 0) {
-                    Unit *un = (*tmore)->ref.unit;
+                    UnitPtr un = (*tmore)->ref.unit;
                     if (beamCheckCollision(center, curlength, **tmore++)) {
                         this->Collide(un, firer, superunit);
                         targcheck = (targcheck || un == targetToCollideWith);
@@ -322,7 +322,7 @@ void Beam::CollideHuge(const LineCollide &lc, Unit *targetToCollideWith, Unit *f
 /*
  * Constructors
  */
-Beam::Beam(const Transformation &trans, const WeaponInfo &clne, void *own, Unit *firer, int sound)
+Beam::Beam(const Transformation &trans, const WeaponInfo &clne, void *own, UnitPtr firer, int sound)
         : vlist(NULL), Col(clne.r, clne.g, clne.b, clne.a) {
     listen_to_owner = false;
 #ifdef PERBOLTSOUND
@@ -438,7 +438,7 @@ void Beam::Reinitialize() {
  * Public Methods
  */
 
-bool Beam::Collide(Unit *target, Unit *firer, Unit *superunit) {
+bool Beam::Collide(UnitPtr target, UnitPtr firer, UnitPtr superunit) {
     if (target == NULL) {
         VS_LOG(error, "Recovering from nonfatal beam error when beam inactive\n");
         return false;
@@ -513,7 +513,7 @@ bool Beam::Collide(Unit *target, Unit *firer, Unit *superunit) {
             direction.Normalize();
         }
     }
-    Unit *colidee;
+    UnitPtr colidee;
     if ((colidee = target->rayCollide(center, end, normal, distance))) {
         if (!(scoop && (tractor || repulsor))) {
             this->curlength = distance;
@@ -568,7 +568,7 @@ bool Beam::Collide(Unit *target, Unit *firer, Unit *superunit) {
                     || target->isTractorable(Unit::tractorIn))
                     && ((center - target->Position()).Magnitude()
                             < (ors_m * owner_rsize + trs_m * target->rSize() + ofs))) {
-                Unit *un = superunit;
+                UnitPtr un = superunit;
                 if (target->faction == upgradesfaction || owner_rsize * nbig > target->rSize()) {
                     //we have our man!
                     //lets add our cargo to him
@@ -622,7 +622,7 @@ bool Beam::Collide(Unit *target, Unit *firer, Unit *superunit) {
                                                 "tractor_onboard.wav"));
                                 AUDPlay(tractor_onboard, QVector(0, 0, 0), Vector(0, 0, 0), 1);
                             } else {
-                                Unit *tmp = _Universe->AccessCockpit()->GetParent();
+                                UnitPtr tmp = _Universe->AccessCockpit()->GetParent();
                                 if (tmp && tmp->owner == un) {
                                     //Subunit of player (a turret)
                                     static int tractor_onboard_fromturret =
@@ -654,7 +654,7 @@ bool Beam::Dissolved() {
     return curthick == 0;
 }
 
-void Beam::Draw(const Transformation &trans, const Matrix &m, Unit *targ, float tracking_cone) {
+void Beam::Draw(const Transformation &trans, const Matrix &m, UnitPtr targ, float tracking_cone) {
     //hope that the correct transformation is on teh stack
     if (curthick == 0) {
         return;
@@ -740,12 +740,12 @@ void Beam::SetOrientation(const Vector &p, const Vector &q, const Vector &r) {
 
 void Beam::UpdatePhysics(const Transformation &trans,
         const Matrix &m,
-        Unit *targ,
+        UnitPtr targ,
         float tracking_cone,
-        Unit *targetToCollideWith,
+        UnitPtr targetToCollideWith,
         float HeatSink,
-        Unit *firer,
-        Unit *superunit) {
+        UnitPtr firer,
+        UnitPtr superunit) {
     curlength += simulation_atom_var * speed;
     if (curlength < 0) {
         curlength = 0;

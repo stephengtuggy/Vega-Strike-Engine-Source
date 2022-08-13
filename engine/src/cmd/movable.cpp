@@ -138,7 +138,7 @@ void Movable::UpdatePhysics(const Transformation &trans,
         const Vector &cum_vel,
         bool lastframe,
         UnitCollection *uc,
-        Unit *superunit) {
+        UnitPtr superunit) {
     //Save information about when this happened
     unsigned int cur_sim_frame = _Universe->activeStarSystem()->getCurrentSimFrame();
     //Well, wasn't skipped actually, but...
@@ -175,7 +175,7 @@ void Movable::UpdatePhysics(const Transformation &trans,
 }
 
 void Movable::AddVelocity(float difficulty) {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
     float lastWarpField = graphicOptions.WarpFieldStrength;
 
     bool playa = isPlayerShip();
@@ -434,13 +434,13 @@ Vector Movable::ToWorldCoordinates(const Vector &v) const {
 
 // TODO: move this to JumpCapable
 double Movable::GetMaxWarpFieldStrength(float rampmult) const {
-    const Unit *unit = vega_dynamic_const_cast_ptr<const Unit>(this);
+    const UnitPtr unit = vega_dynamic_const_cast_ptr<const Unit>(this);
     Vector v = unit->GetWarpRefVelocity();
 //    QVector qv = v.Cast();
 
     //inverse fractional effect of ship vs real big object
     float minimum_multiplier = configuration()->warp_config.warp_multiplier_max * graphicOptions.MaxWarpMultiplier;
-    Unit *nearest_unit = nullptr;
+    UnitPtr nearest_unit = nullptr;
     minimum_multiplier = unit->CalculateNearestWarpUnit(minimum_multiplier, &nearest_unit, true);
     float minWarp = configuration()->warp_config.warp_multiplier_min * graphicOptions.MinWarpMultiplier;
     float maxWarp = configuration()->warp_config.warp_multiplier_max * graphicOptions.MaxWarpMultiplier;

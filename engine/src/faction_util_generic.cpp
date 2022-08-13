@@ -61,7 +61,7 @@ static int GetFactionLookup(const char *factionname) {
     return 0;
 }
 
-Unit *FactionUtil::GetContraband(int faction) {
+UnitPtr FactionUtil::GetContraband(int faction) {
     return factions[faction]->contraband.get();
 }
 
@@ -103,7 +103,7 @@ string FactionUtil::GetFactionName(int index) {
 static bool isPlayerFaction(const int MyFaction) {
     unsigned int numplayers = _Universe->numPlayers();
     for (unsigned int i = 0; i < numplayers; ++i) {
-        Unit *un = _Universe->AccessCockpit(i)->GetParent();
+        UnitPtr un = _Universe->AccessCockpit(i)->GetParent();
         if (un) {
             if (un->faction == MyFaction) {
                 return true;

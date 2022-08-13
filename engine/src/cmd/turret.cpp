@@ -126,7 +126,7 @@ std::string getTurretSize(const std::string &size) {
     return "capital";
 }
 
-Unit *CreateGenericTurret(std::string tur, int faction) {
+UnitPtr CreateGenericTurret(std::string tur, int faction) {
     return new Unit(tur.c_str(), true, faction, "", 0, 0);
 }
 

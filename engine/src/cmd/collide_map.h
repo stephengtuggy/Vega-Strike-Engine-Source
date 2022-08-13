@@ -43,7 +43,7 @@ public:
     float radius; //radius == 0: to-be-deleted, radius <0 bolt (radius == speed in phys frame), radius >0 unit
 
     union CollideRef {
-        Unit *unit;
+        UnitPtr unit;
         unsigned int bolt_index;
     }
             ref;
@@ -95,7 +95,7 @@ public:
     ) {
     }
 
-    Collidable(Unit *un);
+    Collidable(UnitPtr un);
 
     Collidable(unsigned int bolt_index, float speed, const QVector &p) {
         ref.bolt_index = bolt_index;
@@ -127,7 +127,7 @@ public:
         CollidableBackref() : Collidable() {
         }
 
-        CollidableBackref(Unit *un) : Collidable(un) {
+        CollidableBackref(UnitPtr un) : Collidable(un) {
         }
 
         CollidableBackref(unsigned int bolt_index, float speed, const QVector &p) : Collidable(bolt_index, speed, p) {
@@ -193,8 +193,8 @@ public:
     bool CheckCollisions(Bolt *bol, const Collidable &updated);
     bool CheckUnitCollisions(Bolt *bol,
             const Collidable &updated); //DANGER must be used on lists that are only populated with Units, not bolts
-    bool CheckCollisions(Unit *un, const Collidable &updated); //will be handed off to a templated function
-    bool CheckUnitCollisions(Unit *un,
+    bool CheckCollisions(UnitPtr un, const Collidable &updated); //will be handed off to a templated function
+    bool CheckUnitCollisions(UnitPtr un,
             const Collidable &updated); //DANGER must be used on lists that are only populated with Units, not bolts
 };
 

@@ -46,7 +46,7 @@
 using std::string;
 
 // TODO: really. This should be properly defined
-extern bool CheckAccessory(Unit *tur);
+extern bool CheckAccessory(UnitPtr tur);
 
 // TODO: remove
 using namespace Orders;
@@ -107,7 +107,7 @@ bool Intelligent::EnqueueLastPythonAIScript() {
 }
 
 void Intelligent::PrimeOrders(Order *newAI) {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     if (newAI) {
         if (aistate) {
@@ -121,7 +121,7 @@ void Intelligent::PrimeOrders(Order *newAI) {
 }
 
 void Intelligent::PrimeOrders() {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     if (aistate) {
         aistate->Destroy();
@@ -132,7 +132,7 @@ void Intelligent::PrimeOrders() {
 }
 
 void Intelligent::PrimeOrdersLaunched() {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     if (aistate) {
         aistate->Destroy();
@@ -147,7 +147,7 @@ void Intelligent::PrimeOrdersLaunched() {
 }
 
 void Intelligent::SetAI(Order *newAI) {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     newAI->SetParent(unit);
     if (aistate) {
@@ -158,7 +158,7 @@ void Intelligent::SetAI(Order *newAI) {
 }
 
 void Intelligent::EnqueueAI(Order *newAI) {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     newAI->SetParent(unit);
     if (aistate) {
@@ -169,7 +169,7 @@ void Intelligent::EnqueueAI(Order *newAI) {
 }
 
 void Intelligent::EnqueueAIFirst(Order *newAI) {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     newAI->SetParent(unit);
     if (aistate) {
@@ -180,10 +180,10 @@ void Intelligent::EnqueueAIFirst(Order *newAI) {
 }
 
 void Intelligent::ExecuteAI() {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
     Flightgroup *flightgroup = unit->flightgroup;
     if (flightgroup) {
-        Unit *leader = flightgroup->leader.GetUnit();
+        UnitPtr leader = flightgroup->leader.GetUnit();
         //no heirarchy in flight group
         if (leader ? (flightgroup->leader_decision > -1) && (leader->getFgSubnumber() >= unit->getFgSubnumber())
                 : true) {
@@ -199,7 +199,7 @@ void Intelligent::ExecuteAI() {
     }
     if (!unit->SubUnits.empty()) {
         un_iter iter = unit->getSubUnits();
-        Unit *un;
+        UnitPtr un;
         while ((un = *iter)) {
             un->ExecuteAI();                     //like dubya
             ++iter;
@@ -208,7 +208,7 @@ void Intelligent::ExecuteAI() {
 }
 
 string Intelligent::getFullAIDescription() {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     if (getAIState()) {
         return unit->getFgID() + ":" + getAIState()->createFullOrderDescription(0).c_str();
@@ -217,14 +217,14 @@ string Intelligent::getFullAIDescription() {
     }
 }
 
-float Intelligent::getRelation(const Unit *targ) const {
-    const Unit *unit = static_cast<const Unit *>(this);
+float Intelligent::getRelation(const UnitPtr targ) const {
+    const UnitPtr unit = static_cast<const UnitPtr>(this);
 
     return unit->pilot->GetEffectiveRelationship(unit, targ);
 }
 
 double Intelligent::getMinDis(const QVector &pnt) const {
-    const Unit *unit = static_cast<const Unit *>(this);
+    const UnitPtr unit = static_cast<const UnitPtr>(this);
 
     float minsofar = 1e+10;
     float tmpvar;
@@ -257,12 +257,12 @@ double Intelligent::getMinDis(const QVector &pnt) const {
 }
 
 void Intelligent::SetTurretAI() {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     unit->turretstatus = 2;
     static bool talkinturrets = XMLSupport::parse_bool(vs_config->getVariable("AI", "independent_turrets", "false"));
     if (talkinturrets) {
-        Unit *un;
+        UnitPtr un;
         for (un_iter iter = unit->getSubUnits(); (un = *iter); ++iter) {
             if (!CheckAccessory(un)) {
                 un->EnqueueAIFirst(new Orders::FireAt(configuration()->ai.firing_config.aggressivity));
@@ -271,7 +271,7 @@ void Intelligent::SetTurretAI() {
             un->SetTurretAI();
         }
     } else {
-        Unit *un;
+        UnitPtr un;
         for (un_iter iter = unit->getSubUnits(); (un = *iter); ++iter) {
             if (!CheckAccessory(un)) {
                 if (un->aistate) {
@@ -286,10 +286,10 @@ void Intelligent::SetTurretAI() {
 }
 
 void Intelligent::DisableTurretAI() {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     unit->turretstatus = 1;
-    Unit *un;
+    UnitPtr un;
     for (un_iter iter = unit->getSubUnits(); (un = *iter); ++iter) {
         if (un->aistate) {
             un->aistate->Destroy();
@@ -302,7 +302,7 @@ void Intelligent::DisableTurretAI() {
 }
 
 csOPCODECollider *Intelligent::getCollideTree(const Vector &RESTRICT scale, std::vector<mesh_polygon> *RESTRICT pol) {
-    Unit *unit = static_cast<Unit *>(this);
+    UnitPtr unit = static_cast<UnitPtr>(this);
 
     if (!pol) {
         vector<mesh_polygon> polies;

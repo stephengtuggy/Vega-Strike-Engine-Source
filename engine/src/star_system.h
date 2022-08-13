@@ -76,8 +76,8 @@ struct Statistics {
     size_t checkIter;
     size_t navCheckIter;
     Statistics();
-    void AddUnit(Unit *un);
-    void RemoveUnit(Unit *un);
+    void AddUnit(UnitPtr un);
+    void RemoveUnit(UnitPtr un);
     void CheckVitals(StarSystem *ss);
 };
 
@@ -89,7 +89,7 @@ struct Statistics {
 class StarSystem {
 public:
     Statistics stats;
-    std::multimap<Unit *, Unit *> last_collisions;
+    std::multimap<UnitPtr, UnitPtr> last_collisions;
     CollideMap *collide_map[2]; // 0 Unit 1 Bolt
     class CollideTable *collide_table = nullptr;
 
@@ -159,10 +159,10 @@ public:
     virtual void AddMissileToQueue(class MissileEffect *);
     virtual void UpdateMissiles();
     void UpdateUnitsPhysics(bool firstframe);
-    void UpdateUnitPhysics(bool firstframe, Unit *unit);
+    void UpdateUnitPhysics(bool firstframe, UnitPtr unit);
 
     ///Requeues the unit so that it is simulated ASAP.
-    void RequestPhysics(Unit *un, unsigned int queue);
+    void RequestPhysics(UnitPtr un, unsigned int queue);
 
     /// update a simulation atom ExecuteDirector must be false if star system is just loaded before mission is loaded
     void Update(float priority, bool executeDirector);
@@ -190,14 +190,14 @@ public:
         return gravitational_units;
     }
 
-    Unit *nextSignificantUnit();
+    UnitPtr nextSignificantUnit();
     /// returns xy sorted bounding spheres of all units in current view
     ///Adds to draw list
-    void AddUnit(Unit *unit);
+    void AddUnit(UnitPtr unit);
     ///Removes from draw list
-    bool RemoveUnit(Unit *unit);
-    bool JumpTo(Unit *unit,
-            Unit *jumppoint,
+    bool RemoveUnit(UnitPtr unit);
+    bool JumpTo(UnitPtr unit,
+            UnitPtr jumppoint,
             const std::string &system,
             bool force = false,
             bool save_coordinates = false /*for intersystem transit the long way*/ );
@@ -230,8 +230,8 @@ public:
     void createBackground(Star_XML *xml);
 
     void VolitalizeJumpAnimation(const int ani);
-    void DoJumpingComeSightAndSound(Unit *un);
-    int DoJumpingLeaveSightAndSound(Unit *un);
+    void DoJumpingComeSightAndSound(UnitPtr un);
+    int DoJumpingLeaveSightAndSound(UnitPtr un);
 };
 
 #endif

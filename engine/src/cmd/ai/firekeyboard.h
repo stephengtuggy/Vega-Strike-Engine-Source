@@ -42,10 +42,10 @@ class FireKeyboard : public Order {
     float rxntime;
     float delay;
     float autotrackingtoggle;
-    bool ShouldFire(Unit *targ);
+    bool ShouldFire(UnitPtr targ);
     std::list<CommunicationMessage> resp;
 public:
-    virtual void SetParent(Unit *parent1);
+    virtual void SetParent(UnitPtr parent1);
     static void SetShieldsOff(const KBData &, KBSTATE);
     static void SetShieldsOneThird(const KBData &, KBSTATE);
     static void SetShieldsTwoThird(const KBData &, KBSTATE);
@@ -166,7 +166,7 @@ protected:
     unsigned int whichjoystick;
     struct FIREKEYBOARDTYPE &f();
     struct FIREKEYBOARDTYPE &j();
-    unsigned int DoSpeechAndAni(Unit *un, Unit *parent, class CommunicationMessage &c);
+    unsigned int DoSpeechAndAni(UnitPtr un, UnitPtr parent, class CommunicationMessage &c);
 public:
     virtual void ProcessCommMessage(class CommunicationMessage &c);
     FireKeyboard(unsigned int whichjoystick, unsigned int whichplayer); //weapon prefs?

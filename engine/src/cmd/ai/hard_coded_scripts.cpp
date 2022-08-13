@@ -61,12 +61,12 @@ bool useAfterburnerToFollow() {
     return useafterburner;
 }
 
-void AddOrd(Order *aisc, Unit *un, Order *ord) {
+void AddOrd(Order *aisc, UnitPtr un, Order *ord) {
     ord->SetParent(un);
     aisc->EnqueueOrder(ord);
 }
 
-void ReplaceOrd(Order *aisc, Unit *un, Order *ord) {
+void ReplaceOrd(Order *aisc, UnitPtr un, Order *ord) {
     ord->SetParent(un);
     aisc->ReplaceOrder(ord);
 }
@@ -174,7 +174,7 @@ public:
         parent->GetOrientation(P, Q, facing);
     }
 
-    virtual void SetParent(Unit *parent1) {
+    virtual void SetParent(UnitPtr parent1) {
         FlyByWire::SetParent(parent1);
         SetOppositeDir();
     }
@@ -195,7 +195,7 @@ public:
 
 //these can be used in the XML scripts if they are allowed to be called
 
-void AfterburnTurnTowards(Order *aisc, Unit *un) {
+void AfterburnTurnTowards(Order *aisc, UnitPtr un) {
     Vector vec(0, 0, 10000);
     bool afterburn = useAfterburnerToFollow();
     Order *ord = new Orders::MatchLinearVelocity(un->ClampVelocity(vec, afterburn), true, afterburn, false);
@@ -204,7 +204,7 @@ void AfterburnTurnTowards(Order *aisc, Unit *un) {
     AddOrd(aisc, un, ord);
 }
 
-void AfterburnTurnTowardsITTS(Order *aisc, Unit *un) {
+void AfterburnTurnTowardsITTS(Order *aisc, UnitPtr un) {
     Vector vec(0, 0, 10000);
 
     bool afterburn = useAfterburnerToFollow();
@@ -214,7 +214,7 @@ void AfterburnTurnTowardsITTS(Order *aisc, Unit *un) {
     AddOrd(aisc, un, ord);
 }
 
-void BarrelRoll(Order *aisc, Unit *un) {
+void BarrelRoll(Order *aisc, UnitPtr un) {
     FlyByWire *broll = new FlyByWire;
     AddOrd(aisc, un, broll);
     broll->RollRight(rand() > RAND_MAX / 2 ? 1 : -1);
@@ -239,7 +239,7 @@ void BarrelRoll(Order *aisc, Unit *un) {
     broll->Afterburn(afterburn);
 }
 
-static void EvadeWavy(Order *aisc, Unit *un, bool updown, bool ab) {
+static void EvadeWavy(Order *aisc, UnitPtr un, bool updown, bool ab) {
     EvadeLeftRightC *broll = NULL;
     broll = new EvadeLeftRightC(updown);
     AddOrd(aisc, un, broll);
@@ -250,19 +250,19 @@ static void EvadeWavy(Order *aisc, Unit *un, bool updown, bool ab) {
     broll->Afterburn(afterburn);
 }
 
-void AfterburnEvadeLeftRight(Order *aisc, Unit *un) {
+void AfterburnEvadeLeftRight(Order *aisc, UnitPtr un) {
     EvadeWavy(aisc, un, false, true);
 }
 
-void AfterburnEvadeUpDown(Order *aisc, Unit *un) {
+void AfterburnEvadeUpDown(Order *aisc, UnitPtr un) {
     EvadeWavy(aisc, un, true, true);
 }
 
-void EvadeLeftRight(Order *aisc, Unit *un) {
+void EvadeLeftRight(Order *aisc, UnitPtr un) {
     EvadeWavy(aisc, un, false, false);
 }
 
-void EvadeUpDown(Order *aisc, Unit *un) {
+void EvadeUpDown(Order *aisc, UnitPtr un) {
     EvadeWavy(aisc, un, true, false);
 }
 
@@ -276,7 +276,7 @@ class LoopAround : public Orders::FaceTargetITTS {
     bool aggressive;
     bool force_afterburn;
 public:
-    void SetParent(Unit *parent1) {
+    void SetParent(UnitPtr parent1) {
         FaceTargetITTS::SetParent(parent1);
         m.SetParent(parent1);
     }
@@ -324,7 +324,7 @@ public:
     }
 
     void Execute() {
-        Unit *targ = parent->Target();
+        UnitPtr targ = parent->Target();
         if (targ) {
             Vector relloc = parent->Position() - targ->Position();
             Vector r = targ->cumulative_transformation_matrix.getR();
@@ -423,7 +423,7 @@ public:
     }
 
     void Execute() {
-        Unit *targ = parent->Target();
+        UnitPtr targ = parent->Target();
         if (targ) {
             Vector relloc = parent->Position() - targ->Position();
             Vector r = targ->cumulative_transformation_matrix.getR();
@@ -474,7 +474,7 @@ class FacePerpendicular : public Orders::FaceTargetITTS {
     bool aggressive;
     bool force_afterburn;
 public:
-    void SetParent(Unit *parent1) {
+    void SetParent(UnitPtr parent1) {
         FaceTargetITTS::SetParent(parent1);
         m.SetParent(parent1);
     }
@@ -524,7 +524,7 @@ public:
     void Execute() {
         static float
                 gun_range_pct = XMLSupport::parse_float(vs_config->getVariable("AI", "gun_range_percent_ok", ".66"));
-        Unit *targ = parent->Target();
+        UnitPtr targ = parent->Target();
         if (targ) {
             Vector relloc = parent->Position() - targ->Position();
             Vector r = targ->cumulative_transformation_matrix.getR();
@@ -571,17 +571,17 @@ public:
 };
 }
 
-void LoopAround(Order *aisc, Unit *un) {
+void LoopAround(Order *aisc, UnitPtr un) {
     Order *broll = new Orders::LoopAround(false, true, false, (int) (size_t) un);
     AddOrd(aisc, un, broll);
 }
 
-void AggressiveLoopAround(Order *aisc, Unit *un) {
+void AggressiveLoopAround(Order *aisc, UnitPtr un) {
     Order *broll = new Orders::LoopAroundAgro(true, true, false, (int) (size_t) un);
     AddOrd(aisc, un, broll);
 }
 
-void RollLeft(Order *aisc, Unit *un) {
+void RollLeft(Order *aisc, UnitPtr un) {
     if (un->aistate) {
         AddOrd(un->aistate,
                 un,
@@ -589,7 +589,7 @@ void RollLeft(Order *aisc, Unit *un) {
     }
 }
 
-void RollRight(Order *aisc, Unit *un) {
+void RollRight(Order *aisc, UnitPtr un) {
     if (un->aistate) {
         AddOrd(un->aistate,
                 un,
@@ -597,7 +597,7 @@ void RollRight(Order *aisc, Unit *un) {
     }
 }
 
-void RollLeftHard(Order *aisc, Unit *un) {
+void RollLeftHard(Order *aisc, UnitPtr un) {
     static float durvar = XMLSupport::parse_float(vs_config->getVariable("AI", "roll_order_duration", "5.0"));
     if (un->aistate) {
         AddOrd(un->aistate,
@@ -606,7 +606,7 @@ void RollLeftHard(Order *aisc, Unit *un) {
     }
 }
 
-void RollRightHard(Order *aisc, Unit *un) {
+void RollRightHard(Order *aisc, UnitPtr un) {
     static float durvar = XMLSupport::parse_float(vs_config->getVariable("AI", "roll_order_duration", "5.0"));
     if (un->aistate) {
         AddOrd(un->aistate,
@@ -615,69 +615,69 @@ void RollRightHard(Order *aisc, Unit *un) {
     }
 }
 
-void LoopAroundFast(Order *aisc, Unit *un) {
+void LoopAroundFast(Order *aisc, UnitPtr un) {
     Order *broll = new Orders::LoopAround(false, true, true, (int) (size_t) un);
     AddOrd(aisc, un, broll);
 }
 
-void FacePerpendicularFast(Order *aisc, Unit *un) {
+void FacePerpendicularFast(Order *aisc, UnitPtr un) {
     Order *broll = new Orders::FacePerpendicular(false, true, true, (int) (size_t) un);
     AddOrd(aisc, un, broll);
 }
 
-void FacePerpendicular(Order *aisc, Unit *un) {
+void FacePerpendicular(Order *aisc, UnitPtr un) {
     Order *broll = new Orders::FacePerpendicular(false, true, false, (int) (size_t) un);
     AddOrd(aisc, un, broll);
 }
 
-void FacePerpendicularSlow(Order *aisc, Unit *un) {
+void FacePerpendicularSlow(Order *aisc, UnitPtr un) {
     Order *broll = new Orders::FacePerpendicular(false, false, false, (int) (size_t) un);
     AddOrd(aisc, un, broll);
 }
 
-void RollFacePerpendicularFast(Order *aisc, Unit *un) {
+void RollFacePerpendicularFast(Order *aisc, UnitPtr un) {
     Order *broll = new Orders::FacePerpendicular(true, true, true, (int) (size_t) un);
     AddOrd(aisc, un, broll);
 }
 
-void RollFacePerpendicular(Order *aisc, Unit *un) {
+void RollFacePerpendicular(Order *aisc, UnitPtr un) {
     Order *broll = new Orders::FacePerpendicular(true, true, false, (int) (size_t) un);
     AddOrd(aisc, un, broll);
 }
 
-void RollFacePerpendicularSlow(Order *aisc, Unit *un) {
+void RollFacePerpendicularSlow(Order *aisc, UnitPtr un) {
     Order *broll = new Orders::FacePerpendicular(true, false, false, (int) (size_t) un);
     AddOrd(aisc, un, broll);
 }
 
-void AggressiveLoopAroundFast(Order *aisc, Unit *un) {
+void AggressiveLoopAroundFast(Order *aisc, UnitPtr un) {
     Order *broll = new Orders::LoopAroundAgro(true, true, true, (int) (size_t) un);
     AddOrd(aisc, un, broll);
 }
 
-void LoopAroundSlow(Order *aisc, Unit *un) {
+void LoopAroundSlow(Order *aisc, UnitPtr un) {
     Order *broll = new Orders::LoopAround(false, false, false, (int) (size_t) un);
     AddOrd(aisc, un, broll);
 }
 
-void SelfDestruct(Order *aisc, Unit *un) {
+void SelfDestruct(Order *aisc, UnitPtr un) {
     un->Destroy();
     un->Split(rand() % 3 + 1);
     un->Explode(true, 0);     //displays explosion, unit continues
     un->RemoveFromSystem();      //has no effect
 }
 
-void AggressiveLoopAroundSlow(Order *aisc, Unit *un) {
+void AggressiveLoopAroundSlow(Order *aisc, UnitPtr un) {
     Order *broll = new Orders::LoopAroundAgro(true, false, false, (int) (size_t) un);
     AddOrd(aisc, un, broll);
 }
 
 #if 0
-void Evade( Order *aisc, Unit *un )
+void Evade( Order *aisc, UnitPtr un )
 {
     QVector v( un->Position() );
     QVector u( v );
-    Unit   *targ = un->Target();
+    UnitPtr targ = un->Target();
     if (targ)
         u = targ->Position();
     Order  *ord  = new Orders::ChangeHeading( ( 200*(v-u) )+v, 3 );
@@ -692,9 +692,9 @@ void Evade( Order *aisc, Unit *un )
 }
 #endif
 
-void MoveTo(Order *aisc, Unit *un) {
+void MoveTo(Order *aisc, UnitPtr un) {
     QVector Targ(un->Position());
-    Unit *untarg = un->Target();
+    UnitPtr untarg = un->Target();
     if (untarg) {
         Targ = untarg->Position();
     }
@@ -702,7 +702,7 @@ void MoveTo(Order *aisc, Unit *un) {
     AddOrd(aisc, un, ord);
 }
 
-void KickstopBase(Order *aisc, Unit *un, bool match) {
+void KickstopBase(Order *aisc, UnitPtr un, bool match) {
     Vector vec(0, 0, 0);
     if (match && un->Target()) {
         vec = un->Target()->GetVelocity();
@@ -713,11 +713,11 @@ void KickstopBase(Order *aisc, Unit *un, bool match) {
     AddOrd(aisc, un, ord);
 }
 
-void Kickstop(Order *aisc, Unit *un) {
+void Kickstop(Order *aisc, UnitPtr un) {
     KickstopBase(aisc, un, false);
 }
 
-void CoastToStop(Order *aisc, Unit *un) {
+void CoastToStop(Order *aisc, UnitPtr un) {
     Vector vec(0, 0, 0);
     vec = un->GetVelocity();
 
@@ -731,7 +731,7 @@ void CoastToStop(Order *aisc, Unit *un) {
     AddOrd(aisc, un, ord);
 }
 
-void DoNothing(Order *aisc, Unit *un) {
+void DoNothing(Order *aisc, UnitPtr un) {
     Vector vec(0, 0, 0);
     vec = un->GetVelocity();
 
@@ -739,11 +739,11 @@ void DoNothing(Order *aisc, Unit *un) {
     AddOrd(aisc, un, ord);
 }
 
-void MatchVelocity(Order *aisc, Unit *un) {
+void MatchVelocity(Order *aisc, UnitPtr un) {
     KickstopBase(aisc, un, true);
 }
 
-static Vector VectorThrustHelper(Order *aisc, Unit *un, bool ab = false) {
+static Vector VectorThrustHelper(Order *aisc, UnitPtr un, bool ab = false) {
     Vector vec(0, 0, 0);
     Vector retval(0, 0, 0);
     if (un->Target()) {
@@ -757,31 +757,31 @@ static Vector VectorThrustHelper(Order *aisc, Unit *un, bool ab = false) {
     return retval;
 }
 
-void VeerAway(Order *aisc, Unit *un) {
+void VeerAway(Order *aisc, UnitPtr un) {
     VectorThrustHelper(aisc, un);
     Order *ord = (new Orders::FaceTarget(false, 3));
     AddOrd(aisc, un, ord);
 }
 
-void VeerAwayITTS(Order *aisc, Unit *un) {
+void VeerAwayITTS(Order *aisc, UnitPtr un) {
     VectorThrustHelper(aisc, un);
     Order *ord = (new Orders::FaceTargetITTS(false, 3));
     AddOrd(aisc, un, ord);
 }
 
-void VeerAndVectorAway(Order *aisc, Unit *un) {
+void VeerAndVectorAway(Order *aisc, UnitPtr un) {
     Vector retval = VectorThrustHelper(aisc, un);
     Order *ord = new Orders::ChangeHeading(retval, 3, 1);
     AddOrd(aisc, un, ord);
 }
 
-void AfterburnVeerAndVectorAway(Order *aisc, Unit *un) {
+void AfterburnVeerAndVectorAway(Order *aisc, UnitPtr un) {
     Vector retval = VectorThrustHelper(aisc, un, true);
     Order *ord = new Orders::ChangeHeading(retval, 3, 1);
     AddOrd(aisc, un, ord);
 }
 
-void AfterburnVeerAndTurnAway(Order *aisc, Unit *un) {
+void AfterburnVeerAndTurnAway(Order *aisc, UnitPtr un) {
     Vector vec = Vector(0, 0, 1);
     bool ab = true;
     Vector tpos = un->Position().Cast();
@@ -799,15 +799,15 @@ void AfterburnVeerAndTurnAway(Order *aisc, Unit *un) {
     AddOrd(aisc, un, ord);
 }
 
-static void SetupVAndTargetV(QVector &targetv, QVector &targetpos, Unit *un) {
-    Unit *targ;
+static void SetupVAndTargetV(QVector &targetv, QVector &targetpos, UnitPtr un) {
+    UnitPtr targ;
     if ((targ = un->Target())) {
         targetv = targ->GetVelocity().Cast();
         targetpos = targ->Position();
     }
 }
 
-void SheltonSlide(Order *aisc, Unit *un) {
+void SheltonSlide(Order *aisc, UnitPtr un) {
     QVector def(un->Position() + QVector(1, 0, 0));
     QVector targetv(def);
     QVector targetpos(def);
@@ -825,7 +825,7 @@ void SheltonSlide(Order *aisc, Unit *un) {
     AddOrd(aisc, un, ord);
 }
 
-void AfterburnerSlide(Order *aisc, Unit *un) {
+void AfterburnerSlide(Order *aisc, UnitPtr un) {
     QVector def = un->Position() + QVector(1, 0, 0);
     QVector targetv(def);
     QVector targetpos(def);
@@ -845,7 +845,7 @@ void AfterburnerSlide(Order *aisc, Unit *un) {
     AddOrd(aisc, un, ord);
 }
 
-void SkilledABSlide(Order *aisc, Unit *un) {
+void SkilledABSlide(Order *aisc, UnitPtr un) {
     QVector def = un->Position() + QVector(1, 0, 0);
     QVector targetv(def);
     QVector targetpos(def);
@@ -869,16 +869,16 @@ void SkilledABSlide(Order *aisc, Unit *un) {
     AddOrd(aisc, un, ord);
 }
 
-void Stop(Order *aisc, Unit *un) {
+void Stop(Order *aisc, UnitPtr un) {
     Vector vec(0, 0, 0000);
     Order *ord = new Orders::MatchLinearVelocity(un->ClampVelocity(vec, false), true, false, false);
     AddOrd(aisc, un, ord);     //<!-- should we fini? -->
 }
 
-void AfterburnTurnAway(Order *aisc, Unit *un) {
+void AfterburnTurnAway(Order *aisc, UnitPtr un) {
     QVector v(un->Position());
     QVector u(v);
-    Unit *targ = un->Target();
+    UnitPtr targ = un->Target();
     if (targ) {
         u = targ->Position();
     }
@@ -892,10 +892,10 @@ void AfterburnTurnAway(Order *aisc, Unit *un) {
     AddOrd(aisc, un, ord);
 }
 
-void TurnAway(Order *aisc, Unit *un) {
+void TurnAway(Order *aisc, UnitPtr un) {
     QVector v(un->Position());
     QVector u(v);
-    Unit *targ = un->Target();
+    UnitPtr targ = un->Target();
     if (targ) {
         u = targ->Position();
     }
@@ -909,7 +909,7 @@ void TurnAway(Order *aisc, Unit *un) {
     AddOrd(aisc, un, ord);
 }
 
-void TurnTowards(Order *aisc, Unit *un) {
+void TurnTowards(Order *aisc, UnitPtr un) {
     Vector vec(0, 0, 10000);
     Order *ord = new Orders::MatchLinearVelocity(un->ClampVelocity(vec, false), true, false, false);
     AddOrd(aisc, un, ord);
@@ -918,7 +918,7 @@ void TurnTowards(Order *aisc, Unit *un) {
     AddOrd(aisc, un, ord);
 }
 
-void FlyStraight(Order *aisc, Unit *un) {
+void FlyStraight(Order *aisc, UnitPtr un) {
     Vector vec(0, 0, 10000);
     Order *ord = new Orders::MatchVelocity(un->ClampVelocity(vec, false), Vector(0, 0, 0), true, false, false);
     AddOrd(aisc, un, ord);
@@ -926,7 +926,7 @@ void FlyStraight(Order *aisc, Unit *un) {
     AddOrd(aisc, un, ord);
 }
 
-void FlyStraightAfterburner(Order *aisc, Unit *un) {
+void FlyStraightAfterburner(Order *aisc, UnitPtr un) {
     Vector vec(0, 0, 10000);
     bool afterburn = useAfterburner();
     Order *ord = new Orders::MatchVelocity(un->ClampVelocity(vec, afterburn), Vector(0, 0, 0), true, afterburn, false);
@@ -937,7 +937,7 @@ void FlyStraightAfterburner(Order *aisc, Unit *un) {
 
 //spiritplumber was here and added some orders, mostly for carriers and their spawn (eep, can carriers have kids?)
 
-void Takeoff(Order *aisc, Unit *un) {
+void Takeoff(Order *aisc, UnitPtr un) {
     Vector vec(0, 0, 10000);
     static bool firsttime = true;
     Order *ord;
@@ -979,7 +979,7 @@ void Takeoff(Order *aisc, Unit *un) {
     TurnTowards(aisc, un);
 }
 
-void TakeoffEveryZig(Order *aisc, Unit *un) {
+void TakeoffEveryZig(Order *aisc, UnitPtr un) {
     Vector vec(0, 0, 10000);
 
     Order *ord;
@@ -1007,7 +1007,7 @@ void TakeoffEveryZig(Order *aisc, Unit *un) {
     un->SelectAllWeapon(false);
 }
 
-void CloakForScript(Order *aisc, Unit *un) {
+void CloakForScript(Order *aisc, UnitPtr un) {
     Vector vec(0, 0, 10000);
     Order *ord = new Orders::MatchLinearVelocity(un->ClampVelocity(vec, false), true, false, false);
     AddOrd(aisc, un, ord);
@@ -1017,7 +1017,7 @@ void CloakForScript(Order *aisc, Unit *un) {
     AddOrd(aisc, un, ord);
 }
 
-void TurnTowardsITTS(Order *aisc, Unit *un) {
+void TurnTowardsITTS(Order *aisc, UnitPtr un) {
     Vector vec(0, 0, 10000);
     Order *ord = new Orders::MatchLinearVelocity(un->ClampVelocity(vec, false), true, false, false);
     AddOrd(aisc, un, ord);
@@ -1025,7 +1025,7 @@ void TurnTowardsITTS(Order *aisc, Unit *un) {
     AddOrd(aisc, un, ord);
 }
 
-void DropCargo(Order *aisc, Unit *un) {
+void DropCargo(Order *aisc, UnitPtr un) {
     if (un->numCargo() > 0) {
         int dropcount = un->numCargo();
 
@@ -1040,7 +1040,7 @@ void DropCargo(Order *aisc, Unit *un) {
     }
 }
 
-void DropHalfCargo(Order *aisc, Unit *un) {
+void DropHalfCargo(Order *aisc, UnitPtr un) {
     if (un->numCargo() > 0) {
         int dropcount = (un->numCargo() / 2) + 1;
 
@@ -1055,7 +1055,7 @@ void DropHalfCargo(Order *aisc, Unit *un) {
     }
 }
 
-void DropOneCargo(Order *aisc, Unit *un) {
+void DropOneCargo(Order *aisc, UnitPtr un) {
     if (un->numCargo() > 0) {
         un->EjectCargo(0);
         Stop(aisc, un);

@@ -35,7 +35,7 @@ float max_allowable_travel_time() {
     return mat;
 }
 
-bool DistanceWarrantsWarpTo(Unit *parent, float dist, bool following) {
+bool DistanceWarrantsWarpTo(UnitPtr parent, float dist, bool following) {
     //first let us decide whether the target is far enough to warrant using warp
     //double dist =UnitUtil::getSignificantDistance(parent,target);
     static float tooclose = XMLSupport::parse_float(vs_config->getVariable("AI", "too_close_for_warp_tactic", "13000"));
@@ -65,7 +65,7 @@ bool DistanceWarrantsWarpTo(Unit *parent, float dist, bool following) {
     return false;
 }
 
-bool DistanceWarrantsTravelTo(Unit *parent, float dist, bool following) {
+bool DistanceWarrantsTravelTo(UnitPtr parent, float dist, bool following) {
     //first let us decide whether the target is far enough to warrant using warp
     float diff = 1;
     parent->GetVelocityDifficultyMult(diff);
@@ -76,11 +76,11 @@ bool DistanceWarrantsTravelTo(Unit *parent, float dist, bool following) {
     return false;
 }
 
-bool TargetWorthPursuing(Unit *parent, Unit *target) {
+bool TargetWorthPursuing(UnitPtr parent, UnitPtr target) {
     return true;
 }
 
-static void ActuallyWarpTo(Unit *parent, const QVector &tarpos, Vector tarvel, Unit *MatchSpeed = NULL) {
+static void ActuallyWarpTo(UnitPtr parent, const QVector &tarpos, Vector tarvel, UnitPtr MatchSpeed = NULL) {
     Vector vel = parent->GetVelocity();
     static float mindirveldot = XMLSupport::parse_float(vs_config->getVariable("AI", "warp_cone", ".8"));
     static float mintarveldot = XMLSupport::parse_float(vs_config->getVariable("AI", "match_velocity_cone", "-.8"));
@@ -114,7 +114,7 @@ static void ActuallyWarpTo(Unit *parent, const QVector &tarpos, Vector tarvel, U
     }
 }
 
-void WarpToP(Unit *parent, Unit *target, bool following) {
+void WarpToP(UnitPtr parent, UnitPtr target, bool following) {
     float dist = UnitUtil::getSignificantDistance(parent, target);
     if (DistanceWarrantsWarpTo(parent, dist, following)) {
         if (TargetWorthPursuing(parent, target)) {
@@ -134,7 +134,7 @@ void WarpToP(Unit *parent, Unit *target, bool following) {
     }
 }
 
-void WarpToP(Unit *parent, const QVector &target, float radius, bool following) {
+void WarpToP(UnitPtr parent, const QVector &target, float radius, bool following) {
     float dist = (parent->Position() - target).Magnitude() - radius - parent->rSize();
     if (DistanceWarrantsWarpTo(parent, dist, following)) {
         static bool auto_valid =

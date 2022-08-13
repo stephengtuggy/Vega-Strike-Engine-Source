@@ -105,7 +105,7 @@ void Mission::DirectorEnd() {
     RunDirectorScript("endgame");
 }
 
-void Mission::DirectorShipDestroyed(Unit *unit) {
+void Mission::DirectorShipDestroyed(UnitPtr unit) {
     Flightgroup *fg = unit->getFlightgroup();
     if (fg == nullptr) {
         VS_LOG(info, "ship destroyed-no flightgroup");

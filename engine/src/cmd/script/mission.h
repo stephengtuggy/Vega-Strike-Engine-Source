@@ -427,9 +427,9 @@ public:
     struct Objective {
         float completeness;
         std::string objective;
-        Unit *getOwner();
+        UnitPtr getOwner();
 
-        void setOwner(Unit *u) {
+        void setOwner(UnitPtr u) {
             Owner.SetUnit(u);
         }
 
@@ -454,7 +454,7 @@ public:
     static double gametime;
     std::string mission_name;
     void terminateMission();
-    Unit *call_unit_launch(class CreateFlightgroup *fg, int type /*Vega_UnitType type*/, const std::string &destinations);
+    UnitPtr call_unit_launch(class CreateFlightgroup *fg, int type /*Vega_UnitType type*/, const std::string &destinations);
 
     Mission(const char *configfile, bool loadscripts = true);
     Mission(const char *filename, const std::string &pythonscript, bool loadscripts = true);
@@ -488,7 +488,7 @@ public:
     void DirectorInitgame();
     void DirectorEnd();
     void DirectorBenchmark();
-    void DirectorShipDestroyed(Unit *unit);
+    void DirectorShipDestroyed(UnitPtr unit);
     void BriefingStart();
 //clobbers the cam view & renders btw 0,0, and 1,1
     class TextPlane *BriefingRender();
@@ -506,7 +506,7 @@ public:
     void RunDirectorScript(const std::string &);
     unsigned int createClassInstance(std::string modulename);
 
-    void setCurrentAIUnit(Unit *unit) {
+    void setCurrentAIUnit(UnitPtr unit) {
         current_ai_unit = unit;
     }
 
@@ -532,7 +532,7 @@ private:
     easyDomNode *origin_node;
 
 #ifndef VS_MIS_SEL
-    Unit *current_ai_unit;
+    UnitPtr current_ai_unit;
     Order *current_ai_order;
 
     int debuglevel;
@@ -731,7 +731,7 @@ private:
 
     varInst *call_unit(missionNode *node, int mode);
     varInst *call_briefing(missionNode *node, int mode);
-    Unit *getUnitObject(missionNode *node, int mode, varInst *ovi);
+    UnitPtr getUnitObject(missionNode *node, int mode, varInst *ovi);
 
 //void call_unit_launch(missionNode *node, int mode, std::string name, std::string faction, std::string type, std::string ainame, int nr_ships, Vector &pos);
 
@@ -744,7 +744,7 @@ private:
     std::string call_string_getstring(missionNode *node, int mode, varInst *ovi);
     std::string getStringArgument(missionNode *node, int mode, int arg_nr);
 
-    void findNextEnemyTarget(Unit *my_unit);
+    void findNextEnemyTarget(UnitPtr my_unit);
 
     varInst *doCall(missionNode *node, int mode, std::string module, std::string method);
     void doCall_toxml(std::string module, varInst *ovi);
@@ -765,7 +765,7 @@ private:
     double getFloatArg(missionNode *node, int mode, int arg_nr);
     int getIntArg(missionNode *node, int mode, int arg_nr);
     bool getBoolArg(missionNode *node, int mode, int arg_nr);
-    Unit *getUnitArg(missionNode *node, int mode, int arg_nr);
+    UnitPtr getUnitArg(missionNode *node, int mode, int arg_nr);
 #endif //VS_MIS_SEL
 };
 

@@ -29,13 +29,13 @@
 #include "unit_generic.h"
 #include "vs_logging.h"
 
-PlanetaryOrbit::PlanetaryOrbit(Unit *p,
+PlanetaryOrbit::PlanetaryOrbit(UnitPtr p,
         double velocity,
         double initpos,
         const QVector &x_axis,
         const QVector &y_axis,
         const QVector &centre,
-        Unit *targetunit) : Order(MOVEMENT, 0),
+        UnitPtr targetunit) : Order(MOVEMENT, 0),
         velocity(velocity),
         theta(initpos),
         inittheta(initpos),
@@ -89,7 +89,7 @@ void PlanetaryOrbit::Execute() {
         averaging = 1.0f;
     }
     if (subtype & SSELF) {
-        Unit *unit = group.GetUnit();
+        UnitPtr unit = group.GetUnit();
         if (unit) {
             unsigned int o = current_orbit_frame++;
             current_orbit_frame %= NUM_ORBIT_AVERAGE;

@@ -52,13 +52,13 @@ protected:
     std::vector<int> lights;
 
 public:
-    PlanetaryOrbit(Unit *p,
+    PlanetaryOrbit(UnitPtr p,
             double velocity,
             double initpos,
             const QVector &x_axis,
             const QVector &y_axis,
             const QVector &Centre,
-            Unit *target = NULL);
+            UnitPtr target = NULL);
     ~PlanetaryOrbit();
     void Execute();
 };

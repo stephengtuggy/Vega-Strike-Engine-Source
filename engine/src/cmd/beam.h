@@ -78,19 +78,19 @@ private:
     Vector direction;
 
     void RecalculateVertices(const Matrix &trans);
-    void CollideHuge(const LineCollide &, Unit *targetToCollideWith, Unit *firer, Unit *superunit);
+    void CollideHuge(const LineCollide &, UnitPtr targetToCollideWith, UnitPtr firer, UnitPtr superunit);
 public:
-    Beam(const Transformation &trans, const WeaponInfo &clne, void *own, Unit *firer, int sound);
-    void Init(const Transformation &trans, const WeaponInfo &clne, void *own, Unit *firer);
+    Beam(const Transformation &trans, const WeaponInfo &clne, void *own, UnitPtr firer, int sound);
+    void Init(const Transformation &trans, const WeaponInfo &clne, void *own, UnitPtr firer);
     ~Beam();
 
     void Reinitialize();
 
-    bool Collide(class Unit *target, Unit *firer, Unit *superunit /*for cargo*/ );
+    bool Collide(UnitPtr target, UnitPtr firer, UnitPtr superunit /*for cargo*/ );
 
     void Destabilize();
     bool Dissolved();
-    void Draw(const Transformation &, const Matrix &, class Unit *target, float trackingcone);
+    void Draw(const Transformation &, const Matrix &, UnitPtr target, float trackingcone);
 
     QVector GetPosition() const;
 
@@ -107,12 +107,12 @@ public:
 
     void UpdatePhysics(const Transformation &,
             const Matrix &,
-            class Unit *target,
+            UnitPtr target,
             float trackingcone,
-            Unit *targetToCollideWith /*prevent AI friendly fire--speed up app*/,
+            UnitPtr targetToCollideWith /*prevent AI friendly fire--speed up app*/,
             float HeatSink,
-            Unit *firer,
-            Unit *superunit);
+            UnitPtr firer,
+            UnitPtr superunit);
 
 };
 #endif

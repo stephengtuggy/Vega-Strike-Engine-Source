@@ -195,7 +195,7 @@ void ContinuousTerrain::Collide() {
     }
 }
 
-void ContinuousTerrain::Collide(Unit *un) {
+void ContinuousTerrain::Collide(UnitPtr un) {
     bool datacol = false;
     for (int i = 0; i < numcontterr; i++) {
         if (data[i]) {
@@ -319,7 +319,7 @@ bool ContinuousTerrain::checkInvScale(double &pos, double campos, float size) {
     return retval;
 }
 
-void ContinuousTerrain::Collide(Unit *un, Matrix t) {
+void ContinuousTerrain::Collide(UnitPtr un, Matrix t) {
     Matrix transform;
     if (un->isUnit() == Vega_UnitType::building) {
         return;

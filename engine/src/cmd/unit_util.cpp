@@ -40,7 +40,7 @@
 using std::string;
 namespace UnitUtil {
 
-void switchFg(Unit *my_unit, string arg) {
+void switchFg(UnitPtr my_unit, string arg) {
     if (!my_unit) {
         return;
     }
@@ -61,7 +61,7 @@ void switchFg(Unit *my_unit, string arg) {
     my_unit->SetFg(fg, fg->nr_ships_left - 1);
 }
 
-int communicateTo(Unit *my_unit, Unit *other_unit, float mood) {
+int communicateTo(UnitPtr my_unit, UnitPtr other_unit, float mood) {
     if (!my_unit) {
         return 0;
     }
@@ -78,7 +78,7 @@ int communicateTo(Unit *my_unit, Unit *other_unit, float mood) {
     return sex;
 }
 
-bool commAnimation(Unit *my_unit, string anim) {
+bool commAnimation(UnitPtr my_unit, string anim) {
     if (!my_unit) {
         return false;
     }

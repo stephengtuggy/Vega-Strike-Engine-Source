@@ -202,11 +202,11 @@ void GetLights(const vector<GFXLight> &origlights, vector<GFXLightLocal> &curlig
     free(tmp);
 }
 
-extern Unit *getTopLevelOwner();
+extern UnitPtr getTopLevelOwner();
 extern BLENDFUNC parse_alpha(const char *);
 
-void SetSubunitRotation(Unit *un, float difficulty) {
-    Unit *unit;
+void SetSubunitRotation(UnitPtr un, float difficulty) {
+    UnitPtr unit;
     for (un_iter iter = un->getSubUnits(); (unit = *iter); ++iter) {
         float x = 2 * difficulty * ((float) rand()) / RAND_MAX - difficulty;
         float y = 2 * difficulty * ((float) rand()) / RAND_MAX - difficulty;
@@ -294,7 +294,7 @@ void StarSystem::LoadXML(const string filename, const Vector &centroid, const fl
 
     for (auto &unit : xml->moons) {
         if (unit->isUnit() == Vega_UnitType::planet) {
-            Unit *un = nullptr;
+            UnitPtr un = nullptr;
             // This code here is completely unclear to me and should be refactored
             // TODO: remove the whole PlanetIterator thing and all custom iterators
             for (Planet::PlanetIterator iter((Planet *) unit); (un = *iter); iter.advance()) {

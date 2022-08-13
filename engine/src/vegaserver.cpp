@@ -51,8 +51,8 @@ void VSExit(int code) {
     exit(1);
 }
 
-// I dont think vegaserver makes use of this but it has to be defined.  
-Unit *TheTopLevelUnit = NULL;
+// I dont think vegaserver makes use of this but it has to be defined.
+UnitPtr TheTopLevelUnit = NULL;
 
 int main(int argc, char **argv) {
 

@@ -64,8 +64,8 @@ public:
     CollideMap::iterator location;
     static int AddTexture(BoltDrawManager *q, std::string filename);
     static int AddAnimation(BoltDrawManager *q, std::string filename, QVector cur_position);
-    bool Collide(Unit *target);
-    static bool CollideAnon(Collidable::CollideRef bolt_name, Unit *target);
+    bool Collide(UnitPtr target);
+    static bool CollideAnon(Collidable::CollideRef bolt_name, UnitPtr target);
     static Bolt *BoltFromIndex(Collidable::CollideRef bolt_name);
     static Collidable::CollideRef BoltIndex(int index, int decal, bool isBall);
 

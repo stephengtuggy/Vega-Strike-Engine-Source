@@ -54,7 +54,7 @@ protected:
     void ReCommandWing(Flightgroup *fg);
     bool ProcessCurrentFgDirective(Flightgroup *fg);
 public:
-    virtual void SetParent(Unit *parent1);
+    virtual void SetParent(UnitPtr parent1);
     enum types {
         AGGAI, MOVEMENT, FACING, UNKNOWN, DISTANCE, METERDISTANCE, THREAT, FSHIELD, LSHIELD, RSHIELD, BSHIELD, FARMOR,
         BARMOR, LARMOR, RARMOR, HULL, RANDOMIZ, FSHIELD_HEAL_RATE, BSHIELD_HEAL_RATE, LSHIELD_HEAL_RATE,
@@ -62,7 +62,7 @@ public:
         FARMOR_HEAL_RATE, BARMOR_HEAL_RATE, LARMOR_HEAL_RATE, RARMOR_HEAL_RATE, HULL_HEAL_RATE, TARGET_FACES_YOU,
         TARGET_IN_FRONT_OF_YOU, TARGET_GOING_YOUR_DIRECTION
     };
-    AggressiveAI(const char *file, Unit *target = NULL);
+    AggressiveAI(const char *file, UnitPtr target = NULL);
     void ExecuteNoEnemies();
     void Execute();
 
@@ -70,7 +70,7 @@ public:
         return "aggressive";
     }
 
-    void AfterburnerJumpTurnTowards(Unit *target);
+    void AfterburnerJumpTurnTowards(UnitPtr target);
     float Fshield_prev{};
     float Fshield_rate_old{};
     double Fshield_prev_time{};

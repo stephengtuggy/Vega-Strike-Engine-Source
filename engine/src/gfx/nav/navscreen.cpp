@@ -679,7 +679,7 @@ void NavigationSystem::DrawMission() {
 
 //This is the mission info screen
 //**********************************
-extern string MakeUnitXMLPretty(string str, Unit *un);
+extern string MakeUnitXMLPretty(string str, UnitPtr un);
 
 void NavigationSystem::DrawShip() {
     GFXDisable(TEXTURE0);
@@ -692,7 +692,7 @@ void NavigationSystem::DrawShip() {
     float originx = screenskipby4[0]; //left
     float originy = screenskipby4[3]; //top
     string writethis;
-    Unit *par;
+    UnitPtr par;
     if ((par = _Universe->AccessCockpit()->GetParent())) {
         writethis = MakeUnitXMLPretty(par->WriteUnitString(), par);
     }

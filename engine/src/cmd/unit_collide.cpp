@@ -145,7 +145,7 @@ Vector Vabs(const Vector &in) {
 }
 
 //Slated for removal 0.5
-Matrix WarpMatrixForCollisions(Unit *un, const Matrix &ctm) {
+Matrix WarpMatrixForCollisions(UnitPtr un, const Matrix &ctm) {
     if (un->GetWarpVelocity().MagnitudeSquared() * simulation_atom_var * simulation_atom_var
             < un->rSize() * un->rSize()) {
         return ctm;
@@ -182,7 +182,7 @@ bool Unit::Inside(const QVector &target, const float radius, Vector &normal, flo
     return false;
 }
 
-bool Unit::InsideCollideTree(Unit *smaller,
+bool Unit::InsideCollideTree(UnitPtr smaller,
         QVector &bigpos,
         Vector &bigNormal,
         QVector &smallpos,
@@ -199,7 +199,7 @@ bool Unit::InsideCollideTree(Unit *smaller,
         return false;
     }
     csOPCODECollider::ResetCollisionPairs();
-    Unit *bigger = this;
+    UnitPtr bigger = this;
 
     csReversibleTransform bigtransform(bigger->cumulative_transformation_matrix);
     csReversibleTransform smalltransform(smaller->cumulative_transformation_matrix);
@@ -247,7 +247,7 @@ bool Unit::InsideCollideTree(Unit *smaller,
             && (bigger->graphicOptions.RecurseIntoSubUnitsOnCollision == true || bigtype == Vega_UnitType::asteroid)) {
         i = bigger->getSubUnits();
         float rad = smaller->rSize();
-        for (Unit *un; (un = *i); ++i) {
+        for (UnitPtr un; (un = *i); ++i) {
             float subrad = un->rSize();
             if ((bigtype != Vega_UnitType::asteroid) && (subrad / bigger->rSize() < rsizelim)) {
                 break;
@@ -269,7 +269,7 @@ bool Unit::InsideCollideTree(Unit *smaller,
             && (smaller->graphicOptions.RecurseIntoSubUnitsOnCollision == true || smalltype == Vega_UnitType::asteroid)) {
         i = smaller->getSubUnits();
         float rad = bigger->rSize();
-        for (Unit *un; (un = *i); ++i) {
+        for (UnitPtr un; (un = *i); ++i) {
             float subrad = un->rSize();
             if ((smalltype != Vega_UnitType::asteroid) && (subrad / smaller->rSize() < rsizelim)) {
                 break;
@@ -296,7 +296,7 @@ inline float mysqr(float a) {
     return a * a;
 }
 
-bool Unit::Collide(Unit *target) {
+bool Unit::Collide(UnitPtr target) {
     //now first OF ALL make sure they're within bubbles of each other...
     if ((Position() - target->Position()).MagnitudeSquared() > mysqr(radial_size + target->radial_size)) {
         return false;
@@ -320,16 +320,16 @@ bool Unit::Collide(Unit *target) {
     if (targetisUnit == Vega_UnitType::asteroid && thisisUnit == Vega_UnitType::asteroid) {
         return false;
     }
-    std::multimap<Unit *, Unit *> *last_collisions = &_Universe->activeStarSystem()->last_collisions;
-    last_collisions->insert(std::pair<Unit *, Unit *>(this, target));
+    std::multimap<UnitPtr, UnitPtr> *last_collisions = &_Universe->activeStarSystem()->last_collisions;
+    last_collisions->insert(std::pair<UnitPtr, UnitPtr>(this, target));
     //unit v unit? use point sampling?
     if ((this->DockedOrDocking() & (DOCKED_INSIDE | DOCKED))
             || (target->DockedOrDocking() & (DOCKED_INSIDE | DOCKED))) {
         return false;
     }
     //now do some serious checks
-    Unit *bigger;
-    Unit *smaller;
+    UnitPtr bigger;
+    UnitPtr smaller;
     if (radial_size < target->radial_size) {
         bigger = target;
         smaller = this;
@@ -412,8 +412,8 @@ float globQuerySphere(QVector start, QVector end, QVector pos, float radius) {
     *  Not sure yet if that would work though...  more importantly, we might have to modify end in here in order
     *  to tell calling code that the bolt should stop at a given point.
 */
-Unit *Unit::rayCollide(const QVector &start, const QVector &end, Vector &norm, float &distance) {
-    Unit *tmp;
+UnitPtr Unit::rayCollide(const QVector &start, const QVector &end, Vector &norm, float &distance) {
+    UnitPtr tmp;
     float rad = this->rSize();
     if ((!SubUnits.empty()) && graphicOptions.RecurseIntoSubUnitsOnCollision) {
         if ((tmp = *SubUnits.fastIterator())) {
@@ -426,7 +426,7 @@ Unit *Unit::rayCollide(const QVector &start, const QVector &end, Vector &norm, f
     if (graphicOptions.RecurseIntoSubUnitsOnCollision) {
         if (!SubUnits.empty()) {
             un_fiter i(SubUnits.fastIterator());
-            for (Unit *un; (un = *i); ++i) {
+            for (UnitPtr un; (un = *i); ++i) {
                 if ((tmp = un->rayCollide(start, end, norm, distance)) != 0) {
                     return tmp;
                 }
@@ -523,7 +523,7 @@ bool Unit::querySphere(const QVector &pnt, float err) const {
     if (graphicOptions.RecurseIntoSubUnitsOnCollision) {
         if (!SubUnits.empty()) {
             un_fkiter i = SubUnits.constFastIterator();
-            for (const Unit *un; (un = *i); ++i) {
+            for (const UnitPtr un; (un = *i); ++i) {
                 if ((un)->querySphere(pnt, err)) {
                     return true;
                 }
@@ -536,7 +536,7 @@ bool Unit::querySphere(const QVector &pnt, float err) const {
 float Unit::querySphere(const QVector &start, const QVector &end, float min_radius) const {
     if (!SubUnits.empty()) {
         un_fkiter i = SubUnits.constFastIterator();
-        for (const Unit *un; (un = *i); ++i) {
+        for (const UnitPtr un; (un = *i); ++i) {
             float tmp;
             if ((tmp = un->querySphere(start, end, min_radius)) != 0) {
                 return tmp;

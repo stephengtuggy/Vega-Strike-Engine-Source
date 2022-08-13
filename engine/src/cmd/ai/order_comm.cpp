@@ -32,7 +32,7 @@
 using std::list;
 using std::vector;
 
-void Order::AdjustRelationTo(Unit *un, float factor) {
+void Order::AdjustRelationTo(UnitPtr un, float factor) {
     //virtual stub function
 }
 
@@ -46,7 +46,7 @@ void Order::Communicate(const CommunicationMessage &c) {
             completed |= (suborders[i])->getType();
         }
     }
-    Unit *un;
+    UnitPtr un;
     bool already_communicated = false;
     for (list<CommunicationMessage *>::iterator ii = messagequeue.begin(); ii != messagequeue.end(); ii++) {
         un = (*ii)->sender.GetUnit();
@@ -88,7 +88,7 @@ void Order::ProcessCommunicationMessages(float AICommresponseTime, bool RemoveMe
         if (messagequeue.back()->curstate == messagequeue.back()->fsm->GetRequestLandNode()) {
             cleared = true;
             RemoveMessageProcessed = true;
-            Unit *un = messagequeue.back()->sender.GetUnit();
+            UnitPtr un = messagequeue.back()->sender.GetUnit();
             if (un) {
                 CommunicationMessage c(parent, un, NULL, 0);
                 if (parent->getRelation(un) >= 0

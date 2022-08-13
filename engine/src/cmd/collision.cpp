@@ -39,7 +39,7 @@
 
 // TODO: convert all float to double and all Vector to QVector.
 
-Collision::Collision(Unit *unit, const QVector &location, const Vector &normal) :
+Collision::Collision(UnitPtr unit, const QVector &location, const Vector &normal) :
         unit(unit), location(location), normal(normal) {
     cockpit = _Universe->isPlayerStarship(unit); // smcp/thcp
     unit_type = unit->isUnit();
@@ -59,7 +59,7 @@ Vega_UnitType::nebula,
 Vega_UnitType::asteroid,
 Vega_UnitType::enhancement,
 Vega_UnitType::missile*/
-void Collision::shouldApplyForceAndDealDamage(Unit *other_unit) {
+void Collision::shouldApplyForceAndDealDamage(UnitPtr other_unit) {
     // Collision with a nebula does nothing
     if (other_unit->isUnit() == Vega_UnitType::nebula) {
         return;
@@ -249,10 +249,10 @@ void Collision::validateCollision(const QVector &relative_velocity,
 
 // Discussion - the original code ran this once for both units. This required a comparison of the units to find out which is smaller.
 // The history on this is as follows - one of the normals is picked to compute the force along; while this is arbitrary in the ideal case, given interpentration, we use the heuristic that the larger object's normal is likely to better characterize the collision angles
-void Collision::collide(Unit *unit1,
+void Collision::collide(UnitPtr unit1,
         const QVector &location1,
         const Vector &normal1,
-        Unit *unit2,
+        UnitPtr unit2,
         const QVector &location2,
         const Vector &normal2,
         float distance) {

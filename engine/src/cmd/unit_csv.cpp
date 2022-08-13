@@ -73,7 +73,7 @@ extern void pushMesh(std::vector<Mesh *> &mesh,
 void addShieldMesh(Unit::XML *xml, const char *filename, const float scale, int faction, class Flightgroup *fg);
 void addRapidMesh(Unit::XML *xml, const char *filename, const float scale, int faction, class Flightgroup *fg);
 
-static void UpgradeUnit(Unit *un, const std::string &upgrades) {
+static void UpgradeUnit(UnitPtr un, const std::string &upgrades) {
     string::size_type when;
     string::size_type ofs = 0;
     while ((when = upgrades.find('{', ofs)) != string::npos) {
@@ -96,7 +96,7 @@ static void UpgradeUnit(Unit *un, const std::string &upgrades) {
         if (upgrade.length() == 0) {
             continue;
         }
-        const Unit *upgradee = UnitConstCache::getCachedConst(StringIntKey(upgrade, FactionUtil::GetUpgradeFaction()));
+        const UnitPtr upgradee = UnitConstCache::getCachedConst(StringIntKey(upgrade, FactionUtil::GetUpgradeFaction()));
         if (!upgradee) {
             upgradee = UnitConstCache::setCachedConst(StringIntKey(upgrade, FactionUtil::GetUpgradeFaction()),
                     new Unit(upgrade.c_str(),
@@ -256,11 +256,11 @@ static int stoi(const string &inp, int def = 0) {
     return def;
 }
 
-extern bool CheckAccessory(Unit *);
+extern bool CheckAccessory(UnitPtr);
 
 extern int parseMountSizes(const char *str);
 
-static void AddMounts(Unit *thus, Unit::XML &xml, const std::string &mounts) {
+static void AddMounts(UnitPtr thus, Unit::XML &xml, const std::string &mounts) {
     string::size_type where, when, ofs = 0;
     unsigned int first_new_mount = thus->mounts.size();
     {
@@ -402,7 +402,7 @@ static vector<SubUnitStruct> GetSubUnits(const std::string &subunits) {
     return ret;
 }
 
-static void AddSubUnits(Unit *thus,
+static void AddSubUnits(UnitPtr thus,
         Unit::XML &xml,
         const std::string &subunits,
         int faction,
@@ -458,7 +458,7 @@ static void AddSubUnits(Unit *thus,
     }
 }
 
-void AddDocks(Unit *thus, Unit::XML &xml, const string &docks) {
+void AddDocks(UnitPtr thus, Unit::XML &xml, const string &docks) {
     string::size_type where, when;
     string::size_type ofs = 0;
     int overlap = 1;
@@ -496,7 +496,7 @@ void AddDocks(Unit *thus, Unit::XML &xml, const string &docks) {
     }
 }
 
-void AddLights(Unit *thus, Unit::XML &xml, const string &lights) {
+void AddLights(UnitPtr thus, Unit::XML &xml, const string &lights) {
     const float default_halo_activation = configuration()->graphics_config.default_engine_activation;
     string::size_type where, when;
     string::size_type ofs = 0;
@@ -543,7 +543,7 @@ void AddLights(Unit *thus, Unit::XML &xml, const string &lights) {
     }
 }
 
-static void ImportCargo(Unit *thus, const string &imports) {
+static void ImportCargo(UnitPtr thus, const string &imports) {
     string::size_type where, when, ofs = 0;
     {
         int nelem = 0;
@@ -571,7 +571,7 @@ static void ImportCargo(Unit *thus, const string &imports) {
     }
 }
 
-static void AddCarg(Unit *thus, const string &cargos) {
+static void AddCarg(UnitPtr thus, const string &cargos) {
     string::size_type where, when, ofs = 0;
     {
         int nelem = 0;
@@ -616,7 +616,7 @@ void HudDamage(float *dam, const string &damages) {
     }
 }
 
-string WriteHudDamage(Unit *un) {
+string WriteHudDamage(UnitPtr un) {
     string ret;
     const string semi = ";";
     if (un->pImage->cockpit_damage) {
@@ -628,7 +628,7 @@ string WriteHudDamage(Unit *un) {
     return ret;
 }
 
-string WriteHudDamageFunc(Unit *un) {
+string WriteHudDamageFunc(UnitPtr un) {
     string ret;
     const string semi = ";";
     if (un->pImage->cockpit_damage) {
@@ -641,7 +641,7 @@ string WriteHudDamageFunc(Unit *un) {
     return ret;
 }
 
-void LoadCockpit(Unit *thus, const string &cockpit) {
+void LoadCockpit(UnitPtr thus, const string &cockpit) {
     string::size_type elemstart = 0, elemend = string::npos;
     thus->pImage->cockpitImage = nextElementString(cockpit, elemstart, elemend);
     thus->pImage->CockpitCenter.i = nextElementFloat(cockpit, elemstart, elemend);
@@ -1266,7 +1266,7 @@ string Unit::WriteUnitString() {
                     vector<SubUnitStruct> subunits = GetSubUnits(unit["Sub_Units"]);
                     if (subunits.size()) {
                         unsigned int k = 0;
-                        Unit *subun;
+                        UnitPtr subun;
                         for (; k < subunits.size(); ++k) {
                             subunits[k].filename = "destroyed_blank";
                         }
@@ -1485,7 +1485,7 @@ string Unit::WriteUnitString() {
     return ret;
 }
 
-void UpdateMasterPartList(Unit *ret) {
+void UpdateMasterPartList(UnitPtr ret) {
     for (unsigned int i = 0; i < _Universe->numPlayers(); ++i) {
         Cockpit *cp = _Universe->AccessCockpit(i);
         std::vector<std::string> *addedcargoname = &cp->savegame->getMissionStringData("master_part_list_content");

@@ -28,7 +28,7 @@ using std::string;
 
 extern const char *mission_key;
 
-Unit *DockToSavedBases(int playernum, QVector &safevec);
+UnitPtr DockToSavedBases(int playernum, QVector &safevec);
 
 /*
  * C++ versions of some useful and comfy Python API

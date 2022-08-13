@@ -70,7 +70,7 @@ public:
 
     static unsigned int unitCount;
 
-    static std::map<string, Unit *> Units;
+    static std::map<string, UnitPtr> Units;
 
     Drawable();
     ~Drawable();
@@ -156,6 +156,6 @@ public:
     VSSprite *getHudImage() const;
 };
 
-Matrix *GetCumulativeTransformationMatrix(Unit *unit, const Matrix &parentMatrix, Matrix invview);
+Matrix *GetCumulativeTransformationMatrix(UnitPtr unit, const Matrix &parentMatrix, Matrix invview);
 
 #endif // DRAWABLE_H

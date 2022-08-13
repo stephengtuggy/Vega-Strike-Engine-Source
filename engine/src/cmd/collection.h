@@ -84,17 +84,17 @@ public:
         /*  Move argument list to the beginning of current list */
         void moveBefore(UnitCollection &);
 
-        /* Insert unit before current unit */
-        void preinsert(class Unit *);
+        /* Insert unit before current UnitPtr/
+        void preinsert(UnitPtr);
 
-        /* Insert unit after current unit */
-        void postinsert(class Unit *unit);
+        /* Insert unit after current UnitPtr/
+        void postinsert(UnitPtr unit);
 
         /* increment to next valid unit (may iterate many times) */
         void advance();
 
         /* same as advance, only it returns the unit at the same time */
-        Unit *next();
+        UnitPtr next();
 
         int size() const {
             return (col->size());
@@ -113,7 +113,7 @@ public:
             return *this;
         }
 
-        inline Unit *operator*() {
+        inline UnitPtr operator*() {
             if (col && it != col->u.end()) {
                 return *it;
             }
@@ -126,7 +126,7 @@ public:
         UnitCollection *col;
 
         //Current position in the list
-        std::list<class Unit *>::iterator it;
+        std::list<UnitPtr>::iterator it;
     };
 
     /* This class is to be used when no changes to the list are made
@@ -143,7 +143,7 @@ public:
         ConstIterator(const UnitCollection *);
         ~ConstIterator();
         ConstIterator &operator=(const ConstIterator &orig);
-        Unit *next();
+        UnitPtr next();
 
         int size() const {
             return (col->size());
@@ -160,7 +160,7 @@ public:
         const ConstIterator &operator++();
         const ConstIterator operator++(int);
 
-        inline Unit *operator*() const {
+        inline UnitPtr operator*() const {
             if (it != col->u.end() && !col->empty()) {
                 return *it;
             }
@@ -170,7 +170,7 @@ public:
     protected:
         friend class UnitCollection;
         const UnitCollection *col;
-        std::list<class Unit *>::const_iterator it;
+        std::list<UnitPtr>::const_iterator it;
     };
 
     /* backwards compatibility only.  Typedefs suck. dont use them. */
@@ -203,7 +203,7 @@ public:
 
     /* Traverses entire list and only inserts if no matches are found
      * Do not use in any fast-code paths */
-    void insert_unique(Unit *);
+    void insert_unique(UnitPtr);
 
     inline bool empty() const {
         if (u.empty()) {
@@ -216,36 +216,35 @@ public:
     }
 
     // Add a unit or iterator to the front of the list. */
-    void prepend(Unit *);
+    void prepend(UnitPtr);
     void prepend(UnitIterator *);
 
     /* Add a unit or iterator to the back of the list. */
-    void append(class Unit *);
+    void append(UnitPtr);
     void append(UnitIterator *);
 
     /* This is how iterators insert units. Always inserts before iterator */
-    void insert(std::list<Unit *>::iterator &, Unit *);
+    void insert(std::list<UnitPtr>::iterator &, UnitPtr);
 
     /* Whipes out entire list only if no iterators are being held.
      * No code uses this function as of 0.5 release */
     void clear();
 
-    bool contains(const class Unit *) const;
+    bool contains(const UnitPtr) const;
 
     /* We only erase the unit from the list under the following conditions:
      * 1. if we have less than 4 iterators being held
-     * 2. if none of those iterators are referencing the requested unit
-     * Otherwise the Unit pointer is removed from the list and set to NULL,
+     * 2. if none of those iterators are referencing the requested UnitPtr Otherwise the Unit pointer is removed from the list and set to NULL,
      * and the iterator is referenced on another list to be deleted
      * the delete list is processed when the number of iterators hits 1 or 0.
      * The reason for this is so we can be scalable to 20,000+ units and
      * modifications to the list by multiple held iterators dont bog us down
      */
-    void erase(std::list<class Unit *>::iterator &);
+    void erase(std::list<UnitPtr>::iterator &);
 
     /* traverse list and remove first (only) matching Unit.
      * Do not use in fast-path code */
-    bool remove(const class Unit *);
+    bool remove(const UnitPtr);
 
     /* Returns number of non-null units in list */
     inline const int size() const {
@@ -253,8 +252,8 @@ public:
     }
 
     /* Returns last non-null unit in list. May be Killed() */
-    inline Unit *back() {
-        for (std::list<Unit *>::reverse_iterator it = u.rbegin(); it != u.rend(); ++it) {
+    inline UnitPtr back() {
+        for (std::list<UnitPtr>::reverse_iterator it = u.rbegin(); it != u.rend(); ++it) {
             if (*it) {
                 return *it;
             }
@@ -263,8 +262,8 @@ public:
     }
 
     /* Returns first non-null unit in list. May be Killed() */
-    inline Unit *front() {
-        for (std::list<Unit *>::iterator it = u.begin(); it != u.end(); ++it) {
+    inline UnitPtr front() {
+        for (std::list<UnitPtr>::iterator it = u.begin(); it != u.end(); ++it) {
             if (*it) {
                 return *it;
             }
@@ -301,10 +300,10 @@ private:
     /* This is a list of positions in the collection that are pointing to
      * NULL units, positions that should be removed from the collection
      * but couldn't because another iterator was referencing it. */
-    std::vector<std::list<class Unit *>::iterator> removedIters;
+    std::vector<std::list<UnitPtr>::iterator> removedIters;
 
     /* Main collection */
-    std::list<class Unit *> u;
+    std::list<UnitPtr> u;
 };
 
 /* Typedefs.   We really should not use them but we're lazy */

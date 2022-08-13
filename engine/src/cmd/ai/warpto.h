@@ -26,11 +26,11 @@
 
 
 class Unit;
-bool DistanceWarrantsWarpTo(Unit *parent,
+bool DistanceWarrantsWarpTo(UnitPtr parent,
         float sigdistance,
         bool following); //following == not worried about toodamnclose
-bool DistanceWarrantsTravelTo(Unit *parent, float sigdistance, bool following);
-bool TargetWorthPursuing(Unit *parent, Unit *target);
-void WarpToP(Unit *parent, Unit *target, bool following);
-void WarpToP(Unit *parent, const QVector &target, float radius, bool following);
+bool DistanceWarrantsTravelTo(UnitPtr parent, float sigdistance, bool following);
+bool TargetWorthPursuing(UnitPtr parent, UnitPtr target);
+void WarpToP(UnitPtr parent, UnitPtr target, bool following);
+void WarpToP(UnitPtr parent, const QVector &target, float radius, bool following);
 

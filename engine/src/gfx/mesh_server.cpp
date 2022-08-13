@@ -173,7 +173,7 @@ void Mesh::AddDamageFX(Vector const &, Vector const &, float, struct GFXColor co
 void Mesh::initTechnique(const std::string &) {
 }
 
-void AddWarp(Unit *un, QVector, float) {
+void AddWarp(UnitPtr un, QVector, float) {
 }
 
 void WarpTrailDraw() {

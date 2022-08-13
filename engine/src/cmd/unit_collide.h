@@ -54,12 +54,12 @@ class UnitHash3d {
     UnitCollection hb;
     UnitCollection *active_huge;
     UnitCollection *accum_huge;
-    std::set<Unit *> act_huge;
-    std::set<Unit *> acc_huge;
+    std::set<UnitPtr> act_huge;
+    std::set<UnitPtr> acc_huge;
 ///The hash table itself. Holds most units to be collided with
     UnitCollection table[COLLIDETABLESIZE][COLLIDETABLESIZE][COLLIDETABLESIZE];
     StarSystem *activeStarSystem;
-    Unit *debugUnit;
+    UnitPtr debugUnit;
 
 ///hashes 3 values into the appropriate spot in the hash table
 
@@ -94,7 +94,7 @@ public:
         acc_huge.clear();
     }
 
-    void AddHugeToActive(Unit *un) {
+    void AddHugeToActive(UnitPtr un) {
         if (acc_huge.find(un) == acc_huge.end()) {
             acc_huge.insert(un);
             accum_huge->prepend(un);
@@ -195,7 +195,7 @@ public:
     }
 
 ///Adds objectToPut into collide table with limits specified by target.
-    void Put(LineCollide *target, Unit *objectToPut) {
+    void Put(LineCollide *target, UnitPtr objectToPut) {
         int x, y, z;
         double maxx = (ceil(target->Maxi.i / COLLIDETABLEACCURACY)) * COLLIDETABLEACCURACY;
         double maxy = (ceil(target->Maxi.j / COLLIDETABLEACCURACY)) * COLLIDETABLEACCURACY;
@@ -239,11 +239,11 @@ public:
         }
     }
 
-    static bool removeFromVector(UnitCollection &myvector, Unit *objectToKill) {
+    static bool removeFromVector(UnitCollection &myvector, UnitPtr objectToKill) {
         return (myvector.remove(objectToKill));
     }
 
-    bool Eradicate(Unit *objectToKill) {
+    bool Eradicate(UnitPtr objectToKill) {
         bool ret = removeFromVector(hugeobjects, objectToKill);
         for (unsigned int i = 0; i <= COLLIDETABLESIZE - 1; i++) {
             for (unsigned int j = 0; j <= COLLIDETABLESIZE - 1; j++) {
@@ -256,7 +256,7 @@ public:
     }
 
 ///Removes objectToKill from collide table with span of Target
-    bool Remove(const LineCollide *target, Unit *objectToKill) {
+    bool Remove(const LineCollide *target, UnitPtr objectToKill) {
         bool ret = false;
         int x, y, z;
         double maxx = (ceil(target->Maxi.i / COLLIDETABLEACCURACY)) * COLLIDETABLEACCURACY;
@@ -326,7 +326,7 @@ struct collideTrees {
         return rapidColliders[0] != NULL;
     }
 
-    csOPCODECollider *colTree(Unit *un,
+    csOPCODECollider *colTree(UnitPtr un,
             const Vector &othervelocity);     //gets the appropriately scaled unit collide tree
 
     // Not sure at the moment where we decide to collide to the shield ...since all we ever compare to is colTree in Collide()

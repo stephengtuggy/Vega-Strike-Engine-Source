@@ -68,7 +68,7 @@ void Terrain::SetTransformation(const Matrix &Mat) {
     QuadTree::SetTransformation(Mat);
 }
 
-void Terrain::ApplyForce(Unit *un, const Vector &normal, float dist) {
+void Terrain::ApplyForce(UnitPtr un, const Vector &normal, float dist) {
     un->ApplyForce(normal * .4 * un->getMass()
             * fabs(normal.Dot((un->GetVelocity() / simulation_atom_var))
                     + fabs(dist) / (simulation_atom_var)));
@@ -80,7 +80,7 @@ void Terrain::ApplyForce(Unit *un, const Vector &normal, float dist) {
             un, GFXColor(1, 1, 1, 1), NULL);
 }
 
-void Terrain::Collide(Unit *un, const Matrix &t) {
+void Terrain::Collide(UnitPtr un, const Matrix &t) {
     Vector norm;
     if (un->isUnit() == Vega_UnitType::building) {
         return;
@@ -91,7 +91,7 @@ void Terrain::Collide(Unit *un, const Matrix &t) {
     }
 }
 
-void Terrain::Collide(Unit *un) {
+void Terrain::Collide(UnitPtr un) {
     Collide(un, transformation);
 }
 
@@ -112,7 +112,7 @@ void Terrain::EnableDraw() {
 }
 
 void Terrain::Collide() {
-    Unit *unit;
+    UnitPtr unit;
     for (un_iter iter = _Universe->activeStarSystem()->getUnitList().createIterator(); (unit = *iter) != NULL; ++iter) {
         Collide(unit);
     }

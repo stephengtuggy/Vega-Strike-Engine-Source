@@ -42,12 +42,12 @@ private:
 
 public:
     MissileEffect(const QVector &pos, float dam, float pdam, float radius, float radmult, void *owner);
-    void ApplyDamage(Unit *);
+    void ApplyDamage(UnitPtr);
     const QVector &GetCenter() const;
     float GetRadius() const;
 
 private:
-    void DoApplyDamage(Unit *parent, Unit *un, float distance, float damage_fraction);
+    void DoApplyDamage(UnitPtr parent, UnitPtr un, float distance, float damage_fraction);
 };
 
 class Missile : public Unit {
@@ -94,9 +94,9 @@ public:
             bool ResolveLast,
             UnitCollection *uc = NULL);
 
-    Unit *breakECMLock(Unit *target);
-    bool proximityFuse(Unit *target);
-    bool useFuel(Unit *target, bool had_target);
+    UnitPtr breakECMLock(UnitPtr target);
+    bool proximityFuse(UnitPtr target);
+    bool useFuel(UnitPtr target, bool had_target);
 
 private:
     // TODO: consider if this is really necessary and if so, use = delete

@@ -160,7 +160,7 @@ struct DockedUnits {
     UnitContainer uc;
     unsigned int whichdock;
 
-    DockedUnits(Unit *un, unsigned int w) : uc(un), whichdock(w) {
+    DockedUnits(UnitPtr un, unsigned int w) : uc(un), whichdock(w) {
     }
 };
 
@@ -194,7 +194,7 @@ struct UnitImages {
     std::vector<std::string> destination;
     std::vector<DockingPorts> dockingports;
     ///warning unreliable pointer, never dereference!
-    std::vector<Unit *> clearedunits;
+    std::vector<UnitPtr> clearedunits;
     std::vector<DockedUnits *> dockedunits;
     UnitContainer DockedTo;
     float unitscale;     //for output
@@ -291,8 +291,8 @@ struct unorigdest {
     bool ready;
     QVector final_location;
 
-    unorigdest(Unit *un,
-            Unit *jumppoint,
+    unorigdest(UnitPtr un,
+            UnitPtr jumppoint,
             StarSystem *orig,
             StarSystem *dest,
             float delay,

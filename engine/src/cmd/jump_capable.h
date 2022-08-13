@@ -42,10 +42,10 @@ public:
 
     void ActivateJumpDrive(int destination = 0);
     void AddDestination(const std::string &);
-    bool AutoPilotTo(Unit *un, bool automaticenergyrealloc);
-    bool AutoPilotToErrorMessage(const Unit *un, bool automaticenergyrealloc,
+    bool AutoPilotTo(UnitPtr un, bool automaticenergyrealloc);
+    bool AutoPilotToErrorMessage(const UnitPtr un, bool automaticenergyrealloc,
             std::string &failuremessage, int recursive_level = 2);
-    float CalculateNearestWarpUnit(float minmultiplier, Unit **nearest_unit,
+    float CalculateNearestWarpUnit(float minmultiplier, UnitPtr*nearest_unit,
             bool count_negative_warp_units) const;
     float CourseDeviation(const Vector &OriginalCourse, const Vector &FinalCourse) const;
     void DeactivateJumpDrive();

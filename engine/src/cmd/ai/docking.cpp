@@ -34,10 +34,10 @@
 #include "universe_util.h"
 #include <string>
 
-static void DockedScript(Unit *docker, Unit *base) {
+static void DockedScript(UnitPtr docker, UnitPtr base) {
     static string script = vs_config->getVariable("AI", "DockedToScript", "");
     if (script.length() > 0) {
-        Unit *targ = docker->Target();
+        UnitPtr targ = docker->Target();
         docker->GetComputerData().target.SetUnit(base);
         UniverseUtil::setScratchUnit(docker);
         CompileRunPython(script);
@@ -47,7 +47,7 @@ static void DockedScript(Unit *docker, Unit *base) {
 }
 
 namespace Orders {
-DockingOps::DockingOps(Unit *unitToDockWith, Order *ai, bool physically_dock, bool keeptrying) : MoveTo(QVector(0,
+DockingOps::DockingOps(UnitPtr unitToDockWith, Order *ai, bool physically_dock, bool keeptrying) : MoveTo(QVector(0,
                 0,
                 1),
         false,
@@ -64,7 +64,7 @@ DockingOps::DockingOps(Unit *unitToDockWith, Order *ai, bool physically_dock, bo
     timer = temptimer;
 }
 
-void DockingOps::SetParent(Unit *par) {
+void DockingOps::SetParent(UnitPtr par) {
     MoveTo::SetParent(par);
     if (parent) {
         formerOwnerDoNotDereference = parent->owner;
@@ -73,7 +73,7 @@ void DockingOps::SetParent(Unit *par) {
 }
 
 void DockingOps::Execute() {
-    Unit *utdw = docking.GetUnit();
+    UnitPtr utdw = docking.GetUnit();
     if (parent == utdw || utdw == NULL) {
         RestoreOldAI();
         Destroy();
@@ -120,7 +120,7 @@ void DockingOps::Destroy() {
         }
         oldstate = NULL;
         if (formerOwnerDoNotDereference) {
-            parent->SetOwner((Unit *) formerOwnerDoNotDereference);             //set owner will not deref
+            parent->SetOwner((UnitPtr) formerOwnerDoNotDereference);             //set owner will not deref
             formerOwnerDoNotDereference = NULL;
         }
     }
@@ -131,14 +131,14 @@ void DockingOps::RestoreOldAI() {
     if (parent) {
         parent->aistate = oldstate;         //that's me!
         if (formerOwnerDoNotDereference) {
-            parent->SetOwner((Unit *) formerOwnerDoNotDereference);
+            parent->SetOwner((UnitPtr) formerOwnerDoNotDereference);
             formerOwnerDoNotDereference = NULL;
         }
         oldstate = NULL;
     }
 }
 
-int SelectDockPort(Unit *utdw, Unit *parent) {
+int SelectDockPort(UnitPtr utdw, UnitPtr parent) {
     const vector<DockingPorts> &dp = utdw->DockingPortLocations();
     float dist = FLT_MAX;
     int num = -1;
@@ -155,7 +155,7 @@ int SelectDockPort(Unit *utdw, Unit *parent) {
     return num;
 }
 
-bool DockingOps::RequestClearence(Unit *utdw) {
+bool DockingOps::RequestClearence(UnitPtr utdw) {
     if (physicallyDock && !utdw->RequestClearance(parent)) {
         return false;
     }
@@ -166,7 +166,7 @@ bool DockingOps::RequestClearence(Unit *utdw) {
     return true;
 }
 
-QVector DockingOps::Movement(Unit *utdw) {
+QVector DockingOps::Movement(UnitPtr utdw) {
     const QVector loc(Transform(utdw->GetTransformation(), utdw->DockingPortLocations()[port].GetPosition().Cast()));
     SetDest(loc);
 
@@ -182,7 +182,7 @@ QVector DockingOps::Movement(Unit *utdw) {
     return loc;
 }
 
-bool DockingOps::DockToTarget(Unit *utdw) {
+bool DockingOps::DockToTarget(UnitPtr utdw) {
     if (utdw->DockingPortLocations()[port].IsOccupied()) {
         if (keeptrying) {
             state = GETCLEARENCE;
@@ -230,7 +230,7 @@ bool DockingOps::DockToTarget(Unit *utdw) {
     return false;
 }
 
-bool DockingOps::PerformDockingOperations(Unit *utdw) {
+bool DockingOps::PerformDockingOperations(UnitPtr utdw) {
     timer -= SIMULATION_ATOM;
     bool isplanet = utdw->isUnit() == Vega_UnitType::planet;
     if (timer < 0) {
@@ -259,7 +259,7 @@ bool DockingOps::PerformDockingOperations(Unit *utdw) {
     return false;
 }
 
-bool DockingOps::Undock(Unit *utdw) {
+bool DockingOps::Undock(UnitPtr utdw) {
     //this is a good heuristic... find the location where you are.compare with center...then fly the fuck away
     QVector awaydir = parent->Position() - utdw->Position();
     float len = ((utdw->rSize() + parent->rSize() * 2) / awaydir.Magnitude());

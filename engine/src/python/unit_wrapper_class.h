@@ -27,7 +27,7 @@ using std::string;
 static const char *kNullUnitErrorMsg = "\nERROR: NULL Unit used in Python script; returning default value...";
 #define CHECKME \
     }           \
-    Unit *me = GetUnit(); if (!me) {VS_LOG_AND_FLUSH(error, kNullUnitErrorMsg); return
+    UnitPtr me = GetUnit(); if (!me) {VS_LOG_AND_FLUSH(error, kNullUnitErrorMsg); return
 #define WRAPPED0(type, name, def) \
     type name() {                   \
         {CHECKME def; }             \
@@ -295,15 +295,15 @@ public:
     UnitWrapper(UnitContainer cont) : UnitContainer(cont) {
     }
 
-    UnitWrapper(Unit *un = 0) : UnitContainer(un) {
+    UnitWrapper(UnitPtr un = 0) : UnitContainer(un) {
     }
 
-    operator Unit *() {
+    operator UnitPtr() {
         return GetUnit();
     }
 
     bool isNull() {
-        Unit *un = GetUnit();
+        UnitPtr un = GetUnit();
         if (un) {
             return (un->Destroyed());
         }

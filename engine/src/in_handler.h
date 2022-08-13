@@ -33,9 +33,9 @@ public:
     int *mousex, *mousey;
     KBSTATE( *keystate )[KEYMAP_SIZE];
 
-    Unit *parent;
+    UnitPtr parent;
 
-    InputListener(Unit *parent) {
+    InputListener(UnitPtr parent) {
         this->parent = parent;
         //int a;
         //mousex = mousey = 0;

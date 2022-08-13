@@ -45,11 +45,11 @@
 #include "networking/zonemgr.h"
 #include "networking/netserver.h"
 
-Unit *UnitFactory::createUnit() {
+UnitPtr UnitFactory::createUnit() {
     return new Unit(0);
 }
 
-Unit *UnitFactory::createUnit(const char *filename,
+UnitPtr UnitFactory::createUnit(const char *filename,
         bool SubUnit,
         int faction,
         std::string customizedUnit,
@@ -58,7 +58,7 @@ Unit *UnitFactory::createUnit(const char *filename,
         string *netxml,
         ObjSerial netcreate) {
     _Universe->netLock(true);
-    Unit *un = new Unit(filename,
+    UnitPtr un = new Unit(filename,
             SubUnit,
             faction,
             customizedUnit,
@@ -83,7 +83,7 @@ Unit *UnitFactory::createUnit(const char *filename,
     return un;
 }
 
-Unit *UnitFactory::createServerSideUnit(const char *filename,
+UnitPtr UnitFactory::createServerSideUnit(const char *filename,
         bool SubUnit,
         int faction,
         std::string customizedUnit,
@@ -97,7 +97,7 @@ Unit *UnitFactory::createServerSideUnit(const char *filename,
             fg_subnumber);
 }
 
-Unit *UnitFactory::createUnit(vector<Mesh *> &meshes, bool Subunit, int faction) {
+UnitPtr UnitFactory::createUnit(vector<Mesh *> &meshes, bool Subunit, int faction) {
     return new Unit(meshes,
             Subunit,
             faction);
@@ -185,7 +185,7 @@ Planet *UnitFactory::createPlanet(QVector x,
         BLENDFUNC ds,
         const vector<string> &dest,
         const QVector &orbitcent,
-        Unit *parent,
+        UnitPtr parent,
         const GFXMaterial &ourmat,
         const std::vector<GFXLightLocal> &ligh,
         int faction,
@@ -205,8 +205,7 @@ Planet *UnitFactory::createPlanet(QVector x,
  *               // Could cause inconsistencies with new clients that just read system files.
  *               if ( false && !_Universe->netLocked()) {
  *                       NetBuffer netbuf;
- *                       // Send a packet to clients in order to make them create this unit
- *
+ *                       // Send a packet to clients in order to make them create this UnitPtr
  *                       addPlanetBuffer( netbuf, x, y, vely, rotvel, pos, gravity, radius, filename, sr, ds, dest, orbitcent, parent, ourmat, ligh, faction, fullname, inside_out, netcreate);
  *                       endBuffer( netbuf );
  *                       VSServer->broadcast( netbuf, 0, _Universe->activeStarSystem()->GetZone(), CMD_ENTERCLIENT, true);
@@ -278,7 +277,7 @@ ContinuousTerrain *UnitFactory::createContinuousTerrain(const char *file, Vector
     return NULL;
 }
 
-void UnitFactory::broadcastUnit(Unit *unit, unsigned short zone) {
+void UnitFactory::broadcastUnit(UnitPtr unit, unsigned short zone) {
     if (!_Universe->netLocked() && unit->GetSerial()) {
         if (SERVER) {
             VSServer->broadcastUnit(unit, zone);

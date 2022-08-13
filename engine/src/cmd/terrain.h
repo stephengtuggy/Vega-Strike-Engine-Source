@@ -42,7 +42,7 @@ public:
     float mass;
     int whichstage;
     char draw;
-    void ApplyForce(Unit *un, const Vector &norm, float distance);
+    void ApplyForce(UnitPtr un, const Vector &norm, float distance);
 public:
     Terrain(const char *filename,
             const Vector &Scales,
@@ -56,8 +56,8 @@ public:
     }
 
     ~Terrain();
-    void Collide(Unit *un, const Matrix &t);
-    void Collide(Unit *un);
+    void Collide(UnitPtr un, const Matrix &t);
+    void Collide(UnitPtr un);
     void Collide();
     void SetTransformation(const Matrix &mat);
     static void CollideAll();
