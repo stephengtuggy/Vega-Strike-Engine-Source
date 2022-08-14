@@ -41,8 +41,7 @@
 #include <cstddef>
 #include <list>
 #include <vector>
-
-class Unit;
+#include "unit_fwd_decl.hpp"
 
 /*
  * UnitCollection is the list container for units.

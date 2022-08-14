@@ -34,6 +34,8 @@
 
 #include <boost/smart_ptr/intrusive_ref_counter.hpp>
 #include <boost/smart_ptr/intrusive_ptr.hpp>
+#include <boost/smart_ptr/shared_ptr.hpp>
+#include "vega_intrusive_ptr.hpp"
 
 #include "armed.h"
 #include "audible.h"
@@ -49,12 +51,13 @@
 #include "mount.h"
 #include "damage/damage.h"
 
+#include "unit_fwd_decl.hpp"
+
 #ifdef VS_DEBUG
 #define CONTAINER_DEBUG
 #endif
 #ifdef CONTAINER_DEBUG
 #include "hashtable.h"
-class Unit;
 void CheckUnit( UnitPtr );
 void UncheckUnit( UnitPtr un );
 #endif
@@ -94,7 +97,6 @@ class Order;
 class Beam;
 class Animation;
 class Nebula;
-class Animation;
 class VSSprite;
 class Box;
 class StarSystem;
@@ -1039,10 +1041,6 @@ public:
     float temporary_upgrade_float_variable;
 
 };
-
-using UnitPtr = Unit *;
-//using UnitPtr = boost::shared_ptr<Unit>;
-//using UnitPtr = boost::intrusive_ptr<Unit>;
 
 UnitPtr findUnitInStarsystem(const void *unitDoNotDereference);
 
