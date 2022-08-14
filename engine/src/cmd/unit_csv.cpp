@@ -1,4 +1,7 @@
+// -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 /*
+ * unit_csv.cpp
+ *
  * Copyright (C) 2001-2022 Daniel Horn, pyramid3d, Stephen G. Tuggy,
  * and other Vega Strike contributors.
  *
@@ -20,7 +23,6 @@
  * along with Vega Strike. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
 #include "unit_generic.h"
 #include "csv.h"

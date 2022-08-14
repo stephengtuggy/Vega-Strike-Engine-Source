@@ -1,4 +1,6 @@
 /*
+ * unit_physics.h
+ *
  * Copyright (C) 2001-2022 Daniel Horn, Roy Falk, pyramid3d,
  * Stephen G. Tuggy, and other Vega Strike contributors.
  *

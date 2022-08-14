@@ -1,4 +1,7 @@
+// -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 /*
+ * basecomputer.cpp
+ *
  * Copyright (C) 2001-2022 Daniel Horn, Mike Byron, pyramid3d, Stephen G. Tuggy,
  * and other Vega Strike contributors.
  *
@@ -20,7 +23,6 @@
  * along with Vega Strike. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
 #include "vegastrike.h"
 #if defined (_WIN32) && !defined (__CYGWIN__) && !defined (__MINGW32__)

@@ -1,4 +1,6 @@
 /*
+ * python_class.h
+ *
  * Copyright (C) 2001-2022 Daniel Horn, pyramid3d, Nachum Barcohen,
  * Stephen G. Tuggy, and other Vega Strike contributors.
  *

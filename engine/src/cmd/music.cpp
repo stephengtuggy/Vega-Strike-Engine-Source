@@ -1,10 +1,8 @@
 /*
  * music.cpp
  *
- * Copyright (C) 2001-2019 Daniel Horn and other Vega Strike contributors
- * Copyright (C) 2020-2021 pyramid3d, Stephen G. Tuggy, Evert Vorster,
- * and other Vega Strike contributors
- * Copyright (C) 2022 Stephen G. Tuggy
+ * Copyright (C) 2001-2022 Daniel Horn, pyramid3d, Stephen G. Tuggy,
+ * Evert Vorster, and other Vega Strike contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *

@@ -1,10 +1,8 @@
-/**
+/*
  * basecomputer.h
  *
- * Copyright (C) 2003 Mike Byron
- * Copyright (C) 2019-2020 Stephen G. Tuggy, pyramid3d, and other Vega Strike
- * contributors
- * Copyright (C) 2022 Stephen G. Tuggy
+ * Copyright (C) 2001-2022 Daniel Horn, Mike Byron, pyramid3d, Stephen G. Tuggy,
+ * and other Vega Strike contributors.
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *

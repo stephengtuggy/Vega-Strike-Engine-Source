@@ -1,4 +1,6 @@
 /*
+ * gnuhash.h
+ *
  * Copyright (C) 2001-2022 Daniel Horn, pyramid3d, Stephen G. Tuggy,
  * and other Vega Strike contributors.
  *
@@ -22,12 +24,14 @@
 
 #ifndef _GNUHASH_H_
 #define _GNUHASH_H_
+
 #include <unordered_map>
+#include "unit_generic.h"
 
 #define vsUMap     std::unordered_map
 #define vsHashComp std::hash_compare
 #define vsHash     std::hash
-class Unit;
+//class Unit;
 
 namespace std {
 

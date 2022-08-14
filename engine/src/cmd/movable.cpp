@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2020-2022 Roy Falk, ministerofinformation,
+ * movable.cpp
+ *
+ * Copyright (C) 2001-2022 Daniel Horn, Roy Falk, ministerofinformation,
  * Stephen G. Tuggy, and other Vega Strike contributors.
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source

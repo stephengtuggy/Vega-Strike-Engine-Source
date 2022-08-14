@@ -4,7 +4,7 @@
 #define __UNIT_GENERIC_H__
 
 /*
- * unit_generic.cpp
+ * unit_generic.h
  *
  * Copyright (C) 2001-2022 Daniel Horn, pyramid3d, Stephen G. Tuggy, Roy Falk,
  * and other Vega Strike contributors

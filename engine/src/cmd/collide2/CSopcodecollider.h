@@ -87,7 +87,7 @@ private:
     /* returns face of mesh where ray collided */
     static void RayCallback(const Opcode::CollisionFace &, void *);
 
-    /* Radius around unit using center of unit and furthest part of UnitPtr/
+    /* Radius around unit using center of unit and furthest part of unit */
     float radius;
 
     /* Array of Point's corresponding to vertices of triangles given by mesh_polygon */

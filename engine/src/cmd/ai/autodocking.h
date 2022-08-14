@@ -1,10 +1,8 @@
-/**
+/*
  * autodocking.h
  *
- * Copyright (C) 2001-2002 Daniel Horn
- * Copyright (C) 2002-2019 pyramid3d and other Vega Strike Contributors
- * Copyright (C) 2019-2021 Stephen G. Tuggy, and other Vega Strike Contributors
- * Copyright (C) 2022 Stephen G. Tuggy
+ * Copyright (C) 2001-2022 Daniel Horn, pyramid3d, Stephen G. Tuggy,
+ * and other Vega Strike Contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
