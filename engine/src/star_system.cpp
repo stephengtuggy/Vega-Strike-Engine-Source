@@ -82,6 +82,7 @@
 #include "gfx/occlusion.h"
 #include "gfx/vec.h"
 #include "gfx/cockpit_generic.h"
+#include "vega_cast_utils.hpp"
 
 #include <boost/python/errors.hpp>
 
@@ -239,18 +240,18 @@ class UnitDrawer {
     struct empty {};
     vsUMap<void *, struct empty> gravunits;
 public:
-    UnitPtr parent;
-    UnitPtr parenttarget;
+    boost::weak_ptr<Unit> parent{};
+    boost::weak_ptr<Unit> parent_target{};
 
     UnitDrawer() {
-        parent = nullptr;
-        parenttarget = nullptr;
+//        parent = nullptr;
+//        parent_target = nullptr;
     }
 
     // can't remove redundant distance parameter, as function acquire is overloaded
     // by template in UnitWithinRangeLocator
-    bool acquire(UnitPtr unit, float distance) {
-        if (gravunits.find(unit) == gravunits.end()) {
+    bool acquire(Unit &unit, float distance) {
+        if (gravunits.find(&unit) == gravunits.end()) {
             return draw(unit);
         } else {
             return true;
@@ -258,45 +259,45 @@ public:
     }
 
     void drawParents() {
-        if (parent && parent->isSubUnit()) {
-            parent = UnitUtil::owner(parent);
+        if (!parent.empty() && parent.lock()->isSubUnit()) {
+            parent = UnitUtil::owner(*(parent.lock()));
         }
-        if (parent) {
-            draw(parent);
+        if (!parent.empty()) {
+            draw(*(parent.lock()));
         }
 
-        if (parenttarget && parenttarget->isSubUnit()) {
-            parenttarget = UnitUtil::owner(parenttarget);
+        if (!parent_target.empty() && parent_target.lock()->isSubUnit()) {
+            parent_target = UnitUtil::owner(*(parent_target.lock()));
         }
-        if (parenttarget) {
-            draw(parenttarget);
+        if (!parent_target.empty()) {
+            draw(*(parent_target.lock()));
         }
     }
 
-    bool draw(UnitPtr unit) {
-        if (parent == unit || (parent && parent->isSubUnit() && parent->owner == unit)) {
-            parent = nullptr;
+    bool draw(Unit &unit) {
+        if (!parent.empty() && (parent.lock().get() == &unit || (parent.lock()->isSubUnit() && parent.lock()->owner.lock().get() == &unit))) {
+            parent.reset();
         }
-        if (parenttarget == unit || (parenttarget && parenttarget->isSubUnit() && parenttarget->owner == unit)) {
-            parenttarget = nullptr;
+        if (!parent_target.empty() && (parent_target.lock().get() == &unit || (parent_target.lock()->isSubUnit() && parent_target.lock()->owner.lock().get() == &unit))) {
+            parent_target.reset();
         }
         float backup = simulation_atom_var;
         //VS_LOG(trace, (boost::format("UnitDrawer::draw(): simulation_atom_var as backed up  = %1%") % simulation_atom_var));
         unsigned int cur_sim_frame = _Universe->activeStarSystem()->getCurrentSimFrame();
-        interpolation_blend_factor = calc_blend_factor(saved_interpolation_blend_factor, unit->sim_atom_multiplier,
-                unit->cur_sim_queue_slot,
+        interpolation_blend_factor = calc_blend_factor(saved_interpolation_blend_factor, unit.sim_atom_multiplier,
+                unit.cur_sim_queue_slot,
                 cur_sim_frame);
-        simulation_atom_var = backup * unit->sim_atom_multiplier;
+        simulation_atom_var = backup * static_cast<float>(unit.sim_atom_multiplier);
         //VS_LOG(trace, (boost::format("UnitDrawer::draw(): simulation_atom_var as multiplied = %1%") % simulation_atom_var));
-        (/*(GameUnit*)*/ unit)->Draw();
+        vega_dynamic_cast_ref<Drawable>(unit).Draw();
         interpolation_blend_factor = saved_interpolation_blend_factor;
         simulation_atom_var = backup;
         //VS_LOG(trace, (boost::format("UnitDrawer::draw(): simulation_atom_var as restored   = %1%") % simulation_atom_var));
         return true;
     }
 
-    bool grav_acquire(UnitPtr unit) {
-        gravunits[unit] = empty();
+    bool grav_acquire(Unit &unit) {
+        gravunits[&unit] = empty();
         return draw(unit);
     }
 };
@@ -384,10 +385,14 @@ void StarSystem::Draw(bool DrawCockpit) {
 
     Collidable key_iterator(0, 1, drawstartpos);
     UnitWithinRangeOfPosition<UnitDrawer> drawer(game_options()->precull_dist, 0, key_iterator);
-    //Need to draw really big stuff (i.e. planets, deathstars, and other mind-bogglingly big things that shouldn't be culled despited extreme distance
-    UnitPtr unit;
-    if ((drawer.action.parent = _Universe->AccessCockpit()->GetParent()) != nullptr) {
-        drawer.action.parenttarget = drawer.action.parent->Target();
+    //Need to draw really big stuff (i.e. planets, deathstars, and other mind-bogglingly big things that shouldn't be culled despite extreme distance
+    boost::shared_ptr<Unit> unit{};
+    drawer.action.parent = _Universe->AccessCockpit()->GetParent();
+    if (!drawer.action.parent.empty()) {
+        drawer.action.parent_target = drawer.action.parent.lock()->Target();
+    }
+    for (auto& each : this->gravitational_units) {
+
     }
     for (un_iter iter = this->gravitational_units.createIterator(); (unit = *iter); ++iter) {
         float distance = (drawstartpos - unit->Position()).Magnitude() - unit->rSize();
@@ -629,17 +634,17 @@ string StarSystem::getName() {
     return name;
 }
 
-void StarSystem::AddUnit(UnitPtr unit) {
+void StarSystem::AddUnit(Unit &unit) {
     if (stats.system_faction == FactionUtil::GetNeutralFaction()) {
         stats.CheckVitals(this);
     }
-    if (unit->isPlanet() || unit->isJumppoint() || unit->isUnit() == Vega_UnitType::asteroid) {
+    if (unit.isPlanet() || unit.isJumppoint() || unit.isUnit() == Vega_UnitType::asteroid) {
         if (!gravitationalUnits().contains(unit)) {
             gravitationalUnits().prepend(unit);
         }
     }
     draw_list.prepend(unit);
-    unit->activeStarSystem = this;     //otherwise set at next physics frame...
+    unit.activeStarSystem = this;     //otherwise set at next physics frame...
     unsigned int priority = UnitUtil::getPhysicsPriority(unit);
     //Do we need the +1 here or not - need to look at when current_sim_location is changed relative to this function
     //and relative to this function, when the bucket is processed...
@@ -712,11 +717,11 @@ UnitPtr getTopLevelOwner() {
     return (TheTopLevelUnit);  // Now we return a pointer to a new game unit created in main(), outside of any lists
 }
 
-void CarSimUpdate(UnitPtr un, float height) {
-    un->SetVelocity(Vector(un->GetVelocity().i, 0, un->GetVelocity().k));
-    un->curr_physical_state.position = QVector(un->curr_physical_state.position.i,
+void CarSimUpdate(Unit &un, float height) {
+    un.SetVelocity(Vector(un.GetVelocity().i, 0, un.GetVelocity().k));
+    un.curr_physical_state.position = QVector(un.curr_physical_state.position.i,
             height,
-            un->curr_physical_state.position.k);
+            un.curr_physical_state.position.k);
 }
 
 Statistics::Statistics() {
@@ -803,9 +808,9 @@ void Statistics::CheckVitals(StarSystem *ss) {
     }
 }
 
-void Statistics::AddUnit(UnitPtr un) {
+void Statistics::AddUnit(Unit &un) {
     float rel = UnitUtil::getRelationFromFaction(un, system_faction);
-    if (FactionUtil::isCitizenInt(un->faction)) {
+    if (FactionUtil::isCitizenInt(un.faction)) {
         ++citizencount;
     } else {
         if (rel > 0.05) {
@@ -816,15 +821,15 @@ void Statistics::AddUnit(UnitPtr un) {
             ++neutralcount;
         }
     }
-    if (un->GetDestinations().size()) {
-        jumpPoints[un->GetDestinations()[0]].SetUnit(un);
+    if (un.GetDestinations().size()) {
+        jumpPoints[un.GetDestinations()[0]].SetUnit(un);
     }
     if (UnitUtil::isSignificant(un)) {
         int k = 0;
         if (rel > 0) {
             k = 1;
         }                      //base
-        if (un->isPlanet() && !un->isJumppoint()) {
+        if (un.isPlanet() && !un.isJumppoint()) {
             k = 1;
         }                                       //friendly planet
         //asteroid field/debris field
@@ -1355,10 +1360,10 @@ double calc_blend_factor(double frac,
 
 }
 
-void ActivateAnimation(UnitPtr jumppoint) {
-    jumppoint->graphicOptions.Animating = 1;
-    for (un_iter i = jumppoint->getSubUnits(); !i.isDone(); ++i) {
-        ActivateAnimation(*i);
+void ActivateAnimation(Unit &jumppoint) {
+    jumppoint.graphicOptions.Animating = 1;
+    for (un_iter i = jumppoint.getSubUnits(); !i.isDone(); ++i) {
+        ActivateAnimation(**i);
     }
 }
 

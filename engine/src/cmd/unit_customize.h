@@ -43,9 +43,9 @@
 #endif
 extern int GetModeFromName(const char *);
 
-extern UnitPtr CreateGameTurret(std::string tur, int faction);
+extern boost::shared_ptr<Unit> CreateGameTurret(std::string tur, int faction);
 
-bool Unit::UpgradeSubUnits(const UnitPtr up,
+bool Unit::UpgradeSubUnits(const boost::shared_ptr<Unit> up,
         int subunitoffset,
         bool touchme,
         bool downgrade,

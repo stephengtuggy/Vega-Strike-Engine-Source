@@ -78,7 +78,7 @@ struct Statistics {
     size_t checkIter;
     size_t navCheckIter;
     Statistics();
-    void AddUnit(UnitPtr un);
+    void AddUnit(Unit &un);
     void RemoveUnit(UnitPtr un);
     void CheckVitals(StarSystem *ss);
 };
@@ -113,7 +113,7 @@ protected:
     ///to track the next given physics frame
     double time = 0;
 
-    /// Everything to be drawn. Folded missiles in here oneday
+    /// Everything to be drawn. Folded missiles in here one day
     UnitCollection draw_list;
     UnitCollection gravitational_units;
     UnitCollection physics_buffer[SIM_QUEUE_SIZE + 1];
@@ -195,7 +195,7 @@ public:
     UnitPtr nextSignificantUnit();
     /// returns xy sorted bounding spheres of all units in current view
     ///Adds to draw list
-    void AddUnit(UnitPtr unit);
+    void AddUnit(Unit &unit);
     ///Removes from draw list
     bool RemoveUnit(UnitPtr unit);
     bool JumpTo(UnitPtr unit,

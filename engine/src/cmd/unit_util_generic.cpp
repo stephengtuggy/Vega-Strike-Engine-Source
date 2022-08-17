@@ -870,7 +870,7 @@ static bool ishere(const UnitPtr par, const UnitPtr look) {
     return false;
 }
 
-UnitPtr owner(const UnitPtr un) {
+boost::shared_ptr<Unit> owner(const Unit &un) {
     UnitPtr tmp;
     for (UniverseUtil::PythonUnitIter uniter = UniverseUtil::getUnitList(); (tmp = *uniter); ++uniter) {
         if (tmp == un || ishere(tmp, un)) {

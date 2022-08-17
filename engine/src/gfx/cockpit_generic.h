@@ -335,7 +335,7 @@ public:
     class StarSystem *activeStarSystem; //used for context switch in Universe
     virtual void SetParent(UnitPtr unit, const char *filename, const char *unitmodname, const QVector &startloc);
 
-    UnitPtr GetParent() {
+    boost::shared_ptr<Unit> GetParent() {
         return parent.GetUnit();
     }
 

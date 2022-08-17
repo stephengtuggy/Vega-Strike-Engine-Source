@@ -94,7 +94,7 @@ using std::endl;
 using std::list;
 
 std::string getMasterPartListUnitName() {
-    return configuration()->data_config.master_part_list;
+    return VegaUnit::configuration()->data_config.master_part_list;
 }
 
 UnitPtr _masterPartList = nullptr;
@@ -104,7 +104,7 @@ UnitPtr getMasterPartList() {
         static bool making = true;
         if (making) {
             making = false;
-            _masterPartList = Unit::makeMasterPartList();
+            _masterPartList = VegaUnit::Unit::makeMasterPartList();
             making = true;
         }
     }
@@ -163,7 +163,7 @@ bool Unit::InRange(const UnitPtr target, double &mm, bool cone, bool cap, bool l
     return true;
 }
 
-UnitPtr Unit::Target() {
+boost::weak_ptr<Unit> Unit::Target() {
     return computer.target.GetUnit();
 }
 
@@ -626,7 +626,7 @@ float CloseEnoughCone(UnitPtr me) {
     return configuration()->physics_config.near_autotrack_cone;
 }
 
-bool CloseEnoughToAutotrack(UnitPtr me, UnitPtr targ, float &cone) {
+bool CloseEnoughToAutotrack(Unit &me, Unit &targ, float &cone) {
     if (targ) {
         const float close_enough_to_autotrack =
                 tmpsqr(configuration()->physics_config.close_enough_to_autotrack);
@@ -1011,7 +1011,7 @@ QVector RealPosition(const UnitPtr un) {
 
 float globQueryShell(QVector pos, QVector dir, float rad);
 
-extern void ActivateAnimation(UnitPtr jp);
+extern void ActivateAnimation(Unit &jumppoint);
 
 void TurnJumpOKLightOn(UnitPtr un, Cockpit *cp) {
     if (cp) {
@@ -2744,12 +2744,12 @@ bool Quit(const char *input_buffer) {
 
 using std::string;
 
-bool Unit::UpgradeMounts(const UnitPtr up,
+bool Unit::UpgradeMounts(const boost::shared_ptr<Unit> up,
         int mountoffset,
         bool touchme,
         bool downgrade,
         int &numave,
-        const UnitPtr templ,
+        const boost::shared_ptr<Unit> templ,
         double &percentage) {
     int j;
     int i;
@@ -2976,7 +2976,7 @@ bool Unit::UpgradeMounts(const UnitPtr up,
     return cancompletefully;
 }
 
-bool Unit::UpgradeSubUnits(const UnitPtr up,
+bool Unit::UpgradeSubUnits(const boost::shared_ptr<Unit> up,
         int subunitoffset,
         bool touchme,
         bool downgrade,
@@ -2985,8 +2985,8 @@ bool Unit::UpgradeSubUnits(const UnitPtr up,
     return UpgradeSubUnitsWithFactory(up, subunitoffset, touchme, downgrade, numave, percentage, &CreateGenericTurret);
 }
 
-bool Unit::UpgradeSubUnitsWithFactory(const UnitPtr up, int subunitoffset, bool touchme, bool downgrade, int &numave,
-        double &percentage, UnitPtr(*createupgradesubunit)(std::string s,
+bool Unit::UpgradeSubUnitsWithFactory(const boost::shared_ptr<Unit> up, int subunitoffset, bool touchme, bool downgrade, int &numave,
+        double &percentage, boost::shared_ptr<Unit>(*createupgradesubunit)(std::string s,
         int
         faction)) {
     bool cancompletefully = true;
@@ -5445,7 +5445,7 @@ inline std::vector<UnitPtr> ComparePrimaries(UnitPtr primary, StarSystem *origin
 }
 
 extern void DealPossibleJumpDamage(UnitPtr un);
-extern void ActivateAnimation(UnitPtr);
+extern void ActivateAnimation(Unit &jumppoint);
 void WarpPursuit(UnitPtr un, StarSystem *sourcess, std::string destination);
 
 bool Unit::TransferUnitToSystem(unsigned int kk, StarSystem *&savedStarSystem, bool dosightandsound) {
@@ -5578,4 +5578,12 @@ bool Unit::TransferUnitToSystem(unsigned int kk, StarSystem *&savedStarSystem, b
         VS_LOG(warning, "Already jumped\n");
     }
     return ret;
+}
+
+std::string Unit::getFlightgroupName() const {
+    return flightgroup->name;
+}
+
+int32_t Unit::getFlightgroupSubNumber() const {
+    return flightgroup_subnumber;
 }

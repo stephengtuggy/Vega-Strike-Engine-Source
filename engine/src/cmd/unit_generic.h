@@ -32,10 +32,10 @@
 #ifndef _UNIT_H_
 #define _UNIT_H_
 
-#include <boost/smart_ptr/intrusive_ref_counter.hpp>
-#include <boost/smart_ptr/intrusive_ptr.hpp>
+//#include <boost/smart_ptr/intrusive_ref_counter.hpp>
+//#include <boost/smart_ptr/intrusive_ptr.hpp>
 #include <boost/smart_ptr/shared_ptr.hpp>
-#include "vega_intrusive_ptr.hpp"
+//#include "vega_intrusive_ptr.hpp"
 
 #include "armed.h"
 #include "audible.h"
@@ -51,7 +51,10 @@
 #include "mount.h"
 #include "damage/damage.h"
 
-#include "unit_fwd_decl.hpp"
+class Unit;
+//typedef VegaUnitCollection;
+//class UnitCollection;
+//#include "unit_fwd_decl.hpp"
 
 #ifdef VS_DEBUG
 #define CONTAINER_DEBUG
@@ -61,34 +64,35 @@
 void CheckUnit( UnitPtr );
 void UncheckUnit( UnitPtr un );
 #endif
-#include "vegastrike.h"
-#include "vs_globals.h"
+    #include "vegastrike.h"
+    #include "vs_globals.h"
 
-#include <string>
-#include <set>
-#include <map>
-#include "gfx/matrix.h"
-#include "gfx/quaternion.h"
-#include "gfxlib_struct.h"
-#include "xml_support.h"
-#include "container.h"
-#include "collection.h"
-#include "script/flightgroup.h"
-#include "faction_generic.h"
-#include "star_system_generic.h"
-#include "gfx/cockpit_generic.h"
-#include "vsfilesystem.h"
-#include "collide_map.h"
-#include "SharedPool.h"
-#include "role_bitmask.h"
+    #include <string>
+    #include <set>
+    #include <map>
+    #include "gfx/matrix.h"
+    #include "gfx/quaternion.h"
+    #include "gfxlib_struct.h"
+    #include "xml_support.h"
+    #include "container.h"
+//#include "collection.h"
+    #include "unit_collection.hpp"
+    #include "script/flightgroup.h"
+    #include "faction_generic.h"
+    #include "star_system_generic.h"
+    #include "gfx/cockpit_generic.h"
+    #include "vsfilesystem.h"
+    #include "collide_map.h"
+    #include "SharedPool.h"
+    #include "role_bitmask.h"
 
-#include "configuration/configuration.h"
-#include "configuration/game_config.h"
+    #include "configuration/configuration.h"
+    #include "configuration/game_config.h"
 
 extern char *GetUnitDir(const char *filename);
 
-UnitPtr getMasterPartList();
-bool CloseEnoughToAutotrack(UnitPtr me, UnitPtr targ, float &cone);
+//UnitPtr getMasterPartList();
+bool CloseEnoughToAutotrack(Unit &me, Unit &targ, float &cone);
 
 class PlanetaryOrbit;
 class UnitCollection;
@@ -137,8 +141,7 @@ struct PlanetaryOrbitData;
  */
 
 // TODO: move Armed to subclasses
-class Unit : public boost::intrusive_ref_counter<Unit, boost::thread_safe_counter>,
-        public Armed,
+class Unit : public Armed,
         public Audible,
         public Drawable,
         public Damageable,
@@ -148,9 +151,10 @@ class Unit : public boost::intrusive_ref_counter<Unit, boost::thread_safe_counte
         public JumpCapable,
         public Carrier {
 protected:
-    StringPool::Reference csvRow;
+    //StringPool::Reference csvRow;
+    std::string csvRow;
 public:
-    using IntrusiveUnitRefCounter = boost::intrusive_ref_counter<Unit, boost::thread_safe_counter>;
+//    using IntrusiveUnitRefCounter = boost::intrusive_ref_counter<Unit, boost::thread_safe_counter>;
 
     /// Radar and related systems
     // TODO: take a deeper look at this much later...
@@ -183,9 +187,11 @@ public:
             0;     //this one should be more general--might want to apply it to radioactive goods, passengers, ships (hangar), etc
     float HiddenCargoVolume = 0;
 
-//The name (type) of this unit shouldn't be public
-    StringPool::Reference name;
-    StringPool::Reference filename;
+    //The name (type) of this unit shouldn't be public
+    std::string name;
+    std::string filename;
+    //    StringPool::Reference name;
+    //    StringPool::Reference filename;
 
 /*
  **************************************************************************************
@@ -202,11 +208,11 @@ public:
     Unit();
     ~Unit() override;
 
-/** Default constructor. This is just to figure out where default
- *  constructors are used. The useless argument will be removed
- *  again later.
- */
-    Unit(int dummy);
+///** Default constructor. This is just to figure out where default
+// *  constructors are used. The useless argument will be removed
+// *  again later.
+// */
+//    Unit(int dummy);
 
 /** Constructor that creates aa mesh with meshes as submeshes (number
  *  of them) as either as subunit with faction faction
@@ -222,7 +228,7 @@ public:
             ""), Flightgroup *flightgroup = NULL, int fg_subnumber = 0);
 
 public:
-//Initialize many of the defaults inherant to the constructor
+//Initialize many of the defaults inherent to the constructor
 
     // This is called from python and so left in place for now
     // TODO: get rid of this
@@ -254,24 +260,24 @@ public:
  */
 
 //Uses mmm... stuff not desired here ?
-    bool UpgradeSubUnitsWithFactory(const UnitPtr up, int subunitoffset, bool touchme, bool downgrade, int &numave,
-            double &percentage, UnitPtr(*createupgradesubunit)(std::string s,
+    bool UpgradeSubUnitsWithFactory(const boost::shared_ptr<Unit> up, int subunitoffset, bool touchme, bool downgrade, int &numave,
+            double &percentage, boost::shared_ptr<Unit>(*createupgradesubunit)(std::string s,
             int faction));
-    bool UpgradeSubUnits(const UnitPtr up,
+    bool UpgradeSubUnits(const boost::shared_ptr<Unit> up,
             int subunitoffset,
             bool touchme,
             bool downgrade,
             int &numave,
             double &percentage);
-    bool UpgradeMounts(const UnitPtr up,
+    bool UpgradeMounts(const boost::shared_ptr<Unit> up,
             int subunitoffset,
             bool touchme,
             bool downgrade,
             int &numave,
-            const UnitPtr templ,
+            const boost::shared_ptr<Unit> templ,
             double &percentage);
 //the turrets and spinning parts fun fun stuff
-    UnitCollection SubUnits;
+    VegaUnitCollection SubUnits;
 
 /**
  * Contains information about a particular Mount on a unit.
@@ -563,9 +569,7 @@ public:
     bool isPlayerShip() override;
 
 //The owner of this unit. This may not collide with owner or units owned by owner. Do not dereference (may be dead pointer)
-    void *owner = nullptr;   //void ensures that it won't be referenced by accident
-
-
+    boost::weak_ptr<Unit> owner{};
 
 //Whether or not to schedule subunits for deferred physics processing - if not, they're processed at the same time the parent unit is being processed
     bool do_subunit_scheduling = false;
@@ -791,7 +795,7 @@ public:
     }
 
     bool InRange(const UnitPtr target, double &mm, bool cone, bool cap, bool lock) const;
-    UnitPtr Target();
+    boost::weak_ptr<Unit> Target();
     const UnitPtr Target() const;
     UnitPtr VelocityReference();
     const UnitPtr VelocityReference() const;
@@ -948,7 +952,7 @@ public:
 //the flightgroup this ship is in
     Flightgroup *flightgroup = nullptr;
 //the flightgroup subnumber
-    int flightgroup_subnumber = 0;
+    int32_t flightgroup_subnumber = 0;
 
     void SetFg(Flightgroup *fg, int fg_snumber);
 //The faction of this unit
@@ -961,9 +965,13 @@ public:
     }
 
 //get the subnumber
-    int getFgSubnumber() const {
+    int32_t getFgSubnumber() const {
         return flightgroup_subnumber;
     }
+
+    int32_t getFlightgroupSubNumber() const;
+
+    std::string getFlightgroupName() const;
 
 //get the full flightgroup ID (i.e 'green-4')
     const std::string getFgID();
@@ -1009,10 +1017,10 @@ public:
         return Vega_UnitType::unit;
     }
 
-    void Ref();
-//Low level list function to reference the unit as being the target of a UnitContainer or Colleciton
-//Releases the unit from this reference of UnitContainer or Collection
-    void UnRef();
+//    void Ref();
+////Low level list function to reference the unit as being the target of a UnitContainer or Colleciton
+////Releases the unit from this reference of UnitContainer or Collection
+//    void UnRef();
 //0 in additive is reaplce  1 is add 2 is mult
 //Put that in NetUnit & AcctUnit with string and with Unit
     UnitImages<void> &GetImageInformation();
@@ -1085,16 +1093,9 @@ inline UnitPtr UnitContainer::GetUnit() {
     return unit;
 }
 
-//#ifdef USE_OLD_COLLECTION
-//inline void UnitCollection::UnitIterator::GetNextValidUnit()
-//{
-//    while (pos->next->unit ? pos->next->unit->Killed() : false)
-//        remove();
-//}
-//#endif
-
 extern std::set<std::string> GetListOfDowngrades();
 extern void ClearDowngradeMap();
+
 #endif
 
 /*
@@ -1102,8 +1103,6 @@ extern void ClearDowngradeMap();
  **** MESH ANIMATION STUFF                                                       ***
  **************************************************************************************
  */
-
-
 
 #endif
 

@@ -60,4 +60,14 @@ inline const TargetType* vega_dynamic_const_cast_ptr(const SourceType* from) {
     return ret_val;
 }
 
+template<class TargetType, class SourceType>
+inline TargetType& vega_dynamic_cast_ref(SourceType& from) {
+    try {
+        return dynamic_cast<TargetType &>(from);
+    } catch (std::bad_cast& e) {
+        VS_LOG_AND_FLUSH(fatal, (boost::format("Fatal Error '%1%' casting type %2%& to %3%&") % e.what() % typeid(SourceType).name() % typeid(TargetType).name()));
+        VSExit(-422);
+    }
+}
+
 #endif //VEGA_STRIKE_SRC_VEGA_CAST_UTILS_HPP_
