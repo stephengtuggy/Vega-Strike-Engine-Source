@@ -107,7 +107,7 @@ int allexcept = FE_DIVBYZERO; //|FE_INVALID;//|FE_OVERFLOW|FE_UNDERFLOW;
 int allexcept = 0;
 #endif
 int shiftup(int);
-string getUnitNameAndFgNoBase(Unit &target);
+string getUnitNameAndFgNoBase(UnitPtr target);
 ContinuousTerrain *myterrain;
 int numf = 0;
 CoordinateSelect *locSel = NULL;

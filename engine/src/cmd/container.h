@@ -27,8 +27,7 @@
 #define _UNITCONTAINER_H_
 
 #include "debug_vs.h"
-
-class Unit;
+#include "unit_fwd_decl.hpp"
 
 class UnitContainer {
 protected:
@@ -39,7 +38,7 @@ public:
 
     UnitContainer(const UnitContainer &un) {
         VSCONSTRUCT1('U')
-        unit = 0;
+        unit.reset();
         SetUnit(un.unit);
     }
 

@@ -250,7 +250,7 @@ public:
 
     // can't remove redundant distance parameter, as function acquire is overloaded
     // by template in UnitWithinRangeLocator
-    bool acquire(Unit &unit, float distance) {
+    bool acquire(UnitPtr unit, float distance) {
         if (gravunits.find(&unit) == gravunits.end()) {
             return draw(unit);
         } else {
@@ -260,44 +260,44 @@ public:
 
     void drawParents() {
         if (!parent.empty() && parent.lock()->isSubUnit()) {
-            parent = UnitUtil::owner(*(parent.lock()));
+            parent = UnitUtil::owner(parent.lock());
         }
         if (!parent.empty()) {
-            draw(*(parent.lock()));
+            draw(parent.lock());
         }
 
         if (!parent_target.empty() && parent_target.lock()->isSubUnit()) {
-            parent_target = UnitUtil::owner(*(parent_target.lock()));
+            parent_target = UnitUtil::owner(parent_target.lock());
         }
         if (!parent_target.empty()) {
-            draw(*(parent_target.lock()));
+            draw(parent_target.lock());
         }
     }
 
-    bool draw(Unit &unit) {
-        if (!parent.empty() && (parent.lock().get() == &unit || (parent.lock()->isSubUnit() && parent.lock()->owner.lock().get() == &unit))) {
+    bool draw(UnitPtr unit) {
+        if (!parent.empty() && (parent.lock() == unit || (parent.lock()->isSubUnit() && parent.lock()->owner.lock() == unit))) {
             parent.reset();
         }
-        if (!parent_target.empty() && (parent_target.lock().get() == &unit || (parent_target.lock()->isSubUnit() && parent_target.lock()->owner.lock().get() == &unit))) {
+        if (!parent_target.empty() && (parent_target.lock() == unit || (parent_target.lock()->isSubUnit() && parent_target.lock()->owner.lock() == unit))) {
             parent_target.reset();
         }
         float backup = simulation_atom_var;
         //VS_LOG(trace, (boost::format("UnitDrawer::draw(): simulation_atom_var as backed up  = %1%") % simulation_atom_var));
         unsigned int cur_sim_frame = _Universe->activeStarSystem()->getCurrentSimFrame();
-        interpolation_blend_factor = calc_blend_factor(saved_interpolation_blend_factor, unit.sim_atom_multiplier,
-                unit.cur_sim_queue_slot,
+        interpolation_blend_factor = calc_blend_factor(saved_interpolation_blend_factor, unit->sim_atom_multiplier,
+                unit->cur_sim_queue_slot,
                 cur_sim_frame);
-        simulation_atom_var = backup * static_cast<float>(unit.sim_atom_multiplier);
+        simulation_atom_var = backup * static_cast<float>(unit->sim_atom_multiplier);
         //VS_LOG(trace, (boost::format("UnitDrawer::draw(): simulation_atom_var as multiplied = %1%") % simulation_atom_var));
-        vega_dynamic_cast_ref<Drawable>(unit).Draw();
+        vega_dynamic_cast_boost_shared_ptr<Drawable>(unit)->Draw();
         interpolation_blend_factor = saved_interpolation_blend_factor;
         simulation_atom_var = backup;
         //VS_LOG(trace, (boost::format("UnitDrawer::draw(): simulation_atom_var as restored   = %1%") % simulation_atom_var));
         return true;
     }
 
-    bool grav_acquire(Unit &unit) {
-        gravunits[&unit] = empty();
+    bool grav_acquire(UnitPtr unit) {
+        gravunits[unit.get()] = empty();
         return draw(unit);
     }
 };

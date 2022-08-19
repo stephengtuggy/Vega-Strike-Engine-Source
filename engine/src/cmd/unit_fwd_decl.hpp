@@ -37,8 +37,10 @@ using UnitIntrusivePtr = boost::intrusive_ptr<Unit>;
 using UnitSharedPtr = boost::shared_ptr<Unit>;
 using UnitWeakPtr = boost::weak_ptr<Unit>;
 
-using UnitPtr = UnitRawPtr;
+using UnitPtr = UnitSharedPtr;
 using UnitParentPtr = UnitWeakPtr;
 using UnitPtrForPy = UnitRawPtr;
+
+using UnitRef = Unit &;
 
 #endif //VEGA_STRIKE_SRC_CMD_UNIT_FWD_DECL_HPP_

@@ -83,7 +83,7 @@ string reformatName(string nam) {
     return nam;
 }
 
-string getUnitNameAndFgNoBase(Unit &target) {
+std::string getUnitNameAndFgNoBase(UnitPtr target) {
     Flightgroup *fg = target->getFlightgroup();
     if (target->isUnit() == Vega_UnitType::planet) {
         string hr = ((Planet *) target)->getHumanReadablePlanetType();

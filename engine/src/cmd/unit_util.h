@@ -84,7 +84,7 @@ int isPlayerStarship(const UnitPtr un);
 void setECM(UnitPtr un, int NewECM);  //short fix
 int getECM(const UnitPtr un); //short fix
 void setSpeed(UnitPtr un, float speed);
-boost::shared_ptr<Unit> owner(const Unit &un);
+boost::shared_ptr<Unit> owner(const UnitPtr un);
 float maxSpeed(const UnitPtr un);
 float maxAfterburnerSpeed(const UnitPtr un);
 void performDockingOperations(UnitPtr un, UnitPtr unitToDockWith, int actuallyDockP);

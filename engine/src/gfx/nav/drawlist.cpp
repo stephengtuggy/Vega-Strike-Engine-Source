@@ -151,7 +151,7 @@ void navdrawlist::rotate()      //take the head and stick it in the back
     }
 }
 
-string getUnitNameAndFgNoBase(Unit &target);
+string getUnitNameAndFgNoBase(UnitPtr target);
 
 void drawdescription(UnitPtr source,
         float x_,
