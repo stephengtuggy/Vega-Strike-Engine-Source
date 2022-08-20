@@ -78,7 +78,7 @@ struct Statistics {
     size_t checkIter;
     size_t navCheckIter;
     Statistics();
-    void AddUnit(Unit &un);
+    void AddUnit(boost::shared_ptr<Unit> un);
     void RemoveUnit(UnitPtr un);
     void CheckVitals(StarSystem *ss);
 };
@@ -195,7 +195,7 @@ public:
     UnitPtr nextSignificantUnit();
     /// returns xy sorted bounding spheres of all units in current view
     ///Adds to draw list
-    void AddUnit(Unit &unit);
+    void AddUnit(UnitPtr unit);
     ///Removes from draw list
     bool RemoveUnit(UnitPtr unit);
     bool JumpTo(UnitPtr unit,

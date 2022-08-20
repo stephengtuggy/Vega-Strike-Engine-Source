@@ -634,17 +634,17 @@ string StarSystem::getName() {
     return name;
 }
 
-void StarSystem::AddUnit(Unit &unit) {
+void StarSystem::AddUnit(UnitPtr unit) {
     if (stats.system_faction == FactionUtil::GetNeutralFaction()) {
         stats.CheckVitals(this);
     }
-    if (unit.isPlanet() || unit.isJumppoint() || unit.isUnit() == Vega_UnitType::asteroid) {
+    if (unit->isPlanet() || unit->isJumppoint() || unit->isUnit() == Vega_UnitType::asteroid) {
         if (!gravitationalUnits().contains(unit)) {
             gravitationalUnits().prepend(unit);
         }
     }
     draw_list.prepend(unit);
-    unit.activeStarSystem = this;     //otherwise set at next physics frame...
+    unit->activeStarSystem = this;     //otherwise set at next physics frame...
     unsigned int priority = UnitUtil::getPhysicsPriority(unit);
     //Do we need the +1 here or not - need to look at when current_sim_location is changed relative to this function
     //and relative to this function, when the bucket is processed...
@@ -808,9 +808,9 @@ void Statistics::CheckVitals(StarSystem *ss) {
     }
 }
 
-void Statistics::AddUnit(Unit &un) {
+void Statistics::AddUnit(boost::shared_ptr<Unit> un) {
     float rel = UnitUtil::getRelationFromFaction(un, system_faction);
-    if (FactionUtil::isCitizenInt(un.faction)) {
+    if (FactionUtil::isCitizenInt(un->faction)) {
         ++citizencount;
     } else {
         if (rel > 0.05) {
@@ -821,9 +821,16 @@ void Statistics::AddUnit(Unit &un) {
             ++neutralcount;
         }
     }
-    if (un.GetDestinations().size()) {
-        jumpPoints[un.GetDestinations()[0]].SetUnit(un);
+
+    try {
+        boost::shared_ptr<JumpCapable> un_as_jump_capable = boost::dynamic_pointer_cast<JumpCapable>(un);
+        if (!un_as_jump_capable->GetDestinations().empty()) {
+            jumpPoints[un_as_jump_capable->GetDestinations()[0]].SetUnit(un);
+        }
+    } catch (std::bad_cast& e) {
+        VS_LOG(error, "Failed to cast Unit to JumpCapable");
     }
+
     if (UnitUtil::isSignificant(un)) {
         int k = 0;
         if (rel > 0) {

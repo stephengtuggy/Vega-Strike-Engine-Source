@@ -37,6 +37,7 @@
 #include <boost/smart_ptr/shared_ptr.hpp>
 //#include "vega_intrusive_ptr.hpp"
 
+#include "unit_base_class.hpp"
 #include "armed.h"
 #include "audible.h"
 #include "damageable.h"
@@ -141,7 +142,8 @@ struct PlanetaryOrbitData;
  */
 
 // TODO: move Armed to subclasses
-class Unit : public Armed,
+class Unit : public UnitBaseClass,
+        public Armed,
         public Audible,
         public Drawable,
         public Damageable,

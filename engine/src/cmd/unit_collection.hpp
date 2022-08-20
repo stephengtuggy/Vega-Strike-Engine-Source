@@ -25,10 +25,10 @@
 #ifndef VEGA_STRIKE_SRC_CMD_UNIT_COLLECTION_HPP_
 #define VEGA_STRIKE_SRC_CMD_UNIT_COLLECTION_HPP_
 
-//#if !defined(NDEBUG)
+#if !defined(NDEBUG)
 #define BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING
 #define BOOST_MULTI_INDEX_ENABLE_SAFE_MODE
-//#endif
+#endif
 
 #include <utility>
 #include <string>
@@ -41,7 +41,7 @@
 #include <boost/multi_index/mem_fun.hpp>
 #include <boost/smart_ptr/make_shared.hpp>
 #include <boost/smart_ptr/shared_ptr.hpp>
-#include "unit_generic.h"
+#include "unit_base_class.hpp"
 //class Unit;
 
 //using ::boost::multi_index_container;
@@ -49,26 +49,31 @@
 
 
 struct UnitSequenced {};
-struct UnitIdentity {};
+struct UnitByIdentity {};
 struct UnitFlightgroup {};
 
-typedef ::boost::multi_index_container<Unit,
+typedef ::boost::multi_index_container<::boost::shared_ptr<UnitBaseClass>,
         ::boost::multi_index::indexed_by<
                 ::boost::multi_index::sequenced<::boost::multi_index::tag<UnitSequenced>>,
-                ::boost::multi_index::ordered_unique<::boost::multi_index::tag<UnitIdentity>, ::boost::multi_index::identity<Unit>>,
+                ::boost::multi_index::ordered_unique<::boost::multi_index::tag<UnitByIdentity>, ::boost::multi_index::identity<UnitBaseClass>>,
                 ::boost::multi_index::ordered_unique<::boost::multi_index::tag<UnitFlightgroup>,
                         ::boost::multi_index::composite_key<
-        Unit,
-        BOOST_MULTI_INDEX_CONST_MEM_FUN(Unit, ::std::string, getFlightgroupName),
-        BOOST_MULTI_INDEX_CONST_MEM_FUN(Unit, int32_t, getFlightgroupSubNumber)
->>>> UnitMultiIndexContainer;
-typedef UnitMultiIndexContainer VegaUnitCollection;
-typedef UnitMultiIndexContainer::index_iterator<UnitSequenced> UnitSequencedIterator;
-typedef UnitMultiIndexContainer::index_const_iterator<UnitSequenced> UnitSequencedConstIterator;
-typedef UnitMultiIndexContainer::index_iterator<UnitIdentity> UnitIdentityIterator;
-typedef UnitMultiIndexContainer::index_const_iterator<UnitIdentity> UnitIdentityConstIterator;
-typedef UnitMultiIndexContainer::index_iterator<UnitFlightgroup> UnitFlightgroupIterator;
-typedef UnitMultiIndexContainer::index_const_iterator<UnitFlightgroup> UnitFlightgroupConstIterator;
+                            UnitBaseClass,
+                            BOOST_MULTI_INDEX_CONST_MEM_FUN(UnitBaseClass, ::std::string, getFlightgroupName),
+                            BOOST_MULTI_INDEX_CONST_MEM_FUN(UnitBaseClass, int32_t, getFlightgroupSubNumber)
+                        >,
+                        ::boost::multi_index::composite_key_compare<std::less<std::string>, std::less<int32_t>>
+                >
+        >
+> UnitBaseClassMultiIndexContainer;
+typedef UnitBaseClassMultiIndexContainer VegaUnitCollection;
+typedef VegaUnitCollection::index<UnitSequenced>::type BySequence;
+typedef VegaUnitCollection::index_iterator<UnitSequenced>::type UnitSequencedIterator;
+typedef VegaUnitCollection::index_const_iterator<UnitSequenced>::type UnitSequencedConstIterator;
+typedef VegaUnitCollection::index_iterator<UnitByIdentity>::type UnitIdentityIterator;
+typedef VegaUnitCollection::index_const_iterator<UnitByIdentity>::type UnitIdentityConstIterator;
+typedef VegaUnitCollection::index_iterator<UnitFlightgroup>::type UnitFlightgroupIterator;
+typedef VegaUnitCollection::index_const_iterator<UnitFlightgroup>::type UnitFlightgroupConstIterator;
 typedef UnitSequencedIterator un_iter;
 typedef UnitSequencedConstIterator un_kiter;
 
