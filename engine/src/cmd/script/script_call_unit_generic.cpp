@@ -68,6 +68,7 @@
 #include "star_system.h"
 #include "universe.h"
 #include "vs_logging.h"
+#include "movable.h"
 
 extern const vector<string> &ParseDestinations(const string &value);
 extern Unit &GetUnitMasterPartList();

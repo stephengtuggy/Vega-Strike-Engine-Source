@@ -46,6 +46,7 @@
 #include "cmd/script/pythonmission.h"
 #ifndef NO_GFX
 #include "gfx/cockpit.h"
+#include "movable.h"
 #endif
 const UnitPtr makeTemplateUpgrade(string name, int faction); //for percentoperational
 const UnitPtr getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0); //for percentoperational

@@ -37,6 +37,7 @@
 #include "vs_random.h"
 #include "cmd/unit_util.h"
 #include "configxml.h"
+#include "movable.h"
 using Orders::FireAt;
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE

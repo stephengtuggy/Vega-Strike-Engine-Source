@@ -48,6 +48,7 @@
 #include "mount_size.h"
 #include "weapon_info.h"
 #include "configuration/configuration.h"
+#include "movable.h"
 
 template<typename T>
 inline T mymin(T a, T b) {

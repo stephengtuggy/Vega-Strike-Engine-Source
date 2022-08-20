@@ -55,6 +55,7 @@
 #include "universe.h"
 #include "mount_size.h"
 #include "weapon_info.h"
+#include "movable.h"
 
 #include <algorithm>
 

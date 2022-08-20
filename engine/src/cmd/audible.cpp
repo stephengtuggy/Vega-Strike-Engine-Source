@@ -30,6 +30,7 @@
 #include "universe.h"
 #include "audiolib.h"
 #include "options.h"
+#include "movable.h"
 
 static const SoundType typesArray[] = {SoundType::engine, SoundType::shield, SoundType::armor,
         SoundType::hull, SoundType::explosion, SoundType::cloaking,

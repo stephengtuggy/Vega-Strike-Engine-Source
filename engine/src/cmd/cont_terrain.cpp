@@ -41,6 +41,7 @@
 #include "config_xml.h"
 #include "vsfilesystem.h"
 #include "vs_logging.h"
+#include "movable.h"
 
 ContinuousTerrain::ContinuousTerrain(const char *filename, const Vector &Scales, const float mass) {
     float tmass;

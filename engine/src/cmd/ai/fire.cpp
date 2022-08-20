@@ -41,6 +41,7 @@
 #include "lin_time.h" //DEBUG ONLY
 #include "cmd/pilot.h"
 #include "universe.h"
+#include "movable.h"
 
 extern int numprocessed;
 extern double targetpick;

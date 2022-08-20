@@ -30,6 +30,7 @@
 #include "gfx/camera.h"
 #include "config_xml.h"
 #include "universe.h"
+#include "movable.h"
 
 struct warptrails {
     vector<Mesh *> factions;

@@ -39,6 +39,7 @@
 #include "nav/navcomputer.h"
 #include "gauge.h"
 #include "cockpit_gfx_utils.h"
+#include "movable.h"
 
 #include <algorithm>
 

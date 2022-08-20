@@ -57,6 +57,7 @@
 #include "configuration/game_config.h"
 #include "planetary_orbit.h"
 #include "universe_util.h"
+#include "movable.h"
 
 using std::endl;
 

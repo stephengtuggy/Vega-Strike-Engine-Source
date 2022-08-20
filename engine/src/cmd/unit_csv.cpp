@@ -48,6 +48,7 @@
 #include "weapon_info.h"
 #include "resource/resource.h"
 #include "unit_csv_factory.h"
+#include "movable.h"
 
 CSVRow LookupUnitRow(const string &unitname, const string &faction) {
     string hashname = unitname + "__" + faction;

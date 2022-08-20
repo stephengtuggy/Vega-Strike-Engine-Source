@@ -41,6 +41,7 @@
 #include <vector>
 
 #include "options.h"
+#include "movable.h"
 
 void CacheJumpStar(bool destroy) {
     static Animation *cachedani = new Animation(game_options()->jumpgate.c_str(), true, .1, MIPMAP, false);

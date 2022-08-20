@@ -56,6 +56,7 @@
 #include "mount_size.h"
 #include "weapon_info.h"
 #include "vs_logging.h"
+#include "movable.h"
 
 extern bool toggle_pause();
 

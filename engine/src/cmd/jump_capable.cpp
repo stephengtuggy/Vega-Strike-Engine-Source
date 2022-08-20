@@ -30,6 +30,7 @@
 #include "universe_util.h"
 #include "gfx/warptrail.h"
 #include "vsfilesystem.h"
+#include "movable.h"
 
 // TODO: once implementation is refactored, deal with this too
 extern QVector RealPosition(const UnitPtr un);

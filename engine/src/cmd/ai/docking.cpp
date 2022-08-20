@@ -30,6 +30,7 @@
 #include "cmd/unit_generic.h"
 #include "warpto.h"
 #include "universe_util.h"
+#include "movable.h"
 #include <string>
 
 static void DockedScript(UnitPtr docker, UnitPtr base) {

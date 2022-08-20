@@ -71,6 +71,7 @@ void UncheckUnit( UnitPtr un );
     #include <string>
     #include <set>
     #include <map>
+#include "vega_cast_utils.hpp"
     #include "gfx/matrix.h"
     #include "gfx/quaternion.h"
     #include "gfxlib_struct.h"
@@ -96,7 +97,7 @@ extern char *GetUnitDir(const char *filename);
 bool CloseEnoughToAutotrack(Unit &me, Unit &targ, float &cone);
 
 class PlanetaryOrbit;
-class UnitCollection;
+//class UnitCollection;
 
 class Order;
 class Beam;
@@ -619,7 +620,7 @@ public:
 public:
 
     Vector LocalCoordinates(const UnitPtr un) const {
-        return ToLocalCoordinates((un->Position() - Position()).Cast());
+        return this->ToLocalCoordinates((un->Position() - Position()).Cast());
     }
 
 //how visible the ship is from 0 to 1
@@ -653,11 +654,6 @@ public:
 //What's the size of this unit
     float rSize() const {
         return radial_size;
-    }
-
-//Returns the current world space position
-    QVector Position() const {
-        return cumulative_transformation.position;
     }
 
     const Matrix &GetTransformation() const {

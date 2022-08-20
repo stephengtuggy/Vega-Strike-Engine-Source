@@ -43,6 +43,7 @@
 #include "star_system.h"
 #include "universe.h"
 #include "configuration/game_config.h"
+#include "movable.h"
 
 ////////////////////////////////////////////////////////////////
 /// MissileEffect

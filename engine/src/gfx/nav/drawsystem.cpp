@@ -58,6 +58,7 @@
 #include "navscreen.h"
 #include "gfx/masks.h"
 #include "galaxy_gen.h"
+#include "movable.h"
 
 //**********************************
 //Main function for drawing a CURRENT system

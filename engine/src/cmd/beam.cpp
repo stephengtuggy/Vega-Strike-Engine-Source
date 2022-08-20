@@ -36,6 +36,7 @@ using std::vector;
 #include "weapon_info.h"
 #include "damageable.h"
 #include "universe.h"
+#include "movable.h"
 
 #include <algorithm>
 #include <cmath>

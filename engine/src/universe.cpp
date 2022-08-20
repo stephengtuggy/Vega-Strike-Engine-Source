@@ -62,6 +62,7 @@
 #include <vector>
 
 #include "options.h"
+#include "movable.h"
 
 // Using
 using namespace VSFileSystem;

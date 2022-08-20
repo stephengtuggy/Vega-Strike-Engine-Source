@@ -86,6 +86,7 @@
 
 #include "unit_find.h"
 #include "pilot.h"
+#include "movable.h"
 
 #include <iostream>
 #define DEBUG_MESH_ANI

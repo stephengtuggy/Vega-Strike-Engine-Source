@@ -35,6 +35,7 @@
 #include "vs_logging.h"
 
 #include "json.h"
+#include "movable.h"
 
 // TODO: find out where this is and maybe refactor
 extern int SelectDockPort(UnitPtr, UnitPtr parent);

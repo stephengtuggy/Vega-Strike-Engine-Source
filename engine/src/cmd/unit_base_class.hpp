@@ -29,9 +29,12 @@
 #include <cstdint>
 #include <utility>
 #include <iostream>
-#include <boost/shared_ptr.hpp>
+#include <boost/smart_ptr/intrusive_ref_counter.hpp>
+#include <boost/smart_ptr/intrusive_ptr.hpp>
+#include <boost/smart_ptr/shared_ptr.hpp>
+#include "vega_intrusive_ptr.hpp"
 
-class UnitBaseClass {
+class UnitBaseClass : boost::intrusive_ref_counter<UnitBaseClass, boost::thread_safe_counter> {
 protected:
     std::string flightgroup_name_{};
     int32_t flightgroup_sub_number_{};

@@ -26,6 +26,40 @@
 #ifndef MOVABLE_H
 #define MOVABLE_H
 
+#include "configuration/game_config.h"
+#include "configuration/configuration.h"
+#include "role_bitmask.h"
+#include "SharedPool.h"
+#include "collide_map.h"
+#include "vsfilesystem.h"
+#include "gfx/cockpit_generic.h"
+#include "star_system_generic.h"
+#include "faction_generic.h"
+#include "script/flightgroup.h"
+#include "unit_collection.hpp"
+#include "container.h"
+#include "xml_support.h"
+#include "gfxlib_struct.h"
+#include "gfx/matrix.h"
+#include <vega_cast_utils.hpp>
+#include <map>
+#include <set>
+#include <string>
+#include "vs_globals.h"
+#include "vegastrike.h"
+#include "damage/damage.h"
+#include "mount.h"
+#include "jump_capable.h"
+#include "carrier.h"
+#include "energetic.h"
+#include "intelligent.h"
+#include "computer.h"
+#include "drawable.h"
+#include "damageable.h"
+#include "audible.h"
+#include "armed.h"
+#include "unit_base_class.hpp"
+#include <boost/smart_ptr/shared_ptr.hpp>
 #include "gfx/vec.h"
 #include "vs_limits.h"
 #include "gfx/quaternion.h"
@@ -132,6 +166,12 @@ public:
         graphic_options();
     }
             graphicOptions;
+
+//Returns the current world space position
+    QVector Position() const {
+        return cumulative_transformation.position;
+    }
+
 protected:
     //Moment of intertia of this unit
     float Momentofinertia; // Was 0 but Init says 0.01
@@ -147,11 +187,11 @@ protected:
 public:
     Movable();
 
-protected:
     // forbidden
     Movable(const Movable &) = delete;
     // forbidden
     Movable &operator=(const Movable &) = delete;
+protected:
     virtual ~Movable() = default;
 
 public:

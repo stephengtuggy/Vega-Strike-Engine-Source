@@ -54,6 +54,7 @@
 #include "docking.h"
 #include "star_system.h"
 #include "universe.h"
+#include "movable.h"
 
 extern double aggfire;
 

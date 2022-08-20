@@ -29,6 +29,7 @@
 #include "cmd/unit_generic.h"
 #include "cmd/role_bitmask.h"
 #include "universe.h"
+#include "movable.h"
 
 using namespace Orders;
 

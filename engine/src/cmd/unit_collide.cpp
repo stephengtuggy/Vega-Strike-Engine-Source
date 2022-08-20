@@ -48,6 +48,7 @@
 
 #include "collision.h"
 #include "universe.h"
+#include "movable.h"
 
 static bool operator==(const Collidable &a, const Collidable &b) {
     return memcmp(&a, &b, sizeof(Collidable)) == 0;

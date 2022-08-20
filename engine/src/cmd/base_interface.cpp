@@ -120,6 +120,7 @@ bool BaseInterface::Room::BaseTalk::hastalked = false;
 #ifdef NEW_GUI
 #include "basecomputer.h"
 #include "../gui/eventmanager.h"
+#include "movable.h"
 #endif
 
 using namespace VSFileSystem;

@@ -36,6 +36,7 @@
 #include <typeinfo>
 // #include <boost/log/trivial.hpp>
 #include "vs_logging.h"
+#include "movable.h"
 
 // TODO: convert all float to double and all Vector to QVector.
 

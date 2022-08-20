@@ -86,6 +86,7 @@
 #include "mount_size.h"
 #include "weapon_info.h"
 #include "cockpit_gfx.h"
+#include "movable.h"
 
 #include <cstddef>
 #include <cfloat>

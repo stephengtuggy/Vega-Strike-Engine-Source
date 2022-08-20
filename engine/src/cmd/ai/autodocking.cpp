@@ -36,6 +36,7 @@
 #include "flykeyboard.h"
 #include "in.h"
 #include "in_kb_data.h"
+#include "movable.h"
 
 namespace {
 

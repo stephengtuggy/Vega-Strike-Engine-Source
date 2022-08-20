@@ -80,6 +80,7 @@ using VSFileSystem::SaveFile;
 #endif
 #include <sys/stat.h>
 #include "vega_cast_utils.hpp"
+#include "movable.h"
 
 using namespace XMLSupport; // FIXME -- Shouldn't include an entire namespace, according to Google Style Guide -- stephengtuggy 2021-09-07
 

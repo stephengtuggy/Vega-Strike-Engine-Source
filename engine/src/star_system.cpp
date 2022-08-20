@@ -83,6 +83,7 @@
 #include "gfx/vec.h"
 #include "gfx/cockpit_generic.h"
 #include "vega_cast_utils.hpp"
+#include "movable.h"
 
 #include <boost/python/errors.hpp>
 

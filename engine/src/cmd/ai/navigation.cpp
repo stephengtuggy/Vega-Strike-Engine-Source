@@ -40,6 +40,7 @@
 #include "cmd/unit_util.h"
 #include "star_system.h"
 #include "universe.h"
+#include "movable.h"
 
 using namespace Orders;
 

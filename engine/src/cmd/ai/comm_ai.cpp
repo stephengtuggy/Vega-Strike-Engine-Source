@@ -38,6 +38,7 @@
 #include "cmd/pilot.h"
 #include "universe_util.h"
 #include "universe.h"
+#include "movable.h"
 
 CommunicatingAI::CommunicatingAI(int ttype,
         int stype,

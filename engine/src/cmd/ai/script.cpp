@@ -38,6 +38,7 @@
 #include "universe_util.h"
 #include "configxml.h"
 #include "universe.h"
+#include "movable.h"
 
 #include <assert.h>
 
