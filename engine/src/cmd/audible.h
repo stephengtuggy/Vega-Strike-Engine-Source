@@ -42,6 +42,7 @@ private:
 
 public:
     Audible();
+    virtual ~Audible() = default;
     void addDefaultSounds();
     void addSounds(std::string (*nextElement)(std::string &), std::string soundsString);
     void addSound(std::string soundString, SoundType type);

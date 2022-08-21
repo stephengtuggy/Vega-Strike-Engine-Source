@@ -584,7 +584,7 @@ void SystemFactory::processEnhancement(string element, Star_XML *xml, Object &ob
 
     if (boost::iequals(element, "unit")) {
         Flightgroup *fg = getStaticBaseFlightgroup(faction);
-        unit = new Unit(filename.c_str(), false, faction, "", fg, fg->nr_ships - 1);
+        unit = make_shared_from_intrusive(new Unit(filename.c_str(), false, faction, "", fg, fg->nr_ships - 1));
         unit->setFullname(fullname);
 
         if (unit->faction != neutralfaction) {
@@ -593,7 +593,7 @@ void SystemFactory::processEnhancement(string element, Star_XML *xml, Object &ob
         }
     } else if (boost::iequals(element, "asteroid")) {
         Flightgroup *fg = getStaticAsteroidFlightgroup(faction);
-        unit = static_cast<UnitPtr>(
+        unit = make_shared_from_intrusive(
                 new Asteroid(filename.c_str(),
                         faction, fg, fg->nr_ships - 1,
                         absolute_scalex));
@@ -602,18 +602,18 @@ void SystemFactory::processEnhancement(string element, Star_XML *xml, Object &ob
         } //FIXME un de-referenced before allocation
 
     } else if (boost::iequals(element, "enhancement")) {
-        unit = static_cast<UnitPtr>(
+        unit = make_shared_from_intrusive(
                 new Enhancement(filename.c_str(), faction, string("")));
 
     } else if (boost::iequals(element, "building") ||
             boost::iequals(element, "vehicle")) {
 
         if (xml->ct == nullptr && xml->parentterrain != nullptr) { // Terrain
-            unit = new Building(xml->parentterrain, boost::iequals(element, "vehicle"),
-                    filename.c_str(), false, faction, string(""));
+            unit = make_shared_from_intrusive(new Building(xml->parentterrain, boost::iequals(element, "vehicle"),
+                    filename.c_str(), false, faction, string("")));
         } else if (xml->ct != nullptr) { // Continuous terrain
-            unit = new Building(xml->ct, boost::iequals(element, "vehicle"),
-                    filename.c_str(), false, faction, string(""));
+            unit = make_shared_from_intrusive(new Building(xml->ct, boost::iequals(element, "vehicle"),
+                    filename.c_str(), false, faction, string("")));
         }
 
         unit->EnqueueAI(new Orders::AggressiveAI("default.agg.xml"));
@@ -636,7 +636,7 @@ void SystemFactory::processEnhancement(string element, Star_XML *xml, Object &ob
 
         unit->SetPosAndCumPos(R + S + xml->cursun.Cast() + xml->systemcentroid.Cast());
         unit->SetOwner(getTopLevelOwner());
-        xml->moons.push_back(static_cast<Planet *>(unit)); // Calling factory will call AddUnit using this
+        xml->moons.push_back(vega_dynamic_cast_boost_shared_ptr<Planet>(unit)); // Calling factory will call AddUnit using this
     } else {
         // Some kind of satellite.
         owner->AddSatellite(unit);

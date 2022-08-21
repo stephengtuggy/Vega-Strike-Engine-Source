@@ -57,6 +57,11 @@ VegaStringPtr stringPoolUpsert(const char * my_str) {
     return stringPoolUpsert(temp_string);
 }
 
+VegaStringPtr stringPoolUpsert(char * my_str) {
+    std::string temp_string{my_str};
+    return stringPoolUpsert(temp_string);
+}
+
 //template<class T, class RefcounterTraits = vsHashComp<T> >
 //class SharedPool {
 //public:

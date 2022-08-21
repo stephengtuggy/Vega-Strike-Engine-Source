@@ -916,7 +916,7 @@ void createObjects(std::vector<std::string> &fighter0name,
                 }
 
                 VS_LOG(info, (boost::format("CREATING A LOCAL SHIP : %1%") % fightername));
-                fighters[a] = new Unit(fightername, false, tmptarget[a], modifications, fg, s);
+                fighters[a] = make_shared_from_intrusive(new Unit(fightername, false, tmptarget[a], modifications, fg, s));
 
                 _Universe->activeStarSystem()->AddUnit(fighters[a]);
                 if (s == 0 && squadnum < (int) fighter0name.size()) {
@@ -932,7 +932,7 @@ void createObjects(std::vector<std::string> &fighter0name,
                 bool isvehicle = false;
                 if (fg_terrain == -2) {
                     fighters[a] =
-                            new Building(myterrain, isvehicle, fightername, false, tmptarget[a], string(""), fg);
+                            make_shared_from_intrusive(new Building(myterrain, isvehicle, fightername, false, tmptarget[a], string(""), fg));
                 } else {
                     if (fg_terrain >= (int) _Universe->activeStarSystem()->numTerrain()) {
                         ContinuousTerrain *t;
@@ -941,12 +941,12 @@ void createObjects(std::vector<std::string> &fighter0name,
                                         < _Universe->activeStarSystem()->numContTerrain());
                         t = _Universe->activeStarSystem()
                                 ->getContTerrain(fg_terrain - _Universe->activeStarSystem()->numTerrain());
-                        fighters[a] = new Building(t, isvehicle, fightername, false, tmptarget[a], string(
-                                ""), fg);
+                        fighters[a] = make_shared_from_intrusive(new Building(t, isvehicle, fightername, false, tmptarget[a], string(
+                                ""), fg));
                     } else {
                         Terrain *t = _Universe->activeStarSystem()->getTerrain(fg_terrain);
-                        fighters[a] = new Building(t, isvehicle, fightername, false, tmptarget[a], string(
-                                ""), fg);
+                        fighters[a] = make_shared_from_intrusive(new Building(t, isvehicle, fightername, false, tmptarget[a], string(
+                                ""), fg));
                     }
                 }
                 _Universe->activeStarSystem()->AddUnit(fighters[a]);
@@ -986,16 +986,15 @@ void createObjects(std::vector<std::string> &fighter0name,
 }
 
 void AddUnitToSystem(const SavedUnits *su) {
-    UnitPtr un = NULL;
+    UnitPtr un = nullptr;
     switch (su->type) {
         case Vega_UnitType::enhancement:
-            un =
-                    new Enhancement(su->filename.get().c_str(), FactionUtil::GetFactionIndex(su->faction), string(""));
+            un = make_shared_from_intrusive(new Enhancement(su->filename.get()->c_str(), FactionUtil::GetFactionIndex(su->faction), string("")));
             un->SetPosition(QVector(0, 0, 0));
             break;
         case Vega_UnitType::unit:
         default:
-            un = new Unit(su->filename.get().c_str(), false, FactionUtil::GetFactionIndex(su->faction));
+            un = make_shared_from_intrusive(new Unit(su->filename.get()->c_str(), false, FactionUtil::GetFactionIndex(su->faction)));
             un->EnqueueAI(new Orders::AggressiveAI("default.agg.xml"));
             un->SetTurretAI();
             if (_Universe->AccessCockpit()->GetParent()) {

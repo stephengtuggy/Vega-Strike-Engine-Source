@@ -168,12 +168,12 @@ public:
             graphicOptions;
 
 //Returns the current world space position
-    QVector Position() const {
+    virtual QVector Position() const {
         return cumulative_transformation.position;
     }
 
 protected:
-    //Moment of intertia of this unit
+    //Moment of inertia of this unit
     float Momentofinertia; // Was 0 but Init says 0.01
     Vector SavedAccel;
     Vector SavedAngAccel;
@@ -200,9 +200,9 @@ public:
     virtual Vector ResolveForces(const Transformation &, const Matrix &);
 
     //Sets the unit-space position
-    void SetPosition(const QVector &pos);
+    virtual void SetPosition(const QVector &pos);
 
-//Returns the pqr oritnattion of the unit in world space
+//Returns the pqr orientation of the unit in world space
     void SetOrientation(QVector q, QVector r);
     void SetOrientation(Quaternion Q);
     void SetOrientation(QVector p, QVector q, QVector r);

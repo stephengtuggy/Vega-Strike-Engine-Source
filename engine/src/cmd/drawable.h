@@ -72,7 +72,7 @@ public:
     static std::map<string, UnitPtr> Units;
 
     Drawable();
-    ~Drawable();
+    virtual ~Drawable();
 
     bool DrawableInit(const char *filename,
             int faction,
@@ -85,7 +85,6 @@ public:
 
     void clear();
 
-protected:
     // forbidden
     Drawable(const Drawable &) = delete;
     // forbidden

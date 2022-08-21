@@ -155,7 +155,8 @@ class Unit : public UnitBaseClass,
         public Carrier {
 protected:
     //boost::shared_ptr<std::string> csvRow;
-    std::string csvRow;
+    VegaStringPtr csvRow;
+//    std::string csvRow;
 public:
 //    using IntrusiveUnitRefCounter = boost::intrusive_ref_counter<Unit, boost::thread_safe_counter>;
 
@@ -163,23 +164,23 @@ public:
     // TODO: take a deeper look at this much later...
     //how likely to fool missiles
     // -2 = inactive L2, -1 = inactive L1, 0 = not available, 1 = active L1, 2 = active L2, etc...
-    int ecm;
+    int ecm{};
 
     /// Repair
     // TODO: Maybe move to damageable
     // holds the info for the repair bot type. 0 is no bot;
-    unsigned char repair_droid;
-    float next_repair_time;
-    unsigned int next_repair_cargo;    //(~0 : select randomly)
+    unsigned char repair_droid{};
+    float next_repair_time{};
+    unsigned int next_repair_cargo{};    //(~0 : select randomly)
 
-    float fireControlFunctionality;
-    float fireControlFunctionalityMax;
-    float SPECDriveFunctionality;
-    float SPECDriveFunctionalityMax;
-    float CommFunctionality;
-    float CommFunctionalityMax;
-    float LifeSupportFunctionality;
-    float LifeSupportFunctionalityMax;
+    float fireControlFunctionality{};
+    float fireControlFunctionalityMax{};
+    float SPECDriveFunctionality{};
+    float SPECDriveFunctionalityMax{};
+    float CommFunctionality{};
+    float CommFunctionalityMax{};
+    float LifeSupportFunctionality{};
+    float LifeSupportFunctionalityMax{};
 
     /// Volume
     // This isn't mass. Denser materials translate to more mass
@@ -211,11 +212,13 @@ public:
     Unit();
     ~Unit() override;
 
-///** Default constructor. This is just to figure out where default
-// *  constructors are used. The useless argument will be removed
-// *  again later.
-// */
-//    Unit(int dummy);
+/** Default constructor. This is just to figure out where default
+ *  constructors are used. The useless argument will be removed
+ *  again later.
+ *
+ *  stephengtuggy 2022-08-20: Used in the construction of TheTopLevelUnit in main.cpp, among other places
+ */
+    Unit(int dummy);
 
 /** Constructor that creates aa mesh with meshes as submeshes (number
  *  of them) as either as subunit with faction faction
@@ -955,7 +958,7 @@ public:
     void SetFg(Flightgroup *fg, int fg_snumber);
 //The faction of this unit
     int faction = 0;
-    void SetFaction(int faction);
+    void SetFaction(int new_faction);
 
 //get the flightgroup description
     Flightgroup *getFlightgroup() const {
@@ -1044,7 +1047,7 @@ public:
     // Example:
     // MACRO_FUNCTION(field_a, object_a, object_b)
     // object_a->field_a = object_b->field_b;
-    float temporary_upgrade_float_variable;
+    float temporary_upgrade_float_variable{};
 
 };
 

@@ -34,19 +34,20 @@
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include "vega_intrusive_ptr.hpp"
 
-class UnitBaseClass : boost::intrusive_ref_counter<UnitBaseClass, boost::thread_safe_counter> {
+class UnitBaseClass : public boost::intrusive_ref_counter<UnitBaseClass, boost::thread_safe_counter> {
 protected:
     std::string flightgroup_name_{};
     int32_t flightgroup_sub_number_{};
 public:
-    // Default constructor -- forbidden
-    UnitBaseClass() = delete;
+    // Default constructor
+    UnitBaseClass() = default;
     // Copy constructor -- forbidden
     UnitBaseClass(UnitBaseClass const & rhs) = delete;
     // Move constructor
     UnitBaseClass(UnitBaseClass&& rhs) = default;
     // Main constructor
     inline UnitBaseClass(std::string flightgroup_name, int32_t flightgroup_sub_number) : flightgroup_name_(std::move(flightgroup_name)), flightgroup_sub_number_(flightgroup_sub_number) {}
+    inline UnitBaseClass(boost::shared_ptr<std::string> flightgroup_name, int flightgroup_sub_number) : flightgroup_name_(*flightgroup_name), flightgroup_sub_number_(flightgroup_sub_number) {}
     // Destructor
     virtual ~UnitBaseClass() = default;
 

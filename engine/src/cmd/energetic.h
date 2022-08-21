@@ -33,6 +33,7 @@
 class Energetic {
 public:
     Energetic();
+    virtual ~Energetic() = default;
 
     void decreaseWarpEnergy(bool insys, float time);
     void DecreaseWarpEnergyInWarp();

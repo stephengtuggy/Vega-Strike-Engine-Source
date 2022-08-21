@@ -165,7 +165,7 @@ std::string Carrier::cargoSerializer(const XMLType &input, void *my_this) {
 //special states.  This means the total amount of cargo any ship can have
 //is UINT_MAX -3   which is 65532 for 32bit machines.
 void Carrier::EjectCargo(unsigned int index) {
-    UnitPtr unit = static_cast<UnitPtr>(this);
+    UnitPtr unit{vega_dynamic_cast_ptr<Unit>(this)};
     Cargo *tmp = NULL;
     Cargo ejectedPilot;
     Cargo dockedPilot;

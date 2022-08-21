@@ -39,6 +39,7 @@ public:
 
 public:
     JumpCapable();
+    virtual ~JumpCapable() = default;
 
     void ActivateJumpDrive(int destination = 0);
     void AddDestination(const std::string &);

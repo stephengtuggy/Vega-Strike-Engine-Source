@@ -1539,7 +1539,8 @@ void BaseComputer::recalcTitle() {
     string baseName;
     if (baseUnit) {
         if (baseUnit->isUnit() == Vega_UnitType::planet) {
-            string temp = ((Planet *) baseUnit)->getHumanReadablePlanetType() + " Planet";
+            boost::shared_ptr<Planet> temp_planet_ptr = vega_dynamic_cast_boost_shared_ptr<Planet>(baseUnit);
+            string temp = temp_planet_ptr->getHumanReadablePlanetType() + " Planet";
             // think "<planet type> <name of planet>"
             baseName = temp + " " + baseUnit->name;
         } else {
@@ -4075,8 +4076,8 @@ string buildUpgradeDescription(Cargo &item) {
     Flightgroup *flightGroup = new Flightgroup();     //sigh
     int fgsNumber = 0;
     current_unit_load_mode = NO_MESH;
-    UnitPtr newPart = boost::make_shared<Unit>(item.GetContent().c_str(), false,
-            FactionUtil::GetUpgradeFaction(), blnk, flightGroup, fgsNumber);
+    UnitPtr newPart = make_shared_from_intrusive(new Unit(item.GetContent().c_str(), false,
+            FactionUtil::GetUpgradeFaction(), blnk, flightGroup, fgsNumber));
     current_unit_load_mode = DEFAULT;
     string str = "";
     str += item.GetDescription();

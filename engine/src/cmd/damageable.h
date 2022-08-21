@@ -66,7 +66,6 @@ public:
             killed(false) {
     }
 
-protected:
     virtual ~Damageable() = default;
     // forbidden
     Damageable(const Damageable &) = delete;

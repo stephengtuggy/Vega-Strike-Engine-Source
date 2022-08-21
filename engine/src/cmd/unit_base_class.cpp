@@ -60,3 +60,4 @@ bool UnitBaseClass::operator<(const UnitBaseClass &other) const {
         return this->getFlightgroupSubNumber() < other.getFlightgroupSubNumber();
     }
 }
+

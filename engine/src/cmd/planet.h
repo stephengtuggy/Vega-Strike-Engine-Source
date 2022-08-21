@@ -60,7 +60,7 @@ protected:
     bool inside = false;
     bool atmospheric = false; //then users can go inside!
     float radius = 0.0f;
-    float gravity;
+    float gravity{};
     UnitCollection insiders;
     std::vector<int> lights;
 public:
@@ -108,7 +108,7 @@ public:
             bool inside_out,
             unsigned int lights_num);
 
-    virtual ~Planet();
+    ~Planet() override = default;
 
     friend class PlanetaryOrbit;
 

@@ -381,7 +381,7 @@ int main(int argc, char *argv[]) {
         InitShipCommands();
     }
     _Universe = new Universe(argc, argv, game_options()->galaxy.c_str());
-    TheTopLevelUnit = new Unit(0);
+    TheTopLevelUnit = make_shared_from_intrusive(new Unit(0));
     _Universe->Loop(bootstrap_first_loop);
 
     //Unregister commands - and cleanup memory

@@ -95,7 +95,7 @@ using std::endl;
 using std::list;
 
 std::string getMasterPartListUnitName() {
-    return VegaUnit::configuration()->data_config.master_part_list;
+    return configuration()->data_config.master_part_list;
 }
 
 UnitPtr _masterPartList = nullptr;
@@ -105,7 +105,7 @@ UnitPtr getMasterPartList() {
         static bool making = true;
         if (making) {
             making = false;
-            _masterPartList = VegaUnit::Unit::makeMasterPartList();
+            _masterPartList = Unit::makeMasterPartList();
             making = true;
         }
     }
@@ -123,11 +123,8 @@ void Unit::setFaceCamera() {
 void Unit::SetNebula(Nebula *neb) {
     nebula = neb;
     if (!SubUnits.empty()) {
-        un_fiter iter = SubUnits.fastIterator();
-        UnitPtr un;
-        while ((un = *iter)) {
-            un->SetNebula(neb);
-            ++iter;
+        for (auto & un : SubUnits.get<UnitSequenced>()) {
+            un.SetNebula(neb);
         }
     }
 }
@@ -271,7 +268,7 @@ char *GetUnitDir(const char *filename) {
  **** UNIT STUFF
  **********************************************************************************
  */
-Unit::Unit(int /*dummy*/) : Drawable(), Damageable(), Movable() {
+Unit::Unit(int /*dummy*/) : UnitBaseClass(), Armed(), Audible(), Drawable(), Damageable(), Energetic(), Intelligent(), Movable(), JumpCapable(), Carrier() {
     pImage = (new UnitImages<void>);
     pImage->cockpit_damage = NULL;
     pilot = new Pilot(FactionUtil::GetNeutralFaction());
@@ -279,7 +276,7 @@ Unit::Unit(int /*dummy*/) : Drawable(), Damageable(), Movable() {
     Init();
 }
 
-Unit::Unit() : Drawable(), Damageable(), Movable() //: cumulative_transformation_matrix( identity_matrix )
+Unit::Unit() : UnitBaseClass(), Armed(), Audible(), Drawable(), Damageable(), Energetic(), Intelligent(), Movable(), JumpCapable(), Carrier() //: cumulative_transformation_matrix( identity_matrix )
 {
     pImage = (new UnitImages<void>);
     pImage->cockpit_damage = NULL;
@@ -289,7 +286,7 @@ Unit::Unit() : Drawable(), Damageable(), Movable() //: cumulative_transformation
 }
 
 Unit::Unit(std::vector<Mesh *> &meshes, bool SubU, int fact)
-        : Drawable(), Damageable(), Movable() //: cumulative_transformation_matrix( identity_matrix )
+        : UnitBaseClass(), Armed(), Audible(), Drawable(), Damageable(), Energetic(), Intelligent(), Movable(), JumpCapable(), Carrier() //: cumulative_transformation_matrix( identity_matrix )
 {
     pImage = (new UnitImages<void>);
     pilot = new Pilot(fact);
@@ -303,7 +300,7 @@ Unit::Unit(std::vector<Mesh *> &meshes, bool SubU, int fact)
     meshes.clear();
     meshdata.push_back(NULL);
     calculate_extent(false);
-    pilot->SetComm(this);
+    pilot->SetComm(make_shared_from_intrusive(this));
 }
 
 extern void update_ani_cache();
@@ -314,13 +311,13 @@ Unit::Unit(const char *filename,
         std::string unitModifications,
         Flightgroup *flightgrp,
         int fg_subnumber)
-        : Drawable(), Damageable(), Movable() //: cumulative_transformation_matrix( identity_matrix )
+        : UnitBaseClass(stringPoolUpsert(flightgrp->name), fg_subnumber), Armed(), Audible(), Drawable(), Damageable(), Energetic(), Intelligent(), Movable(), JumpCapable(), Carrier() //: cumulative_transformation_matrix( identity_matrix )
 {
     pImage = (new UnitImages<void>);
     pilot = new Pilot(faction);
     pImage->cockpit_damage = NULL;
     Init(filename, SubU, faction, unitModifications, flightgrp, fg_subnumber);
-    pilot->SetComm(this);
+    pilot->SetComm(make_shared_from_intrusive(this));
 }
 
 Unit::~Unit() {
@@ -334,7 +331,7 @@ Unit::~Unit() {
         VS_LOG_AND_FLUSH(fatal, "DISASTER AREA!!!!");
     }
     VS_LOG(trace, (boost::format("Deallocating unit %1$s addr=%2$x refs=%3$d")
-            % name.get() % this % use_count()));
+            % name % this % use_count()));
 #ifdef DESTRUCTDEBUG
     VS_LOG_AND_FLUSH(trace, (boost::format("stage %1$d %2$x %3$d") % 0 % this % use_count()));
 #endif
@@ -598,7 +595,7 @@ void Unit::calculate_extent(bool update_collide_queue) {
 }
 
 const string Unit::getFgID() {
-    if (flightgroup != NULL) {
+    if (flightgroup != nullptr) {
         char buffer[32];
         sprintf(buffer, "-%d", flightgroup_subnumber);
         return flightgroup->name + buffer;
@@ -607,16 +604,22 @@ const string Unit::getFgID() {
     }
 }
 
-void Unit::SetFaction(int faction) {
-    this->faction = faction;
-    for (un_iter ui = getSubUnits(); (*ui) != NULL; ++ui) {
-        (*ui)->SetFaction(faction);
+void Unit::SetFaction(int new_faction) {
+    this->faction = new_faction;
+    BySequence & my_sub_units = SubUnits.get<UnitSequenced>();
+    UnitSequencedIterator un_iter_1 = my_sub_units.begin();
+    UnitSequencedIterator un_iter_end = my_sub_units.end();
+    while (un_iter_1 != un_iter_end) {
+        my_sub_units.modify(un_iter_1, [new_faction](boost::shared_ptr<UnitBaseClass>& un){ vega_dynamic_cast_boost_shared_ptr<Unit>(un)->SetFaction(new_faction); });
+        ++un_iter_1;
     }
 }
 
 void Unit::SetFg(Flightgroup *fg, int fg_subnumber) {
     flightgroup = fg;
     flightgroup_subnumber = fg_subnumber;
+    flightgroup_name_ = fg->name;
+    flightgroup_sub_number_ = fg_subnumber;
 }
 
 static float tmpsqr(float x) {

@@ -143,6 +143,11 @@ const char *GetFaction(int faction);
  */
 int GetFactionIndex(const std::string &name);
 
+inline int GetFactionIndex(VegaStringPtr name) {
+    const std::string temp{*(name.get())};
+    return GetFactionIndex(temp);
+}
+
 inline int GetUpgradeFaction() {
     return upgradefac;
 }

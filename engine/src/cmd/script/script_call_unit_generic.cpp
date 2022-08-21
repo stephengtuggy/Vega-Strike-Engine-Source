@@ -1022,25 +1022,25 @@ UnitPtr Mission::call_unit_launch(CreateFlightgroup *fg, int type, const string 
             if (bsrc[0] != '\0') {
                 s = parse_alpha(bsrc);
             }
-            my_unit = new Planet(QVector(0, 0, 0), QVector(0, 0, 0), 0, Vector(0, 0, 0),
+            my_unit = make_shared_from_intrusive<Unit>(new Planet(QVector(0, 0, 0), QVector(0, 0, 0), 0, Vector(0, 0, 0),
                     0, 0, radius, tex, "", "", s,
                     d, ParseDestinations(destinations),
-                    QVector(0, 0, 0), NULL, mat,
-                    vector<GFXLightLocal>(), faction_nr, nam);
+                    QVector(0, 0, 0), nullptr, mat,
+                    vector<GFXLightLocal>(), faction_nr, nam));
             free(bsrc);
             free(bdst);
             free(tex);
             free(nam);
             free(citylights);
         } else if (type == Vega_UnitType::nebula) {
-            my_unit = new Nebula(
-                    fg->fg->type.c_str(), false, faction_nr, fg->fg, u + fg->fg->nr_ships - fg->nr_ships);
+            my_unit = make_shared_from_intrusive(new Nebula(
+                    fg->fg->type.c_str(), false, faction_nr, fg->fg, u + fg->fg->nr_ships - fg->nr_ships));
         } else if (type == Vega_UnitType::asteroid) {
-            my_unit = new Asteroid(
-                    fg->fg->type.c_str(), faction_nr, fg->fg, u + fg->fg->nr_ships - fg->nr_ships, .01);
+            my_unit = make_shared_from_intrusive(new Asteroid(
+                    fg->fg->type.c_str(), faction_nr, fg->fg, u + fg->fg->nr_ships - fg->nr_ships, .01));
         } else {
-            my_unit = new Unit(fg->fg->type.c_str(), false, faction_nr, string(
-                    ""), fg->fg, u + fg->fg->nr_ships - fg->nr_ships);
+            my_unit = make_shared_from_intrusive(new Unit(fg->fg->type.c_str(), false, faction_nr, string(
+                    ""), fg->fg, u + fg->fg->nr_ships - fg->nr_ships));
         }
         units[u] = my_unit;
     }

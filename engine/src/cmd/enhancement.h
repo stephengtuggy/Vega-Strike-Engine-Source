@@ -36,7 +36,7 @@ public:
     Enhancement(const char *filename,
             int faction,
             const string &modifications,
-            Flightgroup *flightgrp = NULL,
+            Flightgroup *flightgrp = nullptr,
             int fg_subnumber = 0) :
             Unit(filename, false, faction, modifications, flightgrp, fg_subnumber) {
         string file(filename);
@@ -46,17 +46,19 @@ public:
 protected:
     std::string filename;
 
-    enum Vega_UnitType isUnit() const {
+    enum Vega_UnitType isUnit() const override {
         return Vega_UnitType::enhancement;
     }
 
-protected:
+public:
 /// default constructor forbidden
-    Enhancement();
+    Enhancement() = delete;
 /// copy constructor forbidden
-    Enhancement(const Enhancement &);
+    Enhancement(const Enhancement &) = delete;
 /// assignment operator forbidden
-    Enhancement &operator=(const Enhancement &);
+    Enhancement &operator=(const Enhancement &) = delete;
+    /// destructor
+    ~Enhancement() override = default;
 };
 
 #endif
