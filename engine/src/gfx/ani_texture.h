@@ -49,13 +49,13 @@ class AnimatedTexture : public Texture {
     int texstage;
     SharedPtr<Audio::Source> timeSource;
 
-    vector<StringPool::Reference> frames; //Filenames for each frame
+    vector<boost::shared_ptr<std::string>> frames; //Filenames for each frame
     vector<Vector> frames_maxtc; //Maximum tcoords for each frame
     vector<Vector> frames_mintc; //Minimum tcoords for each frame
 
     VidFile *vidSource;
 
-    StringPool::Reference wrapper_file_path;
+    boost::shared_ptr<std::string> wrapper_file_path;
     VSFileSystem::VSFileType wrapper_file_type;
 
     //Options

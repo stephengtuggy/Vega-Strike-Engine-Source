@@ -35,13 +35,13 @@
 #include "SharedPool.h"
 
 struct SavedUnits {
-    StringPool::Reference filename;
+    VegaStringPtr filename;
     int type;
-    StringPool::Reference faction;
+    VegaStringPtr faction;
 
     SavedUnits(const char *filen, int typ, const char *fact) {
-        faction = std::string(fact);
-        filename = std::string(filen);
+        faction = stringPoolUpsert(fact);
+        filename = stringPoolUpsert(filen);
         type = typ;
     }
 };

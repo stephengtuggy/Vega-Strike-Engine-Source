@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2001-2022 Daniel Horn, pyramid3d, Stephen G. Tuggy,
+ * vega_string_utils.hpp
+ *
+ * Copyright (C) 2001-2022 Daniel Horn, Stephen G. Tuggy,
  * and other Vega Strike contributors.
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
@@ -20,37 +22,29 @@
  * along with Vega Strike. If not, see <https://www.gnu.org/licenses/>.
  */
 
-//#include <string>
-//#include "SharedPool.h"
-//
-//template<typename T, typename RT>
-//SharedPool<T, RT> *SharedPool<T, RT>::ms_singleton = 0;
-//
-//template<typename T, typename RT>
-//SharedPool<T, RT>::SharedPool()
-//#ifdef __GLIBC__
-//        : referenceCounter(
-//#if defined (_WIN32) || __GNUC__ != 2
-//        RT::min_buckets
-//#endif
-//)
-//#endif
-//{
-//    if (ms_singleton == 0) {
-//        ms_singleton = this;
-//    }
-//}
-//
-//template<typename T, typename RT>
-//SharedPool<T, RT>::~SharedPool() {
-//    if (ms_singleton == this) {
-//        ms_singleton = 0;
-//    }
-//}
-//
-//class SharedPoolInitializer {
-//    StringPool stringPool;
-//};
-//
-//static SharedPoolInitializer sharedPoolInitializer;
+#ifndef VEGA_STRIKE_SRC_VEGA_STRING_UTILS_HPP_
+#define VEGA_STRIKE_SRC_VEGA_STRING_UTILS_HPP_
 
+#include "vs_logging.h"
+
+inline char *vega_str_dup(const char *string) {
+#if _XOPEN_SOURCE >= 500 || _POSIX_C_SOURCE >= 200809L
+    return strdup(string);
+#elif defined (WIN32)
+    return _strdup(string);
+#else
+    size_t buf_size = strlen(string) + 1;
+    char *alloc;
+    alloc = (char *)malloc(buf_size);
+    if (alloc == nullptr)
+    {
+        VS_LOG_AND_FLUSH(fatal, "Out of memory");
+        VSExit(-1);
+    }
+    strncpy(alloc, string, buf_size);
+    alloc[buf_size - 1] = '\0';
+    return alloc;
+#endif
+}
+
+#endif //VEGA_STRIKE_SRC_VEGA_STRING_UTILS_HPP_

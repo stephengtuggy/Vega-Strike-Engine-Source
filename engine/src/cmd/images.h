@@ -174,8 +174,8 @@ struct UnitImages {
 
     virtual ~UnitImages();
 
-    StringPool::Reference cockpitImage;
-    StringPool::Reference explosion_type;
+    boost::shared_ptr<std::string> cockpitImage;
+    boost::shared_ptr<std::string> explosion_type;
     Vector CockpitCenter;
     VSSprite *pHudImage = nullptr;
     ///The explosion starts at null, when activated time explode is incremented and ends at null

@@ -1,10 +1,8 @@
-/**
+/*
  * cargo.h
  *
- * Copyright (c) 2001-2002 Daniel Horn
- * Copyright (c) 2002-2019 pyramid3d and other Vega Strike Contributors
- * Copyright (c) 2019-2021 Stephen G. Tuggy, and other Vega Strike Contributors
- * Copyright (C) 2022 Stephen G. Tuggy
+ * Copyright (c) 2001-2022 Daniel Horn, pyramid3d, Stephen G. Tuggy,
+ * and other Vega Strike Contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -34,10 +32,11 @@
 #include <string>
 
 class Cargo {
+protected:
+    VegaStringPtr content;
+    VegaStringPtr category;
+    VegaStringPtr description;
 public:
-    StringPool::Reference content;
-    StringPool::Reference category;
-    StringPool::Reference description;
     int quantity;
     float price;
     float mass;
@@ -60,6 +59,7 @@ public:
     void SetQuantity(int quantity);
     void SetContent(const std::string &content);
     void SetCategory(const std::string &category);
+    void SetDescription(const std::string & new_description);
 
     bool GetMissionFlag() const;
     const std::string &GetCategory() const;

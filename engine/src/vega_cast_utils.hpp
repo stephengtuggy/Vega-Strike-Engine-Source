@@ -1,4 +1,6 @@
 /*
+ * vega_cast_utils.hpp
+ *
  * Copyright (C) 2001-2022 Daniel Horn, Stephen G. Tuggy,
  * and other Vega Strike contributors.
  *
@@ -45,10 +47,10 @@ inline TargetType* vega_dynamic_cast_ptr(SourceType* from) {
 }
 
 template<class TargetType, class SourceType>
-inline const TargetType* vega_dynamic_const_cast_ptr(const SourceType* from) {
+inline TargetType const * vega_dynamic_const_cast_ptr(SourceType const * from) {
     TargetType* ret_val = nullptr;
     try {
-        ret_val = dynamic_cast<TargetType*>(from);
+        ret_val = dynamic_cast<TargetType const *>(from);
     } catch (std::bad_cast& e) {
         VS_LOG_AND_FLUSH(fatal, (boost::format("Fatal Error '%1%' casting type const %2%* to const %3%*") % e.what() % typeid(SourceType).name() % typeid(TargetType).name()));
         VSExit(-422);

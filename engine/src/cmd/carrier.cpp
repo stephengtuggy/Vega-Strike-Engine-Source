@@ -106,16 +106,13 @@ std::string CargoToString(const Cargo &cargo) {
             + string("\"/>\n");
 }
 
-Carrier::Carrier() {
-
-}
+Carrier::Carrier() = default;
 
 void Carrier::SortCargo() {
-    // TODO: better cast
-    UnitPtr un = (UnitPtr) this;
+    UnitRawPtr un = vega_dynamic_cast_ptr<Unit>(this);
     std::sort(un->cargo.begin(), un->cargo.end());
     for (unsigned int i = 0; i + 1 < un->cargo.size(); ++i) {
-        if (un->cargo[i].content == un->cargo[i + 1].content) {
+        if (un->cargo[i].GetContent() == un->cargo[i + 1].GetContent()) {
             float tmpmass = un->cargo[i].quantity * un->cargo[i].mass
                     + un->cargo[i + 1].quantity * un->cargo[i + 1].mass;
             float tmpvolume = un->cargo[i].quantity * un->cargo[i].volume
@@ -135,9 +132,15 @@ void Carrier::SortCargo() {
     }
 }
 
-std::string Carrier::cargoSerializer(const XMLType &input, void *mythis) {
-    UnitPtr un = (UnitPtr) mythis;
-    if (un->cargo.size() == 0) {
+std::string Carrier::cargoSerializer(const XMLType &input, void *my_this) {
+    UnitRawPtr un{};
+    try {
+        un = (UnitRawPtr)my_this;
+    } catch (std::bad_cast& e) {
+        VS_LOG_AND_FLUSH(fatal, (boost::format("Carrier::cargoSerializer(): Bad cast exception '%1%' casting void *mythis to UnitRawPtr") % e.what()));
+        VSExit(-422);
+    }
+    if (un->cargo.empty()) {
         return string("0");
     }
     un->SortCargo();
@@ -145,7 +148,7 @@ std::string Carrier::cargoSerializer(const XMLType &input, void *mythis) {
     if (!(un->cargo.empty())) {
         retval = un->cargo[0].GetCategory() + string("\">\n") + CargoToString(un->cargo[0]);
         for (unsigned int kk = 1; kk < un->cargo.size(); ++kk) {
-            if (un->cargo[kk].category != un->cargo[kk - 1].category) {
+            if (un->cargo[kk].GetCategory() != un->cargo[kk - 1].GetCategory()) {
                 retval += string("\t\t</Category>\n\t\t<Category file=\"") + un->cargo[kk].GetCategory() + string(
                         "\">\n");
             }
@@ -180,7 +183,7 @@ void Carrier::EjectCargo(unsigned int index) {
             isplayer = true;
         }
         //we will have to check for this on undock to return to the parent unit!
-        dockedPilot.content = "return_to_cockpit";
+        dockedPilot.SetContent("return_to_cockpit");
         dockedPilot.mass = .1;
         dockedPilot.volume = 1;
         tmp = &dockedPilot;
@@ -192,7 +195,7 @@ void Carrier::EjectCargo(unsigned int index) {
             string playernum = string("player") + ((pilotnum == 0) ? string("") : XMLSupport::tostring(pilotnum));
             isplayer = true;
         }
-        ejectedPilot.content = "eject";
+        ejectedPilot.SetContent("eject");
         ejectedPilot.mass = .1;
         ejectedPilot.volume = 1;
         tmp = &ejectedPilot;
@@ -202,7 +205,7 @@ void Carrier::EjectCargo(unsigned int index) {
     }
     static float cargotime = XMLSupport::parse_float(vs_config->getVariable("physics", "cargo_live_time", "600"));
     if (tmp) {
-        string tmpcontent = tmp->content;
+        string tmpcontent = tmp->GetContent();
         if (tmp->mission) {
             tmpcontent = "Mission_Cargo";
         }
@@ -564,13 +567,13 @@ UnitPtr Carrier::makeMasterPartList() {
         json::jobject part = json::jobject::parse(part_text);
         Cargo carg;
 
-        carg.content = getJSONValue(part, "file", "");
-        carg.category = getJSONValue(part, "categoryname", "");
+        carg.SetContent(getJSONValue(part, "file", ""));
+        carg.SetCategory(getJSONValue(part, "categoryname", ""));
         carg.volume = std::stof(getJSONValue(part, "volume", ""));
         carg.mass = std::stof(getJSONValue(part, "mass", ""));
         carg.quantity = 1;
         carg.price = std::stoi(getJSONValue(part, "price", ""));
-        carg.description = getJSONValue(part, "description", "");
+        carg.SetDescription(getJSONValue(part, "description", ""));
         ret->cargo.push_back(carg);
     }
 
@@ -591,7 +594,7 @@ float Carrier::PriceCargo(const std::string &s) {
     UnitPtr unit = static_cast<UnitPtr>(this);
 
     Cargo tmp;
-    tmp.content = s;
+    tmp.SetContent(s);
     vector<Cargo>::iterator mycargo = std::find(unit->cargo.begin(),
             unit->cargo.end(), tmp);
     if (mycargo == unit->cargo.end()) {
@@ -637,10 +640,10 @@ void Carrier::GetSortedCargoCat(const std::string &cat, size_t &begin, size_t &e
     vector<Cargo>::iterator ubound = unit->cargo.end();
 
     Cargo beginningtype;
-    beginningtype.category = cat;
+    beginningtype.SetCategory(cat);
     CatCompare Comp;
     lbound = std::lower_bound(Begin, End, beginningtype, Comp);
-    beginningtype.content = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
+    beginningtype.SetContent("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
     ubound = std::upper_bound(Begin, End, beginningtype, Comp);
     begin = lbound - Begin;
     end = ubound - Begin;
@@ -662,20 +665,20 @@ const Cargo *Carrier::GetCargo(const std::string &s, unsigned int &i) const {
     const UnitPtr unit = static_cast<const UnitPtr>(this);
 
     static Hashtable<string, unsigned int, 2047> index_cache_table;
-    UnitPtr mpl = getMasterPartList();
+    UnitRawPtr mpl = getMasterPartList().get();
     if (this == mpl) {
         unsigned int *ind = index_cache_table.Get(s);
         if (ind) {
             if (*ind < unit->cargo.size()) {
                 Cargo *guess = const_cast<Cargo *>(&unit->cargo[*ind]);
-                if (guess->content == s) {
+                if (guess->GetContent() == s) {
                     i = *ind;
                     return guess;
                 }
             }
         }
         Cargo searchfor;
-        searchfor.content = s;
+        searchfor.SetContent(s);
 
         // TODO: could not deduce the right var type. Resorted to auto
         //vector< Cargo >::iterator tmp = std::find( unit->cargo.begin(),
@@ -684,7 +687,7 @@ const Cargo *Carrier::GetCargo(const std::string &s, unsigned int &i) const {
         if (tmp == unit->cargo.end()) {
             return nullptr;
         }
-        if ((*tmp).content == searchfor.content) {
+        if ((*tmp).GetContent() == searchfor.GetContent()) {
             i = (tmp - unit->cargo.begin());
             if (this == mpl) {
                 unsigned int *tmp = new unsigned int;
@@ -700,7 +703,7 @@ const Cargo *Carrier::GetCargo(const std::string &s, unsigned int &i) const {
         return nullptr;
     }
     Cargo searchfor;
-    searchfor.content = s;
+    searchfor.SetContent(s);
 
     // TODO: could not deduce the right var type. Resorted to auto
     auto tmp = (std::find(unit->cargo.begin(), unit->cargo.end(), searchfor));
@@ -720,7 +723,7 @@ std::string Carrier::GetManifest(unsigned int i, UnitPtr scanningUnit, const Vec
     const UnitPtr unit = static_cast<const UnitPtr>(this);
 
     ///FIXME somehow mangle string
-    string mangled = unit->cargo[i].content;
+    string mangled = unit->cargo[i].GetContent();
     static float scramblingmanifest =
             XMLSupport::parse_float(vs_config->getVariable("general", "PercentageSpeedChangeToFaultSearch", ".5"));
     {
@@ -752,7 +755,7 @@ bool Carrier::SellCargo(unsigned int i, int quantity, float &creds, Cargo &carg,
     if (quantity > unit->cargo[i].quantity) {
         quantity = unit->cargo[i].quantity;
     }
-    carg.price = buyer->PriceCargo(unit->cargo[i].content);
+    carg.price = buyer->PriceCargo(unit->cargo[i].GetContent());
     creds += quantity * carg.price;
 
     carg.quantity = quantity;
@@ -763,10 +766,10 @@ bool Carrier::SellCargo(unsigned int i, int quantity, float &creds, Cargo &carg,
 }
 
 bool Carrier::SellCargo(const std::string &s, int quantity, float &creds, Cargo &carg, UnitPtr buyer) {
-    const UnitPtr unit = static_cast<const UnitPtr>(this);
+    Unit const * unit = vega_dynamic_const_cast_ptr<Unit>(this);
 
     Cargo tmp;
-    tmp.content = s;
+    tmp.SetContent(s);
 
     // TODO: could not deduce the right var type. Resorted to auto
     auto mycargo = std::find(unit->cargo.begin(), unit->cargo.end(), tmp);

@@ -46,7 +46,7 @@ public:
     void FileNotFound(const std::string &); //undoes what it did to hash table when file is not located
 
     ///The file name used to load this texture
-    StringPool::Reference texfilename;
+    boost::shared_ptr<std::string> texfilename;
 
     ///the filter mode of this texture
     enum FILTER ismipmapped;

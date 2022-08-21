@@ -154,7 +154,7 @@ class Unit : public UnitBaseClass,
         public JumpCapable,
         public Carrier {
 protected:
-    //StringPool::Reference csvRow;
+    //boost::shared_ptr<std::string> csvRow;
     std::string csvRow;
 public:
 //    using IntrusiveUnitRefCounter = boost::intrusive_ref_counter<Unit, boost::thread_safe_counter>;
@@ -193,8 +193,8 @@ public:
     //The name (type) of this unit shouldn't be public
     std::string name;
     std::string filename;
-    //    StringPool::Reference name;
-    //    StringPool::Reference filename;
+    //    boost::shared_ptr<std::string> name;
+    //    boost::shared_ptr<std::string> filename;
 
 /*
  **************************************************************************************
@@ -785,7 +785,7 @@ public:
 
 public:
 //not used yet
-    StringPool::Reference target_fgid[3];
+    boost::shared_ptr<std::string> target_fgid[3];
 
     bool InRange(const UnitPtr target, bool cone = true, bool cap = true) const {
         double mm;
@@ -847,7 +847,7 @@ public:
     enum COLLIDELOCATIONTYPES { UNIT_ONLY = 0, UNIT_BOLT = 1, NUM_COLLIDE_MAPS = 2 };
 //location[0] is for units only, location[1] is for units + bolts
     // This used to be initialized by set_null (see collide_map)
-    // Right now, there's an ifdef that assigns NULL but it could be something else.
+    // Right now, there's an ifdef that assigns NULL, but it could be something else.
     CollideMap::iterator location[2] = {nullptr, nullptr};
     struct collideTrees *colTrees = nullptr;
 //Sets the parent to be this unit. Unit never dereferenced for this operation
@@ -1019,7 +1019,7 @@ public:
 ////Low level list function to reference the unit as being the target of a UnitContainer or Colleciton
 ////Releases the unit from this reference of UnitContainer or Collection
 //    void UnRef();
-//0 in additive is reaplce  1 is add 2 is mult
+//0 in additive is replace  1 is add 2 is mult
 //Put that in NetUnit & AcctUnit with string and with Unit
     UnitImages<void> &GetImageInformation();
 

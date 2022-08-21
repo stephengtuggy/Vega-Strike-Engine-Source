@@ -577,7 +577,7 @@ void RecomputeUnitUpgrades(UnitPtr un) {
         if (c->GetCategory().find("upgrades") == 0 && c->GetCategory().find(DamagedCategory) != 0) {
             if (c->GetContent().find("mult_") != 0
                     && c->GetContent().find("add_") != 0) {
-                un->Upgrade(c->content, 0, 0, true, false);
+                un->Upgrade(c->GetContent(), 0, 0, true, false);
             }
         }
     }
@@ -586,7 +586,7 @@ void RecomputeUnitUpgrades(UnitPtr un) {
         if (c->GetCategory().find("upgrades") == 0 && c->GetCategory().find(DamagedCategory) != 0) {
             if (c->GetContent().find("add_") == 0) {
                 for (int j = 0; j < c->quantity; ++j) {
-                    un->Upgrade(c->content, 0, 0, true, false);
+                    un->Upgrade(c->GetContent(), 0, 0, true, false);
                 }
             }
         }
@@ -596,7 +596,7 @@ void RecomputeUnitUpgrades(UnitPtr un) {
         if (c->GetCategory().find("upgrades") == 0 && c->GetCategory().find(DamagedCategory) != 0) {
             if (c->GetContent().find("mult_") == 0) {
                 for (int j = 0; j < c->quantity; ++j) {
-                    un->Upgrade(c->content, 0, 0, true, false);
+                    un->Upgrade(c->GetContent(), 0, 0, true, false);
                 }
             }
         }

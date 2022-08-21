@@ -40,7 +40,7 @@ Cargo::Cargo() {
 }
 
 Cargo::Cargo(std::string name, std::string cc, float pp, int qq, float mm, float vv, float func, float maxfunc) :
-        content(name), category(cc) {
+        content(stringPoolUpsert(name)), category(stringPoolUpsert(cc)) {
     quantity = qq;
     price = pp;
     mass = mm;
@@ -52,7 +52,7 @@ Cargo::Cargo(std::string name, std::string cc, float pp, int qq, float mm, float
 }
 
 Cargo::Cargo(std::string name, std::string cc, float pp, int qq, float mm, float vv) :
-        content(name), category(cc) {
+        content(stringPoolUpsert(name)), category(stringPoolUpsert(cc)) {
     quantity = qq;
     price = pp;
     mass = mm;
@@ -99,11 +99,11 @@ void Cargo::SetQuantity(int quantity) {
 }
 
 void Cargo::SetContent(const std::string &content) {
-    this->content = content;
+    this->content = stringPoolUpsert(content);
 }
 
 void Cargo::SetCategory(const std::string &category) {
-    this->category = category;
+    this->category = stringPoolUpsert(category);
 }
 
 bool Cargo::GetMissionFlag() const {
@@ -111,15 +111,15 @@ bool Cargo::GetMissionFlag() const {
 }
 
 const std::string &Cargo::GetCategory() const {
-    return category;
+    return *category;
 }
 
 const std::string &Cargo::GetContent() const {
-    return content;
+    return *content;
 }
 
 const std::string &Cargo::GetDescription() const {
-    return description;
+    return *description;
 }
 
 std::string Cargo::GetCategoryPython() {
@@ -151,11 +151,15 @@ float Cargo::GetPrice() const {
 }
 
 bool Cargo::operator==(const Cargo &other) const {
-    return content == other.content;
+    return *content == other.GetContent();
 }
 
 bool Cargo::operator<(const Cargo &other) const {
-    return (category == other.category) ? (content < other.content) : (category < other.category);
+    return (*category == other.GetCategory()) ? (*content < other.GetContent()) : (*category < other.GetCategory());
+}
+
+void Cargo::SetDescription(const std::string & new_description) {
+    this->description = stringPoolUpsert(new_description);
 }
 
 

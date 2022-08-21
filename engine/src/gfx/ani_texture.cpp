@@ -601,7 +601,7 @@ void AnimatedTexture::LoadAni(VSFileSystem::VSFile &f, int stage, enum FILTER is
                 }
             }
             if (vidMode) {
-                frames.push_back(StringPool::Reference(string(temp)));
+                frames.push_back(boost::shared_ptr<std::string>(string(temp)));
                 frames_mintc.push_back(Vector(
                         XMLSupport::parse_float(XMLSupport::parse_option_value(opt, "mins", defms)),
                         XMLSupport::parse_float(XMLSupport::parse_option_value(opt, "mint", defmt)),

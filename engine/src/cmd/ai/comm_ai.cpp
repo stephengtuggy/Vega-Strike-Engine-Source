@@ -186,7 +186,7 @@ static int InList(std::string item, UnitPtr un) {
     float numcontr = 0;
     if (un) {
         for (unsigned int i = 0; i < un->numCargo(); i++) {
-            if (un->GetCargo(i).content == item) {
+            if (un->GetCargo(i).GetContent() == item) {
                 if (un->GetCargo(i).quantity > 0) {
                     numcontr++;
                 }
@@ -235,7 +235,7 @@ void CommunicatingAI::UpdateContrabandSearch() {
                             unsigned int max = u->numCargo();
                             unsigned int quantity = 0;
                             for (unsigned int i = 0; i < max; ++i) {
-                                if (InList(u->GetCargo(i).content, contrabandlist) > 0) {
+                                if (InList(u->GetCargo(i).GetContent(), contrabandlist) > 0) {
                                     quantity += u->GetCargo(i).quantity;
                                     if (quantity > HiddenTotal) {
                                         TerminateContrabandSearch(true);

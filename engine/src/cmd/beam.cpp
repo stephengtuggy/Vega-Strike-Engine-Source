@@ -586,16 +586,16 @@ bool Beam::Collide(UnitPtr target, UnitPtr firer, UnitPtr superunit) {
                     //add upgrades as space junk
                     if (isnotcargo) {
                         c = &tmp;
-                        tmp.content = "Space_Salvage";
-                        tmp.category = "Uncategorized_Cargo";
+                        tmp.SetContent("Space_Salvage");
+                        tmp.SetCategory("Uncategorized_Cargo");
                         static float spacejunk = parse_float(vs_config->getVariable("cargo", "space_junk_price", "10"));
                         tmp.price = spacejunk;
                         tmp.quantity = 1;
                         tmp.mass = .001;
                         tmp.volume = 1;
                         if (target->faction != upgradesfaction) {
-                            tmp.content = target->name;
-                            tmp.category = "starships";
+                            tmp.SetContent(target->name);
+                            tmp.SetCategory("starships");
                             static float starshipprice =
                                     XMLSupport::parse_float(vs_config->getVariable("cargo",
                                             "junk_starship_price",

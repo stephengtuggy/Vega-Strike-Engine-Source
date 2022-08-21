@@ -1320,7 +1320,7 @@ void VDU::DrawDamage(UnitPtr parent) {
                         && the_cargo.GetContent().find("add_") != 0
                         && non_repair_screen_cargo.find(the_cargo.GetContent())
                                 == std::string::npos)) {
-            percent_working = UnitUtil::PercentOperational(parent, the_cargo.content, the_cargo.category, false);
+            percent_working = UnitUtil::PercentOperational(parent, the_cargo.GetContent(), the_cargo.GetCategory(), false);
             //retval+=parent->GetManifest (i,parent,parent->GetVelocity())+string (" (")+tostring (int(percent_working*100))+string ("%)" +the_cargo.GetCategory()+"\n");
             REPORTITEM(percent_working,
                     1.0,

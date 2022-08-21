@@ -40,12 +40,12 @@
  */
 class SoundContainer {
 private:
-    StringPool::Reference soundFile;
+    boost::shared_ptr<std::string> soundFile;
     float gain;
     bool looping;
 
 protected:
-    void init(const StringPool::Reference &soundfile, bool looping, float gain);
+    void init(const boost::shared_ptr<std::string> &soundfile, bool looping, float gain);
 
 public:
     /**
@@ -53,7 +53,7 @@ public:
      */
     SoundContainer(const SoundContainer &other);
     explicit SoundContainer(const std::string &soundfile, bool looping = false, float gain = 1.0f);
-    explicit SoundContainer(const StringPool::Reference &soundfile, bool looping = false, float gain = 1.0f);
+    explicit SoundContainer(const boost::shared_ptr<std::string> &soundfile, bool looping = false, float gain = 1.0f);
 
     const std::string &getSoundFile() const {
         return soundFile.get();

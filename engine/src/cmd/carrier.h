@@ -27,6 +27,7 @@
 #define CARRIER_H
 
 #include "cargo.h"
+#include "unit_fwd_decl.hpp"
 
 #include <string>
 
@@ -36,8 +37,9 @@ public:
     std::vector<Cargo> cargo;
 
     Carrier();
+    virtual ~Carrier() = default;
     void SortCargo();
-    static std::string cargoSerializer(const struct XMLType &input, void *mythis);
+    static std::string cargoSerializer(const struct XMLType &input, void *my_this);
 
     static UnitPtr makeMasterPartList();
     bool CanAddCargo(const Cargo &carg) const;

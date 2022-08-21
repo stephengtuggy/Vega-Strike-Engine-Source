@@ -285,11 +285,11 @@ void Enslave(UnitPtr parent, bool enslave) {
     for (i = numcargo; i > 0;) {
         Cargo *carg = &parent->GetCargo(--i);
         if (enslave) {
-            if (carg->GetCategory().find("Passengers") != string::npos && carg->content != "Hitchhiker") {
+            if (carg->GetCategory().find("Passengers") != string::npos && carg->GetContent() != "Hitchhiker") {
                 ToBeChanged.push_back(*carg);
                 parent->RemoveCargo(i, carg->quantity, true);
             }
-        } else if (carg->content == "Slaves" || carg->content == "Pilot") {
+        } else if (carg->GetContent() == "Slaves" || carg->GetContent() == "Pilot") {
             ToBeChanged.push_back(*carg);
             parent->RemoveCargo(i, carg->quantity, true);
         }
@@ -300,7 +300,7 @@ void Enslave(UnitPtr parent, bool enslave) {
         Cargo slave = *newCarg;
         for (i = 0; i < ToBeChanged.size(); ++i) {
             slave.quantity = ToBeChanged[i].quantity;
-            while (parent->CanAddCargo(slave) == false && (--slave.quantity) > 0) {
+            while (!parent->CanAddCargo(slave) && (--slave.quantity) > 0) {
             }
             if (slave.quantity) {
                 if (parent->CanAddCargo(slave)) {

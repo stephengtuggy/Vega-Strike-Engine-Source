@@ -59,7 +59,7 @@
 
 class gameMessage {
 public:
-    StringPool::Reference from, to, message;
+    boost::shared_ptr<std::string> from, to, message;
     double time;
 };
 

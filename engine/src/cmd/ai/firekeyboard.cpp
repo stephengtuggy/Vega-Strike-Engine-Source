@@ -1600,7 +1600,7 @@ void Arrested(UnitPtr parent) {
                 Cargo *ci = &parent->GetCargo(i);
                 for (unsigned int j = 0; j < contra->numCargo(); ++j) {
                     Cargo *cj = &contra->GetCargo(j);
-                    if (ci->content == cj->content) {
+                    if (ci->GetContent() == cj->GetContent()) {
                         attack = true;
                         break;
                     }

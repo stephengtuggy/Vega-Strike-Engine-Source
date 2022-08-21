@@ -430,15 +430,15 @@ void Damageable::DamageCargo(InflictedDamage inflicted_damage) {
         return;
     }
 
-    const int prefix_length = strlen("upgrades/");
-    cargo.category = "upgrades/Damaged/" + cargo_category.substr(prefix_length);
+    const size_t prefix_length = strlen("upgrades/");
+    cargo.SetCategory("upgrades/Damaged/" + cargo_category.substr(prefix_length));
 
     // TODO: find a better name for whatever this is. Right now it's not not downgrade
     if (configuration()->physics_config.separate_system_flakiness_component) {
         return;
     }
 
-    const UnitPtr downgrade = loadUnitByCache(cargo.content, FactionUtil::GetFactionIndex("upgrades"));
+    const UnitPtr downgrade = loadUnitByCache(cargo.GetContent(), FactionUtil::GetFactionIndex("upgrades"));
     if (!downgrade) {
         return;
     }
