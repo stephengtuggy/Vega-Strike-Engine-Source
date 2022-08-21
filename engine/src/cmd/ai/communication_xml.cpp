@@ -32,6 +32,7 @@
 #include <assert.h>
 #include "vsfilesystem.h"
 #include "vs_logging.h"
+#include "unit_base_class.hpp"
 
 static int unitlevel;
 using namespace XMLSupport;

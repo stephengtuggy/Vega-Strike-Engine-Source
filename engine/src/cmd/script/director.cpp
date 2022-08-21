@@ -69,6 +69,7 @@
 #include "gfx/cockpit_generic.h"
 #include "vs_logging.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 /* *********************************************************** */
 //ADD_FROM_PYTHON_FUNCTION(pythonMission)

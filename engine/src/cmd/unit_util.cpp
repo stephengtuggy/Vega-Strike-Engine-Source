@@ -34,6 +34,7 @@
 #include "vs_globals.h"
 #include "pilot.h"
 #include "universe.h"
+#include "unit_base_class.hpp"
 
 using std::string;
 namespace UnitUtil {

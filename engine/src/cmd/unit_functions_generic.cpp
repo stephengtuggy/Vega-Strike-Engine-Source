@@ -39,6 +39,7 @@
 #include "mount_size.h"
 #include "damageable.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 
 //Various functions that were used in .cpp files that are now included because of
@@ -68,15 +69,15 @@ int cloakVal(int cloak, int cloakmin, int cloakrate, bool cloakglass) {
     return cloak;
 }
 
-const UnitPtr getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0) {
+UnitConstRawPtr getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0) {
     const char *name = upgradeName.c_str();
-    const UnitPtr partUnit = UnitConstCache::getCachedConst(StringIntKey(name, FactionUtil::GetUpgradeFaction()));
+    UnitConstRawPtr partUnit = UnitConstCache::getCachedConst(StringIntKey(name, FactionUtil::GetUpgradeFaction()));
     if (!partUnit) {
         partUnit = UnitConstCache::setCachedConst(StringIntKey(name,
                         FactionUtil::GetUpgradeFaction()),
                 new Unit(name, true, FactionUtil::GetUpgradeFaction()));
     }
-    if (partUnit->name == "LOAD_FAILED") {
+    if (partUnit->failedToLoad()) {
         partUnit = UnitConstCache::getCachedConst(StringIntKey(name, myUnitFaction));
         if (!partUnit) {
             partUnit = UnitConstCache::setCachedConst(StringIntKey(name, myUnitFaction),

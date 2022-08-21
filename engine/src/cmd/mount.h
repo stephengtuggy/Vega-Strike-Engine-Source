@@ -115,7 +115,7 @@ public:
             const Transformation &Cumulative,
             const Matrix &mat,
             const Vector &Velocity,
-            void *owner,
+            UnitWeakPtr owner,
             UnitPtr target,
             signed char autotrack,
             float trackingcone,

@@ -31,6 +31,7 @@
 #include "config_xml.h"
 #include "universe.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 struct warptrails {
     vector<Mesh *> factions;

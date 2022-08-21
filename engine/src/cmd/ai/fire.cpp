@@ -42,6 +42,7 @@
 #include "cmd/pilot.h"
 #include "universe.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 extern int numprocessed;
 extern double targetpick;

@@ -87,6 +87,7 @@
 #include "weapon_info.h"
 #include "cockpit_gfx.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 #include <cstddef>
 #include <cfloat>

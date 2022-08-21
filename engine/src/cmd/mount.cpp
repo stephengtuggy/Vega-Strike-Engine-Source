@@ -45,6 +45,7 @@
 #include "weapon_info.h"
 #include "resource/resource.h"
 #include "gfx/boltdrawmanager.h"
+#include "unit_base_class.hpp"
 
 extern char SERVER;
 
@@ -237,14 +238,14 @@ bool Mount::PhysicsAlignedFire(UnitPtr caller,
         const Transformation &Cumulative,
         const Matrix &m,
         const Vector &velocity,
-        void *owner,
+        UnitWeakPtr owner,
         UnitPtr target,
         signed char autotrack,
         float trackingcone,
         CollideMap::iterator hint[]) {
     using namespace VSFileSystem;
     if (time_to_lock > 0) {
-        target = NULL;
+        target = nullptr;
     }
     static bool lock_disrupted_by_false_fire =
             XMLSupport::parse_bool(vs_config->getVariable("physics", "out_of_arc_fire_disrupts_lock", "false"));
@@ -321,7 +322,7 @@ bool Mount::PhysicsAlignedFire(UnitPtr caller,
                 string skript = /*string("ai/script/")+*/ type->file + string(".xai");
                 VSError err = LookForFile(skript, AiFile);
                 if (err <= Ok) {
-                    temp = new Missile(
+                    temp = make_shared_from_intrusive(new Missile(
                             type->file.c_str(),
                             caller->faction,
                             "",
@@ -330,7 +331,7 @@ bool Mount::PhysicsAlignedFire(UnitPtr caller,
                             type->range / type->speed,
                             type->radius,
                             type->radial_speed,
-                            type->pulse_speed /*detonation_radius*/);
+                            type->pulse_speed /*detonation_radius*/));
                     if (!match_speed_with_target) {
                         temp->GetComputerData().max_combat_speed = type->speed + velocity.Magnitude();
                         temp->GetComputerData().max_combat_ab_speed = type->speed + velocity.Magnitude();
@@ -431,7 +432,7 @@ bool Mount::PhysicsAlignedFire(UnitPtr caller,
                 XMLSupport::parse_bool(vs_config->getVariable("audio", "ai_high_quality_weapon", "false"));
         static bool ai_sound = XMLSupport::parse_bool(vs_config->getVariable("audio", "ai_sound", "true"));
         Cockpit *cp;
-        bool ips = ((cp = _Universe->isPlayerStarshipVoid(owner)) != NULL);
+        bool is_player_starship = ((cp = _Universe->isPlayerStarship(owner)) != nullptr);
         double distancesqr = (tmp.position - AUDListenerLocation()).MagnitudeSquared();
         static double maxdistancesqr =
                 XMLSupport::parse_float(vs_config->getVariable("audio", "max_range_to_hear_weapon_fire",
@@ -454,7 +455,7 @@ bool Mount::PhysicsAlignedFire(UnitPtr caller,
             Vector sound_vel;
             float sound_gain;
 
-            if (ips && cp != NULL && cp->GetView() <= CP_RIGHT) {
+            if (is_player_starship && cp != NULL && cp->GetView() <= CP_RIGHT) {
                 sound_pos = QVector(0, 0, 0);
                 sound_vel = Vector(0, 0, 0);
                 sound_gain = weapon_gain;
@@ -466,8 +467,8 @@ bool Mount::PhysicsAlignedFire(UnitPtr caller,
 
             if ((((!use_separate_sound)
                     || type->type == WEAPON_TYPE::BEAM)
-                    || ((!ai_use_separate_sound) && !ips)) && !type->isMissile()) {
-                if (ai_sound || (ips && type->type == WEAPON_TYPE::BEAM)) {
+                    || ((!ai_use_separate_sound) && !is_player_starship)) && !type->isMissile()) {
+                if (ai_sound || (is_player_starship && type->type == WEAPON_TYPE::BEAM)) {
                     if (!AUDIsPlaying(sound)) {
                         AUDPlay(sound, sound_pos, sound_vel, sound_gain);
                     } else {
@@ -486,7 +487,7 @@ bool Mount::PhysicsAlignedFire(UnitPtr caller,
                         }
                     }
                 }
-            } else if ((ai_sound || ips) && distancesqr < maxdistancesqr) {
+            } else if ((ai_sound || is_player_starship) && distancesqr < maxdistancesqr) {
                 int snd = AUDCreateSound(sound, false);
                 AUDPlay(sound, sound_pos, sound_vel, sound_gain);
                 AUDDeleteSound(snd);

@@ -36,6 +36,7 @@
 
 #include "json.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 // TODO: find out where this is and maybe refactor
 extern int SelectDockPort(UnitPtr, UnitPtr parent);
@@ -232,7 +233,7 @@ void Carrier::EjectCargo(unsigned int index) {
                         ++(fg->nr_ships);
                         ++(fg->nr_ships_left);
                     }
-                    cargo = new Unit(ans.c_str(), false, unit->faction, "", fg, fgsnumber);
+                    cargo = make_shared_from_intrusive(new Unit(ans.c_str(), false, unit->faction, "", fg, fgsnumber));
                     cargo->PrimeOrders();
                     cargo->SetAI(new Orders::AggressiveAI("default.agg.xml"));
                     cargo->SetTurretAI();
@@ -259,12 +260,12 @@ void Carrier::EjectCargo(unsigned int index) {
                             ++(fg->nr_ships);
                             ++(fg->nr_ships_left);
                         }
-                        cargo = new Unit("eject", false, unit->faction, "", fg, fgsnumber);
+                        cargo = make_shared_from_intrusive(new Unit("eject", false, unit->faction, "", fg, fgsnumber));
                     } else {
                         int fac = FactionUtil::GetUpgradeFaction();
-                        cargo = new Unit("eject", false, fac, "", NULL, 0);
+                        cargo = make_shared_from_intrusive(new Unit("eject", false, fac, "", NULL, 0));
                     }
-                    if (unit->owner) {
+                    if (!unit->owner.empty()) {
                         cargo->owner = unit->owner;
                     } else {
                         cargo->owner = unit;
@@ -288,8 +289,8 @@ void Carrier::EjectCargo(unsigned int index) {
                             ++(fg->nr_ships);
                             ++(fg->nr_ships_left);
                         }
-                        cargo = new Unit("return_to_cockpit", false, unit->faction, "", fg, fgsnumber);
-                        if (unit->owner) {
+                        cargo = make_shared_from_intrusive(new Unit("return_to_cockpit", false, unit->faction, "", fg, fgsnumber));
+                        if (!unit->owner.empty()) {
                             cargo->owner = unit->owner;
                         } else {
                             cargo->owner = unit;
@@ -299,16 +300,16 @@ void Carrier::EjectCargo(unsigned int index) {
                         static float ejectcargotime =
                                 XMLSupport::parse_float(vs_config->getVariable("physics", "eject_live_time", "0"));
                         if (cargotime == 0.0) {
-                            cargo = new Unit("eject", false, fac, "", NULL, 0);
+                            cargo = make_shared_from_intrusive(new Unit("eject", false, fac, "", NULL, 0));
                         } else {
-                            cargo = new Missile("eject",
+                            cargo = make_shared_from_intrusive(new Missile("eject",
                                     fac, "",
                                     0,
                                     0,
                                     ejectcargotime,
                                     1,
                                     1,
-                                    1);
+                                    1));
                         }
                     }
                     arot = erot;
@@ -323,7 +324,7 @@ void Carrier::EjectCargo(unsigned int index) {
                         rot = grot;
                     }
                     int upgrfac = FactionUtil::GetUpgradeFaction();
-                    cargo = new Missile(tmpnam.c_str(),
+                    cargo = make_shared_from_intrusive(new Missile(tmpnam.c_str(),
                             upgrfac,
                             "",
                             0,
@@ -331,20 +332,20 @@ void Carrier::EjectCargo(unsigned int index) {
                             cargotime,
                             1,
                             1,
-                            1);
+                            1));
                     arot = rot;
                 }
             }
-            if (cargo->name == "LOAD_FAILED") {
+            if (cargo->failedToLoad()) {
                 cargo->Kill();
-                cargo = new Missile("generic_cargo",
+                cargo = make_shared_from_intrusive(new Missile("generic_cargo",
                         FactionUtil::GetUpgradeFaction(), "",
                         0,
                         0,
                         cargotime,
                         1,
                         1,
-                        1);
+                        1));
                 arot = grot;
             }
             Vector rotation
@@ -399,9 +400,9 @@ void Carrier::EjectCargo(unsigned int index) {
                 cargo->SetVelocity(unit->Velocity * velmul + randVector(-.25, .25).Cast());
                 cargo->setMass(tmp->mass);
                 if (name.length() > 0) {
-                    cargo->name = name;
+                    cargo->setName(name);
                 } else if (tmp) {
-                    cargo->name = tmpcontent;
+                    cargo->setName(tmpcontent);
                 }
                 if (cp && _Universe->numPlayers() == 1) {
                     cargo->SetOwner(NULL);
@@ -552,8 +553,8 @@ extern std::string getJSONValue(const json::jobject& object, const std::string &
 
 UnitPtr Carrier::makeMasterPartList() {
     unsigned int i;
-    UnitPtr ret = new Unit();
-    ret->name = "master_part_list";
+    UnitPtr ret = make_shared_from_intrusive(new Unit());
+    ret->setName("master_part_list");
 
     static std::string json_filename = "master_part_list.json"; //vs_config->getVariable("data", "master_part_list", "master_part_list");
     std::ifstream ifs(json_filename, std::ifstream::in);

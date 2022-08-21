@@ -87,6 +87,7 @@
 #ifndef NO_GFX
 #include "gldrv/gl_globals.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 #endif
 
 #define KEYDOWN(name, key) (name[key]&0x80)
@@ -482,8 +483,8 @@ void Inside(const KBData &, KBSTATE newState) {
         }
         UnitPtr u = nullptr;
         if ((_Universe->AccessCockpit()->GetParent() != nullptr)
-                && (_Universe->AccessCockpit()->GetParent()->name == "return_to_cockpit")
-                && (_Universe->AccessCockpit()->GetParent()->owner != nullptr)
+                && (_Universe->AccessCockpit()->GetParent()->getName() == "return_to_cockpit")
+                && (!_Universe->AccessCockpit()->GetParent()->owner.empty())
                 && (u = findUnitInStarsystem(_Universe->AccessCockpit()->GetParent()->owner))) {
             cockpit = u->getCockpit();
         }

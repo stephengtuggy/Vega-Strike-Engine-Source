@@ -41,6 +41,7 @@ struct DamageableObject {
     DamageableObject(std::vector<DamageableLayer> layers,
             std::vector<DamageableObject> components);
     DamageableObject();
+    virtual ~DamageableObject() = default;
 
     InflictedDamage DealDamage(const CoreVector &attack_vector, Damage &damage);
 

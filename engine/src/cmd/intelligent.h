@@ -80,19 +80,19 @@ public:
     void ExecuteAI();
 
     //Uses Universe stuff -> maybe only needed in Unit class
-    bool isEnemy(const UnitPtr other) const {
+    bool isEnemy(UnitConstRawPtr other) const {
         return getRelation(other) < 0.0;
     }
 
-    bool isFriend(const UnitPtr other) const {
+    bool isFriend(UnitConstRawPtr other) const {
         return getRelation(other) > 0.0;
     }
 
-    bool isNeutral(const UnitPtr other) const {
+    bool isNeutral(UnitConstRawPtr other) const {
         return getRelation(other) == 0.0;
     }
 
-    float getRelation(const UnitPtr other) const;
+    float getRelation(UnitConstRawPtr other) const;
 };
 
 #endif // INTELLIGENT_H

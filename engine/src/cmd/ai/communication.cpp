@@ -31,6 +31,7 @@
 #include "audiolib.h"
 #include "options.h"
 #include "universe.h"
+#include "unit_base_class.hpp"
 
 using namespace XMLSupport;
 

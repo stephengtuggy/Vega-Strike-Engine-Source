@@ -32,6 +32,7 @@
 #include "configxml.h"
 #include "universe.h"
 #include "vs_logging.h"
+#include "unit_base_class.hpp"
 #include <vector>
 
 Pilot::Pilot(int faction) {
@@ -90,7 +91,7 @@ void Pilot::DoHit(UnitPtr parent, void *aggressor, int faction) {
             UniverseUtil::adjustRelationModifierInt(whichCp, faction, hitcost * getRank());
         } else {
             /* Instead use the Aggressor's cockpit? */
-            whichCp = _Universe->whichPlayerStarship((const UnitPtr) aggressor);
+            whichCp = _Universe->whichPlayerStarship((UnitConstRawPtr) aggressor);
             if (whichCp != -1) {
                 Flightgroup *fg = parent->getFlightgroup();
                 if (parent->faction != faction) {
@@ -104,7 +105,7 @@ void Pilot::DoHit(UnitPtr parent, void *aggressor, int faction) {
     }
 }
 
-float Pilot::getAnger(const UnitPtr parent, const UnitPtr target) const {
+float Pilot::getAnger(UnitConstRawPtr parent, UnitConstRawPtr target) const {
     float rel = 0.0f;
     if (target == nullptr) {
         VS_LOG(warning, "Pilot::getAnger(): target is null");
@@ -138,7 +139,7 @@ float Pilot::getAnger(const UnitPtr parent, const UnitPtr target) const {
     }
     {
         int fac = faction;
-        MapStringFloat::iterator mapiter = factions[fac]->ship_relation_modifier.find(target->name);
+        MapStringFloat::iterator mapiter = factions[fac]->ship_relation_modifier.find(target->getName());
         if (mapiter != factions[fac]->ship_relation_modifier.end()) {
             rel += (*mapiter).second;
         }
@@ -164,7 +165,7 @@ float Pilot::getAnger(const UnitPtr parent, const UnitPtr target) const {
     return rel;
 }
 
-float Pilot::GetEffectiveRelationship(const UnitPtr parent, const UnitPtr target) const {
+float Pilot::GetEffectiveRelationship(UnitConstRawPtr parent, UnitConstRawPtr target) const {
     if (target == nullptr) {
         VS_LOG(warning, "Pilot::GetEffectiveRelationship(): target is null");
         return 0.0f;

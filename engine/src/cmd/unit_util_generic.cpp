@@ -47,9 +47,10 @@
 #ifndef NO_GFX
 #include "gfx/cockpit.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 #endif
-const UnitPtr makeTemplateUpgrade(string name, int faction); //for percentoperational
-const UnitPtr getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0); //for percentoperational
+UnitConstRawPtr makeTemplateUpgrade(string name, int faction); //for percentoperational
+UnitConstRawPtr getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0); //for percentoperational
 extern const char *DamagedCategory;  //for percentoperational
 extern bool isWeapon(std::string name); //for percentoperational
 using std::string;
@@ -901,7 +902,6 @@ float PercentOperational(UnitPtr un, std::string name, std::string category, boo
         return 1.0f;
     }
     if (isWeapon(category)) {
-        static std::string loadfailed("LOAD_FAILED");
         if (upgrade->getNumMounts()) {
             const Mount *mnt = &upgrade->mounts[0];
             unsigned int nummounts = un->getNumMounts();

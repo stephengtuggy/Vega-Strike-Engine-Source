@@ -26,6 +26,7 @@
 #include "order.h"
 #include "communication.h"
 #include "configxml.h"
+#include "unit_base_class.hpp"
 
 using std::list;
 using std::vector;

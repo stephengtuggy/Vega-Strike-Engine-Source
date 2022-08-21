@@ -87,6 +87,7 @@
 #include "unit_find.h"
 #include "pilot.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 #include <iostream>
 #define DEBUG_MESH_ANI
@@ -129,7 +130,7 @@ void Unit::SetNebula(Nebula *neb) {
     }
 }
 
-bool Unit::InRange(const UnitPtr target, double &mm, bool cone, bool cap, bool lock) const {
+bool Unit::InRange(UnitConstRawPtr target, double &mm, bool cone, bool cap, bool lock) const {
     const float capship_size = configuration()->physics_config.capship_size;
 
     if (this == target || target->CloakVisible() < .8) {
@@ -165,7 +166,7 @@ boost::weak_ptr<Unit> Unit::Target() {
     return computer.target.GetUnit();
 }
 
-const UnitPtr Unit::Target() const {
+UnitConstRawPtr Unit::Target() const {
     return computer.target.GetConstUnit();
 }
 
@@ -173,7 +174,7 @@ UnitPtr Unit::VelocityReference() {
     return computer.velocity_ref.GetUnit();
 }
 
-const UnitPtr Unit::VelocityReference() const {
+UnitConstRawPtr Unit::VelocityReference() const {
     return computer.velocity_ref.GetConstUnit();
 }
 
@@ -496,7 +497,7 @@ void Unit::Init(const char *filename,
         meshdata.clear();
         meshdata.push_back(NULL);
         this->fullname = filename;
-        this->name = string("LOAD_FAILED");
+        this->setLoadFailed();
         calculate_extent(false);
         radial_size = 1;
         if ((taberr <= Ok && taberr != Unspecified)) {
@@ -506,7 +507,7 @@ void Unit::Init(const char *filename,
         pilot->SetComm(this);
         return;
     }
-    this->name = this->filename;
+    this->setName(this->getFilename());
     bool tmpbool;
     if (UNITTAB) {
         //load from table?
@@ -555,7 +556,7 @@ static float tmpmax(float a, float b) {
 }
 
 bool CheckAccessory(UnitPtr tur) {
-    bool accessory = tur->name.get().find("accessory") != string::npos;
+    bool accessory = tur->getName().find("accessory") != string::npos;
     if (accessory) {
         tur->SetAngularVelocity(tur->DownCoordinateLevel(Vector(tur->GetComputerData().max_pitch_up,
                 tur->GetComputerData().max_yaw_right,
@@ -592,34 +593,6 @@ void Unit::calculate_extent(bool update_collide_queue) {
     if (isUnit() == Vega_UnitType::planet) {
         radial_size = tmpmax(tmpmax(corner_max.i, corner_max.j), corner_max.k);
     }
-}
-
-const string Unit::getFgID() {
-    if (flightgroup != nullptr) {
-        char buffer[32];
-        sprintf(buffer, "-%d", flightgroup_subnumber);
-        return flightgroup->name + buffer;
-    } else {
-        return fullname;
-    }
-}
-
-void Unit::SetFaction(int new_faction) {
-    this->faction = new_faction;
-    BySequence & my_sub_units = SubUnits.get<UnitSequenced>();
-    UnitSequencedIterator un_iter_1 = my_sub_units.begin();
-    UnitSequencedIterator un_iter_end = my_sub_units.end();
-    while (un_iter_1 != un_iter_end) {
-        my_sub_units.modify(un_iter_1, [new_faction](boost::shared_ptr<UnitBaseClass>& un){ vega_dynamic_cast_boost_shared_ptr<Unit>(un)->SetFaction(new_faction); });
-        ++un_iter_1;
-    }
-}
-
-void Unit::SetFg(Flightgroup *fg, int fg_subnumber) {
-    flightgroup = fg;
-    flightgroup_subnumber = fg_subnumber;
-    flightgroup_name_ = fg->name;
-    flightgroup_sub_number_ = fg_subnumber;
 }
 
 static float tmpsqr(float x) {
@@ -1796,8 +1769,6 @@ UnitPtr makeBlankUpgrade(string templnam, int faction) {
     return bl;
 }
 
-static const string LOAD_FAILED = "LOAD_FAILED";
-
 const UnitPtr makeFinalBlankUpgrade(string name, int faction) {
     char *unitdir = GetUnitDir(name.c_str());
     string limiternam = name;
@@ -1805,12 +1776,12 @@ const UnitPtr makeFinalBlankUpgrade(string name, int faction) {
         limiternam = string(unitdir) + string(".blank");
     }
     free(unitdir);
-    const UnitPtr lim = UnitConstCache::getCachedConst(StringIntKey(limiternam, faction));
+    UnitPtr lim = UnitConstCache::getCachedConst(StringIntKey(limiternam, faction));
     if (!lim) {
         lim = UnitConstCache::setCachedConst(StringIntKey(limiternam, faction), makeBlankUpgrade(limiternam, faction));
     }
-    if (lim->name == LOAD_FAILED) {
-        lim = NULL;
+    if (lim->failedToLoad()) {
+        lim.reset();
     }
     return lim;
 }
@@ -1819,13 +1790,13 @@ const UnitPtr makeTemplateUpgrade(string name, int faction) {
     char *unitdir = GetUnitDir(name.c_str());
     string limiternam = string(unitdir) + string(".template");
     free(unitdir);
-    const UnitPtr lim = UnitConstCache::getCachedConst(StringIntKey(limiternam, faction));
+    UnitPtr lim = UnitConstCache::getCachedConst(StringIntKey(limiternam, faction));
     if (!lim) {
         lim =
                 UnitConstCache::setCachedConst(StringIntKey(limiternam,
                         faction), new Unit(limiternam.c_str(), true, faction));
     }
-    if (lim->name == LOAD_FAILED) {
+    if (lim->failedToLoad()) {
         lim = NULL;
     }
     return lim;
@@ -2036,7 +2007,7 @@ bool Unit::Explode(bool drawit, float timeit) {
                     this->ExplosionRadius()
                             * game_options()->explosion_damage_center
                             * game_options()->explosion_damage_edge,
-                    NULL));
+                    UnitWeakPtr{}));
         }
         QVector exploc = this->cumulative_transformation.position;
         bool sub = this->isSubUnit();
@@ -2837,9 +2808,9 @@ bool Unit::UpgradeMounts(const boost::shared_ptr<Unit> up,
                                         * be automatically put in a cache.
                                         * Deletion will corrupt the cache!
                                         */
-                                        const UnitPtr weapon = getUnitFromUpgradeName(weaponname);
+                                        UnitPtr weapon = getUnitFromUpgradeName(weaponname);
 
-                                        if (weapon == NULL || weapon->name == LOAD_FAILED) {
+                                        if (!weapon || weapon->failedToLoad()) {
                                             // this should not happen
                                             VS_LOG(info,
                                                     (boost::format("UpgradeMount(): FAILED to obtain weapon: %1%")
@@ -3222,11 +3193,11 @@ double Unit::Upgrade(const std::string &file,
     }
     free(unitdir);
     double percentage = 0;
-    if (up->name != "LOAD_FAILED") {
+    if (up->failedToLoad()) {
         for (int i = 0; percentage == 0; ++i) {
             if (!this->Unit::Upgrade(up, mountoffset + i, subunitoffset + i,
                     GetModeFromName(file.c_str()), force, percentage,
-                    ((templ->name == "LOAD_FAILED") ? NULL : templ),
+                    (templ->failedToLoad() ? NULL : templ),
                     false, false)) {
                 percentage = 0;
             }
@@ -3992,7 +3963,7 @@ bool Unit::ReduceToTemplate() {
     const UnitPtr temprate = makeFinalBlankUpgrade(name, faction);
     bool success = false;
     double pct = 0;
-    if (temprate && temprate->name != string("LOAD_FAILED")) {
+    if (temprate && temprate->getName() != string("LOAD_FAILED")) {
         success = Upgrade(temprate, -1, -1, 0, true, pct, NULL, true);
         if (pct > 0) {
             success = true;
@@ -4262,7 +4233,7 @@ vector<CargoColor> &Unit::FilterDowngradeList(vector<CargoColor> &mylist, bool d
                         new Unit(mylist[i].cargo.GetContent().c_str(), false,
                                 upgrfac));
             }
-            if (NewPart->name == string("LOAD_FAILED")) {
+            if (NewPart->getName() == string("LOAD_FAILED")) {
                 const UnitPtr NewPart =
                         UnitConstCache::getCachedConst(StringIntKey(mylist[i].cargo.GetContent().c_str(), faction));
                 if (!NewPart) {
@@ -4271,9 +4242,9 @@ vector<CargoColor> &Unit::FilterDowngradeList(vector<CargoColor> &mylist, bool d
                                     false, faction));
                 }
             }
-            if (NewPart->name != string("LOAD_FAILED")) {
+            if (NewPart->getName() != string("LOAD_FAILED")) {
                 int maxmountcheck = NewPart->getNumMounts() ? getNumMounts() : 1;
-                char *unitdir = GetUnitDir(name.get().c_str());
+                char *unitdir = GetUnitDir(getName().c_str());
                 string templnam = string(unitdir) + ".template";
                 string limiternam = string(unitdir) + ".blank";
                 if (!downgrade) {
@@ -4284,7 +4255,7 @@ vector<CargoColor> &Unit::FilterDowngradeList(vector<CargoColor> &mylist, bool d
                                                 faction),
                                         new Unit(templnam.c_str(), true, this->faction));
                     }
-                    if (templ->name == std::string("LOAD_FAILED")) {
+                    if (templ->getName() == std::string("LOAD_FAILED")) {
                         templ = NULL;
                     }
                 } else {
@@ -4295,7 +4266,7 @@ vector<CargoColor> &Unit::FilterDowngradeList(vector<CargoColor> &mylist, bool d
                                 new Unit(limiternam.c_str(), true,
                                         this->faction));
                     }
-                    if (downgradelimit->name == std::string("LOAD_FAILED")) {
+                    if (downgradelimit->getName() == std::string("LOAD_FAILED")) {
                         downgradelimit = NULL;
                     }
                 }
@@ -4606,12 +4577,11 @@ void Unit::Repair() {
                         next_repair_time =
                                 UniverseUtil::GetGameTime() + repairtime * (1 - percentoperational) / repair_droid;
                     } else {
-                        //ACtually fix the cargo here
+                        // Actually fix the cargo here
                         static int upfac = FactionUtil::GetUpgradeFaction();
                         const UnitPtr up = getUnitFromUpgradeName(carg->GetContent(), upfac);
-                        static std::string loadfailed("LOAD_FAILED");
-                        if (up->name == loadfailed) {
-                            VS_LOG(info,
+                        if (up->failedToLoad()) {
+                            VS_LOG(error,
                                     "Bug: Load failed cargo encountered: report on https://github.com/vegastrike/Vega-Strike-Engine-Source");
                         } else {
                             double percentage = 0;
@@ -4624,7 +4594,7 @@ void Unit::Repair() {
                                     VS_LOG(error,
                                             (boost::format(
                                                     "Failed repair for unit %1%, cargo item %2%: %3% (%4%) - please report error")
-                                                    % name.get().c_str()
+                                                    % getName()
                                                     % next_repair_cargo
                                                     % carg->GetContent().c_str()
                                                     % carg->GetCategory().c_str()));
@@ -5236,8 +5206,9 @@ void Unit::UpdatePhysics3(const Transformation &trans,
                                 : _Universe->activeStarSystem()->
                                 collide_map[locind]->begin();
             }
-            if (!mounts[i].PhysicsAlignedFire(this, t1, m1, cumulative_velocity,
-                    (!isSubUnit() || owner == NULL) ? this : owner, target, autotrack,
+            UnitPtr thus = make_shared_from_intrusive(this);
+            if (!mounts[i].PhysicsAlignedFire(thus, t1, m1, cumulative_velocity,
+                    (!isSubUnit() || owner.empty()) ? boost::weak_ptr<Unit>(thus) : owner, target, autotrack,
                     trackingcone,
                     hint)) {
                 const WeaponInfo *typ = mounts[i].type;
@@ -5584,10 +5555,14 @@ bool Unit::TransferUnitToSystem(unsigned int kk, StarSystem *&savedStarSystem, b
     return ret;
 }
 
-std::string Unit::getFlightgroupName() const {
-    return flightgroup->name;
+void Unit::SetFaction(int new_faction) {
+    faction = new_faction;
+    BySequence & my_sub_units = SubUnits.get<UnitSequenced>();
+    UnitSequencedIterator un_iter_1 = my_sub_units.begin();
+    UnitSequencedIterator un_iter_end = my_sub_units.end();
+    while (un_iter_1 != un_iter_end) {
+        my_sub_units.modify(un_iter_1, [new_faction](boost::shared_ptr<UnitBaseClass>& un){ vega_dynamic_cast_boost_shared_ptr<Unit>(un)->SetFaction(new_faction); });
+        ++un_iter_1;
+    }
 }
 
-int32_t Unit::getFlightgroupSubNumber() const {
-    return flightgroup_subnumber;
-}

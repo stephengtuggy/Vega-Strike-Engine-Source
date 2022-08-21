@@ -87,7 +87,7 @@ void Pilot::DoHit(UnitPtr parent, void *aggressor, int faction) {
             UniverseUtil::adjustRelationModifierInt(whichCp, faction, hitcost * getRank());
         } else {
             /* Instead use the Aggressor's cockpit? */
-            whichCp = _Universe->whichPlayerStarship((const UnitPtr) aggressor);
+            whichCp = _Universe->whichPlayerStarship((UnitConstRawPtr) aggressor);
             if (whichCp != -1) {
                 Flightgroup *fg = parent->getFlightgroup();
                 if (parent->faction != faction) {
@@ -101,7 +101,7 @@ void Pilot::DoHit(UnitPtr parent, void *aggressor, int faction) {
     }
 }
 
-float Pilot::getAnger(const UnitPtr parent, const UnitPtr target) const {
+float Pilot::getAnger(UnitConstRawPtr parent, UnitConstRawPtr target) const {
     relationmap::const_iterator iter = effective_relationship.find(target);
     float rel = 0;
     if (iter != effective_relationship.end()) {

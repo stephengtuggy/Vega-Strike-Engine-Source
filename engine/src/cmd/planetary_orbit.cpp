@@ -27,6 +27,7 @@
 
 #include "unit_generic.h"
 #include "vs_logging.h"
+#include "unit_base_class.hpp"
 
 PlanetaryOrbit::PlanetaryOrbit(UnitPtr p,
         double velocity,
@@ -109,7 +110,7 @@ void PlanetaryOrbit::Execute() {
                     VS_LOG(trace,
                             (boost::format(
                                     "void PlanetaryOrbit::Execute(): simulation_atom_var, %1$.6f, != orbiting_last_simatom, %2$.6f, for planet %3$s")
-                                    % simulation_atom_var % orbiting_last_simatom % this->parent->name));
+                                    % simulation_atom_var % orbiting_last_simatom % this->parent->getName()));
                     QVector sum_diff(0, 0, 0);
                     QVector sum_position;
                     int limit;
@@ -192,7 +193,7 @@ void PlanetaryOrbit::Execute() {
         VS_LOG(debug,
                 (boost::format(
                         "void PlanetaryOrbit::Execute(): A velocity value considered unreasonable was calculated for planet %1%; zeroing it out")
-                        % this->parent->name));
+                        % this->parent->getName()));
         parent->Velocity.Set(0, 0, 0);
         parent->cumulative_velocity.Set(0, 0, 0);
         parent->SetCurPosition(origin - focus + sum_orbiting_average + x_offset + y_offset);

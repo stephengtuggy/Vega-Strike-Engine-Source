@@ -54,10 +54,10 @@
 //};
 //
 //template<>
-//struct hash<const UnitPtr> {
+//struct hash<UnitConstRawPtr> {
 //    hash<size_t> a;
 //public:
-//    size_t operator()(const UnitPtr const &key) const {
+//    size_t operator()(UnitConstRawPtr const &key) const {
 //        return a((size_t) key >> 4);
 //    }
 //};

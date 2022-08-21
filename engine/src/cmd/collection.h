@@ -228,7 +228,7 @@
 //     * No code uses this function as of 0.5 release */
 //    void clear();
 //
-//    bool contains(const UnitPtr) const;
+//    bool contains(UnitConstRawPtr) const;
 //
 //    /* We only erase the unit from the list under the following conditions:
 //     * 1. if we have less than 4 iterators being held
@@ -242,7 +242,7 @@
 //
 //    /* traverse list and remove first (only) matching Unit.
 //     * Do not use in fast-path code */
-//    bool remove(const UnitPtr);
+//    bool remove(UnitConstRawPtr);
 //
 //    /* Returns number of non-null units in list */
 //    inline const int size() const {

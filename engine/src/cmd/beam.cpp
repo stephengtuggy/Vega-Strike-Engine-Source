@@ -37,6 +37,7 @@ using std::vector;
 #include "damageable.h"
 #include "universe.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -574,8 +575,8 @@ bool Beam::Collide(UnitPtr target, UnitPtr firer, UnitPtr superunit) {
                 UnitPtr un = superunit;
                 if (target->faction == upgradesfaction || owner_rsize * nbig > target->rSize()) {
                     //we have our man!
-                    //lets add our cargo to him
-                    Cargo *c = GetMasterPartList(target->name.get().c_str());
+                    //let's add our cargo to him
+                    Cargo *c = GetMasterPartList(target->getName().c_str());
                     Cargo tmp;
                     bool isnotcargo = (c == NULL);
                     if (!isnotcargo) {
@@ -594,7 +595,7 @@ bool Beam::Collide(UnitPtr target, UnitPtr firer, UnitPtr superunit) {
                         tmp.mass = .001;
                         tmp.volume = 1;
                         if (target->faction != upgradesfaction) {
-                            tmp.SetContent(target->name);
+                            tmp.SetContent(target->getName());
                             tmp.SetCategory("starships");
                             static float starshipprice =
                                     XMLSupport::parse_float(vs_config->getVariable("cargo",

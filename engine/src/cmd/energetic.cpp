@@ -31,6 +31,7 @@
 #include "unit_generic.h"
 #include "universe.h"
 #include "resource/resource.h"
+#include "unit_base_class.hpp"
 
 #include <algorithm>
 

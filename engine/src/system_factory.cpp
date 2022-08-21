@@ -44,6 +44,7 @@
 // TODO: For comparison only - remove
 #include "terrain.h"
 #include "cont_terrain.h"
+#include "unit_base_class.hpp"
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>

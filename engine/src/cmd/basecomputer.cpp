@@ -81,6 +81,7 @@ using VSFileSystem::SaveFile;
 #include <sys/stat.h>
 #include "vega_cast_utils.hpp"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 using namespace XMLSupport; // FIXME -- Shouldn't include an entire namespace, according to Google Style Guide -- stephengtuggy 2021-09-07
 
@@ -216,11 +217,10 @@ static const char *const NEWS_NAME_LABEL = "news";
 //Some upgrade declarations.
 //These should probably be in a header file somewhere.
 
-extern const UnitPtr makeFinalBlankUpgrade(string name, int faction);
+extern UnitConstRawPtr makeFinalBlankUpgrade(string name, int faction);
 extern int GetModeFromName(const char *);  //1=add, 2=mult, 0=neither.
 extern Cargo *GetMasterPartList(const char *input_buffer);
 extern Unit &GetUnitMasterPartList();
-static const string LOAD_FAILED = "LOAD_FAILED";
 
 //Some ship dealer declarations.
 //These should probably be in a header file somewhere.
@@ -390,10 +390,10 @@ static float SellPrice(float operational, float price) {
     return usedValue(price) - RepairPrice(operational, price);
 }
 
-extern const UnitPtr makeTemplateUpgrade(string name, int faction);
+extern UnitConstRawPtr makeTemplateUpgrade(string name, int faction);
 
 //Ported from old code.  Not sure what it does.
-const UnitPtr getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0);
+UnitConstRawPtr getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0);
 
 //Takes in a category of an upgrade or cargo and returns true if it is any type of mountable weapon.
 extern bool isWeapon(std::string name);
@@ -1542,11 +1542,11 @@ void BaseComputer::recalcTitle() {
             boost::shared_ptr<Planet> temp_planet_ptr = vega_dynamic_cast_boost_shared_ptr<Planet>(baseUnit);
             string temp = temp_planet_ptr->getHumanReadablePlanetType() + " Planet";
             // think "<planet type> <name of planet>"
-            baseName = temp + " " + baseUnit->name;
+            baseName = temp + " " + baseUnit->getName();
         } else {
             // as above, but e.g. mining bases have 'mining_base' in baseUnit->name
-            // so we need to come up with something a little bit better
-            baseName = baseUnit->name + " " + baseUnit->getFullname();
+            // so we need to come up with something a little better
+            baseName = baseUnit->getName() + " " + baseUnit->getFullname();
         }
     }
     // at this point, baseName will be e.g. "Agricultural planet Helen" or "mining_base Achilles"
@@ -1612,7 +1612,7 @@ void BaseComputer::recalcTitle() {
                         - (m_currentDisplay
                                 == CARGO ? playerUnit->getCargoVolume() : playerUnit->getUpgradeVolume());
                 // Cargo weight may render your ship hard to manoeuver, display its effects
-                const float basemass = atof(UniverseUtil::LookupUnitStat(playerUnit->name, "", "Mass").c_str());
+                const float basemass = atof(UniverseUtil::LookupUnitStat(playerUnit->getName(), "", "Mass").c_str());
                 float massEffect = 0.0;
                 if (basemass > 0) {
                     massEffect = 100 * playerUnit->getMass() / basemass;
@@ -2239,7 +2239,7 @@ bool BaseComputer::pickerChangedSelection(const EventCommandId &command, Control
 
 bool UpgradeAllowed(const Cargo &item, UnitPtr playerUnit) {
     std::string prohibited_upgrades =
-            UniverseUtil::LookupUnitStat(playerUnit->name, FactionUtil::GetFactionName(
+            UniverseUtil::LookupUnitStat(playerUnit->getName(), FactionUtil::GetFactionName(
                     playerUnit->faction), "Prohibited_Upgrades");
     while (prohibited_upgrades.length()) {
         std::string::size_type where = prohibited_upgrades.find(" ");
@@ -2887,9 +2887,9 @@ void BaseComputer::loadNewsControls(void) {
         gameMessage last;
         int i = 0;
         vector<std::string> who;
-        who.push_back("news");
+        who.emplace_back("news");
         while ((mission->msgcenter->last(i++, last, who))) {
-            picker->addCell(new SimplePickerCell(last.message));
+            picker->addCell(new SimplePickerCell(*(last.message)));
         }
     } else {
         //Get news from save game.
@@ -2903,7 +2903,7 @@ void BaseComputer::loadNewsControls(void) {
         }
     }
     //Make sure the description is empty.
-    StaticDisplay *desc = static_cast< StaticDisplay * > ( window()->findControlById("Description"));
+    StaticDisplay *desc = vega_dynamic_cast_ptr<StaticDisplay>(window()->findControlById("Description"));
     assert(desc != NULL);
     desc->setText("");
 
@@ -3400,7 +3400,7 @@ void BaseComputer::UpgradeOperation::finish() {
 bool BaseComputer::UpgradeOperation::endInit() {
     if (m_parent.m_player.GetUnit()) {
         m_newPart = getUnitFromUpgradeName(m_selectedItem.GetContent(), m_parent.m_player.GetUnit()->faction);
-        if (m_newPart->name != LOAD_FAILED) {
+        if (m_newPart->loadedSuccessfully()) {
             selectMount();
         } else {
             return false;
@@ -3486,14 +3486,14 @@ void BaseComputer::UpgradeOperation::modalDialogResult(const std::string &id,
 }
 
 //Start the Buy Upgrade Operation.
-void BaseComputer::BuyUpgradeOperation::start(void) {
+void BaseComputer::BuyUpgradeOperation::start() {
     UnitPtr playerUnit = m_parent.m_player.GetUnit();
     UnitPtr baseUnit = m_parent.m_base.GetUnit();
     if (!(playerUnit && baseUnit && commonInit())) {
         finish();
         return;
     }
-    m_theTemplate = makeTemplateUpgrade(playerUnit->name.get(), playerUnit->faction);
+    m_theTemplate = makeTemplateUpgrade(playerUnit->getName(), playerUnit->faction);
 
     m_addMultMode =
             GetModeFromName(m_selectedItem.GetContent().c_str());     //Whether the price is linear or geometric.
@@ -3677,12 +3677,12 @@ void BaseComputer::SellUpgradeOperation::start(void) {
         finish();
         return;
     }
-    const string unitDir = GetUnitDir(playerUnit->name.get().c_str());
+    const string unitDir = GetUnitDir(playerUnit->getName().c_str());
     const string limiterName = unitDir + ".blank";
     const int faction = playerUnit->faction;
 
     //Get the "limiter" for this operation.  Stats can't decrease more than the blank ship.
-    m_downgradeLimiter = makeFinalBlankUpgrade(playerUnit->name, faction);
+    m_downgradeLimiter = makeFinalBlankUpgrade(playerUnit->getName(), faction);
 
     //If its limiter is not available, just assume that there are no limits.
 
@@ -4001,7 +4001,7 @@ void SwapInNewShipName(Cockpit *cockpit, UnitPtr base, const std::string &newFil
     UnitPtr parent = cockpit->GetParent();
     if (parent) {
         size_t putpos = (swappingShipsIndex >= 0) ? swappingShipsIndex : cockpit->GetNumUnits();
-        cockpit->GetUnitFileName(putpos) = parent->name;
+        cockpit->GetUnitFileName(putpos) = parent->getName();
         cockpit->GetUnitSystemName(putpos) = _Universe->activeStarSystem()->getFileName();
         cockpit->GetUnitBaseName(putpos) = (base != NULL) ? Cockpit::MakeBaseName(base) : string("");
         if (swappingShipsIndex != -1) {
@@ -4032,7 +4032,7 @@ string buildShipDescription(Cargo &item, std::string &texturedescription) {
     current_unit_load_mode = NO_MESH;
 
     VS_LOG(debug, "buildShipDescription: creating newPart");
-    UnitPtr newPart = new Unit(item.GetContent().c_str(), false, 0, newModifications, flightGroup, fgsNumber);
+    UnitPtr newPart = make_shared_from_intrusive(new Unit(item.GetContent().c_str(), false, 0, newModifications, flightGroup, fgsNumber));
     current_unit_load_mode = DEFAULT;
     string sHudImage;
     string sImage;
@@ -4316,24 +4316,24 @@ string buildCargoDescription(const Cargo &item, BaseComputer &computer, float pr
         vector<string> highest, lowest;
 
         const string &baseName = (computer.m_base.GetUnit()->isUnit() == Vega_UnitType::planet) ?
-                computer.m_base.GetUnit()->name.get()
+                computer.m_base.GetUnit()->getName()
                 : computer.m_base
                         .GetUnit()
                         ->getFullname();
 
         trackPrice(cp, item, price, UniverseUtil::getSystemName(), baseName, highest, lowest);
 
-        if (highest.size()) {
+        if (!highest.empty()) {
             desc += "#n##n##b#Highest prices seen#-b#:";
-            for (vector<string>::const_iterator i = highest.begin(); i != highest.end(); ++i) {
-                desc += *i;
+            for (const auto & i : highest) {
+                desc += i;
             }
         }
 
-        if (lowest.size()) {
+        if (!lowest.empty()) {
             desc += "#n##n##b#Lowest prices seen#-b#:";
-            for (vector<string>::const_iterator i = lowest.begin(); i != lowest.end(); ++i) {
-                desc += *i;
+            for (const auto & i : lowest) {
+                desc += i;
             }
         }
     }
@@ -4476,15 +4476,15 @@ bool buyShip(UnitPtr baseUnit,
                             0),
                     Vector(0, 0, 0));
             UnitPtr newPart =
-                    new Unit(content.c_str(),
+                    make_shared_from_intrusive(new Unit(content.c_str(),
                             false,
                             baseUnit->faction,
                             newModifications,
                             flightGroup,
-                            fgsNumber);
+                            fgsNumber));
             CurrentSaveGameName = tmpnam;
             newPart->SetFaction(playerUnit->faction);
-            if (newPart->name != LOAD_FAILED) {
+            if (newPart->loadedSuccessfully()) {
                 if (newPart->nummesh() > 0) {
                     _Universe->AccessCockpit()->credits -= shipCargo->price;
                     newPart->curr_physical_state = playerUnit->curr_physical_state;
@@ -4771,7 +4771,7 @@ static const char *WeaponTypeStrings[] = {
 };
 
 void showUnitStats(UnitPtr playerUnit, string &text, int subunitlevel, int mode, Cargo &item) {
-    static UnitPtr blankUnit = new Unit("upgrading_dummy_unit", 1, FactionUtil::GetFactionIndex("upgrades"));
+    static UnitPtr blankUnit = make_shared_from_intrusive(new Unit("upgrading_dummy_unit", 1, FactionUtil::GetFactionIndex("upgrades")));
     static float
             warpenratio = XMLSupport::parse_float(vs_config->getVariable("physics", "warp_energy_multiplier", "0.12"));
     static float warpbleed = XMLSupport::parse_float(vs_config->getVariable("physics", "warpbleed", "20"));
@@ -4817,7 +4817,7 @@ void showUnitStats(UnitPtr playerUnit, string &text, int subunitlevel, int mode,
         }
         nametemp = playerUnit->getFullname();
         if (nametemp == "") {
-            const std::string &name = playerUnit->name.get();
+            const std::string &name = playerUnit->getName();
             for (nameindex = 0; (nameindex < name.size()) && name[nameindex] != '.'; ++nameindex) {
                 nametemp += name[nameindex];
             }
@@ -4843,7 +4843,7 @@ void showUnitStats(UnitPtr playerUnit, string &text, int subunitlevel, int mode,
         text += "#n##c0:1:.5#[STATS]#n##-c";
     }
     if (!mode) {
-        const std::string &name = playerUnit->name;
+        const std::string &name = playerUnit->getName();
         for (nameindex = 0; (nameindex < name.size()) && name[nameindex] != '.'; nameindex++) {
         }
         nametemp = playerUnit->getFullname();
@@ -4870,7 +4870,7 @@ void showUnitStats(UnitPtr playerUnit, string &text, int subunitlevel, int mode,
         } else {
             model = "Military Spec. Variant (" + model + ")";
         }
-        Cargo *fullname = GetMasterPartList(playerUnit->name.get().c_str());
+        Cargo *fullname = GetMasterPartList(playerUnit->getName().c_str());
         Cargo *milname = GetMasterPartList(nametemp.c_str());
         Cargo *blankname = GetMasterPartList((nametemp + ".blank").c_str());
         if (!subunitlevel && (fullname || milname || blankname)) {
@@ -5992,7 +5992,7 @@ bool BaseComputer::actionQuitGame(const EventCommandId &command, Control *contro
 
 bool BaseComputer::actionConfirmedSaveGame() {
     UnitPtr player = m_player.GetUnit();
-    if (player && player->name == "return_to_cockpit") {
+    if (player && player->getName() == "return_to_cockpit") {
         showAlert("Return to a base to save.");
         return false;         //should be false, but causes badness.
     }

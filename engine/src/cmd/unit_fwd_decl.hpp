@@ -33,6 +33,7 @@
 class Unit;
 
 using UnitRawPtr = Unit *;
+using UnitConstRawPtr = Unit const *;
 using UnitIntrusivePtr = boost::intrusive_ptr<Unit>;
 using UnitSharedPtr = boost::shared_ptr<Unit>;
 using UnitWeakPtr = boost::weak_ptr<Unit>;

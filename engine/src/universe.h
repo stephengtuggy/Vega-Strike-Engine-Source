@@ -105,13 +105,22 @@ public:
     Texture *getLightMap();
 
 // Player Ship
-    Cockpit *isPlayerStarship(const UnitPtr fighter);
+    Cockpit *isPlayerStarship(UnitConstRawPtr do_not_dereference);
 
-    Cockpit *isPlayerStarshipVoid(const void *pointercompare) {
-        return isPlayerStarship((const UnitPtr) pointercompare);
+    static Cockpit * isPlayerStarship(Unit const * pointer_compare);
+
+//    Cockpit *isPlayerStarshipVoid(const void *pointercompare) {
+//        try {
+//
+//        }
+//        return isPlayerStarship((UnitConstRawPtr) pointercompare);
+//    }
+
+    inline Cockpit * isPlayerStarship(const UnitWeakPtr pointer_compare) {
+        return isPlayerStarship(pointer_compare.lock());
     }
 
-    int whichPlayerStarship(const UnitPtr fighter);
+    int whichPlayerStarship(UnitConstRawPtr do_not_dereference);
 
 // Script System - whatever that is
     StarSystem *scriptStarSystem();

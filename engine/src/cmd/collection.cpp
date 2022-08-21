@@ -293,7 +293,7 @@ void UnitCollection::destr() {
     }
 }
 
-bool UnitCollection::contains(const UnitPtr unit) const {
+bool UnitCollection::contains(UnitConstRawPtr unit) const {
     if (u.empty() || !unit) {
         return false;
     }
@@ -340,7 +340,7 @@ inline void UnitCollection::erase(list<UnitPtr>::iterator &it2) {
     it2 = u.erase(it2);
 }
 
-bool UnitCollection::remove(const UnitPtr unit) {
+bool UnitCollection::remove(UnitConstRawPtr unit) {
     if (u.empty() || !unit) {
         return false;
     }

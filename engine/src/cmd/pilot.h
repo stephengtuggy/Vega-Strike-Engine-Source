@@ -57,14 +57,14 @@ public:
     typedef vsUMap<const void *, float> relationmap; //non dereferencable Unit to float
     relationmap effective_relationship;
     std::vector<Animation *> *comm_face;
-    float getAnger(const UnitPtr parent, const UnitPtr un) const;
+    float getAnger(UnitConstRawPtr parent, UnitConstRawPtr un) const;
 
     std::vector<Animation *> *getCommFaces(unsigned char &sex) {
         sex = gender;
         return comm_face;
     }
 
-    float GetEffectiveRelationship(const UnitPtr parent, const UnitPtr target) const;
+    float GetEffectiveRelationship(UnitConstRawPtr parent, UnitConstRawPtr target) const;
     float adjustSpecificRelationship(UnitPtr parent,
             void *aggressor,
             float value,

@@ -436,7 +436,7 @@ Vector Movable::ToWorldCoordinates(const Vector &v) const {
 
 // TODO: move this to JumpCapable
 double Movable::GetMaxWarpFieldStrength(float rampmult) const {
-    const UnitPtr unit = vega_dynamic_const_cast_ptr<const Unit>(this);
+    UnitConstRawPtr unit = vega_dynamic_const_cast_ptr<const Unit>(this);
     Vector v = unit->GetWarpRefVelocity();
 //    QVector qv = v.Cast();
 

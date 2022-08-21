@@ -39,6 +39,7 @@
 #include "universe_util.h"
 #include "universe.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 CommunicatingAI::CommunicatingAI(int ttype,
         int stype,

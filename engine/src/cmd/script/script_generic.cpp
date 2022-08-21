@@ -26,6 +26,7 @@
 #include "xml_support.h"
 #include "cmd/unit_generic.h"
 #include "mission.h"
+#include "unit_base_class.hpp"
 
 void Mission::call_unit_toxml(missionNode *node, int mode, varInst *ovi) {
     UnitPtr my_object = getUnitObject(node, mode, ovi);

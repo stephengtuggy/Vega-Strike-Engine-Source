@@ -49,6 +49,7 @@
 #include "resource/resource.h"
 #include "unit_csv_factory.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 CSVRow LookupUnitRow(const string &unitname, const string &faction) {
     string hashname = unitname + "__" + faction;
@@ -424,7 +425,7 @@ static void AddSubUnits(UnitPtr thus,
                         faction,
                         modification,
                         NULL));         //I set here the fg arg to NULL
-        if (xml.units.back()->name == "LOAD_FAILED") {
+        if (xml.units.back()->failedToLoad()) {
             xml.units.back()->limits.yaw = 0;
             xml.units.back()->limits.pitch = 0;
             xml.units.back()->limits.roll = 0;
@@ -440,14 +441,14 @@ static void AddSubUnits(UnitPtr thus,
         xml.units.back()->SetPosition(pos * xml.unitscale);
         xml.units.back()->limits.structurelimits = R.Cast();
         xml.units.back()->limits.limitmin = restricted;
-        xml.units.back()->name = filename;
+        xml.units.back()->setName(filename);
         if (xml.units.back()->pImage->unitwriter != NULL) {
             xml.units.back()->pImage->unitwriter->setName(filename);
         }
         CheckAccessory(xml.units.back());         //turns on the ceerazy rotation for the turr
     }
     for (int a = xml.units.size() - 1; a >= 0; a--) {
-        bool randomspawn = xml.units[a]->name.get().find("randomspawn") != string::npos;
+        bool randomspawn = xml.units[a]->getName().find("randomspawn") != string::npos;
         if (randomspawn) {
             int chancetospawn = float_to_int(xml.units[a]->warpCapData());
             if (chancetospawn > rand() % 100) {
@@ -1286,7 +1287,7 @@ string Unit::WriteUnitString() {
                                 j = k;
                             }
                             if (j < subunits.size()) {
-                                subunits[j].filename = subun->name;
+                                subunits[j].filename = subun->getName();
                             }
                         }
                         string str;

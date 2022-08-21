@@ -31,6 +31,7 @@
 
 #include "options.h"
 #include "vs_logging.h"
+#include "unit_base_class.hpp"
 
 #ifndef GL_TEXTURE_CUBE_MAP_EXT
 #define GL_TEXTURE_CUBE_MAP_EXT 0x8513

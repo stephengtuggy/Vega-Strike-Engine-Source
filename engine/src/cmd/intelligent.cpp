@@ -40,6 +40,7 @@
 #include "gfx/mesh.h"
 #include "ai/turretai.h"
 #include "collide2/CSopcodecollider.h"
+#include "unit_base_class.hpp"
 
 #include <string>
 
@@ -217,14 +218,14 @@ string Intelligent::getFullAIDescription() {
     }
 }
 
-float Intelligent::getRelation(const UnitPtr targ) const {
-    const UnitPtr unit = static_cast<const UnitPtr>(this);
+float Intelligent::getRelation(UnitConstRawPtr targ) const {
+    UnitConstRawPtr unit = static_cast<UnitConstRawPtr>(this);
 
     return unit->pilot->GetEffectiveRelationship(unit, targ);
 }
 
 double Intelligent::getMinDis(const QVector &pnt) const {
-    const UnitPtr unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr unit = static_cast<const UnitPtr>(this);
 
     float minsofar = 1e+10;
     float tmpvar;

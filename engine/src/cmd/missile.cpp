@@ -44,11 +44,12 @@
 #include "universe.h"
 #include "configuration/game_config.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 ////////////////////////////////////////////////////////////////
 /// MissileEffect
 ////////////////////////////////////////////////////////////////
-MissileEffect::MissileEffect(const QVector &pos, float dam, float pdam, float radius, float radmult, void *owner) : pos(
+MissileEffect::MissileEffect(const QVector &pos, float dam, float pdam, float radius, float radmult, UnitWeakPtr owner) : pos(
         pos) {
     damage = dam;
     phasedamage = pdam;
@@ -111,7 +112,7 @@ void MissileEffect::DoApplyDamage(UnitPtr parent, UnitPtr un, float distance, fl
         double total_area = 0.0;
         {
             un_kiter ki = un->viewSubUnits();
-            for (const UnitPtr subun; (subun = *ki); ++ki) {
+            for (UnitConstRawPtr subun; (subun = *ki); ++ki) {
                 if (subun->Killed()) {
                     continue;
                 }
@@ -154,8 +155,8 @@ void MissileEffect::DoApplyDamage(UnitPtr parent, UnitPtr un, float distance, fl
     if (damage_left > 0) {
         VS_LOG(info,
                 (boost::format("Missile damaging %1$s/%2$s (dist=%3$.3f r=%4$.3f dmg=%5$.3f)")
-                        % parent->name.get()
-                        % ((un == parent) ? "." : un->name.get())
+                        % parent->getName()
+                        % ((un == parent) ? std::string(".") : un->getName())
                         % distance
                         % radius
                         % (damage * damage_fraction * damage_left)));
@@ -199,9 +200,9 @@ Missile::Missile(const char *filename,
 
 void Missile::Discharge() {
     if ((damage != 0 || phasedamage != 0) && !discharged) {
-        UnitPtr target = Unit::Target();
+        UnitPtr target = Unit::Target().lock();
         VS_LOG(info, (boost::format("Missile discharged (target %1%)")
-                % ((target != NULL) ? target->name.get() : "NULL")));
+                % ((target) ? target->getName() : std::string("NULL"))));
         _Universe->activeStarSystem()->AddMissileToQueue(
                 new MissileEffect(Position(), damage, phasedamage,
                         radial_effect, radial_multiplier, owner));

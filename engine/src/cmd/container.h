@@ -47,11 +47,11 @@ public:
         return a;
     }
 
-    bool operator==(const UnitPtr oth) const {
+    bool operator==(UnitConstRawPtr oth) const {
         return unit == oth;
     }
 
-    bool operator!=(const UnitPtr oth) const {
+    bool operator!=(UnitConstRawPtr oth) const {
         return unit != oth;
     }
 
@@ -67,7 +67,7 @@ public:
     void SetUnit(UnitPtr);
     UnitPtr GetUnit();
 
-    const UnitPtr GetConstUnit() const {
+    UnitConstRawPtr GetConstUnit() const {
         return unit;
     }
 };

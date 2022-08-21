@@ -47,6 +47,7 @@
 #include "vs_math.h"
 #include "mount_size.h"
 #include "weapon_info.h"
+#include "unit_base_class.hpp"
 
 using namespace XMLSupport;
 

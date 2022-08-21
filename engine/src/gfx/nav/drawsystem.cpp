@@ -59,6 +59,7 @@
 #include "gfx/masks.h"
 #include "galaxy_gen.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 //**********************************
 //Main function for drawing a CURRENT system

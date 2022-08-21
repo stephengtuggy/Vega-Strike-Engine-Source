@@ -154,9 +154,7 @@ class Unit : public UnitBaseClass,
         public JumpCapable,
         public Carrier {
 protected:
-    //boost::shared_ptr<std::string> csvRow;
     VegaStringPtr csvRow;
-//    std::string csvRow;
 public:
 //    using IntrusiveUnitRefCounter = boost::intrusive_ref_counter<Unit, boost::thread_safe_counter>;
 
@@ -191,18 +189,12 @@ public:
             0;     //this one should be more general--might want to apply it to radioactive goods, passengers, ships (hangar), etc
     float HiddenCargoVolume = 0;
 
-    //The name (type) of this unit shouldn't be public
-    std::string name;
-    std::string filename;
-    //    boost::shared_ptr<std::string> name;
-    //    boost::shared_ptr<std::string> filename;
-
 /*
  **************************************************************************************
  **** CONSTRUCTORS / DESTRUCTOR                                                     ***
  **************************************************************************************
  */
-
+public:
 //forbidden
     Unit(const Unit &) = delete;
 
@@ -282,7 +274,7 @@ public:
             int &numave,
             const boost::shared_ptr<Unit> templ,
             double &percentage);
-//the turrets and spinning parts fun fun stuff
+//the turrets and spinning parts fun, fun stuff
     VegaUnitCollection SubUnits;
 
 /**
@@ -296,6 +288,7 @@ public:
     };
     un_iter getSubUnits();
     un_kiter viewSubUnits() const;
+    void SetFaction(int new_faction) override;
 #define NO_MOUNT_STAR
     bool inertialmode = false;
     bool autopilotactive = false;
@@ -445,7 +438,7 @@ public:
 //Uses planet stuff
 /* Updates the collide Queue with any possible change in sectors
  *  Split this mesh with into 2^level submeshes at arbitrary planes
- *  Uses Mesh so only in Unit and maybe in NetUnitPtr/
+ *  Uses Mesh so only in Unit and maybe in NetUnit */
     virtual void Split(int level) {
     }
 
@@ -950,32 +943,7 @@ public:
  */
 
 public:
-//the flightgroup this ship is in
-    Flightgroup *flightgroup = nullptr;
-//the flightgroup subnumber
-    int32_t flightgroup_subnumber = 0;
 
-    void SetFg(Flightgroup *fg, int fg_snumber);
-//The faction of this unit
-    int faction = 0;
-    void SetFaction(int new_faction);
-
-//get the flightgroup description
-    Flightgroup *getFlightgroup() const {
-        return flightgroup;
-    }
-
-//get the subnumber
-    int32_t getFgSubnumber() const {
-        return flightgroup_subnumber;
-    }
-
-    int32_t getFlightgroupSubNumber() const;
-
-    std::string getFlightgroupName() const;
-
-//get the full flightgroup ID (i.e 'green-4')
-    const std::string getFgID();
     // Changed next two lines from struct CargoColor to class CargoColor to fit line 70 declaration
     std::vector<class CargoColor> &FilterDowngradeList(std::vector<class CargoColor> &mylist, bool downgrade = true);
     std::vector<class CargoColor> &FilterUpgradeList(std::vector<class CargoColor> &mylist);
@@ -997,23 +965,9 @@ public:
 private:
     unsigned char tractorability_flags = tractorImmune;
 
-protected:
-//if the unit is a planet, this contains the long-name 'mars-station'
-    std::string fullname;
 public:
-    void setFullname(std::string name) {
-        fullname = name;
-    }
 
-    const string &getFullname() const {
-        return fullname;
-    }
-
-    const string &getFilename() const {
-        return filename.get();
-    }
-
-//Is this class a unit
+    //Is this class a unit
     virtual enum Vega_UnitType isUnit() const {
         return Vega_UnitType::unit;
     }

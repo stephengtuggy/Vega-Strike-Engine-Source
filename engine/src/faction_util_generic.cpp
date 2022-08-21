@@ -33,6 +33,7 @@
 #include "universe.h"
 
 #include "options.h"
+#include "unit_base_class.hpp"
 
 using namespace FactionUtil;
 int FactionUtil::upgradefac = 0;

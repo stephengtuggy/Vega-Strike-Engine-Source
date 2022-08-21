@@ -49,6 +49,7 @@
 #include "weapon_info.h"
 #include "configuration/configuration.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 template<typename T>
 inline T mymin(T a, T b) {

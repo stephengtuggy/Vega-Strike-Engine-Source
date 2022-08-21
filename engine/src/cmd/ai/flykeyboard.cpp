@@ -35,6 +35,7 @@
 #include "gfx/cockpit.h"
 #include "lin_time.h"
 #include "universe.h"
+#include "unit_base_class.hpp"
 
 struct StarShipControlKeyboard {
     bool switchmode;

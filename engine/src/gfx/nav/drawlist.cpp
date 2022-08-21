@@ -37,6 +37,7 @@
 
 #include "drawlist.h"
 #include "gfx/masks.h"
+#include "unit_base_class.hpp"
 
 navdrawnode::navdrawnode()      //new undefined node, check for these values if wondering if assignment didnt happen.
 {

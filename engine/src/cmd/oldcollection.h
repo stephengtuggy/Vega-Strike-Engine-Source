@@ -179,12 +179,12 @@ public:
             pos = NULL;
         }
 
-        const UnitPtr next() {
+        UnitConstRawPtr next() {
             advance();
             return current();
         }
 
-        const UnitPtr current() const {
+        UnitConstRawPtr current() const {
             return pos->next->unit;
         }
 
@@ -197,18 +197,18 @@ public:
             GetNextValidUnit();
         }
 
-        inline const UnitPtr operator++() {
+        inline UnitConstRawPtr operator++() {
             advance();
             return current();
         }
 
-        inline const UnitPtr operator++(int) {
-            const UnitPtr un = current();
+        inline UnitConstRawPtr operator++(int) {
+            UnitConstRawPtr un = current();
             advance();
             return un;
         }
 
-        inline const UnitPtr operator*() const {
+        inline UnitConstRawPtr operator*() const {
             return current();
         }
     };
@@ -230,7 +230,7 @@ public:
             pos = NULL;
         }
 
-        const UnitPtr current() const {
+        UnitConstRawPtr current() const {
             return pos->next->unit;
         }
 
@@ -238,22 +238,22 @@ public:
             pos = pos->next;
         }
 
-        inline const UnitPtr operator++() {
+        inline UnitConstRawPtr operator++() {
             advance();
             return current();
         }
 
-        inline const UnitPtr operator++(int) {
-            const UnitPtr un = current();
+        inline UnitConstRawPtr operator++(int) {
+            UnitConstRawPtr un = current();
             advance();
             return un;
         }
 
-        inline const UnitPtr operator*() const {
+        inline UnitConstRawPtr operator*() const {
             return current();
         }
 
-        const UnitPtr next() {
+        UnitConstRawPtr next() {
             advance();
             return current();
         }
@@ -384,15 +384,15 @@ public:
         init();
     }
 
-    bool contains(const UnitPtr unit) const;
-    bool remove(const UnitPtr unit);
+    bool contains(UnitConstRawPtr unit) const;
+    bool remove(UnitConstRawPtr unit);
     void cleanup();
 
     UnitPtr front() {
         return *createIterator();
     }
 
-    const UnitPtr front() const {
+    UnitConstRawPtr front() const {
         return *constIterator();
     }
 

@@ -70,6 +70,7 @@
 #include "vs_logging.h"
 #include "movable.h"
 #include "vega_string_utils.hpp"
+#include "unit_base_class.hpp"
 
 extern const vector<string> &ParseDestinations(const string &value);
 extern Unit &GetUnitMasterPartList();

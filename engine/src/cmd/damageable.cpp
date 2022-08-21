@@ -42,6 +42,7 @@
 
 #include <algorithm>
 #include "configuration/configuration.h"
+#include "unit_base_class.hpp"
 
 bool Damageable::ShieldUp(const Vector &pnt) const {
     const int shield_min = 5;
@@ -97,11 +98,11 @@ void Damageable::ApplyDamage(const Vector &pnt,
         Damage damage,
         UnitPtr affected_unit,
         const GFXColor &color,
-        void *ownerDoNotDereference) {
+        UnitWeakPtr ownerDoNotDereference) {
     InflictedDamage inflicted_damage(3);
 
-    const Damageable *const_damagable = static_cast<const Damageable *>(this);
-    UnitPtr unit = static_cast<UnitPtr>(this);
+    const Damageable *const_damagable = const_cast<const Damageable *>(vega_dynamic_cast_ptr<Damageable>(this));
+    UnitRawPtr unit = vega_dynamic_cast_ptr<Unit>(this);
 
     //We also do the following lock on client side in order not to display shield hits
     const bool no_dock_damage = configuration()->physics_config.no_damage_to_docked_ships;
@@ -109,7 +110,7 @@ void Damageable::ApplyDamage(const Vector &pnt,
 
     // Stop processing if the affected unit isn't this unit
     // How could this happen? Why even have two parameters (this and affected_unit)???
-    if (affected_unit != unit) {
+    if (affected_unit.get() != unit) {
         return;
     }
 
@@ -123,11 +124,11 @@ void Damageable::ApplyDamage(const Vector &pnt,
         return;
     }
 
-    Cockpit *shooter_cockpit = _Universe->isPlayerStarshipVoid(ownerDoNotDereference);
+    Cockpit *shooter_cockpit = _Universe->isPlayerStarship(ownerDoNotDereference);
     bool shooter_is_player = (shooter_cockpit != nullptr);
-    bool shot_at_is_player = _Universe->isPlayerStarship(unit);
-    Vector localpnt(InvTransform(unit->cumulative_transformation_matrix, pnt));
-    Vector localnorm(unit->ToLocalCoordinates(normal));
+    bool shot_at_is_player = _Universe->isPlayerStarship(affected_unit);
+    Vector localpnt(InvTransform(affected_unit->cumulative_transformation_matrix, pnt));
+    Vector localnorm(affected_unit->ToLocalCoordinates(normal));
     CoreVector attack_vector(localpnt.i, localpnt.j, localpnt.k);
     float previous_hull_percent = GetHullPercent();
 
@@ -151,7 +152,7 @@ void Damageable::ApplyDamage(const Vector &pnt,
         // If we damage the armor, we do this 10 times by default
         for (int i = 0; i < anger; ++i) {
             //now we can dereference it because we checked it against the parent
-            CommunicationMessage c(reinterpret_cast< UnitPtr > (ownerDoNotDereference), unit, nullptr, 0);
+            CommunicationMessage c(ownerDoNotDereference.lock(), affected_unit, nullptr, 0);
             c.SetCurrentState(c.fsm->GetHitNode(), nullptr, 0);
             if (unit->getAIState()) {
                 unit->getAIState()->Communicate(c);
@@ -159,10 +160,10 @@ void Damageable::ApplyDamage(const Vector &pnt,
         }
 
         //the dark danger is real!
-        unit->Threaten(reinterpret_cast< UnitPtr > (ownerDoNotDereference), 10);
+        unit->Threaten(ownerDoNotDereference.lock(), 10);
     } else {
         //if only the damage contained which faction it belonged to
-        unit->pilot->DoHit(unit, ownerDoNotDereference, FactionUtil::GetNeutralFaction());
+        unit->pilot->DoHit(affected_unit, ownerDoNotDereference.lock().get(), FactionUtil::GetNeutralFaction());
 
         // Non-player ships choose a target when hit. Presumably the shooter.
         if (unit->aistate) {
@@ -174,15 +175,15 @@ void Damageable::ApplyDamage(const Vector &pnt,
         unit->ClearMounts();
 
         if (shooter_is_player) {
-            ScoreKill(shooter_cockpit, reinterpret_cast< UnitPtr > (ownerDoNotDereference), unit);
+            ScoreKill(shooter_cockpit, ownerDoNotDereference.lock(), affected_unit);
         } else {
             UnitPtr tmp;
-            if ((tmp = findUnitInStarsystem(ownerDoNotDereference)) != nullptr) {
-                if ((nullptr != (shooter_cockpit = _Universe->isPlayerStarshipVoid(tmp->owner)))
+            if ((tmp = findUnitInStarsystem(ownerDoNotDereference.lock().get())) != nullptr) {
+                if ((nullptr != (shooter_cockpit = _Universe->isPlayerStarship(tmp->owner)))
                         && (shooter_cockpit->GetParent() != nullptr)) {
-                    ScoreKill(shooter_cockpit, shooter_cockpit->GetParent(), unit);
+                    ScoreKill(shooter_cockpit, shooter_cockpit->GetParent(), affected_unit);
                 } else {
-                    ScoreKill(NULL, tmp, unit);
+                    ScoreKill(nullptr, tmp, affected_unit);
                 }
             }
         }
@@ -262,7 +263,7 @@ void Damageable::ApplyDamage(const Vector &pnt,
     }
 
     // Shake cockpit
-    Cockpit *shot_at_cockpit = _Universe->isPlayerStarship(unit);
+    Cockpit *shot_at_cockpit = _Universe->isPlayerStarship(affected_unit);
 
     // The second condition should always be met, but if not, at least we won't crash
     if (shot_at_is_player && shot_at_cockpit) {
@@ -291,10 +292,10 @@ void Damageable::ApplyDamage(const Vector &pnt,
         UnitPtr computer_ai = nullptr;
         UnitPtr player = nullptr;
         if (shot_at_is_player) {
-            computer_ai = findUnitInStarsystem(ownerDoNotDereference);
-            player = unit;
+            computer_ai = findUnitInStarsystem(ownerDoNotDereference.lock().get());
+            player = affected_unit;
         } else {
-            computer_ai = unit;
+            computer_ai = affected_unit;
             player = shooter_cockpit->GetParent();
         }
 
@@ -352,7 +353,7 @@ extern float rand01();
 extern const UnitPtr loadUnitByCache(std::string name, int faction);
 
 void Damageable::DamageRandomSystem(InflictedDamage inflicted_damage, bool player, Vector attack_vector) {
-    UnitPtr unit = static_cast<UnitPtr>(this);
+    UnitRawPtr unit = vega_dynamic_cast_ptr<Unit>(this);
 
     bool hull_damage = inflicted_damage.inflicted_damage_by_layer[0] > 0;
     bool armor_damage = inflicted_damage.inflicted_damage_by_layer[0] > 0;

@@ -29,9 +29,10 @@
 #include "damageable_object.h"
 #include "gfx/vec.h"
 #include "mount_size.h"
+#include "gfxlib_struct.h"
 
-class Unit;
-struct GFXColor;
+//class Unit;
+//struct GFXColor;
 
 /**
  * @brief The Damageable class TODO
@@ -66,7 +67,7 @@ public:
             killed(false) {
     }
 
-    virtual ~Damageable() = default;
+    ~Damageable() override = default;
     // forbidden
     Damageable(const Damageable &) = delete;
     // forbidden
@@ -132,7 +133,7 @@ public:
             Damage damage,
             UnitPtr affected_unit,
             const GFXColor &color,
-            void *ownerDoNotDereference);
+            UnitWeakPtr ownerDoNotDereference);
     void DamageRandomSystem(InflictedDamage inflicted_damage, bool player, Vector attack_vector);
     void DamageCargo(InflictedDamage inflicted_damage);
     void Destroy(); //explodes then deletes

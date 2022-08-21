@@ -121,6 +121,7 @@ bool BaseInterface::Room::BaseTalk::hastalked = false;
 #include "basecomputer.h"
 #include "../gui/eventmanager.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 #endif
 
 using namespace VSFileSystem;
@@ -1196,7 +1197,7 @@ BaseInterface::BaseInterface(const char *basefile, UnitPtr base, UnitPtr un) :
     createdmusic = AUDHighestSoundPlaying();
     if (base && un) {
         vector<string> vec;
-        vec.push_back(base->name);
+        vec.push_back(base->getName());
         int cpt = UnitUtil::isPlayerStarship(un);
         if (cpt >= 0) {
             saveStringList(cpt, mission_key, vec);
@@ -1292,12 +1293,13 @@ void BaseInterface::Room::Launch::Click(BaseInterface *base, float x, float y, i
         UnitPtr playa = base->caller.GetUnit();
 
         if (playa && bas) {
-            if (((playa->name == "eject") || (playa->name == "ejecting") || (playa->name == "pilot")
-                    || (playa->name == "Pilot") || (playa->name == "Eject")) && (bas->faction == playa->faction)) {
-                playa->name = "return_to_cockpit";
+            std::string player_name = playa->getName();
+            if (((player_name == "eject") || (player_name == "ejecting") || (player_name == "pilot")
+                    || (player_name == "Pilot") || (player_name == "Eject")) && (bas->faction == playa->faction)) {
+                player_name = "return_to_cockpit";
             }
         }
-        if ((playa && bas) && (auto_undock || (playa->name == "return_to_cockpit"))) {
+        if ((playa && bas) && (auto_undock || (playa->getName() == "return_to_cockpit"))) {
             playa->UnDock(bas);
             CommunicationMessage c(bas, playa, NULL, 0);
             c.SetCurrentState(c.fsm->GetUnDockNode(), NULL, 0);
@@ -1305,7 +1307,7 @@ void BaseInterface::Room::Launch::Click(BaseInterface *base, float x, float y, i
                 playa->getAIState()->Communicate(c);
             }
             abletodock(5);
-            if (playa->name == "return_to_cockpit") {
+            if (playa->getName() == "return_to_cockpit") {
                 if (playa->faction == bas->faction) {
                     playa->owner = bas;
                 }
@@ -1332,8 +1334,8 @@ void BaseInterface::Room::Eject::Click(BaseInterface *base, float x, float y, in
         UnitPtr bas = base->baseun.GetUnit();
         UnitPtr playa = base->caller.GetUnit();
         if (playa && bas) {
-            if (playa->name == "return_to_cockpit") {
-                playa->name = "ejecting";
+            if (playa->getName() == "return_to_cockpit") {
+                playa->setName("ejecting");
                 Vector tmpvel = bas->Velocity * -1;
                 if (tmpvel.MagnitudeSquared() < .00001) {
                     tmpvel = randyVector(-(bas->rSize()), bas->rSize()).Cast();
@@ -1358,8 +1360,9 @@ void BaseInterface::Room::Eject::Click(BaseInterface *base, float x, float y, in
             }
             abletodock(5);
             playa->EjectCargo((unsigned int) -1);
-            if ((playa->name == "return_to_cockpit") || (playa->name == "ejecting") || (playa->name == "eject")
-                    || (playa->name == "Eject") || (playa->name == "Pilot") || (playa->name == "pilot")) {
+            std::string player_name = playa->getName();
+            if ((player_name == "return_to_cockpit") || (player_name == "ejecting") || (player_name == "eject")
+                    || (player_name == "Eject") || (player_name == "Pilot") || (player_name == "pilot")) {
                 playa->Kill();
             }
         }

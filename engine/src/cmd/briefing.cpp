@@ -33,7 +33,7 @@
 
 Briefing::Ship::Ship(const char *filename, int faction, const Vector &position) {
     VSCONSTRUCT2('s')
-    UnitPtr tmp = new Unit(filename, true, faction);
+    UnitPtr tmp = make_shared_from_intrusive(new Unit(filename, true, faction));
     meshdata = tmp->StealMeshes();
     tmp->Kill();
     cloak = 1;

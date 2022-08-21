@@ -55,6 +55,7 @@
 #include "star_system.h"
 #include "universe.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 extern double aggfire;
 

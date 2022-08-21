@@ -30,6 +30,7 @@
 #include "cmd/role_bitmask.h"
 #include "universe.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 using namespace Orders;
 
@@ -88,13 +89,13 @@ void TurretAI::Execute() {
             float dot = R.Dot(Pos.Cast());
             int neu = FactionUtil::GetNeutralFaction();
             int upg = FactionUtil::GetUpgradeFaction();
-            bool isplayerstarship = _Universe->isPlayerStarshipVoid(parent->owner) != NULL;
+            bool is_player_starship = _Universe->isPlayerStarship(parent->owner) != nullptr;
 
             bool shouldfire =
                     ((mag - targ->rSize() - parent->rSize() < range
                             && dot > dot_cutoff)
-                            && (isplayerstarship == false || targ->faction == upg
-                                    || (isplayerstarship
+                            && (is_player_starship == false || targ->faction == upg
+                                    || (is_player_starship
                                             && (targ->getRelation((UnitPtr) parent->owner)
                                                     < 0 /*now that it is a player, we know it's dereferencable*/
                                                     || targ->Target() == (UnitPtr) parent->owner)))

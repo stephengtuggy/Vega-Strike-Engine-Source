@@ -206,7 +206,7 @@ UnitCollection::UnitCollection(const UnitCollection &uc) : u(NULL) {
     }
 }
 
-bool UnitCollection::contains(const UnitPtr unit) const {
+bool UnitCollection::contains(UnitConstRawPtr unit) const {
     if (empty()) {
         return false;
     }
@@ -221,7 +221,7 @@ bool UnitCollection::contains(const UnitPtr unit) const {
     return false;
 }
 
-bool UnitCollection::remove(const UnitPtr unit) {
+bool UnitCollection::remove(UnitConstRawPtr unit) {
     bool res = false;
     if (empty()) {
         return false;

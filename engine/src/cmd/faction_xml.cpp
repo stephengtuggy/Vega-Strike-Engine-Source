@@ -36,6 +36,7 @@
 #include "cmd/music.h"
 #include "faction_generic.h"
 #include "faction_factory.h"
+#include "unit_base_class.hpp"
 
 using namespace XMLSupport;
 

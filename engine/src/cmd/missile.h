@@ -36,10 +36,10 @@ private:
     float phasedamage;
     float radius;
     float radialmultiplier;
-    void *ownerDoNotDereference;
+    UnitWeakPtr ownerDoNotDereference;
 
 public:
-    MissileEffect(const QVector &pos, float dam, float pdam, float radius, float radmult, void *owner);
+    MissileEffect(const QVector &pos, float dam, float pdam, float radius, float radmult, UnitWeakPtr owner);
     void ApplyDamage(UnitPtr);
     const QVector &GetCenter() const;
     float GetRadius() const;

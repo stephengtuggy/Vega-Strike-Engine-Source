@@ -78,7 +78,7 @@ bool Unit::querySphereClickList(int mouseX, int mouseY, float err, Camera *activ
             return true;
         }
     }
-    const UnitPtr su;
+    UnitConstRawPtr su;
     for (un_kiter ui = this->viewSubUnits(); (su = *ui); ++ui) {
         if (su->querySphereClickList(mouseX, mouseY, err, activeCam)) {
             return true;

@@ -31,13 +31,14 @@
 #include "gfx/warptrail.h"
 #include "vsfilesystem.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 // TODO: once implementation is refactored, deal with this too
-extern QVector RealPosition(const UnitPtr un);
+extern QVector RealPosition(UnitConstRawPtr un);
 extern float getAutoRSize(UnitPtr orig, UnitPtr un, bool ignore_friend = false);
 extern float globQueryShell(QVector st, QVector dir, float radius);
 
-static QVector AutoSafeEntrancePoint(const QVector start, float rsize, const UnitPtr goal) {
+static QVector AutoSafeEntrancePoint(const QVector start, float rsize, UnitConstRawPtr goal) {
     QVector def = UniverseUtil::SafeEntrancePoint(start, rsize);
     double bdis = (def - RealPosition(goal)).MagnitudeSquared();
     for (int i = -1; i <= 1; ++i) {
@@ -117,12 +118,12 @@ bool JumpCapable::AutoPilotTo(UnitPtr un, bool automaticenergyrealloc) {
     return AutoPilotToErrorMessage(un, automaticenergyrealloc, tmp);
 }
 
-bool JumpCapable::AutoPilotToErrorMessage(const UnitPtr target,
+bool JumpCapable::AutoPilotToErrorMessage(UnitConstRawPtr target,
         bool ignore_energy_requirements,
         std::string &failuremessage,
         int recursive_level) {
     UnitPtr unit = static_cast<UnitPtr>(this);
-    const UnitPtr const_unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr const_unit = static_cast<UnitConstRawPtr>(this);
 
     static bool auto_valid =
             XMLSupport::parse_bool(vs_config->getVariable("physics", "insystem_jump_or_timeless_auto-pilot", "false"));
@@ -132,7 +133,7 @@ bool JumpCapable::AutoPilotToErrorMessage(const UnitPtr target,
         return false;
     }
     if (target->isUnit() == Vega_UnitType::planet) {
-        const UnitPtr targ = *(target->viewSubUnits());
+        UnitConstRawPtr targ = *(target->viewSubUnits());
         if (targ && 0 == targ->graphicOptions.FaceCamera) {
             return AutoPilotToErrorMessage(targ, ignore_energy_requirements, failuremessage, recursive_level);
         }
@@ -385,7 +386,7 @@ bool JumpCapable::AutoPilotToErrorMessage(const UnitPtr target,
 float JumpCapable::CalculateNearestWarpUnit(float minmultiplier,
         UnitPtr*nearest_unit,
         bool count_negative_warp_units) const {
-    const UnitPtr unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr unit = static_cast<UnitConstRawPtr>(this);
 
     static float smallwarphack = XMLSupport::parse_float(vs_config->getVariable("physics", "minwarpeffectsize", "100"));
     static float bigwarphack =
@@ -478,7 +479,7 @@ float JumpCapable::CalculateNearestWarpUnit(float minmultiplier,
 }
 
 float JumpCapable::CourseDeviation(const Vector &OriginalCourse, const Vector &FinalCourse) const {
-    const UnitPtr unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr unit = static_cast<const UnitPtr>(this);
     if (unit->ViewComputerData().max_ab_speed() > .001) {
         return (OriginalCourse - (FinalCourse)).Magnitude() / unit->ViewComputerData().max_ab_speed();
     } else {

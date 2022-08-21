@@ -58,6 +58,7 @@
 #include "planetary_orbit.h"
 #include "universe_util.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 using std::endl;
 
@@ -256,7 +257,7 @@ Planet::Planet(QVector x,
         UnitPtr jump = jum;
         bool anytrue = false;
         while (jump != nullptr) {
-            if (jump->name != "LOAD_FAILED") {
+            if (jump->loadedSuccessfully()) {
                 anytrue = true;
                 radius = jump->rSize();
                 Mesh *shield = jump->meshdata.size() ? jump->meshdata.back() : nullptr;
@@ -454,7 +455,7 @@ void Planet::InitPlanet(QVector x,
     UnitPtr un = new Unit(tempname.c_str(), true, tmpfac);
 
     const bool smartplanets = configuration()->physics_config.planets_can_have_subunits;
-    if (un->name != string("LOAD_FAILED")) {
+    if (un->getName() != string("LOAD_FAILED")) {
         cargo = un->cargo;
         CargoVolume = un->CargoVolume;
         UpgradeVolume = un->UpgradeVolume;
@@ -467,7 +468,7 @@ void Planet::InitPlanet(QVector x,
             un->SetRecursiveOwner(this);
             this->SetTurretAI();
             un->SetTurretAI();              //allows adding planetary defenses, also allows launching fighters from planets, interestingly
-            un->name = "Defense_grid";
+            un->setName("Defense_grid");
         }
         const bool neutralplanets = configuration()->physics_config.planets_always_neutral;
         if (neutralplanets) {
@@ -478,7 +479,7 @@ void Planet::InitPlanet(QVector x,
             this->faction = faction;
         }
     }
-    if (un->name == string("LOAD_FAILED") || (!smartplanets)) {
+    if (un->failedToLoad() || (!smartplanets)) {
         un->Kill();
     }
 }

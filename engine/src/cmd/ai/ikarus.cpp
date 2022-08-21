@@ -40,6 +40,7 @@
 #include "universe_util.h"
 #include "gfx/cockpit_generic.h"
 #include "ikarus.h"
+#include "unit_base_class.hpp"
 using namespace Orders;
 
 Ikarus::Ikarus() : AggressiveAI("default.agg.xml") {

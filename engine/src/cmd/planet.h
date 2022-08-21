@@ -34,6 +34,7 @@
 #include "unit_generic.h"
 #include "ai/order.h"
 #include "collection.h"
+#include "unit_base_class.hpp"
 #include <vector>
 #include <string>
 

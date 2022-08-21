@@ -31,6 +31,7 @@
 #include "cmd/planet.h"
 #include "cmd/unit_util.h"
 #include "track.h"
+#include "unit_base_class.hpp"
 
 namespace Radar {
 

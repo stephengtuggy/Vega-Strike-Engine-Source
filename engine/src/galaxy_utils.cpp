@@ -33,6 +33,7 @@
 #include "star_system_generic.h"
 
 #include "options.h"
+#include "universe_globals.h"
 
 #include <vector>
 #include <string>
@@ -330,4 +331,16 @@ void Universe::getJumpPath(const std::string &from, const std::string &to, vecto
 
     // Reverse to get the straight path
     reverse(path.begin(), path.end());
+}
+
+Cockpit *Universe::isPlayerStarship(const Unit *pointer_compare) {
+    if (!pointer_compare) {
+        return nullptr;
+    }
+    for (auto & i : _cockpits) {
+        if (pointer_compare == i->GetParent().get()) {
+            return i;
+        }
+    }
+    return nullptr;
 }

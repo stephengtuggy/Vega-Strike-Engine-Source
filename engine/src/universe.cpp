@@ -63,6 +63,7 @@
 
 #include "options.h"
 #include "movable.h"
+#include "unit_base_class.hpp"
 
 // Using
 using namespace VSFileSystem;
@@ -192,7 +193,7 @@ UnitPtr DockToSavedBases(int playernum, QVector &safevec) {
     UnitPtr un;
     QVector dock_position(plr->curr_physical_state.position);
     for (un_iter iter = plr->getStarSystem()->getUnitList().createIterator(); (un = *iter); ++iter) {
-        if (un->name == str || un->getFullname() == str) {
+        if (un->getName() == str || un->getFullname() == str) {
             dist = UnitUtil::getSignificantDistance(plr, un);
             if (closestUnit == NULL || dist < lastdist) {
                 lastdist = dist;
@@ -547,25 +548,25 @@ Texture *Universe::getLightMap() {
 }
 
 // Player Ship
-Cockpit *Universe::isPlayerStarship(const UnitPtr doNotDereference) {
+Cockpit *Universe::isPlayerStarship(UnitConstRawPtr do_not_dereference) {
     using std::vector;
-    if (!doNotDereference) {
-        return NULL;
+    if (!do_not_dereference) {
+        return nullptr;
     }
-    for (std::vector<Cockpit *>::iterator iter = _cockpits.begin(); iter < _cockpits.end(); iter++) {
-        if (doNotDereference == (*(iter))->GetParent()) {
+    for (auto iter = _cockpits.begin(); iter < _cockpits.end(); iter++) {
+        if (do_not_dereference == (*(iter))->GetParent()) {
             return *(iter);
         }
     }
-    return NULL;
+    return nullptr;
 }
 
-int Universe::whichPlayerStarship(const UnitPtr doNotDereference) {
-    if (!doNotDereference) {
+int Universe::whichPlayerStarship(UnitConstRawPtr do_not_dereference) {
+    if (!do_not_dereference) {
         return -1;
     }
     for (unsigned int i = 0; i < _cockpits.size(); i++) {
-        if (doNotDereference == _cockpits[i]->GetParent()) {
+        if (do_not_dereference == _cockpits[i]->GetParent()) {
             return i;
         }
     }

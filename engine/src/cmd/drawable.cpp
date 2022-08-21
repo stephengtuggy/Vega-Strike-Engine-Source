@@ -45,6 +45,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include "vega_cast_utils.hpp"
+#include "unit_base_class.hpp"
 
 // Dupe to same function in unit.cpp
 // TODO: remove duplication
@@ -859,7 +860,7 @@ void Drawable::Split(int level) {
     int nm = this->nummesh();
     string fac = FactionUtil::GetFaction(unit->faction);
 
-    CSVRow unit_stats(LookupUnitRow(unit->name, fac));
+    CSVRow unit_stats(LookupUnitRow(unit->getName(), fac));
     unsigned int num_chunks = unit_stats.success() ? atoi(unit_stats["Num_Chunks"].c_str()) : 0;
     if (nm <= 0 && num_chunks == 0) {
         return;
@@ -873,14 +874,14 @@ void Drawable::Split(int level) {
         size_t i;
         vector<Mesh *> nw;
         unsigned int which_chunk = rand() % num_chunks;
-        string chunkname = UniverseUtil::LookupUnitStat(unit->name, fac, "Chunk_" + XMLSupport::tostring(which_chunk));
-        string dir = UniverseUtil::LookupUnitStat(unit->name, fac, "Directory");
+        string chunkname = UniverseUtil::LookupUnitStat(unit->getName(), fac, "Chunk_" + XMLSupport::tostring(which_chunk));
+        string dir = UniverseUtil::LookupUnitStat(unit->getName(), fac, "Directory");
         VSFileSystem::current_path.push_back(unit_stats.getRoot());
         VSFileSystem::current_subdirectory.push_back("/" + dir);
         VSFileSystem::current_type.push_back(VSFileSystem::UnitFile);
         float randomstartframe = 0;
         float randomstartseconds = 0;
-        string scalestr = UniverseUtil::LookupUnitStat(unit->name, fac, "Unit_Scale");
+        string scalestr = UniverseUtil::LookupUnitStat(unit->getName(), fac, "Unit_Scale");
         int scale = atoi(scalestr.c_str());
         if (scale == 0) {
             scale = 1;
@@ -940,7 +941,7 @@ void Drawable::Split(int level) {
         }
         unit->SubUnits.prepend(splitsub = new Unit(tempmeshes, true, unit->faction));
         *splitsub->current_hull = 1000.0f;
-        splitsub->name = "debris";
+        splitsub->setName("debris");
         splitsub->setMass(game_options()->debris_mass * splitsub->getMass() / level);
         splitsub->pImage->timeexplode = .1;
         if (splitsub->meshdata[0]) {

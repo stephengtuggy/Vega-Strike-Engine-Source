@@ -55,6 +55,7 @@
 
 #include "star_system.h"
 #include "universe.h"
+#include "unit_base_class.hpp"
 
 #include <boost/filesystem.hpp>
 #include <boost/chrono/time_point.hpp>
@@ -772,7 +773,7 @@ string LookupUnitStat(const string &unitname, const string &faction, const strin
 static std::vector<UnitPtr> cachedUnits;
 
 void precacheUnit(string type_string, string faction_string) {
-    cachedUnits.push_back(new Unit(type_string.c_str(), true, FactionUtil::GetFactionIndex(faction_string)));
+    cachedUnits.push_back(make_shared_from_intrusive(new Unit(type_string.c_str(), true, FactionUtil::GetFactionIndex(faction_string))));
 }
 
 UnitPtr getPlayer() {
