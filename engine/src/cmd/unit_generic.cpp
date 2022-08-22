@@ -3963,7 +3963,7 @@ bool Unit::ReduceToTemplate() {
     const UnitPtr temprate = makeFinalBlankUpgrade(name, faction);
     bool success = false;
     double pct = 0;
-    if (temprate && temprate->getName() != string("LOAD_FAILED")) {
+    if (temprate && temprate->loadedSuccessfully()) {
         success = Upgrade(temprate, -1, -1, 0, true, pct, NULL, true);
         if (pct > 0) {
             success = true;
@@ -4033,7 +4033,7 @@ int Unit::RepairUpgrade() {
     const UnitPtr temprate = makeFinalBlankUpgrade(name, faction);
     int success = 0;
     double pct = 0;
-    if (temprate && temprate->name != string("LOAD_FAILED")) {
+    if (temprate && temprate->loadedSuccessfully()) {
         success = Upgrade(temprate, -1, -1, 0, false, pct, NULL, false) ? 1 : 0;
         if (pct > 0) {
             success = 1;
@@ -4233,7 +4233,7 @@ vector<CargoColor> &Unit::FilterDowngradeList(vector<CargoColor> &mylist, bool d
                         new Unit(mylist[i].cargo.GetContent().c_str(), false,
                                 upgrfac));
             }
-            if (NewPart->getName() == string("LOAD_FAILED")) {
+            if (NewPart->failedToLoad()) {
                 const UnitPtr NewPart =
                         UnitConstCache::getCachedConst(StringIntKey(mylist[i].cargo.GetContent().c_str(), faction));
                 if (!NewPart) {
@@ -4242,7 +4242,7 @@ vector<CargoColor> &Unit::FilterDowngradeList(vector<CargoColor> &mylist, bool d
                                     false, faction));
                 }
             }
-            if (NewPart->getName() != string("LOAD_FAILED")) {
+            if (NewPart->loadedSuccessfully()) {
                 int maxmountcheck = NewPart->getNumMounts() ? getNumMounts() : 1;
                 char *unitdir = GetUnitDir(getName().c_str());
                 string templnam = string(unitdir) + ".template";
@@ -4255,7 +4255,7 @@ vector<CargoColor> &Unit::FilterDowngradeList(vector<CargoColor> &mylist, bool d
                                                 faction),
                                         new Unit(templnam.c_str(), true, this->faction));
                     }
-                    if (templ->getName() == std::string("LOAD_FAILED")) {
+                    if (templ->failedToLoad()) {
                         templ = NULL;
                     }
                 } else {
@@ -4266,7 +4266,7 @@ vector<CargoColor> &Unit::FilterDowngradeList(vector<CargoColor> &mylist, bool d
                                 new Unit(limiternam.c_str(), true,
                                         this->faction));
                     }
-                    if (downgradelimit->getName() == std::string("LOAD_FAILED")) {
+                    if (downgradelimit->failedToLoad()) {
                         downgradelimit = NULL;
                     }
                 }

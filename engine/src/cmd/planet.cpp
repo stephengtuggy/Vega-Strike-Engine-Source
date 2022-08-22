@@ -455,7 +455,7 @@ void Planet::InitPlanet(QVector x,
     UnitPtr un = new Unit(tempname.c_str(), true, tmpfac);
 
     const bool smartplanets = configuration()->physics_config.planets_can_have_subunits;
-    if (un->getName() != string("LOAD_FAILED")) {
+    if (un->loadedSuccessfully()) {
         cargo = un->cargo;
         CargoVolume = un->CargoVolume;
         UpgradeVolume = un->UpgradeVolume;
