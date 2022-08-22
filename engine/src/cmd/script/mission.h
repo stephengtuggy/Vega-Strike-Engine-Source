@@ -54,6 +54,7 @@ class MessageCenter;
 #endif
 
 #include "star_system.h"
+#include "flightgroup.h"
 
 #include <assert.h>
 
@@ -418,6 +419,7 @@ class pythonMission;
 class PythonMissionBaseClass;
 #endif //VS_MIS_SEL
 
+class CreateFlightgroup;
 class Mission {
 public:
     enum MISSION_AUTO { AUTO_OFF = -1, AUTO_NORMAL = 0, AUTO_ON = 1 };
@@ -454,7 +456,7 @@ public:
     static double gametime;
     std::string mission_name;
     void terminateMission();
-    UnitPtr call_unit_launch(class CreateFlightgroup *fg, int type /*Vega_UnitType type*/, const std::string &destinations);
+    UnitPtrForPy call_unit_launch(CreateFlightgroup *fg, int type /*Vega_UnitType type*/, const std::string &destinations);
 
     Mission(const char *configfile, bool loadscripts = true);
     Mission(const char *filename, const std::string &pythonscript, bool loadscripts = true);
@@ -731,7 +733,7 @@ private:
 
     varInst *call_unit(missionNode *node, int mode);
     varInst *call_briefing(missionNode *node, int mode);
-    UnitPtr getUnitObject(missionNode *node, int mode, varInst *ovi);
+    Unit * getUnitObject(missionNode *node, int mode, varInst *ovi);
 
 //void call_unit_launch(missionNode *node, int mode, std::string name, std::string faction, std::string type, std::string ainame, int nr_ships, Vector &pos);
 
@@ -765,7 +767,7 @@ private:
     double getFloatArg(missionNode *node, int mode, int arg_nr);
     int getIntArg(missionNode *node, int mode, int arg_nr);
     bool getBoolArg(missionNode *node, int mode, int arg_nr);
-    UnitPtr getUnitArg(missionNode *node, int mode, int arg_nr);
+    Unit * getUnitArg(missionNode *node, int mode, int arg_nr);
 #endif //VS_MIS_SEL
 };
 

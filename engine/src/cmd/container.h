@@ -31,20 +31,20 @@
 
 class UnitContainer {
 protected:
-    UnitPtr unit;
+    UnitRawPtr unit;
 public:
     UnitContainer();
-    UnitContainer(UnitPtr);
+    explicit UnitContainer(UnitRawPtr un);
 
     UnitContainer(const UnitContainer &un) {
         VSCONSTRUCT1('U')
-        unit.reset();
+        unit = nullptr;
         SetUnit(un.unit);
     }
 
-    const UnitContainer &operator=(const UnitContainer &a) {
+    UnitContainer &operator=(const UnitContainer &a) {
         SetUnit(a.unit);
-        return a;
+        return *this;
     }
 
     bool operator==(UnitConstRawPtr oth) const {
@@ -64,8 +64,8 @@ public:
     }
 
     ~UnitContainer();
-    void SetUnit(UnitPtr);
-    UnitPtr GetUnit();
+    void SetUnit(UnitRawPtr);
+    UnitRawPtr GetUnit();
 
     UnitConstRawPtr GetConstUnit() const {
         return unit;

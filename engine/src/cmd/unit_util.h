@@ -76,6 +76,7 @@ bool isCapitalShip(UnitConstRawPtr my_unit);
 bool isDockableUnit(UnitConstRawPtr my_unit);
 bool isAsteroid(UnitConstRawPtr my_unit);
 bool isSun(UnitPtr my_unit);
+bool isSun(UnitRawPtr my_unit);
 void switchFg(UnitPtr my_unit, string arg);
 int communicateTo(UnitPtr my_unit, UnitPtr other_unit, float mood);
 bool commAnimation(UnitPtr my_unit, string anim);

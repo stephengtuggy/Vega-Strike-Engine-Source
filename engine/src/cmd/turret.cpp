@@ -125,7 +125,7 @@ std::string getTurretSize(const std::string &size) {
 }
 
 UnitPtr CreateGenericTurret(std::string tur, int faction) {
-    return new Unit(tur.c_str(), true, faction, "", 0, 0);
+    return make_shared_from_intrusive(new Unit(tur.c_str(), true, faction, "", 0, 0));
 }
 
 /*class VCString : public std::string

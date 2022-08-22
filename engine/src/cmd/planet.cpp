@@ -249,11 +249,11 @@ Planet::Planet(QVector x,
         }
         string wormholename = wormhole_unit + stab;
         string wormholeneutralname = wormhole_unit + ".neutral" + stab;
-        UnitPtr jum = new Unit(wormholename.c_str(), true, faction);
+        UnitPtr jum = make_shared_from_intrusive(new Unit(wormholename.c_str(), true, faction));
         int neutralfaction = FactionUtil::GetNeutralFaction();
         faction = neutralfaction;
 
-        UnitPtr neujum = new Unit(wormholeneutralname.c_str(), true, neutralfaction);
+        UnitPtr neujum = make_shared_from_intrusive(new Unit(wormholeneutralname.c_str(), true, neutralfaction));
         UnitPtr jump = jum;
         bool anytrue = false;
         while (jump != nullptr) {
@@ -452,7 +452,7 @@ void Planet::InitPlanet(QVector x,
     if (UniverseUtil::LookupUnitStat(tempname, FactionUtil::GetFactionName(faction), "Cargo_Import").length() == 0) {
         tmpfac = FactionUtil::GetPlanetFaction();
     }
-    UnitPtr un = new Unit(tempname.c_str(), true, tmpfac);
+    UnitPtr un = make_shared_from_intrusive(new Unit(tempname.c_str(), true, tmpfac));
 
     const bool smartplanets = configuration()->physics_config.planets_can_have_subunits;
     if (un->loadedSuccessfully()) {
@@ -567,9 +567,9 @@ void Planet::AddFog(const std::vector<AtmosphericFogMesh> &v, bool opticalillusi
     }
     UnitPtr fawg;
     if (opticalillusion) {
-        fawg = new AtmosphereHalo(this->rSize(), fogs, 0);
+        fawg = make_shared_from_intrusive(new AtmosphereHalo(this->rSize(), fogs, 0));
     } else {
-        fawg = new Unit(fogs, true, 0);
+        fawg = make_shared_from_intrusive(new Unit(fogs, true, 0));
     }
     fawg->setFaceCamera();
     getSubUnits().preinsert(fawg);
@@ -666,7 +666,7 @@ Vector Planet::AddSpaceElevator(const std::string &name, const std::string &fact
         } else {
             ElevatorLoc.p.Set(-dir.i * mn.i, -dir.j * mn.j, -dir.k * mn.k);
         }
-        UnitPtr un = new Unit(name.c_str(), true, FactionUtil::GetFactionIndex(faction), "", nullptr);
+        UnitPtr un = make_shared_from_intrusive(new Unit(name.c_str(), true, FactionUtil::GetFactionIndex(faction), "", nullptr));
         if (pImage->dockingports.back().GetPosition().MagnitudeSquared() < 10) {
             pImage->dockingports.clear();
         }
@@ -808,8 +808,9 @@ UnitPtr Planet::beginElement(QVector x,
         if (isunit == true) {
             UnitPtr sat_unit = nullptr;
             Flightgroup *fg = getStaticBaseFlightgroup(faction);
-            satellites.prepend(sat_unit = new Unit(filename.c_str(), false, faction, "", fg, fg->nr_ships - 1));
+            sat_unit = make_shared_from_intrusive(new Unit(filename.c_str(), false, faction, "", fg, fg->nr_ships - 1));
             sat_unit->setFullname(fullname);
+            satellites.prepend(sat_unit);
             un = sat_unit;
             un_iter satiterator(satellites.createIterator());
             (*satiterator)->SetAI(new PlanetaryOrbit(*satiterator, vely, pos, x, y, QVector(0, 0, 0), this));

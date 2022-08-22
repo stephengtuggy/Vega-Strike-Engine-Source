@@ -963,5 +963,12 @@ void unsetMissionRelevant(UnitPtr un) {
     }
 }
 
+bool isSun(UnitRawPtr my_unit) {
+    if (my_unit == nullptr) {
+        return false;
+    }
+    return my_unit->isPlanet() && (vega_dynamic_cast_ptr<Planet>(my_unit))->hasLights();
+}
+
 }
 

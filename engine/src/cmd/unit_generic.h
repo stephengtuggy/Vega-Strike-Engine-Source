@@ -298,8 +298,8 @@ public:
     }
 
     void setFaceCamera();
-    bool UpAndDownGrade(const UnitPtr up,
-            const UnitPtr templ,
+    bool UpAndDownGrade(UnitConstRawPtr up,
+            UnitConstRawPtr templ,
             int mountoffset,
             int subunitoffset,
             bool touchme,
@@ -307,7 +307,7 @@ public:
             int additive,
             bool forcetransaction,
             double &percentage,
-            const UnitPtr downgrade_min,
+            UnitConstRawPtr downgradelimit,
             bool force_change_on_nothing,
             bool gen_downgrade_list);
     void ImportPartList(const std::string &category, float price, float pricedev, float quantity, float quantdev);
@@ -317,22 +317,22 @@ public:
 //Uses base stuff -> only in Unit
     virtual void UpgradeInterface(UnitPtr base);
 
-    bool canUpgrade(const UnitPtr upgrador,
+    bool canUpgrade(UnitConstRawPtr upgrador,
             int mountoffset,
             int subunitoffset,
             int additive,
             bool force,
             double &percentage,
-            const UnitPtr templ = NULL,
+            UnitConstRawPtr templ = NULL,
             bool force_change_on_nothing = false,
             bool gen_downgrade_list = true);
-    bool Upgrade(const UnitPtr upgrador,
+    bool Upgrade(UnitConstRawPtr upgrador,
             int mountoffset,
             int subunitoffset,
             int additive,
             bool force,
             double &percentage,
-            const UnitPtr templ = NULL,
+            UnitConstRawPtr templ = NULL,
             bool force_change_on_nothing = false,
             bool gen_downgrade_list = true);
     int RepairCost();                            //returns how many things need to be repaired--if nothing is damaged it will return 1 for labor.  doesn't assume any given cost on such thigns.
@@ -344,17 +344,17 @@ public:
     Vector MountPercentOperational(int whichmount);
     bool ReduceToTemplate();
     double Upgrade(const std::string &file, int mountoffset, int subunitoffset, bool force, bool loop_through_mounts);
-    bool canDowngrade(const UnitPtr downgradeor,
+    bool canDowngrade(UnitConstRawPtr downgradeor,
             int mountoffset,
             int subunitoffset,
             double &percentage,
-            const UnitPtr downgradelimit,
+            UnitConstRawPtr downgradelimit,
             bool gen_downgrade_list = true);
-    bool Downgrade(const UnitPtr downgradeor,
+    bool Downgrade(UnitConstRawPtr downgradeor,
             int mountoffset,
             int subunitoffset,
             double &percentage,
-            const UnitPtr downgradelimit,
+            UnitConstRawPtr downgradelimit,
             bool gen_downgrade_list = true);
 
 protected:
@@ -1035,7 +1035,7 @@ struct Unit::XML {
     bool calculated_role;
 };
 
-inline UnitPtr UnitContainer::GetUnit() {
+inline UnitRawPtr UnitContainer::GetUnit() {
     if (unit != NULL) {
 #ifdef CONTAINER_DEBUG
         CheckUnit( unit );

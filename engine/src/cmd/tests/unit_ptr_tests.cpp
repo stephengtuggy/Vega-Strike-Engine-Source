@@ -28,7 +28,7 @@
 #include "cmd/unit_generic.h"
 
 TEST(Unit, Sanity) {
-    UnitPtr p1 = new Unit();
+    UnitRawPtr p1 = new Unit();
 
     boost::shared_ptr<Unit> unit_ptr1 = make_shared_from_intrusive(p1);
 }

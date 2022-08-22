@@ -31,7 +31,7 @@ UnitContainer::UnitContainer() : unit(nullptr) {
     VSCONSTRUCT1('U')
 }
 
-UnitContainer::UnitContainer(UnitPtr un) : unit(nullptr) {
+UnitContainer::UnitContainer(UnitRawPtr un) : unit(nullptr) {
     SetUnit(un);
     VSCONSTRUCT1('U');
 }
@@ -39,25 +39,25 @@ UnitContainer::UnitContainer(UnitPtr un) : unit(nullptr) {
 UnitContainer::~UnitContainer() {
     VSDESTRUCT1
     if (unit) {
-        unit->UnRef();
+        unit-;
     }
     //bad idea...arrgh!
 }
 
-void UnitContainer::SetUnit(UnitPtr un) {
+void UnitContainer::SetUnit(UnitRawPtr un) {
     //if the unit is null then go here otherwise if the unit is killed then go here
-    if (un != NULL ? un->Killed() == true : true) {
+    if (un != nullptr ? un->Killed() == true : true) {
         if (unit) {
-            unit->UnRef();
+            intrusive_ptr_release(unit);
         }
-        unit = NULL;
+        unit = nullptr;
         return;
     } else {
         if (unit) {
-            unit->UnRef();
+            intrusive_ptr_release(unit);
         }
         unit = un;
-        unit->Ref();
+        intrusive_ptr_add_ref(unit);
     }
 }
 

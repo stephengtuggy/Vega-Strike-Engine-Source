@@ -855,8 +855,8 @@ bool Cockpit::Update() {
                     fg->nr_ships++;
                     fg->nr_ships_left++;
                 }
-                UnitPtr un = new Unit(
-                        GetUnitFileName().c_str(), false, this->unitfaction, unitmodname, fg, fgsnumber);
+                UnitPtr un = make_shared_from_intrusive(new Unit(
+                        GetUnitFileName().c_str(), false, this->unitfaction, unitmodname, fg, fgsnumber));
                 un->SetCurPosition(UniverseUtil::SafeEntrancePoint(savegame->GetPlayerLocation()));
                 ss->AddUnit(un);
 

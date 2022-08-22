@@ -106,7 +106,7 @@ int SelectDockPort(UnitPtr utdw, UnitPtr parent) {
 
 //From unit_customize.cpp
 UnitPtr CreateGameTurret(std::string tur, int faction) {
-    return new Unit(tur.c_str(), true, faction);
+    return make_shared_from_intrusive(new Unit(tur.c_str(), true, faction));
 }
 
 //un scored a faction kill

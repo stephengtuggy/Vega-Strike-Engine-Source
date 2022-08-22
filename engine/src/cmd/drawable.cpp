@@ -939,7 +939,7 @@ void Drawable::Split(int level) {
         for (unsigned int j = 0; j < meshsizes[i] && k < old.size(); ++j, ++k) {
             tempmeshes.push_back(old[k]);
         }
-        unit->SubUnits.prepend(splitsub = new Unit(tempmeshes, true, unit->faction));
+        unit->SubUnits.prepend(splitsub = make_shared_from_intrusive(new Unit(tempmeshes, true, unit->faction)));
         *splitsub->current_hull = 1000.0f;
         splitsub->setName("debris");
         splitsub->setMass(game_options()->debris_mass * splitsub->getMass() / level);

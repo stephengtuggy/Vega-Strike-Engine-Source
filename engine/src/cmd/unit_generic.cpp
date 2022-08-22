@@ -1751,7 +1751,7 @@ void Unit::ProcessDeleteQueue() {
 //#endif
         UnitPtr mydeleter = Unitdeletequeue.back();
         Unitdeletequeue.pop_back();
-        delete mydeleter;                        ///might modify unitdeletequeue
+        mydeleter.reset();                        ///might modify unitdeletequeue
 
 //#ifdef DESTRUCTDEBUG
 //        VS_LOG_AND_FLUSH(trace, (boost::format("Completed %1$d") % Unitdeletequeue.size()));
@@ -1760,7 +1760,7 @@ void Unit::ProcessDeleteQueue() {
 }
 
 UnitPtr makeBlankUpgrade(string templnam, int faction) {
-    UnitPtr bl = new Unit(templnam.c_str(), true, faction);
+    UnitPtr bl = make_shared_from_intrusive(new Unit(templnam.c_str(), true, faction));
     for (int i = bl->numCargo() - 1; i >= 0; i--) {
         int q = bl->GetCargo(i).quantity;
         bl->RemoveCargo(i, q);
@@ -1769,41 +1769,43 @@ UnitPtr makeBlankUpgrade(string templnam, int faction) {
     return bl;
 }
 
-const UnitPtr makeFinalBlankUpgrade(string name, int faction) {
+UnitConstRawPtr makeFinalBlankUpgrade(string name, int faction) {
     char *unitdir = GetUnitDir(name.c_str());
     string limiternam = name;
     if (unitdir != name) {
         limiternam = string(unitdir) + string(".blank");
     }
     free(unitdir);
-    UnitPtr lim = UnitConstCache::getCachedConst(StringIntKey(limiternam, faction));
+    UnitConstRawPtr lim = UnitConstCache::getCachedConst(StringIntKey(limiternam, faction));
     if (!lim) {
-        lim = UnitConstCache::setCachedConst(StringIntKey(limiternam, faction), makeBlankUpgrade(limiternam, faction));
+        lim = UnitConstCache::setCachedConst(StringIntKey(limiternam, faction), makeBlankUpgrade(limiternam, faction).get());
     }
     if (lim->failedToLoad()) {
-        lim.reset();
+        delete lim;
+        lim = nullptr;
     }
     return lim;
 }
 
-const UnitPtr makeTemplateUpgrade(string name, int faction) {
+UnitConstRawPtr makeTemplateUpgrade(string name, int faction) {
     char *unitdir = GetUnitDir(name.c_str());
     string limiternam = string(unitdir) + string(".template");
     free(unitdir);
-    UnitPtr lim = UnitConstCache::getCachedConst(StringIntKey(limiternam, faction));
+    UnitConstRawPtr lim = UnitConstCache::getCachedConst(StringIntKey(limiternam, faction));
     if (!lim) {
         lim =
                 UnitConstCache::setCachedConst(StringIntKey(limiternam,
                         faction), new Unit(limiternam.c_str(), true, faction));
     }
     if (lim->failedToLoad()) {
-        lim = NULL;
+        delete lim;
+        lim = nullptr;
     }
     return lim;
 }
 
-const UnitPtr loadUnitByCache(std::string name, int faction) {
-    const UnitPtr temprate = UnitConstCache::getCachedConst(StringIntKey(name, faction));
+UnitConstRawPtr loadUnitByCache(std::string name, int faction) {
+    UnitConstRawPtr temprate = UnitConstCache::getCachedConst(StringIntKey(name, faction));
     if (!temprate) {
         temprate =
                 UnitConstCache::setCachedConst(StringIntKey(name, faction), new Unit(name.c_str(), true, faction));
@@ -2979,24 +2981,24 @@ bool Unit::UpgradeSubUnitsWithFactory(const boost::shared_ptr<Unit> up, int subu
         return true;
     }
     bool hasAnyTurrets = false;
-    turSize = getTurretSize(giveAway->name);
+    turSize = getTurretSize(giveAway->getName());
     //begin going through other unit's turrets
     for (upturrets = up->viewSubUnits(); ((*upturrets) != NULL) && ((*ui) != NULL); ++ui, ++upturrets) {
         hasAnyTurrets = true;
-        const UnitPtr addtome;
+        UnitConstRawPtr add_to_me;
 
-        addtome = *upturrets;                    //set pointers
+        add_to_me = *upturrets;                    //set pointers
 
         bool foundthis = false;
         //if the new turret has any size at all
-        if (turSize == getTurretSize(addtome->name) && addtome->rSize()
-                && (turSize + "_blank" != addtome->name.get())) {
-            if (!downgrade || addtome->name == giveAway->name) {
+        if (turSize == getTurretSize(add_to_me->getName()) && add_to_me->rSize()
+                && (turSize + "_blank" != add_to_me->getName())) {
+            if (!downgrade || add_to_me->getName() == giveAway->getName()) {
                 found = true;
                 foundthis = true;
                 ++numave;                                //add it
                 //add up percentage equal to ratio of sizes
-                percentage += (giveAway->rSize() / addtome->rSize());
+                percentage += (giveAway->rSize() / add_to_me->rSize());
             }
         }
         if (foundthis) {
@@ -3008,7 +3010,7 @@ bool Unit::UpgradeSubUnitsWithFactory(const boost::shared_ptr<Unit> up, int subu
                 ui.remove();                     //remove the turret from the first unit
                 //if we are upgrading swap them
                 if (!downgrade) {
-                    UnitPtr addToMeNew = (*createupgradesubunit)(addtome->name, addtome->faction);
+                    UnitPtr addToMeNew = (*createupgradesubunit)(add_to_me->getName(), add_to_me->faction);
                     addToMeNew->curr_physical_state = addToMeCur;
                     addToMeNew->SetFaction(faction);
                     addToMeNew->prev_physical_state = addToMePrev;
@@ -3020,7 +3022,7 @@ bool Unit::UpgradeSubUnitsWithFactory(const boost::shared_ptr<Unit> up, int subu
                     UnitPtr un;                            //make garbage unit
                     //NOT 100% SURE A GENERIC UNIT CAN FIT (WAS GAME UNIT CREATION)
                     //give a default do-nothing unit
-                    ui.preinsert(un = new Unit("upgrading_dummy_unit", true, faction));
+                    un = make_shared_from_intrusive(new Unit("upgrading_dummy_unit", true, faction));
                     un->SetFaction(faction);
                     un->curr_physical_state = addToMeCur;
                     un->prev_physical_state = addToMePrev;
@@ -3029,11 +3031,12 @@ bool Unit::UpgradeSubUnitsWithFactory(const boost::shared_ptr<Unit> up, int subu
                     un->limits.roll = 0;
                     un->limits.lateral = un->limits.retro = un->limits.forward = un->limits.afterburn = 0.0;
 
-                    un->name = turSize + "_blank";
-                    if (un->pImage->unitwriter != NULL) {
-                        un->pImage->unitwriter->setName(un->name);
+                    un->setName(turSize + "_blank");
+                    if (un->pImage->unitwriter) {
+                        un->pImage->unitwriter->setName(un->getName());
                     }
                     un->SetRecursiveOwner(this);
+                    ui.preinsert(un);
                 }
             }
         }
@@ -3053,13 +3056,13 @@ static void GCCBugCheckFloat(float *f, int offset) {
     }          //keep it real
 }
 
-bool Unit::canUpgrade(const UnitPtr upgrador,
+bool Unit::canUpgrade(UnitConstRawPtr upgrador,
         int mountoffset,
         int subunitoffset,
         int additive,
         bool force,
         double &percentage,
-        const UnitPtr templ,
+        UnitConstRawPtr templ,
         bool force_change_on_nothing,
         bool gen_downgrade_list) {
     return UpAndDownGrade(upgrador,
@@ -3076,13 +3079,13 @@ bool Unit::canUpgrade(const UnitPtr upgrador,
             gen_downgrade_list);
 }
 
-bool Unit::Upgrade(const UnitPtr upgrador,
+bool Unit::Upgrade(UnitConstRawPtr upgrador,
         int mountoffset,
         int subunitoffset,
         int additive,
         bool force,
         double &percentage,
-        const UnitPtr templ,
+        UnitConstRawPtr templ,
         bool force_change_on_nothing,
         bool gen_downgrade_list) {
     return UpAndDownGrade(upgrador,
@@ -3099,14 +3102,14 @@ bool Unit::Upgrade(const UnitPtr upgrador,
             gen_downgrade_list);
 }
 
-bool Unit::canDowngrade(const UnitPtr downgradeor,
+bool Unit::canDowngrade(UnitConstRawPtr downgradeor,
         int mountoffset,
         int subunitoffset,
         double &percentage,
-        const UnitPtr downgradelimit,
+        UnitConstRawPtr downgradelimit,
         bool gen_downgrade_list) {
     return UpAndDownGrade(downgradeor,
-            NULL,
+            nullptr,
             mountoffset,
             subunitoffset,
             false,
@@ -3119,14 +3122,14 @@ bool Unit::canDowngrade(const UnitPtr downgradeor,
             gen_downgrade_list);
 }
 
-bool Unit::Downgrade(const UnitPtr downgradeor,
+bool Unit::Downgrade(UnitConstRawPtr downgradeor,
         int mountoffset,
         int subunitoffset,
         double &percentage,
-        const UnitPtr downgradelimit,
+        UnitConstRawPtr downgradelimit,
         bool gen_downgrade_list) {
     return UpAndDownGrade(downgradeor,
-            NULL,
+            nullptr,
             mountoffset,
             subunitoffset,
             true,
@@ -3172,7 +3175,7 @@ double Unit::Upgrade(const std::string &file,
         bool force,
         bool loop_through_mounts) {
     int upgradefac = FactionUtil::GetUpgradeFaction();
-    const UnitPtr up = UnitConstCache::getCachedConst(StringIntKey(file, upgradefac));
+    UnitConstRawPtr up = UnitConstCache::getCachedConst(StringIntKey(file, upgradefac));
     if (!up) {
         up = UnitConstCache::setCachedConst(StringIntKey(file, upgradefac),
                 new Unit(file.c_str(), true, upgradefac));
@@ -3182,10 +3185,10 @@ double Unit::Upgrade(const std::string &file,
     if (cargo) {
         cargo->installed = true;
     }
-    char *unitdir = GetUnitDir(this->name.get().c_str());
+    char *unitdir = GetUnitDir(this->getName().c_str());
     string templnam = string(unitdir) + ".template";
-    const UnitPtr templ = UnitConstCache::getCachedConst(StringIntKey(templnam, this->faction));
-    if (templ == NULL) {
+    UnitConstRawPtr templ = UnitConstCache::getCachedConst(StringIntKey(templnam, this->faction));
+    if (!templ) {
         templ =
                 UnitConstCache::setCachedConst(StringIntKey(templnam,
                                 this->faction),
@@ -3197,7 +3200,7 @@ double Unit::Upgrade(const std::string &file,
         for (int i = 0; percentage == 0; ++i) {
             if (!this->Unit::Upgrade(up, mountoffset + i, subunitoffset + i,
                     GetModeFromName(file.c_str()), force, percentage,
-                    (templ->failedToLoad() ? NULL : templ),
+                    (templ->failedToLoad() ? nullptr : templ),
                     false, false)) {
                 percentage = 0;
             }
@@ -3319,7 +3322,7 @@ static bool cell_has_recursive_data(const string &name, unsigned int fac, const 
             ++numave;                                                                                               \
             can_be_redeemed = true;                                                                                 \
             if (gen_downgrade_list)                                                                                 \
-                AddToDowngradeMap( up->name, oth, ( (char*) &value_to_lookat )-(char*) this, tempdownmap );         \
+                AddToDowngradeMap( up->getName(), oth, ( (char*) &value_to_lookat )-(char*) this, tempdownmap );    \
         }                                                                                                           \
         else if (retval != NOTTHERE)                                                                                \
         {                                                                                                           \
@@ -3357,8 +3360,8 @@ static bool cell_has_recursive_data(const string &name, unsigned int fac, const 
 extern float accelStarHandler(float &input);
 float speedStarHandler(float &input);
 
-bool Unit::UpAndDownGrade(const UnitPtr up,
-        const UnitPtr templ,
+bool Unit::UpAndDownGrade(UnitConstRawPtr up,
+        UnitConstRawPtr templ,
         int mountoffset,
         int subunitoffset,
         bool touchme,
@@ -3366,7 +3369,7 @@ bool Unit::UpAndDownGrade(const UnitPtr up,
         int additive,
         bool forcetransaction,
         double &percentage,
-        const UnitPtr downgradelimit,
+        UnitConstRawPtr downgradelimit,
         bool force_change_on_nothing,
         bool gen_downgrade_list) {
     percentage = 0;
@@ -3446,7 +3449,7 @@ bool Unit::UpAndDownGrade(const UnitPtr up,
     double resultdoub;
     int retval = 0; //"= 0" added by chuck_starchaser to shut off a warning about its possibly being used uninitialized
     double temppercent;
-    static UnitPtr blankship = NULL;
+    static UnitRawPtr blankship = nullptr;
     static bool initblankship = false;
     if (!initblankship) {
         blankship = this;
@@ -3454,7 +3457,7 @@ bool Unit::UpAndDownGrade(const UnitPtr up,
         blankship = new Unit("upgrading_dummy_unit", true, FactionUtil::GetUpgradeFaction());
     }
     //set up vars for "LookupUnitStat" to check for empty cells
-    string upgrade_name = up->name;
+    string upgrade_name = up->getName();
     //Check SPEC stuff
     if (!csv_cell_null_check || force_change_on_nothing
             || cell_has_recursive_data(upgrade_name, up->faction,
@@ -4214,8 +4217,8 @@ extern int GetModeFromName(const char *);
 extern double ComputeMinDowngradePercent();
 
 vector<CargoColor> &Unit::FilterDowngradeList(vector<CargoColor> &mylist, bool downgrade) {
-    const UnitPtr templ = NULL;
-    const UnitPtr downgradelimit = NULL;
+    UnitConstRawPtr templ = nullptr;
+    UnitConstRawPtr downgradelimit = nullptr;
     static bool staticrem =
             XMLSupport::parse_bool(vs_config->getVariable("general", "remove_impossible_downgrades", "true"));
     static float MyPercentMin = ComputeMinDowngradePercent();
@@ -4224,7 +4227,7 @@ vector<CargoColor> &Unit::FilterDowngradeList(vector<CargoColor> &mylist, bool d
         bool removethis = true /*staticrem*/;
         int mode = GetModeFromName(mylist[i].cargo.GetContent().c_str());
         if (mode != 2 || (!downgrade)) {
-            const UnitPtr NewPart =
+            UnitConstRawPtr NewPart =
                     UnitConstCache::getCachedConst(StringIntKey(mylist[i].cargo.GetContent().c_str(), upgrfac));
             if (!NewPart) {
                 NewPart = UnitConstCache::setCachedConst(StringIntKey(
@@ -4234,7 +4237,7 @@ vector<CargoColor> &Unit::FilterDowngradeList(vector<CargoColor> &mylist, bool d
                                 upgrfac));
             }
             if (NewPart->failedToLoad()) {
-                const UnitPtr NewPart =
+                UnitConstRawPtr NewPart =
                         UnitConstCache::getCachedConst(StringIntKey(mylist[i].cargo.GetContent().c_str(), faction));
                 if (!NewPart) {
                     NewPart = UnitConstCache::setCachedConst(StringIntKey(mylist[i].cargo.GetContent(), faction),
@@ -4249,25 +4252,25 @@ vector<CargoColor> &Unit::FilterDowngradeList(vector<CargoColor> &mylist, bool d
                 string limiternam = string(unitdir) + ".blank";
                 if (!downgrade) {
                     templ = UnitConstCache::getCachedConst(StringIntKey(templnam, faction));
-                    if (templ == NULL) {
+                    if (templ == nullptr) {
                         templ =
                                 UnitConstCache::setCachedConst(StringIntKey(templnam,
                                                 faction),
                                         new Unit(templnam.c_str(), true, this->faction));
                     }
                     if (templ->failedToLoad()) {
-                        templ = NULL;
+                        templ = nullptr;
                     }
                 } else {
                     downgradelimit = UnitConstCache::getCachedConst(StringIntKey(limiternam, faction));
-                    if (downgradelimit == NULL) {
+                    if (downgradelimit == nullptr) {
                         downgradelimit = UnitConstCache::setCachedConst(StringIntKey(limiternam,
                                         faction),
                                 new Unit(limiternam.c_str(), true,
                                         this->faction));
                     }
                     if (downgradelimit->failedToLoad()) {
-                        downgradelimit = NULL;
+                        downgradelimit = nullptr;
                     }
                 }
                 free(unitdir);
@@ -4313,9 +4316,9 @@ vector<CargoColor> &Unit::FilterUpgradeList(vector<CargoColor> &mylist) {
     if (filtercargoprice) {
         Cockpit *cp = _Universe->isPlayerStarship(this);
         if (cp) {
-            for (unsigned int i = 0; i < mylist.size(); ++i) {
-                if (mylist[i].cargo.price > cp->credits) {
-                    mylist[i].color = disable;
+            for (auto & i : mylist) {
+                if (i.cargo.price > cp->credits) {
+                    i.color = disable;
                 }
             }
         }
@@ -4324,7 +4327,7 @@ vector<CargoColor> &Unit::FilterUpgradeList(vector<CargoColor> &mylist) {
 }
 
 bool Unit::IsBase() const {
-    return ((flightgroup != NULL) && (flightgroup->name == "Base"));
+    return ((flightgroup != nullptr) && (flightgroup->name == "Base"));
 }
 
 void Unit::TurretFAW() {

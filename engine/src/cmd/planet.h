@@ -109,7 +109,7 @@ public:
             bool inside_out,
             unsigned int lights_num);
 
-    ~Planet() override = default;
+    ~Planet() override;
 
     friend class PlanetaryOrbit;
 
@@ -284,13 +284,14 @@ public:
         return 0.0f;
     }
 
-private:
+public:
 
 /// copy constructor forbidden
-    Planet(const Planet &);
+    Planet(const Planet &) = delete;
 
 /// assignment operator forbidden
-    Planet &operator=(const Planet &);
+    Planet &operator=(const Planet &) = delete;
+private:
     friend bool operator==(const Planet &lhs, const Planet &rhs);
 };
 

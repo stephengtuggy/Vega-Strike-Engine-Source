@@ -100,7 +100,7 @@ static void UpgradeUnit(UnitPtr un, const std::string &upgrades) {
         if (upgrade.length() == 0) {
             continue;
         }
-        const UnitPtr upgradee = UnitConstCache::getCachedConst(StringIntKey(upgrade, FactionUtil::GetUpgradeFaction()));
+        UnitConstRawPtr upgradee = UnitConstCache::getCachedConst(StringIntKey(upgrade, FactionUtil::GetUpgradeFaction()));
         if (!upgradee) {
             upgradee = UnitConstCache::setCachedConst(StringIntKey(upgrade, FactionUtil::GetUpgradeFaction()),
                     new Unit(upgrade.c_str(),
@@ -413,18 +413,18 @@ static void AddSubUnits(UnitPtr thus,
         const std::string &modification) {
     vector<SubUnitStruct> su = GetSubUnits(subunits);
     xml.units.reserve(subunits.size() + xml.units.size());
-    for (vector<SubUnitStruct>::iterator i = su.begin(); i != su.end(); ++i) {
-        string filename = (*i).filename;
-        QVector pos = (*i).pos;
-        QVector Q = (*i).Q;
-        QVector R = (*i).R;
-        double restricted = (*i).restricted;
+    for (auto & i : su) {
+        string filename = i.filename;
+        QVector pos = i.pos;
+        QVector Q = i.Q;
+        QVector R = i.R;
+        double restricted = i.restricted;
         xml.units
-                .push_back(new Unit(filename.c_str(),
+                .push_back(make_shared_from_intrusive(new Unit(filename.c_str(),
                         true,
                         faction,
                         modification,
-                        NULL));         //I set here the fg arg to NULL
+                        nullptr)));         //I set here the fg arg to NULL
         if (xml.units.back()->failedToLoad()) {
             xml.units.back()->limits.yaw = 0;
             xml.units.back()->limits.pitch = 0;

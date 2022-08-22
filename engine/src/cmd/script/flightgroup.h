@@ -59,8 +59,16 @@ public:
     void Decrement(UnitPtr trashed) {
         nr_ships--;
         nr_ships_left--;
+        if (leader.GetUnit() == trashed.get()) {
+            leader.SetUnit(nullptr);
+        }
+    }
+
+    void Decrement(UnitRawPtr trashed) {
+        --nr_ships;
+        --nr_ships_left;
         if (leader.GetUnit() == trashed) {
-            leader.SetUnit(NULL);
+            leader.SetUnit(nullptr);
         }
     }
 

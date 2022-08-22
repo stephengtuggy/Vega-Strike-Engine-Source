@@ -313,7 +313,7 @@ public:
     void UnpackUnitInfo(vector<std::string> &info);
 
     std::string communication_choices;
-    float credits; //how much money player has
+    double credits; //how much money player has
 
     ///How far away chasecam and pan cam is
     float zoomfactor;
