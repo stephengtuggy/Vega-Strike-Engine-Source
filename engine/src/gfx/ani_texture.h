@@ -28,7 +28,7 @@
 #include "vsfilesystem.h"
 #include "vid_file.h"
 
-#include <stdio.h>
+#include <cstdio>
 #include "../SharedPool.h"
 
 #include "audio/Types.h"
@@ -88,29 +88,29 @@ protected:
     bool done;
 
 public:
-    virtual void setTime(double tim);
+    void setTime(double tim) override;
 
-    virtual double curTime() const {
+    double curTime() const override {
         return curtime;
     }
 
-    virtual unsigned int numFrames() const {
+    unsigned int numFrames() const override {
         return numframes;
     }
 
-    virtual float framesPerSecond() const {
+    float framesPerSecond() const override {
         return 1 / timeperframe;
     }
 
-    virtual unsigned int numLayers() const;
+    unsigned int numLayers() const override;
 
-    virtual unsigned int numPasses() const;
+    unsigned int numPasses() const override;
 
-    virtual bool canMultiPass() const {
+    bool canMultiPass() const override {
         return true;
     }
 
-    virtual bool constFrameRate() const {
+    bool constFrameRate() const override {
         return constframerate;
     }
 
@@ -132,27 +132,27 @@ public:
 
     void Destroy();
 
-    virtual const Texture *Original() const;
+    const Texture *Original() const override;
 
-    virtual Texture *Original();
+    Texture *Original() override;
 
-    ~AnimatedTexture();
+    ~AnimatedTexture() override;
 
-    virtual Texture *Clone();
+    Texture *Clone() override;
 
-    virtual void MakeActive() {
+    void MakeActive() override {
         MakeActive(texstage, 0);
     }                                                   //MSVC bug seems to hide MakeActive() if we define MakeActive(int,int) - the suckers!
 
-    virtual void MakeActive(int stage) {
+    void MakeActive(int stage) override {
         MakeActive(stage, 0);
     }                                                         //MSVC bug seems to hide MakeActive(int) if we define MakeActive(int,int) - the suckers!
 
-    virtual void MakeActive(int stage, int pass);
+    void MakeActive(int stage, int pass) override;
 
-    bool SetupPass(int pass, int stage, const enum BLENDFUNC src, const enum BLENDFUNC dst);
+    bool SetupPass(int pass, int stage, const enum BLENDFUNC src, const enum BLENDFUNC dst) override;
 
-    bool SetupPass(int pass, const enum BLENDFUNC src, const enum BLENDFUNC dst) {
+    bool SetupPass(int pass, const enum BLENDFUNC src, const enum BLENDFUNC dst) override {
         return SetupPass(pass, texstage, src, dst);
     }
 
@@ -205,7 +205,7 @@ public:
 
     bool Done() const;
 
-    virtual bool LoadSuccess();
+    bool LoadSuccess() override;
 
     //Some useful factory methods -- also defined in ani_texture.cpp
     static AnimatedTexture *CreateVideoTexture(const std::string &fname,

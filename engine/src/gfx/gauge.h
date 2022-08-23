@@ -34,8 +34,9 @@ private:
     enum DIRECTION dir;
 public:
     Gauge(const char *file, DIRECTION up);
+    ~Gauge() override = default;
     void Draw(float percentage);
-    void SetSize(float x, float y);
-    void GetSize(float &x, float &y);
+    void SetSize(float x, float y) override;
+    void GetSize(float &x, float &y) override;
 };
 

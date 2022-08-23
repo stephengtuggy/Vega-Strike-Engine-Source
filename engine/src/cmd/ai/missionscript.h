@@ -35,19 +35,18 @@
 #include "flybywire.h"
 
 #include "cmd/script/mission.h"
+#include "vs_logging.h"
 
 class AImissionScript : public FlyByWire {
 public:
 ///saves scriptname in the filename var
     AImissionScript(string modulename);
-    ~AImissionScript();
+    ~AImissionScript() override;
 ///Loads the AI script from the hard drive, or executes if loaded
-    void Execute();
+    void Execute() override;
 
-    virtual string getOrderDescription() {
-        char buffer[300];
-        sprintf(buffer, "%s:%d:%s", modulename.c_str(), classid, getActionString().c_str());
-        return buffer;
+    string getOrderDescription() override {
+        return (boost::format("%1$s:%2$d:%3$s") % modulename % classid % getActionString()).str();
     }
 
 protected:

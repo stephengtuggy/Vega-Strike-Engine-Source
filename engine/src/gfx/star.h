@@ -83,15 +83,15 @@ class PointStarVlist : public StarVlist {
     GFXVertexList *nonstretchvlist;
 public:
     PointStarVlist(int num, float spread, const std::string &our_system_name);
-    ~PointStarVlist();
+    ~PointStarVlist() override;
     bool BeginDrawState(const QVector &center,
             const Vector &vel,
             const Vector &angular_vel,
             bool rotate,
             bool yawpitch,
-            int whichTexture);
-    void Draw(bool, int whichTexture);
-    void EndDrawState(bool, int whichTexture);
+            int whichTexture) override;
+    void Draw(bool, int whichTexture) override;
+    void EndDrawState(bool, int whichTexture) override;
 };
 
 #define NUM_ACTIVE_ANIMATIONS 8
@@ -101,16 +101,16 @@ class SpriteStarVlist : public StarVlist {
     class Texture *decal[NUM_ACTIVE_ANIMATIONS];
 public:
     SpriteStarVlist(int num, float spread, std::string our_system_name, std::string texturename, float size);
-    ~SpriteStarVlist();
-    int NumTextures();
+    ~SpriteStarVlist() override;
+    int NumTextures() override;
     bool BeginDrawState(const QVector &center,
             const Vector &vel,
             const Vector &angular_vel,
             bool rotate,
             bool yawpitch,
-            int whichTexture);
-    void Draw(bool, int whichTexture);
-    void EndDrawState(bool, int whichTexture);
+            int whichTexture) override;
+    void Draw(bool, int whichTexture) override;
+    void EndDrawState(bool, int whichTexture) override;
 };
 
 class Stars {

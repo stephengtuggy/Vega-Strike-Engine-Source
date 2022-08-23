@@ -56,7 +56,7 @@ void UnitContainer::SetUnit(Unit * un) {
             unit.reset();
         }
         unit = make_shared_from_intrusive(un);
-    }s
+    }
 }
 
 UnitRawPtr UnitContainer::GetUnit() const {

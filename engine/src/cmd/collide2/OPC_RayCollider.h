@@ -48,7 +48,7 @@ public:
     }
 
     //! Destructor
-    ~CollisionFaces() {
+    ~CollisionFaces() override {
     }
 
     inline_    uint32_t GetNbFaces() const {
@@ -59,7 +59,7 @@ public:
         return (const CollisionFace *) GetEntries();
     }
 
-    inline_    void Reset() {
+    inline     void Reset() override {
         Container::Reset();
     }
 

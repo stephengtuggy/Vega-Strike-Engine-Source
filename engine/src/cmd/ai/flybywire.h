@@ -192,7 +192,7 @@ protected:
     float stolen_setspeed_value;
 public:
     FlyByWire();
-    ~FlyByWire();
+    ~FlyByWire() override;
 
     void SwitchFlightMode() {
         controltype = !controltype;
@@ -222,9 +222,9 @@ public:
     void MatchSpeed(const Vector &velocity);
 ///negative is decel... 0 = nothing
     void Accel(float percentage);
-    void Execute();
+    void Execute() override;
 
-    virtual std::string getOrderDescription() {
+    std::string getOrderDescription() override {
         return "wire";
     }
 

@@ -125,6 +125,7 @@ public:
             short cols,
             float *MaxArmor,
             float *maxhull);
+    ~VDU() override = default;
 ///Draws the entire VDU, all data, etc
     void Draw(GameCockpit *parentcp, UnitPtr parent, const GFXColor &c);
 ///Changes the mode of the current VDU to another legal mode

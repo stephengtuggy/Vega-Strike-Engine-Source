@@ -25,7 +25,7 @@ public:
     TriList() {
     }
 
-    ~TriList() {
+    ~TriList() override {
     }
 
     inline_    uint32_t GetNbTriangles() const {
@@ -55,7 +55,7 @@ public:
     TriangleList() {
     }
 
-    ~TriangleList() {
+    ~TriangleList() override {
     }
 
     inline_    uint32_t GetNbTriangles() const {

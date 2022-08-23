@@ -37,8 +37,8 @@ public:
     CloakFor(bool enable, float seconds = 0) : Order(CLOAKING, 0), time(0), maxtime(seconds), enable(enable) {
     }
 
-    void Execute();
-    ~CloakFor();
+    void Execute() override;
+    ~CloakFor() override;
 };
 
 #endif

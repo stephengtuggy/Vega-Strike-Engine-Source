@@ -44,16 +44,16 @@ public:
         return true;
     }
 
-    virtual Texture *Clone();
-    virtual Texture *Original();
+    Texture *Clone() override;
+    Texture *Original() override;
     PipelinedTexture();
     PipelinedTexture(unsigned int width, unsigned int height, unsigned char *current, unsigned char *last);
-    ~PipelinedTexture();
+    ~PipelinedTexture() override;
     unsigned char *beginMutate();
     void Swap();
     void endMutate(int xoffset, int yoffset, int width, int height);
     void MakeBothActive();
-    void MakeActive();
+    void MakeActive() override;
     void MakeLastActive();
 };
 

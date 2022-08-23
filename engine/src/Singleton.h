@@ -66,7 +66,8 @@ protected:
         _singletonInstance = 0;
     }
 
-    ~Singleton() {
+public:
+    virtual ~Singleton() {
         if (_singletonInstance == this) {
             deinitializeSingleton();
         }

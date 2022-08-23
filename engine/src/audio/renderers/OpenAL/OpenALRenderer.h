@@ -61,43 +61,43 @@ public:
     /** Initialize the renderer with default or config-driven settings. */
     OpenALRenderer();
 
-    virtual ~OpenALRenderer();
+    ~OpenALRenderer() override;
 
     /** @copydoc Renderer::getSound */
-    virtual SharedPtr<Sound> getSound(
+    SharedPtr<Sound> getSound(
             const std::string &name,
             VSFileSystem::VSFileType type = VSFileSystem::UnknownFile,
-            bool streaming = false);
+            bool streaming = false) override;
 
     /** @copydoc Renderer::owns */
-    virtual bool owns(SharedPtr<Sound> sound);
+    bool owns(SharedPtr<Sound> sound) override;
 
     /** @copydoc Renderer::attach(SharedPtr<Source>) */
-    virtual void attach(SharedPtr<Source> source);
+    void attach(SharedPtr<Source> source) override;
 
     /** @copydoc Renderer::attach(SharedPtr<Listener>) */
-    virtual void attach(SharedPtr<Listener> listener);
+    void attach(SharedPtr<Listener> listener) override;
 
     /** @copydoc Renderer::detach(SharedPtr<Source>) */
-    virtual void detach(SharedPtr<Source> source);
+    void detach(SharedPtr<Source> source) override;
 
     /** @copydoc Renderer::detach(SharedPtr<Listener>) */
-    virtual void detach(SharedPtr<Listener> listener);
+    void detach(SharedPtr<Listener> listener) override;
 
     /** @copydoc Renderer::setMeterDistance */
-    virtual void setMeterDistance(Scalar distance);
+    void setMeterDistance(Scalar distance) override;
 
     /** @copydoc Renderer::setDopplerFactor */
-    virtual void setDopplerFactor(Scalar factor);
+    void setDopplerFactor(Scalar factor) override;
 
     /** @copydoc Renderer::setOutputFormat */
-    virtual void setOutputFormat(const Format &format);
+    void setOutputFormat(const Format &format) override;
 
     /** @copydoc Renderer::beginTransaction */
-    virtual void beginTransaction();
+    void beginTransaction() override;
 
     /** @copydoc Renderer::commitTransaction */
-    virtual void commitTransaction();
+    void commitTransaction() override;
 protected:
 
     /** Makes sure the AL context is valid, creating one if necessary */

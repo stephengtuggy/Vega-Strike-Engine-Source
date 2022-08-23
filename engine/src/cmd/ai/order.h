@@ -107,7 +107,8 @@ public:
         VSCONSTRUCT1('O')
     }
 
-///The virutal function that unrefs all memory then calls Destruct () which takes care of unreffing this or calling delete on this
+    // TODO: Refactor this away! stephengtuggy 2022-08-23
+///The virtual function that unrefs all memory then calls Destruct () which takes care of unreffing this or calling delete on this
     virtual void Destroy();
 
 ///The function that gets called and executes all queued suborders

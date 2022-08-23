@@ -63,9 +63,9 @@ class AIScript : public Order {
 public:
 ///saves scriptname in the filename var
     AIScript(const char *scriptname);
-    ~AIScript();
+    ~AIScript() override;
 ///Loads the AI script from the hard drive, or executes if loaded
-    void Execute();
+    void Execute() override;
 };
 
 #endif

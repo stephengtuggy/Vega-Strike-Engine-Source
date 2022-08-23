@@ -72,7 +72,7 @@ public:
      * @remarks End-users of the class shouldn't be using this. Singletons need it*/
     CodecRegistry();
 
-    ~CodecRegistry();
+    ~CodecRegistry() override;
 
     /**
      * Add a codec to the registry

@@ -31,7 +31,7 @@ struct OPCODE_API SphereCache : VolumeCache {
     SphereCache() : Center(0.0f, 0.0f, 0.0f), FatRadius2(0.0f), FatCoeff(1.1f) {
     }
 
-    ~SphereCache() {
+    ~SphereCache() override {
     }
 
     // Cached faces signature
@@ -45,7 +45,7 @@ class OPCODE_API SphereCollider : public VolumeCollider {
 public:
     // Constructor / Destructor
     SphereCollider();
-    virtual                                ~SphereCollider();
+    ~SphereCollider() override;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
@@ -100,7 +100,7 @@ class OPCODE_API HybridSphereCollider : public SphereCollider {
 public:
     // Constructor / Destructor
     HybridSphereCollider();
-    virtual                                ~HybridSphereCollider();
+    ~HybridSphereCollider() override;
 
     bool Collide(SphereCache &cache,
             const Sphere &sphere,

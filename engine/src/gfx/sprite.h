@@ -39,17 +39,17 @@ class VSFile;
 class Texture;
 
 class VSSprite {
-    float xcenter;
-    float ycenter;
-    float widtho2;
-    float heighto2;
-    float maxs, maxt;
-    float rotation;
+    float xcenter{};
+    float ycenter{};
+    float widtho2{};
+    float heighto2{};
+    float maxs{}, maxt{};
+    float rotation{};
     Texture *surface;
-    bool isAnimation;
+    bool isAnimation{};
 
 //For private use only
-    VSSprite() : surface(0) {
+    VSSprite() : surface(nullptr) {
     }
 
 public:
@@ -66,7 +66,7 @@ public:
             float t = 0.f,
             bool isAnimation = false);
     VSSprite(const VSSprite &source);
-    ~VSSprite();
+    virtual ~VSSprite();
 //Return true if sprite was loaded successfully
     bool LoadSuccess() const;
     void Draw();
@@ -96,8 +96,8 @@ public:
     void SetTime(double newtime);
     void SetPosition(const float &x1, const float &y1);
     void GetPosition(float &x1, float &y1);
-    void SetSize(float s1, float s2);
-    void GetSize(float &x1, float &y1);
+    virtual void SetSize(float s1, float s2);
+    virtual void GetSize(float &x1, float &y1);
     void SetTimeSource(SharedPtr<Audio::Source> source);
     void ClearTimeSource();
     bool Done() const;

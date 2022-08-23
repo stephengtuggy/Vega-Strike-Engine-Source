@@ -53,14 +53,14 @@ public:
         TotalSizeZ = Z;
     }
 
-    ~Terrain();
+    ~Terrain() override;
     void Collide(UnitPtr un, const Matrix &t);
     void Collide(UnitPtr un);
     void Collide();
-    void SetTransformation(const Matrix &mat);
+    void SetTransformation(const Matrix &mat) override;
     static void CollideAll();
     static void DeleteAll();
-    void Render();
+    void Render() override;
     static void RenderAll();
     static void UpdateAll(int resolution);
     void DisableDraw();

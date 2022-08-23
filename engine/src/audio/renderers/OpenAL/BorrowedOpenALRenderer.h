@@ -62,12 +62,12 @@ public:
      */
     BorrowedOpenALRenderer(ALCdevice *device = 0, ALCcontext *context = 0);
 
-    ~BorrowedOpenALRenderer();
+    ~BorrowedOpenALRenderer() override;
 
-    virtual void setOutputFormat(const Format &format);
+    void setOutputFormat(const Format &format) override;
 
 protected:
-    virtual void checkContext();
+    void checkContext() override;
 };
 
 };

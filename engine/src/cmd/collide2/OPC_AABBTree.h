@@ -33,7 +33,7 @@
         public:                                                                                                                 \
         /* Constructor / Destructor */                                                                                          \
                                     base_class();                                                                               \
-                                    ~base_class();                                                                              \
+                                    virtual ~base_class();                                                                      \
         /* Data access */                                                                                                       \
         inline_    const volume*        Get##volume()    const    { return &mBV;                            }                   \
         /* Clear the last bit */                                                                                                \
@@ -57,8 +57,7 @@
 		public:																											    \
 		/* Constructor / Destructor */																					    \
 									base_class();																		    \
-									~base_class();																		    \
-
+									virtual ~base_class();															        \
 		/* Data access */																								    \
 		inline_	const volume*		Get##volume()	const	{ return &mBV;							}					    \
 		/* Clear the last bit */																						    \
@@ -121,7 +120,7 @@ class OPCODE_API AABBTree : public AABBTreeNode {
 public:
     // Constructor / Destructor
     AABBTree();
-    ~AABBTree();
+    ~AABBTree() override;
     // Build
     bool Build(AABBTreeBuilder *builder);
     void Release();

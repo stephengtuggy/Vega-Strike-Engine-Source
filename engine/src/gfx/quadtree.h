@@ -65,11 +65,11 @@ protected:
     Matrix transformation;
 public:
     QuadTree(const char *filename, const Vector &scales, const float Radius);
-    ~QuadTree();
-    void Render();
+    virtual ~QuadTree();
+    virtual void Render();
     void SetNeighbors(QuadTree *east, QuadTree *north, QuadTree *west, QuadTree *south);
     void Update(unsigned short numstages, unsigned short whichstage, updateparity *updateorder = identityparity);
-    void SetTransformation(const Matrix &transformation);
+    virtual void SetTransformation(const Matrix &transformation);
     float GetHeight(Vector Location,
             Vector &normal,
             const Matrix &transform,

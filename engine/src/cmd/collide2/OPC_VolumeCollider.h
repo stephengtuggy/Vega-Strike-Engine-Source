@@ -31,7 +31,7 @@ struct OPCODE_API VolumeCache {
     VolumeCache() : Model(nullptr) {
     }
 
-    ~VolumeCache() {
+    virtual ~VolumeCache() {
     }
 
     Container TouchedPrimitives;    //!< Indices of touched primitives

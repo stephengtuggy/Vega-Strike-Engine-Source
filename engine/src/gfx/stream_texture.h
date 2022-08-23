@@ -33,15 +33,15 @@ class StreamTexture : public Texture {
     int handle;
 public:
     StreamTexture(int width, int height, enum FILTER filtertype, unsigned char *origdata);
-    ~StreamTexture();
+    ~StreamTexture() override;
     unsigned char *Map();
     void UnMap(bool changed = true);
-    void MakeActive(int stage);
+    void MakeActive(int stage) override;
 
-    void MakeActive() {
+    void MakeActive() override {
         MakeActive(this->stage);
     }
 
-    StreamTexture *Clone();
+    StreamTexture *Clone() override;
 };
 

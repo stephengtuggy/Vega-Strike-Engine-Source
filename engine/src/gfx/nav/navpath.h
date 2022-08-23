@@ -214,28 +214,28 @@ public:
 
 class AbsolutePathNode : public PathNode {
 public:
-    bool isAbsolute() const {
+    bool isAbsolute() const override {
         return true;
     }
 
-    bool isSourceable() const {
+    bool isSourceable() const override {
         return true;
     }
 
-    std::string getDescription() const;
+    std::string getDescription() const override;
 
-    std::deque<unsigned> initSearchQueue() const;
+    std::deque<unsigned> initSearchQueue() const override;
 
-    bool isDestination(unsigned index) const {
+    bool isDestination(unsigned index) const override {
         return index == system;
     }
 
-    unsigned getSystemIndex() {
+    unsigned getSystemIndex() const {
         return system;
     }
 //Desc: Gets the system referenced by this node
 
-    PathNode *clone() const {
+    PathNode *clone() const override {
         return new AbsolutePathNode(system);
     }
 
@@ -243,7 +243,7 @@ public:
         system = index;
     }
 
-    ~AbsolutePathNode() {
+    ~AbsolutePathNode() override {
     }
 
 protected:
@@ -258,33 +258,33 @@ protected:
 
 class CurrentPathNode : public PathNode {
 public:
-    bool isAbsolute() const {
+    bool isAbsolute() const override {
         return true;
     }
 
-    bool isSourceable() const {
+    bool isSourceable() const override {
         return true;
     }
 
-    std::string getDescription() const {
+    std::string getDescription() const override {
         return "Current System";
     }
 
-    bool isCurrentDependant() const {
+    bool isCurrentDependant() const override {
         return true;
     }
 
-    std::deque<unsigned> initSearchQueue() const;
-    bool isDestination(unsigned index) const;
+    std::deque<unsigned> initSearchQueue() const override;
+    bool isDestination(unsigned index) const override;
 
-    PathNode *clone() const {
+    PathNode *clone() const override {
         return new CurrentPathNode();
     }
 
     CurrentPathNode() {
     }
 
-    ~CurrentPathNode() {
+    ~CurrentPathNode() override {
     }
 };
 
@@ -296,33 +296,33 @@ public:
 
 class TargetPathNode : public PathNode {
 public:
-    bool isAbsolute() const {
+    bool isAbsolute() const override {
         return true;
     }
 
-    bool isSourceable() const {
+    bool isSourceable() const override {
         return true;
     }
 
-    std::string getDescription() const {
+    std::string getDescription() const override {
         return "Target System";
     }
 
-    bool isTargetDependant() const {
+    bool isTargetDependant() const override {
         return true;
     }
 
-    std::deque<unsigned> initSearchQueue() const;
-    bool isDestination(unsigned index) const;
+    std::deque<unsigned> initSearchQueue() const override;
+    bool isDestination(unsigned index) const override;
 
-    PathNode *clone() const {
+    PathNode *clone() const override {
         return new TargetPathNode();
     }
 
     TargetPathNode() {
     }
 
-    ~TargetPathNode() {
+    ~TargetPathNode() override {
     }
 };
 
@@ -334,30 +334,30 @@ public:
 
 class CriteriaPathNode : public PathNode {
 public:
-    bool isAbsolute() const {
+    bool isAbsolute() const override {
         return false;
     }
 
-    bool isSourceable() const {
+    bool isSourceable() const override {
         return false;
     }
 
-    std::string getDescription() const;
+    std::string getDescription() const override;
 
-    std::deque<unsigned> initSearchQueue() const {
+    std::deque<unsigned> initSearchQueue() const override {
         std::deque<unsigned> temp;
         return temp;
     }
 
-    bool isDestination(unsigned index) const;
+    bool isDestination(unsigned index) const override;
 
     CriteriaRoot *getRoot() {
         return criteria;
     }
 
-    PathNode *clone() const;
+    PathNode *clone() const override;
     CriteriaPathNode();
-    ~CriteriaPathNode();
+    ~CriteriaPathNode() override;
 
 private:
     CriteriaRoot *criteria;
@@ -371,22 +371,22 @@ private:
 
 class ChainPathNode : public PathNode {
 public:
-    bool isAbsolute() const {
-        return type == ALL_POINTS ? false : true;
+    bool isAbsolute() const override {
+        return type != ALL_POINTS;
     }
 
-    bool isSourceable() const {
+    bool isSourceable() const override {
         return true;
     }
 
-    std::string getDescription() const;
+    std::string getDescription() const override;
 
-    NavPath *getRequiredPath() {
+    NavPath *getRequiredPath() override {
         return supplierPath;
     }
 
-    std::deque<unsigned> initSearchQueue() const;
-    bool isDestination(unsigned index) const;
+    std::deque<unsigned> initSearchQueue() const override;
+    bool isDestination(unsigned index) const override;
 
     void setSupplierPath(NavPath *supplier) {
         supplierPath = supplier;
@@ -406,12 +406,12 @@ public:
         return type;
     }
 
-    PathNode *clone() const {
+    PathNode *clone() const override {
         return new ChainPathNode(supplierPath, type);
     }
 
     ChainPathNode() {
-        supplierPath = NULL;
+        supplierPath = nullptr;
     }
 
     ChainPathNode(NavPath *supplier, PartType part) {
@@ -419,12 +419,12 @@ public:
         type = part;
     }
 
-    ~ChainPathNode() {
+    ~ChainPathNode() override {
     }
 
 private:
     NavPath *supplierPath;
-    PartType type;
+    PartType type{};
 };
 
 #endif   //__NAVPATH_H__

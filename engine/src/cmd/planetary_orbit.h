@@ -57,8 +57,8 @@ public:
             const QVector &y_axis,
             const QVector &Centre,
             UnitPtr target = NULL);
-    ~PlanetaryOrbit();
-    void Execute();
+    ~PlanetaryOrbit() override;
+    void Execute() override;
 };
 
 #endif // PLANETARY_ORBIT_H

@@ -37,7 +37,7 @@ public:
     Pairs() {
     }
 
-    ~Pairs() {
+    ~Pairs() override {
     }
 
     inline_    uint32_t GetNbPairs() const {
