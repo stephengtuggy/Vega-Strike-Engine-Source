@@ -95,9 +95,9 @@ public:
     virtual std::string getFlightgroupName() const;
     virtual int32_t getFlightgroupSubNumber() const;
 
-    virtual std::string toString();
+    virtual std::string toString() const;
 //get the full flightgroup ID (i.e 'green-4')
-    const std::string getFgID();
+    virtual std::string getFgID() const;
     virtual void SetFaction(int new_faction);
     void SetFg(Flightgroup *fg, int fg_snumber);
 //the flightgroup this ship is in

@@ -116,7 +116,7 @@ public:
 //        return isPlayerStarship((UnitConstRawPtr) pointercompare);
 //    }
 
-    inline Cockpit * isPlayerStarship(const UnitWeakPtr pointer_compare) {
+    inline Cockpit * isPlayerStarship(const UnitParentPtr pointer_compare) {
         return isPlayerStarship(pointer_compare.lock());
     }
 

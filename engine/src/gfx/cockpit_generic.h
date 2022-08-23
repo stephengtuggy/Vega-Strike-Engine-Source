@@ -30,7 +30,7 @@
 #include <vector>
 #include "gfx/vec.h"
 #include "vsfilesystem.h"
-//using namespace XMLSupport;  DONT DO THIS IN HEADERS
+//using namespace XMLSupport;  DON'T DO THIS IN HEADERS
 enum VIEWSTYLE {
     CP_FRONT,
     CP_BACK,
@@ -52,7 +52,9 @@ enum VIEWSTYLE {
 #else
 #define MAXVDUS (12)
 #endif
-class Unit;
+//class Unit;
+#include "unit_base_class.hpp"
+#include "unit_fwd_decl.hpp"
 class Camera;
 class Animation;
 class NavigationSystem;
@@ -335,11 +337,9 @@ public:
     class StarSystem *activeStarSystem; //used for context switch in Universe
     virtual void SetParent(UnitPtr unit, const char *filename, const char *unitmodname, const QVector &startloc);
 
-    boost::shared_ptr<Unit> GetParent() {
-        return parent.GetUnit();
-    }
+    UnitParentPtr GetParent();
 
-    UnitPtr GetSaveParent();
+    UnitParentPtr GetSaveParent();
 
     ///Draws Cockpit then restores viewport
     virtual void Draw() {

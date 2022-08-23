@@ -67,10 +67,12 @@
 
 #include <cfloat>
 
+#include "unit_fwd_decl.hpp"
+
 struct Transformation;
 class Matrix;
-class Unit;
-class UnitCollection;
+//class Unit;
+//class UnitCollection;
 struct Quaternion;
 
 class Movable {
@@ -120,8 +122,8 @@ public:
     Transformation curr_physical_state;
 
     //Should we resolve forces on this unit (is it free to fly or in orbit)
-    // TODO: this should be deleted when we separate satelites from movables
-    bool resolveforces;
+    // TODO: this should be deleted when we separate satellites from movables
+    bool resolve_forces_;
 
     //The number of frames ahead this was put in the simulation queue
     unsigned int sim_atom_multiplier;
@@ -238,18 +240,18 @@ public:
     //Not needed here, so only in NetUnit and Unit classes
     void UpdatePhysics(const Transformation &trans,
             const Matrix &transmat,
-            const Vector &CumulativeVelocity,
-            bool ResolveLast,
-            UnitCollection *uc,
+            const Vector &cum_vel,
+            bool lastframe,
+            boost::shared_ptr<VegaUnitCollection> uc,
             UnitPtr superunit);
     virtual void UpdatePhysics2(const Transformation &trans,
             const Transformation &old_physical_state,
             const Vector &accel,
             float difficulty,
             const Matrix &transmat,
-            const Vector &CumulativeVelocity,
-            bool ResolveLast,
-            UnitCollection *uc = NULL);
+            const Vector &cum_vel,
+            bool lastframe,
+            boost::shared_ptr<VegaUnitCollection> uc);
 
     //Returns unit-space ang velocity
     const Vector &GetAngularVelocity() const {

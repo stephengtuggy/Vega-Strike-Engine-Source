@@ -42,6 +42,7 @@
 #include <boost/smart_ptr/make_shared.hpp>
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include "unit_base_class.hpp"
+#include "unit_collection.hpp"
 //class Unit;
 
 //using ::boost::multi_index_container;
@@ -55,14 +56,10 @@ struct UnitFlightgroup {};
 typedef ::boost::multi_index_container<::boost::shared_ptr<UnitBaseClass>,
         ::boost::multi_index::indexed_by<
                 ::boost::multi_index::sequenced<::boost::multi_index::tag<UnitSequenced>>,
-                ::boost::multi_index::ordered_unique<::boost::multi_index::tag<UnitByIdentity>, ::boost::multi_index::identity<UnitBaseClass>>,
+                ::boost::multi_index::ordered_unique<::boost::multi_index::tag<UnitByIdentity>,
+                        ::boost::multi_index::identity<UnitBaseClass>>,
                 ::boost::multi_index::ordered_unique<::boost::multi_index::tag<UnitFlightgroup>,
-                        ::boost::multi_index::composite_key<
-                            UnitBaseClass,
-                            BOOST_MULTI_INDEX_CONST_MEM_FUN(UnitBaseClass, ::std::string, getFlightgroupName),
-                            BOOST_MULTI_INDEX_CONST_MEM_FUN(UnitBaseClass, int32_t, getFlightgroupSubNumber)
-                        >,
-                        ::boost::multi_index::composite_key_compare<std::less<std::string>, std::less<int32_t>>
+                        BOOST_MULTI_INDEX_CONST_MEM_FUN(UnitBaseClass, ::std::string, getFgID)
                 >
         >
 > UnitBaseClassMultiIndexContainer;

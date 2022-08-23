@@ -145,7 +145,7 @@ void Cockpit::Init(const char *file, bool isDisabled) {
     f.Close();
 }
 
-UnitPtr Cockpit::GetSaveParent() {
+UnitParentPtr Cockpit::GetSaveParent() {
     UnitPtr un = parentturret.GetUnit();
     if (!un) {
         un = parent.GetUnit();
@@ -1033,5 +1033,9 @@ void Cockpit::SetSoundForEvent(Cockpit::EVENTID eventId, const SoundContainer &s
 
 SoundContainer *Cockpit::soundImpl(const SoundContainer &specs) {
     return new SoundContainer(specs);
+}
+
+UnitParentPtr Cockpit::GetParent() {
+    return UnitParentPtr(make_shared_from_intrusive(parent.GetUnit()));
 }
 

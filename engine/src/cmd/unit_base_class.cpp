@@ -79,7 +79,7 @@
 #include "unit_base_class.hpp"
 #include <boost/format.hpp>
 
-std::string UnitBaseClass::toString() {
+std::string UnitBaseClass::toString() const {
     return getFgID();
 }
 
@@ -92,30 +92,32 @@ int32_t UnitBaseClass::getFlightgroupSubNumber() const {
 }
 
 bool UnitBaseClass::operator<(UnitBaseClass &other) const {
-    const std::string &this_flightgroup_name = this->getFlightgroupName();
-    const std::string &other_flightgroup_name = other.getFlightgroupName();
-    if (this_flightgroup_name < other_flightgroup_name) {
-        return true;
-    } else if (this_flightgroup_name > other_flightgroup_name) {
-        return false;
-    } else {
-        return this->getFlightgroupSubNumber() < other.getFlightgroupSubNumber();
-    }
+    return toString() < other.toString();
+//    const std::string &this_flightgroup_name = this->getFlightgroupName();
+//    const std::string &other_flightgroup_name = other.getFlightgroupName();
+//    if (this_flightgroup_name < other_flightgroup_name) {
+//        return true;
+//    } else if (this_flightgroup_name > other_flightgroup_name) {
+//        return false;
+//    } else {
+//        return this->getFlightgroupSubNumber() < other.getFlightgroupSubNumber();
+//    }
 }
 
 bool UnitBaseClass::operator<(const UnitBaseClass &other) const {
-    const std::string &this_flightgroup_name = this->getFlightgroupName();
-    const std::string &other_flightgroup_name = other.getFlightgroupName();
-    if (this_flightgroup_name < other_flightgroup_name) {
-        return true;
-    } else if (this_flightgroup_name > other_flightgroup_name) {
-        return false;
-    } else {
-        return this->getFlightgroupSubNumber() < other.getFlightgroupSubNumber();
-    }
+    return toString() < other.toString();
+//    const std::string &this_flightgroup_name = this->getFlightgroupName();
+//    const std::string &other_flightgroup_name = other.getFlightgroupName();
+//    if (this_flightgroup_name < other_flightgroup_name) {
+//        return true;
+//    } else if (this_flightgroup_name > other_flightgroup_name) {
+//        return false;
+//    } else {
+//        return this->getFlightgroupSubNumber() < other.getFlightgroupSubNumber();
+//    }
 }
 
-const std::string UnitBaseClass::getFgID() {
+std::string UnitBaseClass::getFgID() const {
     if (flightgroup != nullptr) {
         return (boost::format("%1$s-%2$4d") % flightgroup->name % flightgroup_sub_number_).str();
     } else {

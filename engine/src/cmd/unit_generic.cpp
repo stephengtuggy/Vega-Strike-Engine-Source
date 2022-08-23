@@ -2009,7 +2009,7 @@ bool Unit::Explode(bool drawit, float timeit) {
                     this->ExplosionRadius()
                             * game_options()->explosion_damage_center
                             * game_options()->explosion_damage_edge,
-                    UnitWeakPtr{}));
+                    UnitParentPtr{}));
         }
         QVector exploc = this->cumulative_transformation.position;
         bool sub = this->isSubUnit();

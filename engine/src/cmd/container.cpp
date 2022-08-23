@@ -23,7 +23,7 @@
  */
 
 
-#include <stdlib.h>
+//#include <stdlib.h>
 #include "container.h"
 #include "unit_generic.h"
 
@@ -39,25 +39,52 @@ UnitContainer::UnitContainer(UnitRawPtr un) : unit(nullptr) {
 UnitContainer::~UnitContainer() {
     VSDESTRUCT1
     if (unit) {
-        unit-;
+        unit->Kill(); // TODO: Should we do this here?
     }
     //bad idea...arrgh!
 }
 
-void UnitContainer::SetUnit(UnitRawPtr un) {
+void UnitContainer::SetUnit(Unit * un) {
     //if the unit is null then go here otherwise if the unit is killed then go here
-    if (un != nullptr ? un->Killed() == true : true) {
+    if (un == nullptr || un->Killed()) {
         if (unit) {
-            intrusive_ptr_release(unit);
+            unit.reset();
         }
-        unit = nullptr;
         return;
     } else {
         if (unit) {
-            intrusive_ptr_release(unit);
+            unit.reset();
+        }
+        unit = make_shared_from_intrusive(un);
+    }s
+}
+
+UnitRawPtr UnitContainer::GetUnit() const {
+    return unit.get();
+}
+
+void UnitContainer::SetUnit(UnitSharedPtr un) {
+    if (!un || un->Killed()) {
+        if (unit) {
+            unit.reset();
+        }
+        return;
+    } else {
+        if (unit) {
+            unit.reset();
         }
         unit = un;
-        intrusive_ptr_add_ref(unit);
+    }
+}
+
+void UnitContainer::SetUnit(UnitWeakPtr un) {
+    if (un.empty()) {
+        if (unit) {
+            unit.reset();
+        }
+        return;
+    } else {
+        SetUnit(un.lock());
     }
 }
 

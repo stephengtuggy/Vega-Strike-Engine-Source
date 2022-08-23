@@ -49,7 +49,7 @@
 ////////////////////////////////////////////////////////////////
 /// MissileEffect
 ////////////////////////////////////////////////////////////////
-MissileEffect::MissileEffect(const QVector &pos, float dam, float pdam, float radius, float radmult, UnitWeakPtr owner) : pos(
+MissileEffect::MissileEffect(const QVector &pos, float dam, float pdam, float radius, float radmult, UnitParentPtr owner) : pos(
         pos) {
     damage = dam;
     phasedamage = pdam;

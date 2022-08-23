@@ -27,11 +27,14 @@
 #define _UNITCONTAINER_H_
 
 #include "debug_vs.h"
+//#include "unit_base_class.hpp"
 #include "unit_fwd_decl.hpp"
+//#include "vega_intrusive_ptr.hpp"
+#include "unit_generic.h"
 
 class UnitContainer {
 protected:
-    UnitRawPtr unit;
+    UnitSharedPtr unit;
 public:
     UnitContainer();
     explicit UnitContainer(UnitRawPtr un);
@@ -48,11 +51,11 @@ public:
     }
 
     bool operator==(UnitConstRawPtr oth) const {
-        return unit == oth;
+        return unit.get() == oth;
     }
 
     bool operator!=(UnitConstRawPtr oth) const {
-        return unit != oth;
+        return unit.get() != oth;
     }
 
     bool operator==(const UnitContainer &oth) const {
@@ -64,10 +67,20 @@ public:
     }
 
     ~UnitContainer();
-    void SetUnit(UnitRawPtr);
-    UnitRawPtr GetUnit();
+    void SetUnit(Unit * un);
+    void SetUnit(UnitSharedPtr un);
+    void SetUnit(UnitWeakPtr un);
+    UnitRawPtr GetUnit() const;
 
     UnitConstRawPtr GetConstUnit() const {
+        return unit.get();
+    }
+
+    UnitWeakPtr getWeakUnitPtr() {
+        return UnitWeakPtr(unit);
+    }
+
+    UnitSharedPtr getSharedUnitPtr() {
         return unit;
     }
 };

@@ -98,7 +98,7 @@ void Damageable::ApplyDamage(const Vector &pnt,
         Damage damage,
         UnitPtr affected_unit,
         const GFXColor &color,
-        UnitWeakPtr ownerDoNotDereference) {
+        UnitParentPtr ownerDoNotDereference) {
     InflictedDamage inflicted_damage(3);
 
     const Damageable *const_damagable = const_cast<const Damageable *>(vega_dynamic_cast_ptr<Damageable>(this));

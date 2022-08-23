@@ -133,7 +133,7 @@ public:
             Damage damage,
             UnitPtr affected_unit,
             const GFXColor &color,
-            UnitWeakPtr ownerDoNotDereference);
+            UnitParentPtr ownerDoNotDereference);
     void DamageRandomSystem(InflictedDamage inflicted_damage, bool player, Vector attack_vector);
     void DamageCargo(InflictedDamage inflicted_damage);
     void Destroy(); //explodes then deletes

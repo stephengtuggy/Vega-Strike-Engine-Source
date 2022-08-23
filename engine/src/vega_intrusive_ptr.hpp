@@ -25,8 +25,9 @@
 #ifndef VEGA_STRIKE_SRC_VEGA_INTRUSIVE_PTR_HPP_
 #define VEGA_STRIKE_SRC_VEGA_INTRUSIVE_PTR_HPP_
 
-#include <boost/intrusive_ptr.hpp>
-#include <boost/shared_ptr.hpp>
+#include <boost/smart_ptr/intrusive_ptr.hpp>
+#include <boost/smart_ptr/intrusive_ref_counter.hpp>
+#include <boost/smart_ptr/shared_ptr.hpp>
 
 template<class T> struct intrusive_deleter
 {

@@ -64,7 +64,7 @@ Movable::Movable() : cumulative_transformation_matrix(identity_matrix),
     Identity(cumulative_transformation_matrix);
     cumulative_transformation = identity_transformation;
     curr_physical_state = prev_physical_state = identity_transformation;
-    resolveforces = true;
+    resolve_forces_ = true;
     AngularVelocity = default_angular_velocity;
 }
 
@@ -132,14 +132,14 @@ void Movable::SetAngularVelocity(const Vector &v) {
 
 //FIXME Daughter units should be able to be turrets (have y/p/r)
 void Movable::SetResolveForces(bool ys) {
-    resolveforces = ys;
+    resolve_forces_ = ys;
 }
 
 void Movable::UpdatePhysics(const Transformation &trans,
         const Matrix &transmat,
         const Vector &cum_vel,
         bool lastframe,
-        UnitCollection *uc,
+        boost::shared_ptr<VegaUnitCollection> uc,
         UnitPtr superunit) {
     //Save information about when this happened
     unsigned int cur_sim_frame = _Universe->activeStarSystem()->getCurrentSimFrame();
@@ -150,7 +150,7 @@ void Movable::UpdatePhysics(const Transformation &trans,
 
     UpdatePhysics3(trans, transmat, lastframe, uc, superunit);
 
-    if (resolveforces) {
+    if (resolve_forces_) {
         //clamp velocity
         ResolveForces(trans, transmat);
         float velocity_max = configuration()->physics_config.velocity_max;
@@ -177,7 +177,7 @@ void Movable::UpdatePhysics(const Transformation &trans,
 }
 
 void Movable::AddVelocity(float difficulty) {
-    UnitPtr unit = static_cast<UnitPtr>(this);
+    UnitRawPtr unit = vega_dynamic_cast_ptr<Unit>(this);
     float lastWarpField = graphicOptions.WarpFieldStrength;
 
     bool playa = isPlayerShip();
@@ -247,7 +247,7 @@ void Movable::UpdatePhysics2(const Transformation &trans,
         const Matrix &transmat,
         const Vector &cum_vel,
         bool lastframe,
-        UnitCollection *uc) {
+        boost::shared_ptr<VegaUnitCollection> uc) {
     //Only in non-networking OR networking && is a player OR SERVER && not a player
     if (AngularVelocity.i || AngularVelocity.j || AngularVelocity.k) {
         Rotate(simulation_atom_var * (AngularVelocity));
