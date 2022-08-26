@@ -452,9 +452,9 @@ BaseComputer::BaseComputer(UnitPtr player, UnitPtr base, const std::vector<Displ
 }
 
 //Destructor.
-BaseComputer::~BaseComputer(void) {
-    m_player.SetUnit(NULL);
-    m_base.SetUnit(NULL);
+BaseComputer::~BaseComputer() {
+    m_player.setNull();
+    m_base.setNull();
     //Delete any group controls that the window doesn't "own".
     for (int i = 0; i < DISPLAY_MODE_COUNT; i++) {
         if (m_modeGroups[i] != nullptr) {

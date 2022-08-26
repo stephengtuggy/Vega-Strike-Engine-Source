@@ -706,7 +706,7 @@ float Unit::cosAngleFromMountTo(UnitPtr targ, float &dist) const {
 void Unit::Threaten(UnitPtr targ, float danger) {
     if (!targ) {
         computer.threatlevel = danger;
-        computer.threat.SetUnit(NULL);
+        computer.threat.setNull();
     } else if (targ->owner != this && this->owner != targ && danger > PARANOIA && danger > computer.threatlevel) {
         computer.threat.SetUnit(targ);
         computer.threatlevel = danger;
@@ -1689,11 +1689,11 @@ void Unit::Kill(bool erasefromsave, bool quitting) {
     if (!isSubUnit()) {
         RemoveFromSystem();
     }
-    computer.target.SetUnit(NULL);
+    computer.target.setNull();
 
     //God I can't believe this next line cost me 1 GIG of memory until I added it
-    computer.threat.SetUnit(NULL);
-    computer.velocity_ref.SetUnit(NULL);
+    computer.threat.setNull();
+    computer.velocity_ref.setNull();
     computer.force_velocity_ref = true;
     if (aistate) {
         aistate->ClearMessages();
@@ -1718,7 +1718,7 @@ void Unit::Kill(bool erasefromsave, bool quitting) {
         Unitdeletequeue.push_back(this);
         if (flightgroup) {
             if (flightgroup->leader.GetUnit() == this) {
-                flightgroup->leader.SetUnit(NULL);
+                flightgroup->leader.setNull();
             }
         }
 
@@ -1887,7 +1887,7 @@ void Unit::Target(UnitPtr targ) {
     }
 
     if (!(activeStarSystem == NULL || activeStarSystem == _Universe->activeStarSystem())) {
-        computer.target.SetUnit(NULL);
+        computer.target.setNull();
         return;
     }
     if (targ) {
@@ -1918,11 +1918,11 @@ void Unit::Target(UnitPtr targ) {
                     WarpPursuit(this, _Universe->activeStarSystem(), targ->getStarSystem()->getFileName());
                 }
             } else {
-                computer.target.SetUnit(NULL);
+                computer.target.setNull();
             }
         }
     } else {
-        computer.target.SetUnit(NULL);
+        computer.target.setNull();
     }
 }
 
@@ -2245,7 +2245,7 @@ void Unit::FreeDockingPort(unsigned int i) {
     }
     unsigned int whichdock = pImage->dockedunits[i]->whichdock;
     pImage->dockingports[whichdock].Occupy(false);
-    pImage->dockedunits[i]->uc.SetUnit(NULL);
+    pImage->dockedunits[i]->uc.setNull();
     delete pImage->dockedunits[i];
     pImage->dockedunits.erase(pImage->dockedunits.begin() + i);
 }
@@ -2485,7 +2485,7 @@ bool Unit::UnDock(UnitPtr utdw) {
             i--;
             SetVisible(true);
             docked &= (~(DOCKED_INSIDE | DOCKED));
-            pImage->DockedTo.SetUnit(NULL);
+            pImage->DockedTo.setNull();
             Velocity = utdw->Velocity;
             static float
                     launch_speed = XMLSupport::parse_float(vs_config->getVariable("physics", "launch_speed", "-1"));

@@ -435,7 +435,7 @@ void Cockpit::UpdAutoPilot() {
             UnitPtr par = GetParent();
             if (par) {
                 UnitPtr autoun = autopilot_target.GetUnit();
-                autopilot_target.SetUnit(NULL);
+                autopilot_target.setNull();
                 if (autoun) {
                     par->AutoPilotTo(autoun, false);
                 }
@@ -612,7 +612,7 @@ bool Cockpit::Update() {
                                 this->unitmodname.c_str(),
                                 savegame->GetPlayerLocation());
                         SwitchUnits(NULL, un);
-                        parentturret.SetUnit(NULL);
+                        parentturret.setNull();
                         un->SetTurretAI();
                         un->DisableTurretAI();
                     }
@@ -654,7 +654,7 @@ bool Cockpit::Update() {
     }
     if (switchunit.size() > _Universe->CurrentCockpit()) {
         if (switchunit[_Universe->CurrentCockpit()]) {
-            parentturret.SetUnit(NULL);
+            parentturret.setNull();
 
             static float initialzoom =
                     XMLSupport::parse_float(vs_config->getVariable("graphics", "inital_zoom_factor", "2.25"));
@@ -764,7 +764,7 @@ bool Cockpit::Update() {
                         XMLSupport::parse_float(vs_config->getVariable("graphics", "inital_zoom_factor", "2.25"));
                 zoomfactor = initialzoom;
 
-                parentturret.SetUnit(NULL);
+                parentturret.setNull();
                 respawnunit[_Universe->CurrentCockpit()] = 0;
                 std::string savegamefile = mission->getVariable("savegame", "");
                 unsigned int k;

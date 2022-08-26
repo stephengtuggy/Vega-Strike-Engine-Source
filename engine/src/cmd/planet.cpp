@@ -904,7 +904,7 @@ void Planet::ProcessTerrains() {
     while (!PlanetTerrainDrawQueue.empty()) {
         Planet *pl = (Planet *) PlanetTerrainDrawQueue.back()->GetUnit();
         pl->DrawTerrain();
-        PlanetTerrainDrawQueue.back()->SetUnit(nullptr);
+        PlanetTerrainDrawQueue.back()->setNull();
         delete PlanetTerrainDrawQueue.back();
         PlanetTerrainDrawQueue.pop_back();
     }

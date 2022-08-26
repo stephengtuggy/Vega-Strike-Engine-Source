@@ -2222,7 +2222,7 @@ void GameCockpit::UpdAutoPilot() {
             UnitPtr par = GetParent();
             if (par) {
                 UnitPtr autoun = autopilot_target.GetUnit();
-                autopilot_target.SetUnit(NULL);
+                autopilot_target.setNull();
                 if (autoun && autopan) {
                     par->AutoPilotTo(autoun, false);
                 }

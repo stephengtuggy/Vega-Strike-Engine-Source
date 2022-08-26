@@ -864,7 +864,7 @@ void Statistics::RemoveUnit(UnitPtr un) {
     }
     if (un->GetDestinations().size()) {
         //make sure it is there
-        jumpPoints[(un->GetDestinations()[0])].SetUnit(nullptr);
+        jumpPoints[(un->GetDestinations()[0])].setNull();
         //kill it--stupid I know--but hardly time critical
         jumpPoints.erase(jumpPoints.find(un->GetDestinations()[0]));
     }

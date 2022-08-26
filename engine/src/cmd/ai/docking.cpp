@@ -123,7 +123,7 @@ void DockingOps::Destroy() {
             formerOwnerDoNotDereference = NULL;
         }
     }
-    docking.SetUnit(NULL);
+    docking.setNull();
 }
 
 void DockingOps::RestoreOldAI() {
@@ -187,7 +187,7 @@ bool DockingOps::DockToTarget(UnitPtr utdw) {
             state = GETCLEARENCE;
             return false;
         } else {
-            docking.SetUnit(NULL);
+            docking.setNull();
             state = GETCLEARENCE;
             return false;
         }

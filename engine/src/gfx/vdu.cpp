@@ -991,7 +991,7 @@ void VDU::DrawComm() {
                     thismode.back() = blah;
                 }
             }
-            communicating.SetUnit(NULL);
+            communicating.setNull();
             comm_ani = NULL;
         }
         GFXDisable(TEXTURE0);
@@ -1698,7 +1698,7 @@ bool VDU::SetWebcamAnimation() {
     if (comm_ani == NULL) {
         if (posmodes & WEBCAM) {
             comm_ani = new Animation();
-            communicating.SetUnit(NULL);
+            communicating.setNull();
             thismode.push_back(WEBCAM);
             comm_ani->Reset();
             return true;
@@ -1758,7 +1758,7 @@ void VDU::Draw(GameCockpit *parentcp, UnitPtr parent, const GFXColor &color) {
     if (thismode.back() != COMM && comm_ani != NULL) {
         if (comm_ani->Done()) {
             comm_ani = NULL;
-            communicating.SetUnit(NULL);
+            communicating.setNull();
         }
     }
     float delautotime = UniverseUtil::GetGameTime() - parentcp->autoMessageTime;

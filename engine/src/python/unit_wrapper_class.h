@@ -300,6 +300,8 @@ public:
     UnitWrapper(UnitPtr un = 0) : UnitContainer(un) {
     }
 
+    ~UnitWrapper() override = default;
+
     operator UnitPtr() {
         return GetUnit();
     }
@@ -316,9 +318,9 @@ public:
         return !isNull();
     }
 
-    void setNull() {
-        SetUnit(0);
-    }
+//    void setNull() {
+//        SetUnit(0);
+//    }
 
     bool equal(UnitWrapper oth) {
         return this->operator==(oth);

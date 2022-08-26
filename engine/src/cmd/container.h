@@ -41,7 +41,8 @@ public:
 
     UnitContainer(const UnitContainer &un) {
         VSCONSTRUCT1('U')
-        unit = nullptr;
+        //unit = nullptr;
+        unit.reset();
         SetUnit(un.unit);
     }
 
@@ -66,7 +67,7 @@ public:
         return unit != oth.unit;
     }
 
-    ~UnitContainer();
+    virtual ~UnitContainer();
     void SetUnit(Unit * un);
     void SetUnit(UnitSharedPtr un);
     void SetUnit(UnitWeakPtr un);
@@ -82,6 +83,12 @@ public:
 
     UnitSharedPtr getSharedUnitPtr() {
         return unit;
+    }
+
+    virtual void setNull() {
+        if (unit) {
+            unit.reset();
+        }
     }
 };
 

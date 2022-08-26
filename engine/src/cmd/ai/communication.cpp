@@ -540,7 +540,7 @@ void LeadMe(UnitPtr un, string directive, string speech, bool changetarget) {
                 fg->target.SetUnit(un->Target());
             }
             if ((directive == "")) {
-                fg->target.SetUnit(NULL);
+                fg->target.setNull();
             }
         }
     }

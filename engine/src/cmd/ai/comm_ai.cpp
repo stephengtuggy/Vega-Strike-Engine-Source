@@ -176,7 +176,7 @@ void CommunicatingAI::TerminateContrabandSearch(bool contraband_detected) {
             o->Communicate(c);
         }
     }
-    contraband_searchee.SetUnit(NULL);
+    contraband_searchee.setNull();
 }
 
 void CommunicatingAI::GetMadAt(UnitPtr un, int numHitsPerContrabandFail) {

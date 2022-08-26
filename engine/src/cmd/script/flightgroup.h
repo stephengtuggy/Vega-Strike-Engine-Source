@@ -60,7 +60,7 @@ public:
         nr_ships--;
         nr_ships_left--;
         if (leader.GetUnit() == trashed.get()) {
-            leader.SetUnit(nullptr);
+            leader.setNull();
         }
     }
 
@@ -68,7 +68,7 @@ public:
         --nr_ships;
         --nr_ships_left;
         if (leader.GetUnit() == trashed) {
-            leader.SetUnit(nullptr);
+            leader.setNull();
         }
     }
 
