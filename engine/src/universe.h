@@ -107,7 +107,7 @@ public:
 // Player Ship
     Cockpit *isPlayerStarship(UnitConstRawPtr do_not_dereference);
 
-    static Cockpit * isPlayerStarship(Unit const * pointer_compare);
+//    static Cockpit * isPlayerStarship(Unit const * pointer_compare);
 
 //    Cockpit *isPlayerStarshipVoid(const void *pointercompare) {
 //        try {
@@ -117,10 +117,11 @@ public:
 //    }
 
     inline Cockpit * isPlayerStarship(const UnitParentPtr pointer_compare) {
-        return isPlayerStarship(pointer_compare.lock());
+        return isPlayerStarship(pointer_compare.lock().get());
     }
 
     int whichPlayerStarship(UnitConstRawPtr do_not_dereference);
+    int whichPlayerStarship(UnitWeakPtr do_not_dereference);
 
 // Script System - whatever that is
     StarSystem *scriptStarSystem();

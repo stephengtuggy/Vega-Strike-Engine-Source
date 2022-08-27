@@ -415,7 +415,7 @@ float getFactionRelation(const UnitPtr my_unit, const UnitPtr their_unit) {
     return relation;
 }
 
-float getRelationToFaction(const UnitPtr my_unit, int other_faction) {
+float getRelationToFaction(UnitPtr my_unit, int other_faction) {
     float relation = FactionUtil::GetIntRelation(my_unit->faction, other_faction);
     int my_cp = _Universe->whichPlayerStarship(my_unit);
     if (my_cp != -1) {
@@ -424,7 +424,25 @@ float getRelationToFaction(const UnitPtr my_unit, int other_faction) {
     return relation;
 }
 
-float getRelationFromFaction(const UnitPtr their_unit, int my_faction) {
+float getRelationToFaction(UnitConstRawPtr my_unit, int other_faction) {
+    float relation = FactionUtil::GetIntRelation(my_unit->faction, other_faction);
+    int my_cp = _Universe->whichPlayerStarship(my_unit);
+    if (my_cp != -1) {
+        relation += UniverseUtil::getRelationModifierInt(my_cp, other_faction);
+    }
+    return relation;
+}
+
+float getRelationFromFaction(UnitPtr their_unit, int my_faction) {
+    float relation = FactionUtil::GetIntRelation(my_faction, their_unit->faction);
+    int their_cp = _Universe->whichPlayerStarship(their_unit);
+    if (their_cp != -1) {
+        relation += UniverseUtil::getRelationModifierInt(their_cp, my_faction);
+    }
+    return relation;
+}
+
+float getRelationFromFaction(UnitConstRawPtr their_unit, int my_faction) {
     float relation = FactionUtil::GetIntRelation(my_faction, their_unit->faction);
     int their_cp = _Universe->whichPlayerStarship(their_unit);
     if (their_cp != -1) {

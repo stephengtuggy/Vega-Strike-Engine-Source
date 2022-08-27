@@ -565,8 +565,20 @@ int Universe::whichPlayerStarship(UnitConstRawPtr do_not_dereference) {
     if (!do_not_dereference) {
         return -1;
     }
-    for (unsigned int i = 0; i < _cockpits.size(); i++) {
-        if (do_not_dereference == _cockpits[i]->GetParent()) {
+    for (size_t i = 0; i < _cockpits.size(); ++i) {
+        if (do_not_dereference == _cockpits[i]->GetParent().lock().get()) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int Universe::whichPlayerStarship(UnitWeakPtr do_not_dereference) {
+    if (do_not_dereference.empty()) {
+        return -1;
+    }
+    for (size_t i = 0; i < _cockpits.size(); ++i) {
+        if (do_not_dereference.lock() == _cockpits[i]->GetParent().lock()) {
             return i;
         }
     }
