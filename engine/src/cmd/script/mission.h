@@ -57,6 +57,7 @@ class MessageCenter;
 #include "flightgroup.h"
 
 #include <assert.h>
+#include <ai/order.h>
 
 #define qu(x) ("\""+x+"\"")
 
@@ -761,7 +762,7 @@ private:
     varInst *call_terminateMission(missionNode *node, int mode);
 
     varInst *call_order(missionNode *node, int mode);
-    boost::shared_ptr<Order> getOrderObject(missionNode *node, int mode, varInst *ovi);
+    OrderPtrForPy getOrderObject(missionNode *node, int mode, varInst *ovi);
 
     QVector getVec3Arg(missionNode *node, int mode, int arg_nr);
     double getFloatArg(missionNode *node, int mode, int arg_nr);

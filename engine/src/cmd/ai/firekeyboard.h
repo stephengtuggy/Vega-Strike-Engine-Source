@@ -43,7 +43,7 @@ class FireKeyboard : public Order {
     bool ShouldFire(UnitPtr targ);
     std::list<CommunicationMessage> resp;
 public:
-    virtual void SetParent(UnitPtr parent1);
+    virtual void SetParent(UnitParentPtr parent1);
     static void SetShieldsOff(const KBData &, KBSTATE);
     static void SetShieldsOneThird(const KBData &, KBSTATE);
     static void SetShieldsTwoThird(const KBData &, KBSTATE);

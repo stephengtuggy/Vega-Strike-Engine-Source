@@ -384,7 +384,7 @@ void Carrier::EjectCargo(unsigned int index) {
                     Vector p, q, r;
                     unit->GetOrientation(p, q, r);
                     cargo->SetOrientation(p, q, r);
-                    if (unit->owner) {
+                    if (!unit->owner.empty()) {
                         cargo->owner = unit->owner;
                     } else {
                         cargo->owner = unit;
@@ -421,7 +421,7 @@ void Carrier::EjectCargo(unsigned int index) {
                         }
                         //make unit a sitting duck in the mean time
                         SwitchUnits(NULL, unit);
-                        if (unit->owner) {
+                        if (!unit->owner.empty()) {
                             cargo->owner = unit->owner;
                         } else {
                             cargo->owner = unit;
@@ -440,7 +440,7 @@ void Carrier::EjectCargo(unsigned int index) {
                         }
                     } else {
                         SwitchUnits(NULL, cargo);
-                        if (unit->owner) {
+                        if (!unit->owner.empty()) {
                             cargo->owner = unit->owner;
                         } else {
                             cargo->owner = unit;
@@ -459,7 +459,7 @@ void Carrier::EjectCargo(unsigned int index) {
 }
 
 int Carrier::RemoveCargo(unsigned int i, int quantity, bool eraseZero) {
-    UnitPtr unit = static_cast<UnitPtr>(this);
+    UnitRawPtr unit = static_cast<UnitRawPtr>(this);
     if (!(i < unit->cargo.size())) {
         VS_LOG(error, "(previously) FATAL problem...removing cargo that is past the end of array bounds.");
         return 0;
@@ -482,7 +482,7 @@ int Carrier::RemoveCargo(unsigned int i, int quantity, bool eraseZero) {
 }
 
 void Carrier::AddCargo(const Cargo &carg, bool sort) {
-    UnitPtr unit = static_cast<UnitPtr>(this);
+    UnitRawPtr unit = static_cast<UnitRawPtr>(this);
 
     static bool usemass = XMLSupport::parse_bool(vs_config->getVariable("physics", "use_cargo_mass", "true"));
     if (usemass) {
@@ -499,12 +499,12 @@ bool cargoIsUpgrade(const Cargo &c) {
 }
 
 float Carrier::getHiddenCargoVolume() const {
-    const UnitPtr unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr unit = static_cast<UnitConstRawPtr>(this);
     return unit->HiddenCargoVolume;
 }
 
 bool Carrier::CanAddCargo(const Cargo &carg) const {
-    const UnitPtr unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr unit = static_cast<UnitConstRawPtr>(this);
 
     //Always can, in this case (this accounts for some odd precision issues)
     if ((carg.quantity == 0) || (carg.volume == 0)) {
@@ -528,17 +528,17 @@ bool Carrier::CanAddCargo(const Cargo &carg) const {
 
 //The cargo volume of this ship when empty.  Max cargo volume.
 float Carrier::getEmptyCargoVolume(void) const {
-    const UnitPtr unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr unit = static_cast<UnitConstRawPtr>(this);
     return unit->CargoVolume;
 }
 
 float Carrier::getEmptyUpgradeVolume(void) const {
-    const UnitPtr unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr unit = static_cast<UnitConstRawPtr>(this);
     return unit->UpgradeVolume;
 }
 
 float Carrier::getCargoVolume(void) const {
-    const UnitPtr unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr unit = static_cast<UnitConstRawPtr>(this);
     float result = 0.0;
     for (unsigned int i = 0; i < unit->cargo.size(); ++i) {
         if (!cargoIsUpgrade(unit->cargo[i])) {
@@ -592,7 +592,7 @@ UnitPtr Carrier::makeMasterPartList() {
 }
 
 float Carrier::PriceCargo(const std::string &s) {
-    UnitPtr unit = static_cast<UnitPtr>(this);
+    UnitRawPtr unit = static_cast<UnitRawPtr>(this);
 
     Cargo tmp;
     tmp.SetContent(s);
@@ -600,7 +600,7 @@ float Carrier::PriceCargo(const std::string &s) {
             unit->cargo.end(), tmp);
     if (mycargo == unit->cargo.end()) {
         UnitPtr mpl = getMasterPartList();
-        if (this != mpl) {
+        if (this != mpl.get()) {
             return mpl->PriceCargo(s);
         } else {
             static float spacejunk = parse_float(vs_config->getVariable("cargo", "space_junk_price", "10"));
@@ -613,7 +613,7 @@ float Carrier::PriceCargo(const std::string &s) {
 }
 
 float Carrier::getUpgradeVolume(void) const {
-    const UnitPtr unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr unit = static_cast<UnitConstRawPtr>(this);
     float result = 0.0;
     for (unsigned int i = 0; i < unit->cargo.size(); ++i) {
         if (cargoIsUpgrade(unit->cargo[i])) {
@@ -624,17 +624,17 @@ float Carrier::getUpgradeVolume(void) const {
 }
 
 Cargo &Carrier::GetCargo(unsigned int i) {
-    UnitPtr unit = static_cast<UnitPtr>(this);
+    UnitRawPtr unit = static_cast<UnitRawPtr>(this);
     return unit->cargo[i];
 }
 
 const Cargo &Carrier::GetCargo(unsigned int i) const {
-    const UnitPtr unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr unit = static_cast<UnitConstRawPtr>(this);
     return unit->cargo[i];
 }
 
 void Carrier::GetSortedCargoCat(const std::string &cat, size_t &begin, size_t &end) {
-    UnitPtr unit = static_cast<UnitPtr>(this);
+    UnitRawPtr unit = static_cast<UnitRawPtr>(this);
     vector<Cargo>::iterator Begin = unit->cargo.begin();
     vector<Cargo>::iterator End = unit->cargo.end();
     vector<Cargo>::iterator lbound = unit->cargo.end();
@@ -655,7 +655,7 @@ void Carrier::GetSortedCargoCat(const std::string &cat, size_t &begin, size_t &e
 // The game also crashed due to endless loop.
 // I returned the code and now it works and I don't know why.
 Cargo *Carrier::GetCargo(const std::string &s, unsigned int &i) {
-    const UnitPtr unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr unit = static_cast<UnitConstRawPtr>(this);
     if (unit->GetCargo(s, i)) {
         return &GetCargo(i);
     }
@@ -663,7 +663,7 @@ Cargo *Carrier::GetCargo(const std::string &s, unsigned int &i) {
 }
 
 const Cargo *Carrier::GetCargo(const std::string &s, unsigned int &i) const {
-    const UnitPtr unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr unit = static_cast<UnitConstRawPtr>(this);
 
     static Hashtable<string, unsigned int, 2047> index_cache_table;
     UnitRawPtr mpl = getMasterPartList().get();
@@ -716,12 +716,12 @@ const Cargo *Carrier::GetCargo(const std::string &s, unsigned int &i) const {
 }
 
 unsigned int Carrier::numCargo() const {
-    const UnitPtr unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr unit = static_cast<UnitConstRawPtr>(this);
     return unit->cargo.size();
 }
 
 std::string Carrier::GetManifest(unsigned int i, UnitPtr scanningUnit, const Vector &oldspd) const {
-    const UnitPtr unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr unit = static_cast<UnitConstRawPtr>(this);
 
     ///FIXME somehow mangle string
     string mangled = unit->cargo[i].GetContent();
@@ -746,7 +746,7 @@ std::string Carrier::GetManifest(unsigned int i, UnitPtr scanningUnit, const Vec
 }
 
 bool Carrier::SellCargo(unsigned int i, int quantity, float &creds, Cargo &carg, UnitPtr buyer) {
-    const UnitPtr unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr unit = static_cast<UnitConstRawPtr>(this);
 
     if (i < 0 || i >= unit->cargo.size() || !buyer->CanAddCargo(unit->cargo[i])
             || unit->getMass() < unit->cargo[i].mass) {
@@ -767,7 +767,7 @@ bool Carrier::SellCargo(unsigned int i, int quantity, float &creds, Cargo &carg,
 }
 
 bool Carrier::SellCargo(const std::string &s, int quantity, float &creds, Cargo &carg, UnitPtr buyer) {
-    Unit const * unit = vega_dynamic_const_cast_ptr<Unit>(this);
+    UnitConstRawPtr unit = static_cast<UnitConstRawPtr>(this);
 
     Cargo tmp;
     tmp.SetContent(s);

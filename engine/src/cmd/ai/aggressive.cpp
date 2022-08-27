@@ -248,7 +248,7 @@ AggressiveAI::AggressiveAI(const char *filename, UnitPtr target)
     last_directive = filename;
 }
 
-void AggressiveAI::SetParent(UnitPtr parent1) {
+void AggressiveAI::SetParent(UnitParentPtr parent1) {
     FireAt::SetParent(parent1);
     string::size_type which = last_directive.find("|");
     string filename(string("default.agg.xml"));

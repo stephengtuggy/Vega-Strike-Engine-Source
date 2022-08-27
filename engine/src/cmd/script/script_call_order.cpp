@@ -69,7 +69,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
     if (method_id == CMT_ORDER_newAggressiveAI) {
         string filestr = getStringArgument(node, mode, 0);
         string intstr = getStringArgument(node, mode, 1);
-        boost::shared_ptr<Order> my_order{nullptr};
+        OrderPtrForPy my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             my_order = boost::make_shared<Orders::AggressiveAI>(filestr.c_str());
         }
@@ -85,7 +85,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         bool afterburn = checkBoolExpr(ab_node, mode);
         missionNode *sw_node = getArgument(node, mode, 2);
         int nr_switchbacks = checkIntExpr(sw_node, mode);
-        boost::shared_ptr<Order> my_order{nullptr};
+        OrderPtrForPy my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             QVector vec3 = call_olist_tovector(pos_node, mode, pos_vi);
             my_order = boost::make_shared<Orders::MoveTo>(vec3, afterburn, nr_switchbacks);
@@ -101,7 +101,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         varInst *pos_vi = checkObjectExpr(pos_node, mode);
         missionNode *sw_node = getArgument(node, mode, 1);
         int nr_switchbacks = checkIntExpr(sw_node, mode);
-        boost::shared_ptr<Order> my_order{nullptr};
+        OrderPtrForPy my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             QVector vec3 = call_olist_tovector(pos_node, mode, pos_vi);
             my_order = boost::make_shared<Orders::ChangeHeading>(vec3, nr_switchbacks);
@@ -119,7 +119,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         bool fini = checkBoolExpr(fini_node, mode);
         missionNode *acc_node = getArgument(node, mode, 2);
         int acc = checkIntExpr(acc_node, mode);
-        boost::shared_ptr<Order> my_order{nullptr};
+        OrderPtrForPy my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             if (itts) {
                 my_order = boost::make_shared<Orders::FaceTargetITTS>(fini, acc);
@@ -135,7 +135,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
     } else if (method_id == CMT_ORDER_newFireAt) {
         missionNode *aggr_node = getArgument(node, mode, 1);
         float aggr = checkFloatExpr(aggr_node, mode);
-        boost::shared_ptr<Order> my_order{nullptr};
+        OrderPtrForPy my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             my_order = boost::make_shared<Orders::FireAt>(aggr);
         }
@@ -147,10 +147,10 @@ varInst *Mission::call_order(missionNode *node, int mode) {
     } else if (method_id == CMT_ORDER_newExecuteFor) {
         missionNode *enq_node = getArgument(node, mode, 0);
         varInst *enq_vi = checkObjectExpr(enq_node, mode);
-        boost::shared_ptr<Order> enq_order = getOrderObject(enq_node, mode, enq_vi);
+        OrderPtrForPy enq_order = getOrderObject(enq_node, mode, enq_vi);
         missionNode *time_node = getArgument(node, mode, 1);
         float fortime = checkFloatExpr(time_node, mode);
-        boost::shared_ptr<Order> my_order{nullptr};
+        OrderPtrForPy my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             my_order = boost::make_shared<Orders::ExecuteFor>(enq_order, fortime);
         }
@@ -165,9 +165,11 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         bool res = checkBoolExpr(val_node, mode);
         missionNode *time_node = getArgument(node, mode, 1);
         float fortime = checkFloatExpr(time_node, mode);
-        boost::shared_ptr<Order> my_order{nullptr};
+        OrderPtrForPy my_order{nullptr};
+        boost::shared_ptr<CloakFor> cloak_for{};
         if (mode == SCRIPT_RUN) {
-            my_order = new CloakFor(res, fortime);
+            cloak_for = make_shared_from_intrusive(new CloakFor(res, fortime));
+            my_order = cloak_for;
         }
         viret = newVarInst(VI_TEMP);
         viret->type = VAR_OBJECT;
@@ -185,7 +187,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         bool afburn = checkBoolExpr(afburn_node, mode);
         missionNode *fini_node = getArgument(node, mode, 4);
         bool fini = checkBoolExpr(fini_node, mode);
-        boost::shared_ptr<Order> my_order{nullptr};
+        OrderPtrForPy my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             Vector des3 = call_olist_tovector(des_node, mode, des_vi).Cast();
             Vector desa3 = call_olist_tovector(desa_node, mode, desa_vi).Cast();
@@ -205,7 +207,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         bool local = checkBoolExpr(local_node, mode);
         missionNode *fini_node = getArgument(node, mode, 2);
         bool fini = checkBoolExpr(fini_node, mode);
-        boost::shared_ptr<Order> my_order{nullptr};
+        OrderPtrForPy my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             Vector des3 = call_olist_tovector(des_node, mode, des_vi).Cast();
             my_order = boost::make_shared<Orders::MatchAngularVelocity>(des3, local, fini);
@@ -225,7 +227,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         bool afburn = checkBoolExpr(afburn_node, mode);
         missionNode *fini_node = getArgument(node, mode, 3);
         bool fini = checkBoolExpr(fini_node, mode);
-        boost::shared_ptr<Order> my_order{nullptr};
+        OrderPtrForPy my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             Vector des3 = call_olist_tovector(des_node, mode, des_vi).Cast();s
             my_order = boost::make_shared<Orders::MatchLinearVelocity>(des3, local, afburn, fini);
@@ -242,7 +244,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         float vel = getFloatArg(node, mode, 1);
         bool afburn = getBoolArg(node, mode, 2);
         float range = getFloatArg(node, mode, 3);
-        boost::shared_ptr<Order> my_order{nullptr};
+        OrderPtrForPy my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             QVector des3 = call_olist_tovector(des_node, mode, des_vi);
             my_order = new AIFlyToWaypoint(des3, vel, afburn, range);
@@ -260,7 +262,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         bool afburn = getBoolArg(node, mode, 2);
         float range = getFloatArg(node, mode, 3);
         float defend_range = getFloatArg(node, mode, 4);
-        boost::shared_ptr<Order> my_order{nullptr};
+        OrderPtrForPy my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             QVector des3 = call_olist_tovector(des_node, mode, des_vi);
             my_order = new AIFlyToWaypointDefend(des3, vel, afburn, range, defend_range);
@@ -277,7 +279,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         UnitPtr des_unit = getUnitObject(des_node, mode, des_vi);
         float vel = getFloatArg(node, mode, 1);
         bool afburn = getBoolArg(node, mode, 2);
-        boost::shared_ptr<Order> my_order{nullptr};
+        OrderPtrForPy my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             my_order = new AIFlyToJumppoint(des_unit, vel, afburn);
         }
@@ -296,7 +298,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         varInst *unit_vi = checkObjectExpr(unit_node, mode);
         UnitPtr around_unit = getUnitObject(unit_node, mode, unit_vi);
         float patrol_speed = getFloatArg(node, mode, 4);
-        boost::shared_ptr<Order> my_order{nullptr};
+        OrderPtrForPy my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             QVector des3 = call_olist_tovector(des_node, mode, des_vi);
             my_order = new AIPatrol(patrol_mode, des3, range, around_unit, patrol_speed);
@@ -312,7 +314,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         missionNode *unit_node = getArgument(node, mode, 0);
         varInst *unit_vi = checkObjectExpr(unit_node, mode);
         olist_t *orderlist = getOListObject(unit_node, mode, unit_vi);
-        boost::shared_ptr<Order> my_order{nullptr};
+        OrderPtrForPy my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             my_order = new AIOrderList(orderlist);
         }
@@ -323,7 +325,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         deleteVarInst(unit_vi);
         return viret;
     } else if (method_id == CMT_ORDER_newSuperiority) {
-        boost::shared_ptr<Order> my_order{nullptr};
+        OrderPtrForPy my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             my_order = new AISuperiority();
         }
@@ -334,7 +336,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         return viret;
     } else {
         varInst *ovi = getObjectArg(node, mode);
-        boost::shared_ptr<Order> my_order = getOrderObject(node, mode, ovi);
+        OrderPtrForPy my_order = getOrderObject(node, mode, ovi);
         if (mode == SCRIPT_RUN) {
             UnitPtr player = _Universe->AccessCockpit()->GetParent();
             if (player) {
@@ -367,7 +369,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         } else if (method_id == CMT_ORDER_eraseOrder) {
             missionNode *enq_node = getArgument(node, mode, 1);
             varInst *enq_vi = checkObjectExpr(enq_node, mode);
-            boost::shared_ptr<Order> enq_order = getOrderObject(enq_node, mode, enq_vi);
+            OrderPtrForPy enq_order = getOrderObject(enq_node, mode, enq_vi);
             if (mode == SCRIPT_RUN) {
                 my_order->eraseOrder(enq_order);
                 debug(3, node, mode, "erasing order");
@@ -378,8 +380,8 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         } else if (method_id == CMT_ORDER_findOrder) {
             missionNode *enq_node = getArgument(node, mode, 1);
             varInst *enq_vi = checkObjectExpr(enq_node, mode);
-            boost::shared_ptr<Order> enq_order = getOrderObject(enq_node, mode, enq_vi);
-            boost::shared_ptr<Order> res_order{nullptr};
+            OrderPtrForPy enq_order = getOrderObject(enq_node, mode, enq_vi);
+            OrderPtrForPy res_order{nullptr};
             if (mode == SCRIPT_RUN) {
                 res_order = my_order->findOrder(enq_order);
             }
@@ -481,8 +483,8 @@ varInst *Mission::call_order(missionNode *node, int mode) {
     return NULL;     //never reach
 }
 
-boost::shared_ptr<Order> Mission::getOrderObject(missionNode *node, int mode, varInst *ovi) {
-    boost::shared_ptr<Order> my_object{nullptr};
+OrderPtrForPy Mission::getOrderObject(missionNode *node, int mode, varInst *ovi) {
+    OrderPtrForPy my_object{nullptr};
     if (mode == SCRIPT_RUN) {
         my_object = boost::reinterpret_pointer_cast<Order>(ovi->object);
         if (my_object == NULL) {

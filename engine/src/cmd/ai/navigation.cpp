@@ -518,7 +518,7 @@ void AutoLongHaul::MakeLinearVelocityOrder() {
     Order::EnqueueOrder(temp);
 }
 
-void AutoLongHaul::SetParent(UnitPtr parent1) {
+void AutoLongHaul::SetParent(UnitParentPtr parent1) {
     ChangeHeading::SetParent(parent1);
     group.SetUnit(parent1->Target());
     inside_landing_zone = false;
@@ -772,7 +772,7 @@ AutoLongHaul::~AutoLongHaul() {
 #endif
 }
 
-void FaceDirection::SetParent(UnitPtr un) {
+void FaceDirection::SetParent(UnitParentPtr un) {
     if (un->getFlightgroup()) {
         AttachSelfOrder(un->getFlightgroup()->leader.GetUnit());
     }
@@ -810,7 +810,7 @@ FaceDirection::~FaceDirection() {
 #endif
 }
 
-void FormUp::SetParent(UnitPtr un) {
+void FormUp::SetParent(UnitParentPtr un) {
     if (un->getFlightgroup()) {
         AttachSelfOrder(un->getFlightgroup()->leader.GetUnit());
     }
@@ -840,7 +840,7 @@ void FormUp::Execute() {
 FormUp::~FormUp() {
 }
 
-void FormUpToOwner::SetParent(UnitPtr un) {
+void FormUpToOwner::SetParent(UnitParentPtr un) {
     UnitPtr ownerDoNotDereference = NULL;
     UnitPtr temp;
     for (un_iter i = _Universe->activeStarSystem()->getUnitList().createIterator();

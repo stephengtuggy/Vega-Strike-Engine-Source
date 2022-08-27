@@ -31,13 +31,13 @@
 
 void CloakFor::Execute() {
     if (time == 0) {
-        parent->Cloak(enable);
+        parent.lock()->Cloak(enable);
     }
     time += SIMULATION_ATOM;
     if (time > maxtime) {
         done = true;
         if (maxtime != 0) {
-            parent->Cloak(!enable);
+            parent.lock()->Cloak(!enable);
         }
         return;
     }
@@ -47,8 +47,8 @@ CloakFor::~CloakFor() {
 #ifdef ORDERDEBUG
     VS_LOG_AND_FLUSH(trace, (boost::format("clk%1$x") % this));
 #endif
-    if (parent && time <= maxtime) {
-        parent->Cloak(!enable);
+    if (!parent.empty() && time <= maxtime) {
+        parent.lock()->Cloak(!enable);
     }
 }
 

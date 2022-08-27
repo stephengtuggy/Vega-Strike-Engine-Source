@@ -173,7 +173,7 @@ public:
         parent->GetOrientation(P, Q, facing);
     }
 
-    virtual void SetParent(UnitPtr parent1) {
+    virtual void SetParent(UnitParentPtr parent1) {
         FlyByWire::SetParent(parent1);
         SetOppositeDir();
     }
@@ -275,7 +275,7 @@ class LoopAround : public Orders::FaceTargetITTS {
     bool aggressive;
     bool force_afterburn;
 public:
-    void SetParent(UnitPtr parent1) {
+    void SetParent(UnitParentPtr parent1) {
         FaceTargetITTS::SetParent(parent1);
         m.SetParent(parent1);
     }
@@ -473,7 +473,7 @@ class FacePerpendicular : public Orders::FaceTargetITTS {
     bool aggressive;
     bool force_afterburn;
 public:
-    void SetParent(UnitPtr parent1) {
+    void SetParent(UnitParentPtr parent1) {
         FaceTargetITTS::SetParent(parent1);
         m.SetParent(parent1);
     }

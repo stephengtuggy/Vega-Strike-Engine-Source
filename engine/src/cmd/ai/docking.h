@@ -38,7 +38,7 @@ class DockingOps : public MoveTo {
 public:
     QVector Movement(UnitPtr utdw);
     DockingOps(UnitPtr unitToDockWith, Order *oldstate, bool physicallyDock, bool keeptrying);
-    virtual void SetParent(UnitPtr par);
+    virtual void SetParent(UnitParentPtr par);
     void Execute();
     bool RequestClearence(UnitPtr);
     bool DockToTarget(UnitPtr);

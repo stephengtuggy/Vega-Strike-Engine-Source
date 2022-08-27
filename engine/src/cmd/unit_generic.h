@@ -93,7 +93,7 @@ void UncheckUnit( UnitPtr un );
 
 extern char *GetUnitDir(const char *filename);
 
-//UnitPtr getMasterPartList();
+UnitPtr getMasterPartList();
 bool CloseEnoughToAutotrack(Unit &me, Unit &targ, float &cone);
 
 class PlanetaryOrbit;

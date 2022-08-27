@@ -52,7 +52,7 @@ protected:
     void ReCommandWing(Flightgroup *fg);
     bool ProcessCurrentFgDirective(Flightgroup *fg);
 public:
-    virtual void SetParent(UnitPtr parent1);
+    virtual void SetParent(UnitParentPtr parent1);
     enum types {
         AGGAI, MOVEMENT, FACING, UNKNOWN, DISTANCE, METERDISTANCE, THREAT, FSHIELD, LSHIELD, RSHIELD, BSHIELD, FARMOR,
         BARMOR, LARMOR, RARMOR, HULL, RANDOMIZ, FSHIELD_HEAL_RATE, BSHIELD_HEAL_RATE, LSHIELD_HEAL_RATE,

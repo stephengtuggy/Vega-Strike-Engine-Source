@@ -188,7 +188,7 @@ class AutoLongHaul : public ChangeHeading {
 public:
     AutoLongHaul(bool fini = false, int accuracy = 1);
     virtual void Execute();
-    virtual void SetParent(UnitPtr parent1);
+    virtual void SetParent(UnitParentPtr parent1);
 
     virtual string getOrderDescription() {
         return "ASAP";
@@ -220,7 +220,7 @@ class FormUp : public MoveTo {
 public:
     FormUp(const QVector &Position);
     void SetPos(const QVector &);
-    virtual void SetParent(UnitPtr parent1);
+    virtual void SetParent(UnitParentPtr parent1);
     virtual void Execute();
 
     virtual string getOrderDescription() {
@@ -234,7 +234,7 @@ class FormUpToOwner : public MoveTo {
 public:
     FormUpToOwner(const QVector &Position);
     void SetPos(const QVector &);
-    virtual void SetParent(UnitPtr parent1);
+    virtual void SetParent(UnitParentPtr parent1);
     virtual void Execute();
 
     virtual string getOrderDescription() {
@@ -248,7 +248,7 @@ class FaceDirection : public ChangeHeading {
     float dist;
 public:
     FaceDirection(float distToMatchFacing, bool fini = false, int accuracy = 3);
-    virtual void SetParent(UnitPtr parent1);
+    virtual void SetParent(UnitParentPtr parent1);
     virtual void Execute();
 
     virtual string getOrderDescription() {

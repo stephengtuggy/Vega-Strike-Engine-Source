@@ -1695,7 +1695,7 @@ static void ForceChangeTarget(UnitPtr parent) {
 
 int SelectDockPort(UnitPtr utdw, UnitPtr parent);
 
-void FireKeyboard::SetParent(UnitPtr parent1) {
+void FireKeyboard::SetParent(UnitParentPtr parent1) {
     this->Order::SetParent(parent1);
     static bool allow_special_with_weapons =
             XMLSupport::parse_bool(vs_config->getVariable("physics", "special_and_normal_gun_combo", "true"));

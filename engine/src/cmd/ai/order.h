@@ -32,6 +32,10 @@
 #include <list>
 #include <vector>
 #include <string>
+#include <boost/smart_ptr/intrusive_ref_counter.hpp>
+#include <boost/smart_ptr/intrusive_ptr.hpp>
+#include <boost/smart_ptr/shared_ptr.hpp>
+#include "vega_intrusive_ptr.hpp"
 
 /**
  * Order is the base class for all orders.  All orders inherit from Order
@@ -43,16 +47,29 @@
  * various variables may be set earlier than at every execution time
  */
 
+class Order;
+using OrderRawPtr = Order *;
+using OrderConstRawPtr = Order const *;
+using OrderIntrusivePtr = boost::intrusive_ptr<Order>;
+using OrderSharedPtr = boost::shared_ptr<Order>;
+using OrderWeakPtr = boost::weak_ptr<Order>;
+
+using OrderPtr = OrderSharedPtr;
+using OrderParentPtr = OrderWeakPtr;
+using OrderPtrForPy = OrderSharedPtr; //OrderRawPtr;
+
+using OrderRef = Order &;
+
 class Animation;
 typedef std::vector<class varInst *> olist_t;
-class Order : public boost::enable_shared_from_this<Order> {
+class Order : public boost::intrusive_ref_counter<Order, boost::thread_safe_counter> {
 private:
 
 public:
     virtual ~Order();
 protected:
 ///The unit this order is attached to
-    UnitPtr parent;
+    UnitParentPtr parent;
 ///The bit code (from ORDERTYPES) that this order is (for parallel execution)
     unsigned int type;
 
@@ -64,7 +81,7 @@ protected:
 ///If this order applies to a physical location in world space
     QVector targetlocation;
 ///The queue of suborders that will be executed in parallel according to bit code
-    std::vector<boost::shared_ptr<Order>> suborders;
+    std::vector<OrderPtr> suborders;
 ///a bunch of communications that have not been answered CommunicationMessages are actually containing reference to a nice Finite State Machine that can allow a player to have a reasonable conversation with an AI
     std::list<class CommunicationMessage *> messagequeue;
 ///changes the local relation of this unit to another...may inform superiors about "good" or bad! behavior depending on the AI
@@ -90,7 +107,7 @@ public:
 
 ///The default constructor setting everything to NULL and no dependency on order
     Order()
-            : parent(NULL),
+            : parent(),
             type(0),
             subtype(0),
             done(false),
@@ -100,7 +117,7 @@ public:
 
 ///The constructor that specifies what order dependencies this order has
     Order(int type, int subtype)
-            : parent(NULL),
+            : parent(),
             type(type),
             subtype(subtype),
             done(false),
@@ -115,9 +132,9 @@ public:
 ///The function that gets called and executes all queued suborders
     virtual void Execute();
 ///returns a pointer to the first order that may be bitwised ored with that type
-    boost::shared_ptr<Order> queryType(unsigned int type);
+    OrderPtr queryType(unsigned int type);
 ///returns a pointer to the first order that may be bitwise ored with any type
-    boost::shared_ptr<Order> queryAny(unsigned int type);
+    OrderPtr queryAny(unsigned int type);
 ///Erases all orders that bitwise OR with that type
     void eraseType(unsigned int type);
 ///Attaches a group of targets to this order (used for strategery-type games)
@@ -127,9 +144,9 @@ public:
 ///Attaches a group (form up) to this order
     bool AttachSelfOrder(UnitPtr targets);
 ///Enqueues another order that will be executed (in parallel perhaps) when next void Execute() is called
-    boost::shared_ptr<Order> EnqueueOrder(boost::shared_ptr<Order> ord);
+    OrderPtr EnqueueOrder(OrderPtr ord);
 ///Replaces the first order of that type in the order queue
-    boost::shared_ptr<Order> ReplaceOrder(boost::shared_ptr<Order> ord);
+    OrderPtr ReplaceOrder(OrderPtr ord);
 
     bool Done() {
         return done;
@@ -144,11 +161,11 @@ public:
     }
 
 ///Sets the parent of this Unit.  Any virtual functions must call this one
-    virtual void SetParent(UnitPtr parent1) {
+    virtual void SetParent(UnitParentPtr parent1) {
         parent = parent1;
     }
 
-    UnitPtr GetParent() const {
+    UnitParentPtr GetParent() const {
         return parent;
     }
 
@@ -159,11 +176,11 @@ public:
 ///responds (or does not) to certain messages in the message queue
     virtual void ProcessCommunicationMessages(float CommRepsonseTime, bool RemoveMessageProcessed);
 /// return pointer to order or NULL if not found
-    boost::shared_ptr<Order> findOrder(boost::shared_ptr<Order> ord);
+    OrderPtr findOrder(OrderPtr ord);
 /// erase that order from the list
-    void eraseOrder(boost::shared_ptr<Order> ord);
+    void eraseOrder(OrderPtr ord);
 /// enqueue order as first order
-    boost::shared_ptr<Order> EnqueueOrderFirst(boost::shared_ptr<Order> ord);
+    OrderPtr EnqueueOrderFirst(OrderPtr ord);
 
 /// returns the orderlist (NULL for orders that haven't got any)
     virtual olist_t *getOrderList() {
@@ -217,7 +234,7 @@ class ExecuteFor : public Order {
 private:
 
 ///The child order to execute
-    boost::shared_ptr<Order> child;
+    OrderPtr child;
 ///the time it has executed the child order for
     float time;
 ///the total time it can execute child order
@@ -227,7 +244,7 @@ public:
     }
 
 public:
-    ExecuteFor(boost::shared_ptr<Order> chld, float seconds) : Order(chld->getType(), chld->getSubType()),
+    ExecuteFor(OrderPtr chld, float seconds) : Order(chld->getType(), chld->getSubType()),
             child(chld),
             time(0),
             maxtime(seconds) {

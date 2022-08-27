@@ -63,7 +63,7 @@ DockingOps::DockingOps(UnitPtr unitToDockWith, Order *ai, bool physically_dock, 
     timer = temptimer;
 }
 
-void DockingOps::SetParent(UnitPtr par) {
+void DockingOps::SetParent(UnitParentPtr par) {
     MoveTo::SetParent(par);
     if (parent) {
         formerOwnerDoNotDereference = parent->owner;

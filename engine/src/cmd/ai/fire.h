@@ -72,7 +72,7 @@ public:
     void XMLScript(std::string script);
     void LastPythonScript();
 
-    virtual void SetParent(UnitPtr parent) {
+    virtual void SetParent(UnitParentPtr parent) {
         CommunicatingAI::SetParent(parent);
     }
 
