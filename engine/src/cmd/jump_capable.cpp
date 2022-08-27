@@ -386,7 +386,7 @@ bool JumpCapable::AutoPilotToErrorMessage(UnitConstRawPtr target,
 float JumpCapable::CalculateNearestWarpUnit(float minmultiplier,
         UnitPtr*nearest_unit,
         bool count_negative_warp_units) const {
-    UnitConstRawPtr unit = static_cast<UnitConstRawPtr>(this);
+    UnitConstRawPtr unit = vega_dynamic_const_cast_ptr<const Unit>(this);
 
     static float smallwarphack = XMLSupport::parse_float(vs_config->getVariable("physics", "minwarpeffectsize", "100"));
     static float bigwarphack =
@@ -479,7 +479,7 @@ float JumpCapable::CalculateNearestWarpUnit(float minmultiplier,
 }
 
 float JumpCapable::CourseDeviation(const Vector &OriginalCourse, const Vector &FinalCourse) const {
-    UnitConstRawPtr unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr unit = vega_dynamic_const_cast_ptr<const Unit>(this);
     if (unit->ViewComputerData().max_ab_speed() > .001) {
         return (OriginalCourse - (FinalCourse)).Magnitude() / unit->ViewComputerData().max_ab_speed();
     } else {

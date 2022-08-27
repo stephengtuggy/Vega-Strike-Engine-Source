@@ -225,7 +225,7 @@ float Intelligent::getRelation(UnitConstRawPtr targ) const {
 }
 
 double Intelligent::getMinDis(const QVector &pnt) const {
-    UnitConstRawPtr unit = static_cast<const UnitPtr>(this);
+    UnitConstRawPtr unit = static_cast<UnitConstRawPtr>(this);
 
     float minsofar = 1e+10;
     float tmpvar;
