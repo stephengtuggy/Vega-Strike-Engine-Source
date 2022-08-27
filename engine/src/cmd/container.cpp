@@ -88,3 +88,7 @@ void UnitContainer::SetUnit(UnitWeakPtr un) {
     }
 }
 
+UnitWeakPtr UnitContainer::getWeakUnitPtrConst() const {
+    return UnitWeakPtr(unit);
+}
+

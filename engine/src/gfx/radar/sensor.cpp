@@ -101,7 +101,7 @@ Track Sensor::CreateTrack(const UnitPtr target, const Vector &position) const {
 bool Sensor::IsTracking(const Track &track) const {
     assert(player);
 
-    return (track.target == player->Target());
+    return (track.target == player->getTargetWeakPtr());
 }
 
 bool Sensor::InsideNebula() const {
@@ -141,7 +141,7 @@ public:
         const float min_radar_blip_size = configuration()->graphics_config.hud.min_radar_blip_size;
 
         if (target != player) {
-            const bool isCurrentTarget = (player->Target() == target);
+            const bool isCurrentTarget = (player->getTargetWeakPtr() == target);
             double dummy;
             if (!player->InRange(target, dummy, isCurrentTarget && untarget_out_cone, true, true)) {
                 if (isCurrentTarget) {
@@ -196,7 +196,7 @@ const Sensor::TrackCollection &Sensor::FindTracksInRange() const {
                 &unitLocator);
     }
     if (kDrawGravitationalObjects) {
-        UnitPtr target = player->Target();
+        UnitPtr target = player->getTargetWeakPtr();
         const UnitPtr gravUnit;
         bool foundtarget = false;
         for (un_kiter i = _Universe->activeStarSystem()->gravitationalUnits().constIterator();

@@ -156,7 +156,7 @@ void FlyByKeyboard::Execute(bool resetangvelocity) {
 #define SSCK (starshipcontrolkeys[whichplayer])
     if (SSCK.setunvel) {
         SSCK.setunvel = false;
-        UnitPtr t = parent->Target();
+        UnitPtr t = parent->getTargetWeakPtr();
         int neu = FactionUtil::GetNeutralFaction();
         int upg = FactionUtil::GetUpgradeFaction();
         static bool allowanyreference =
@@ -166,13 +166,13 @@ void FlyByKeyboard::Execute(bool resetangvelocity) {
         if (t) {
             if ((t->getRelation(parent) >= 0
                     && !onlyupgraderef) || t->faction == neu || t->faction == upg || allowanyreference) {
-                parent->VelocityReference(parent->Target());
+                parent->getVelocityReferenceWeakPtr(parent->getTargetWeakPtr());
             }
         }
     }
     if (SSCK.setnulvel) {
         SSCK.setnulvel = false;
-        parent->VelocityReference(NULL);
+        parent->getVelocityReferenceWeakPtr(NULL);
     }
     if (SSCK.switch_combat_mode) {
         SSCK.switch_combat_mode = false;
@@ -194,7 +194,7 @@ void FlyByKeyboard::Execute(bool resetangvelocity) {
                     XMLSupport::parse_bool(vs_config->getVariable("test", "autodocker", "false"));
             Order *autoNavigator = NULL;
             if (autodock) {
-                UnitPtr station = parent->Target();
+                UnitPtr station = parent->getTargetWeakPtr();
                 if (Orders::AutoDocking::CanDock(parent, station)) {
                     autoNavigator = new Orders::AutoDocking(station);
                 }
@@ -212,7 +212,7 @@ void FlyByKeyboard::Execute(bool resetangvelocity) {
     if (SSCK.realauto) {
         Cockpit *cp = _Universe->isPlayerStarship(parent);
         if (cp) {
-            cp->Autopilot(parent->Target());
+            cp->Autopilot(parent->getTargetWeakPtr());
         }
         enteredautopilot = true;
         SSCK.realauto = false;
@@ -440,7 +440,7 @@ void FlyByKeyboard::Execute(bool resetangvelocity) {
     }
     if (SSCK.matchspeed) {
         SSCK.matchspeed = false;
-        UnitPtr targ = parent->Target();
+        UnitPtr targ = parent->getTargetWeakPtr();
         if (targ) {
             MatchSpeed(targ->GetVelocity());
         }

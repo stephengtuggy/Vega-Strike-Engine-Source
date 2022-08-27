@@ -51,7 +51,7 @@ void TurretAI::getAverageGunSpeed(float &speed, float &range, float &mrange) con
 extern unsigned int FireBitmask(UnitPtr parent, bool shouldfire, bool firemissile);
 
 void TurretAI::Execute() {
-    UnitPtr targ = parent->Target();
+    UnitPtr targ = parent->getTargetWeakPtr();
     if (range == -1) {
         range = mrange = speed = 0;
         parent->getAverageGunSpeed(speed, range, mrange);
@@ -98,7 +98,7 @@ void TurretAI::Execute() {
                                     || (is_player_starship
                                             && (targ->getRelation((UnitPtr) parent->owner)
                                                     < 0 /*now that it is a player, we know it's dereferencable*/
-                                                    || targ->Target() == (UnitPtr) parent->owner)))
+                                                    || targ->getTargetWeakPtr() == (UnitPtr) parent->owner)))
                             && targ->faction != neu);
 
             //FIXME - rand() is not going to be in the expected range here - stephengtuggy 2020-07-25
@@ -109,7 +109,7 @@ void TurretAI::Execute() {
             hadFired = shouldfire;
         }
         if (targ->Destroyed()) {
-            parent->Target(nullptr);
+            parent->getTargetWeakPtr(nullptr);
         }
     } else if (hadFired && parent->getNumMounts() > 0) {
         // When we get a kill, we must stop firing

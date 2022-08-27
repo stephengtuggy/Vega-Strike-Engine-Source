@@ -783,19 +783,23 @@ public:
 //not used yet
     boost::shared_ptr<std::string> target_fgid[3];
 
-    bool InRange(const UnitPtr target, bool cone = true, bool cap = true) const {
+    bool InRange(UnitWeakPtr target, bool cone = true, bool cap = true) const {
         double mm;
         return InRange(target, mm, cone, cap, true);
     }
 
-    bool InRange(const UnitPtr target, double &mm, bool cone, bool cap, bool lock) const;
-    boost::weak_ptr<Unit> Target();
-    const UnitPtr Target() const;
-    UnitPtr VelocityReference();
-    const UnitPtr VelocityReference() const;
-    UnitPtr Threat();
+    bool InRange(UnitWeakPtr target, double &mm, bool cone, bool cap, bool lock) const;
+    UnitWeakPtr getTargetWeakPtr();
+    UnitWeakPtr getTargetWeakPtrConst() const;
+    UnitConstRawPtr getTargetConstRawPtr() const;
+    UnitConstRawPtr Target() const;
+    UnitWeakPtr getVelocityReferenceWeakPtr();
+    UnitWeakPtr getVelocityReferenceWeakPtrConst() const;
+    UnitConstRawPtr getVelocityReferenceConstRawPtr() const;
+    UnitConstRawPtr VelocityReference() const;
+    UnitWeakPtr Threat();
 //Uses Universe stuff so only in Unit class
-    void VelocityReference(UnitPtr targ);
+    void VelocityReference(UnitWeakPtr targ);
     void TargetTurret(UnitPtr targ);
 //Threatens this unit with "targ" as aggressor. Danger should be cos angle to target
     void Threaten(UnitPtr targ, float danger);

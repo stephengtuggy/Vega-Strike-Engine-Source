@@ -102,7 +102,7 @@ bool FireAt::PursueTarget(UnitPtr un, bool leader) {
     if (leader) {
         return true;
     }
-    if (un == parent->Target()) {
+    if (un == parent->getTargetWeakPtr()) {
         return rand() < .9 * RAND_MAX;
     }
     if (parent->getRelation(un) < 0) {
@@ -321,7 +321,7 @@ float Priority(UnitPtr me, UnitPtr targ, float gunrange, float rangetotarget, fl
     static float
             threat_weight = XMLSupport::parse_float(vs_config->getVariable("AI", "Targetting", "ThreatWeight", ".5"));
     float threat_priority = (me->Threat() == targ) ? threat_weight : 0;
-    threat_priority += (targ->Target() == me) ? threat_weight : 0;
+    threat_priority += (targ->getTargetWeakPtr() == me) ? threat_weight : 0;
     float role_priority01 = ((float) *rolepriority) / 31.;
     float range_priority01 = .5 * gunrange / rangetotarget;     //number between 0 and 1 for most ships 1 is best
     return range_priority01 * role_priority01 + inertial_priority + threat_priority;
@@ -507,7 +507,7 @@ void FireAt::ChooseTargets(int numtargs, bool force) {
         return;
     }          //don't switch if switching too soon
 
-    UnitPtr curtarg = parent->Target();
+    UnitPtr curtarg = parent->getTargetWeakPtr();
     int hastarg = (curtarg == NULL) ? 0 : 1;
     //Following code exists to limit the number of craft polling for a target in a given frame - this is an expensive operation, and needs to be spread out, or there will be pauses.
     if ((UniverseUtil::GetGameTime()) - targettimer >= SIMULATION_ATOM * .99) {
@@ -606,7 +606,7 @@ void FireAt::ChooseTargets(int numtargs, bool force) {
                 }
             }
             UnitPtr lead = UnitUtil::getFlightgroupLeader(parent);
-            if (lead != NULL && lead != parent && (lead = lead->Target()) != NULL) {
+            if (lead != NULL && lead != parent && (lead = lead->getTargetWeakPtr()) != NULL) {
                 unitLocator.action.ShouldTargetUnit(lead, UnitUtil::getDistance(parent, lead));
             }
             UnitPtr threat = parent->Threat();
@@ -648,7 +648,7 @@ void FireAt::ChooseTargets(int numtargs, bool force) {
             }
         }
     } else {
-        if (parent->Target() != mytarg) {
+        if (parent->getTargetWeakPtr() != mytarg) {
             nextframenumpollers[hastarg] += 2;
             if (nextframenumpollers[hastarg] > maxnumpollers) {
                 nextframenumpollers[hastarg] = maxnumpollers;
@@ -660,7 +660,7 @@ void FireAt::ChooseTargets(int numtargs, bool force) {
             }
         }
     }
-    parent->Target(mytarg);
+    parent->getTargetWeakPtr(mytarg);
     parent->LockTarget(true);
     SignalChosenTarget();
 }
@@ -680,7 +680,7 @@ bool FireAt::ShouldFire(UnitPtr targ, bool &missilelock) {
     float angle = parent->cosAngleTo(targ, dist, parent->GetComputerData().itts ? gunspeed : FLT_MAX, gunrange, false);
     missilelock = false;
     targ->Threaten(parent, angle / (dist < .8 ? .8 : dist));
-    if (targ == parent->Target()) {
+    if (targ == parent->getTargetWeakPtr()) {
         distance = dist;
     }
     static float firewhen = XMLSupport::parse_float(vs_config->getVariable("AI", "Firing", "InWeaponRange", "1.2"));
@@ -735,7 +735,7 @@ FireAt::~FireAt() {
 
 unsigned int FireBitmask(UnitPtr parent, bool shouldfire, bool firemissile) {
     unsigned int firebitm = ROLES::EVERYTHING_ELSE;
-    UnitPtr un = parent->Target();
+    UnitPtr un = parent->getTargetWeakPtr();
     if (un) {
         firebitm = (1 << un->getUnitRoleChar());
 
@@ -792,7 +792,7 @@ void FireAt::PossiblySwitchTarget(bool unused) {
         Flightgroup *fg;
         if ((fg = parent->getFlightgroup())) {
             if (fg->directive.find(".") != string::npos) {
-                ct = (parent->Target() == NULL);
+                ct = (parent->getTargetWeakPtr() == NULL);
             }
         }
         if (ct) {
@@ -843,7 +843,7 @@ void FireAt::Execute() {
     }
     bool shouldfire = false;
     bool istargetjumpableplanet = false;
-    if ((targ = parent->Target())) {
+    if ((targ = parent->getTargetWeakPtr())) {
         istargetjumpableplanet = isJumpablePlanet(targ);
         if (targ->CloakVisible() > .8 && !targ->Destroyed()) {
             had_target = true;

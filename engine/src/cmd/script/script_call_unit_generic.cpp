@@ -388,7 +388,7 @@ varInst *Mission::call_unit(missionNode *node, int mode) {
         } else if (method_id == CMT_UNIT_getTarget) {
             UnitPtrForPy res_unit = nullptr;
             if (mode == SCRIPT_RUN) {
-                res_unit = my_unit->Target().lock().get();
+                res_unit = my_unit->getTargetWeakPtr().lock().get();
             }
             viret = newVarInst(VI_TEMP);
             viret->type = VAR_OBJECT;

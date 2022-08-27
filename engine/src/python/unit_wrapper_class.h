@@ -137,14 +137,14 @@ public:
         {
         CHECKME 0;
         }
-        return unit->Target();
+        return unit->getTargetWeakPtr();
     }
 
     UnitWrapper GetVelocityReference() {
         {
         CHECKME 0;
         }
-        return unit->VelocityReference();
+        return unit->getVelocityReferenceWeakPtr();
     }
 
     void SetVelocityReference(UnitWrapper targ) {

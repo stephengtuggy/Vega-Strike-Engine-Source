@@ -142,7 +142,7 @@ int getPhysicsPriority(UnitPtr un) {
             if (force_system_installation_priority && player->activeStarSystem == un->activeStarSystem) {
                 return SYSTEM_INSTALLATION_PRIORITY;
             }
-            if (un == player->Target()) {
+            if (un == player->getTargetWeakPtr()) {
                 return PLAYER_PRIORITY;
             }
             float tmpdist = UnitUtil::getDistance(un, player);
@@ -272,7 +272,7 @@ int getPhysicsPriority(UnitPtr un) {
         //else
         //return ASTEROID_LOW_PRIORITY;
     }
-    UnitPtr targ = un->Target();
+    UnitPtr targ = un->getTargetWeakPtr();
     if (_Universe->isPlayerStarship(targ)) {
         if (un->isJumppoint()) {
             return PLAYER_PRIORITY;

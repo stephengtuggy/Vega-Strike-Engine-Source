@@ -188,7 +188,7 @@ float getAutoRSize(UnitPtr orig, UnitPtr un, bool ignore_friend = false) {
         return ignore_friend ? -FLT_MAX : (-orig->rSize() - un->rSize());
     }
     float rel = un->getRelation(orig);
-    if (orig == un->Target()) {
+    if (orig == un->getTargetWeakPtr()) {
         rel -= 1.5;
     }
     if (un->faction == neutral) {

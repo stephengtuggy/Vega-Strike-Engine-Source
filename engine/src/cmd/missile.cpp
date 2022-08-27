@@ -200,7 +200,7 @@ Missile::Missile(const char *filename,
 
 void Missile::Discharge() {
     if ((damage != 0 || phasedamage != 0) && !discharged) {
-        UnitPtr target = Unit::Target().lock();
+        UnitPtr target = Unit::getTargetWeakPtr().lock();
         VS_LOG(info, (boost::format("Missile discharged (target %1%)")
                 % ((target) ? target->getName() : std::string("NULL"))));
         _Universe->activeStarSystem()->AddMissileToQueue(
@@ -232,7 +232,7 @@ void Missile::UpdatePhysics2(const Transformation &trans,
 
 
     // Get the target
-    UnitPtr target = Target();
+    UnitPtr target = getTargetWeakPtr();
 
     // We have a valid target - we mark this as it affects fuel and TTL
     if (target != nullptr) {
@@ -256,7 +256,7 @@ void Missile::UpdatePhysics2(const Transformation &trans,
             UnitPtr su;
             for (; (su = *i) != nullptr; ++i) {
                 if (su->getAttackPreferenceChar() == pointdef) {
-                    if (su->Target() == nullptr) {
+                    if (su->getTargetWeakPtr() == nullptr) {
                         float speed, range, mrange;
                         su->getAverageGunSpeed(speed, range, mrange);
                         if ((Position() - su->Position()).MagnitudeSquared() < range * range) {

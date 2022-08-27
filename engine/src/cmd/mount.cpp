@@ -355,7 +355,7 @@ bool Mount::PhysicsAlignedFire(UnitPtr caller,
                                 "",
                                 mission);
                         if (fg != NULL) {
-                            fg->target.SetUnit(caller->Target());
+                            fg->target.SetUnit(caller->getTargetWeakPtr());
                             fg->directive = "a";
                             fg->name =
                                     "Base_Patrol";                               //this fixes base-spawned fighters becoming navpoints, which happens sometimes
@@ -502,7 +502,7 @@ bool Mount::PhysicsAlignedFire(UnitPtr caller,
 
 bool Mount::NextMountCloser(Mount *nextmount, UnitPtr firer) {
     UnitPtr target;
-    if (nextmount && (target = firer->Target())) {
+    if (nextmount && (target = firer->getTargetWeakPtr())) {
         Matrix mat;
         nextmount->orient.to_matrix(mat);
         Vector nextR = mat.getR();

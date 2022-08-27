@@ -448,7 +448,7 @@ FaceTargetITTS::~FaceTargetITTS() {
 }
 
 void FaceTargetITTS::Execute() {
-    UnitPtr target = parent->Target();
+    UnitPtr target = parent->getTargetWeakPtr();
     if (target == NULL) {
         done = finish;
         return;
@@ -475,7 +475,7 @@ FaceTarget::FaceTarget(bool fini, int accuracy) : ChangeHeading(QVector(0, 0, 1)
 }
 
 void FaceTarget::Execute() {
-    UnitPtr target = parent->Target();
+    UnitPtr target = parent->getTargetWeakPtr();
     if (target == NULL) {
         done = finish;
         return;
@@ -520,7 +520,7 @@ void AutoLongHaul::MakeLinearVelocityOrder() {
 
 void AutoLongHaul::SetParent(UnitParentPtr parent1) {
     ChangeHeading::SetParent(parent1);
-    group.SetUnit(parent1->Target());
+    group.SetUnit(parent1->getTargetWeakPtr());
     inside_landing_zone = false;
     MakeLinearVelocityOrder();
 }
@@ -594,7 +594,7 @@ bool AutoLongHaul::InsideLandingPort(const UnitPtr obstacle) const {
 void AutoLongHaul::Execute() {
     UnitPtr target = group.GetUnit();
     if (target == NULL) {
-        group.SetUnit(parent->Target());
+        group.SetUnit(parent->getTargetWeakPtr());
         done = finish;
         parent->autopilotactive = false;
         return;
@@ -759,7 +759,7 @@ void AutoLongHaul::Execute() {
         }
     }
     if (do_auto_finish
-            && (stopnow || dis < distance_to_stop || (target->Target() == parent && dis < enemy_distance_to_stop))) {
+            && (stopnow || dis < distance_to_stop || (target->getTargetWeakPtr() == parent && dis < enemy_distance_to_stop))) {
         parent->autopilotactive = false;
         WarpRampOff(parent, rampdown);
         done = true;

@@ -89,7 +89,7 @@ int CommunicatingAI::selectCommunicationMessageMood(CommunicationMessage &c, flo
     float relationship = 0;
     if (targ) {
         relationship = parent->pilot->GetEffectiveRelationship(parent, targ);
-        if (targ == parent->Target() && relationship > -1.0) {
+        if (targ == parent->getTargetWeakPtr() && relationship > -1.0) {
             relationship = -1.0;
         }
         mood += (1 - randomresponse) * relationship;
@@ -331,16 +331,16 @@ void CommunicatingAI::AdjustRelationTo(UnitPtr un, float factor) {
             }
         }
     }
-    if (newrel < anger || (parent->Target() == NULL && newrel + UnitUtil::getFactionRelation(parent, un) < 0)) {
-        if (parent->Target() == NULL
+    if (newrel < anger || (parent->getTargetWeakPtr() == NULL && newrel + UnitUtil::getFactionRelation(parent, un) < 0)) {
+        if (parent->getTargetWeakPtr() == NULL
                 || (parent->getFlightgroup() == NULL
                         || parent->getFlightgroup()->directive.find(".") == string::npos)) {
-            parent->Target(un);             //he'll target you--even if he's friendly
+            parent->getTargetWeakPtr(un);             //he'll target you--even if he's friendly
             parent->TargetTurret(un);             //he'll target you--even if he's friendly
         } else if (newrel > appease) {
-            if (parent->Target() == un) {
+            if (parent->getTargetWeakPtr() == un) {
                 if (parent->getFlightgroup() == NULL || parent->getFlightgroup()->directive.find(".") == string::npos) {
-                    parent->Target(NULL);
+                    parent->getTargetWeakPtr(NULL);
                     parent->TargetTurret(NULL);                     //he'll target you--even if he's friendly
                 }
             }
@@ -359,8 +359,8 @@ UnitPtr CommunicatingAI::GetRandomUnit(float playaprob, float targprob) {
             }
         }
     }
-    if (vsrandom.uniformInc(0, 1) < targprob && parent->Target()) {
-        return parent->Target();
+    if (vsrandom.uniformInc(0, 1) < targprob && parent->getTargetWeakPtr()) {
+        return parent->getTargetWeakPtr();
     }
     //FIXME FOR TESTING ONLY
     //return parent->Target();
@@ -383,7 +383,7 @@ UnitPtr CommunicatingAI::GetRandomUnit(float playaprob, float targprob) {
     if (target == NULL || target == parent)
         target = parent->Target();
 #else
-    UnitPtr target = parent->Target();
+    UnitPtr target = parent->getTargetWeakPtr();
 #endif
     return target;
 }

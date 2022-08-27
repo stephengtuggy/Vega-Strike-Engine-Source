@@ -88,6 +88,7 @@
 #include "pilot.h"
 #include "movable.h"
 #include "unit_base_class.hpp"
+#include "unit_collection.hpp"
 
 #include <iostream>
 #define DEBUG_MESH_ANI
@@ -130,17 +131,18 @@ void Unit::SetNebula(Nebula *neb) {
     }
 }
 
-bool Unit::InRange(UnitConstRawPtr target, double &mm, bool cone, bool cap, bool lock) const {
+bool Unit::InRange(UnitWeakPtr target, double &mm, bool cone, bool cap, bool lock) const {
     const float capship_size = configuration()->physics_config.capship_size;
 
-    if (this == target || target->CloakVisible() < .8) {
+    UnitSharedPtr target_lock_ptr = target.lock();
+    if (this == target_lock_ptr.get() || target_lock_ptr->CloakVisible() < .8) {
         return false;
     }
     if (cone && computer.radar.maxcone > -.98) {
-        QVector delta(target->Position() - Position());
+        QVector delta(target_lock_ptr->Position() - Position());
         mm = delta.Magnitude();
-        if ((!lock) || (!TargetLocked(target))) {
-            double tempmm = mm - target->rSize();
+        if ((!lock) || (!TargetLocked(target_lock_ptr))) {
+            double tempmm = mm - target_lock_ptr->rSize();
             if (tempmm > 0.0001) {
                 if ((ToLocalCoordinates(Vector(delta.i, delta.j, delta.k)).k / tempmm) < computer.radar.maxcone
                         && cone) {
@@ -149,46 +151,54 @@ bool Unit::InRange(UnitConstRawPtr target, double &mm, bool cone, bool cap, bool
             }
         }
     } else {
-        mm = (target->Position() - Position()).Magnitude();
+        mm = (target_lock_ptr->Position() - Position()).Magnitude();
     }
     //owner==target?!
-    if (((mm - rSize() - target->rSize()) > computer.radar.maxrange)
-            || target->rSize() < computer.radar.mintargetsize) {
-        Flightgroup *fg = target->getFlightgroup();
-        if ((target->rSize() < capship_size || (!cap)) && (fg == NULL ? true : fg->name != "Base")) {
-            return target->isUnit() == Vega_UnitType::planet;
+    if (((mm - rSize() - target_lock_ptr->rSize()) > computer.radar.maxrange)
+            || target_lock_ptr->rSize() < computer.radar.mintargetsize) {
+        Flightgroup *fg = target_lock_ptr->getFlightgroup();
+        if ((target_lock_ptr->rSize() < capship_size || (!cap)) && (fg == NULL ? true : fg->name != "Base")) {
+            return target_lock_ptr->isUnit() == Vega_UnitType::planet;
         }
     }
     return true;
 }
 
-boost::weak_ptr<Unit> Unit::Target() {
-    return computer.target.GetUnit();
+UnitWeakPtr Unit::getTargetWeakPtr() {
+    return computer.target.getWeakUnitPtr();
 }
 
-UnitConstRawPtr Unit::Target() const {
+UnitConstRawPtr Unit::getTargetConstRawPtr() const {
     return computer.target.GetConstUnit();
 }
 
-UnitPtr Unit::VelocityReference() {
-    return computer.velocity_ref.GetUnit();
+UnitWeakPtr Unit::getVelocityReferenceWeakPtr() {
+    return computer.velocity_ref.getWeakUnitPtr();
+}
+
+UnitWeakPtr Unit::getVelocityReferenceWeakPtrConst() const {
+    return computer.velocity_ref.getWeakUnitPtrConst();
 }
 
 UnitConstRawPtr Unit::VelocityReference() const {
     return computer.velocity_ref.GetConstUnit();
 }
 
-UnitPtr Unit::Threat() {
-    return computer.threat.GetUnit();
+UnitConstRawPtr Unit::getVelocityReferenceConstRawPtr() const {
+    return computer.velocity_ref.GetConstUnit();
+}
+
+UnitWeakPtr Unit::Threat() {
+    return computer.threat.getWeakUnitPtr();
 }
 
 void Unit::RestoreGodliness() {
     _Universe->AccessCockpit()->RestoreGodliness();
 }
 
-void Unit::Ref() {
-    intrusive_ptr_add_ref(this);
-}
+//void Unit::Ref() {
+//    intrusive_ptr_add_ref(this);
+//}
 
 #define INVERSEFORCEDISTANCE 5400
 extern void abletodock(int dock);
@@ -1892,7 +1902,7 @@ void Unit::Target(UnitPtr targ) {
     }
     if (targ) {
         if (targ->activeStarSystem == _Universe->activeStarSystem() || targ->activeStarSystem == NULL) {
-            if (targ != Unit::Target()) {
+            if (targ != Unit::getTargetWeakPtr()) {
                 for (int i = 0; i < getNumMounts(); ++i) {
                     mounts[i].time_to_lock = mounts[i].type->lock_time;
                 }
@@ -1926,8 +1936,8 @@ void Unit::Target(UnitPtr targ) {
     }
 }
 
-void Unit::VelocityReference(UnitPtr targ) {
-    computer.force_velocity_ref = !!targ;
+void Unit::VelocityReference(UnitWeakPtr targ) {
+    computer.force_velocity_ref = !targ.empty();
     computer.velocity_ref.SetUnit(targ);
 }
 
@@ -5048,7 +5058,7 @@ void Unit::UpdatePhysics3(const Transformation &trans,
     }
 
     float dist_sqr_to_target = FLT_MAX;
-    UnitPtr target = Unit::Target();
+    UnitPtr target = Unit::getTargetWeakPtr();
     bool increase_locking = false;
     if (target && cloaking < 0 /*-1 or -32768*/) {
         if (target->isUnit() != Vega_UnitType::planet) {
@@ -5438,12 +5448,12 @@ bool Unit::TransferUnitToSystem(unsigned int kk, StarSystem *&savedStarSystem, b
                 if (unit->Threat() == this) {
                     unit->Threaten(NULL, 0);
                 }
-                if (unit->VelocityReference() == this) {
-                    unit->VelocityReference(NULL);
+                if (unit->getVelocityReferenceWeakPtr() == this) {
+                    unit->getVelocityReferenceWeakPtr(NULL);
                 }
-                if (unit->Target() == this) {
+                if (unit->getTargetWeakPtr() == this) {
                     if (pendingjump[kk]->jumppoint.GetUnit()) {
-                        unit->Target(pendingjump[kk]->jumppoint.GetUnit());
+                        unit->getTargetWeakPtr(pendingjump[kk]->jumppoint.GetUnit());
                         unit->ActivateJumpDrive(0);
                     } else {
                         WarpPursuit(unit, pendingjump[kk]->orig, pendingjump[kk]->dest->getFileName());
@@ -5452,7 +5462,7 @@ bool Unit::TransferUnitToSystem(unsigned int kk, StarSystem *&savedStarSystem, b
                     Flightgroup *ff = unit->getFlightgroup();
                     if (ff) {
                         if (this == ff->leader.GetUnit() && (ff->directive == "f" || ff->directive == "F")) {
-                            unit->Target(pendingjump[kk]->jumppoint.GetUnit());
+                            unit->getTargetWeakPtr(pendingjump[kk]->jumppoint.GetUnit());
                             unit->getFlightgroup()->directive = "F";
                             unit->ActivateJumpDrive(0);
                         }
@@ -5567,5 +5577,13 @@ void Unit::SetFaction(int new_faction) {
         my_sub_units.modify(un_iter_1, [new_faction](boost::shared_ptr<UnitBaseClass>& un){ vega_dynamic_cast_boost_shared_ptr<Unit>(un)->SetFaction(new_faction); });
         ++un_iter_1;
     }
+}
+
+UnitWeakPtr Unit::getTargetWeakPtrConst() const {
+    return computer.target.getWeakUnitPtrConst();
+}
+
+UnitConstRawPtr Unit::Target() const {
+    return getTargetConstRawPtr();
 }
 

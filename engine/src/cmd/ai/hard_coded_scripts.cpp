@@ -323,7 +323,7 @@ public:
     }
 
     void Execute() {
-        UnitPtr targ = parent->Target();
+        UnitPtr targ = parent->getTargetWeakPtr();
         if (targ) {
             Vector relloc = parent->Position() - targ->Position();
             Vector r = targ->cumulative_transformation_matrix.getR();
@@ -422,7 +422,7 @@ public:
     }
 
     void Execute() {
-        UnitPtr targ = parent->Target();
+        UnitPtr targ = parent->getTargetWeakPtr();
         if (targ) {
             Vector relloc = parent->Position() - targ->Position();
             Vector r = targ->cumulative_transformation_matrix.getR();
@@ -523,7 +523,7 @@ public:
     void Execute() {
         static float
                 gun_range_pct = XMLSupport::parse_float(vs_config->getVariable("AI", "gun_range_percent_ok", ".66"));
-        UnitPtr targ = parent->Target();
+        UnitPtr targ = parent->getTargetWeakPtr();
         if (targ) {
             Vector relloc = parent->Position() - targ->Position();
             Vector r = targ->cumulative_transformation_matrix.getR();
@@ -693,7 +693,7 @@ void Evade( Order *aisc, UnitPtr un )
 
 void MoveTo(Order *aisc, UnitPtr un) {
     QVector Targ(un->Position());
-    UnitPtr untarg = un->Target();
+    UnitPtr untarg = un->getTargetWeakPtr();
     if (untarg) {
         Targ = untarg->Position();
     }
@@ -703,8 +703,8 @@ void MoveTo(Order *aisc, UnitPtr un) {
 
 void KickstopBase(Order *aisc, UnitPtr un, bool match) {
     Vector vec(0, 0, 0);
-    if (match && un->Target()) {
-        vec = un->Target()->GetVelocity();
+    if (match && un->getTargetWeakPtr()) {
+        vec = un->getTargetWeakPtr()->GetVelocity();
     }
     Order *ord = new Orders::MatchLinearVelocity(un->ClampVelocity(vec, false), true, false, true);
     AddOrd(aisc, un, ord);
@@ -745,8 +745,8 @@ void MatchVelocity(Order *aisc, UnitPtr un) {
 static Vector VectorThrustHelper(Order *aisc, UnitPtr un, bool ab = false) {
     Vector vec(0, 0, 0);
     Vector retval(0, 0, 0);
-    if (un->Target()) {
-        Vector tpos = un->Target()->Position().Cast();
+    if (un->getTargetWeakPtr()) {
+        Vector tpos = un->getTargetWeakPtr()->Position().Cast();
         Vector relpos = tpos - un->Position().Cast();
         CrossProduct(relpos, Vector(1, 0, 0), vec);
         retval += tpos;
@@ -784,8 +784,8 @@ void AfterburnVeerAndTurnAway(Order *aisc, UnitPtr un) {
     Vector vec = Vector(0, 0, 1);
     bool ab = true;
     Vector tpos = un->Position().Cast();
-    if (un->Target()) {
-        tpos = un->Target()->Position().Cast();
+    if (un->getTargetWeakPtr()) {
+        tpos = un->getTargetWeakPtr()->Position().Cast();
         Vector relpos = tpos - un->Position().Cast();
         CrossProduct(relpos, Vector(1, 0, 0), vec);
     }
@@ -800,7 +800,7 @@ void AfterburnVeerAndTurnAway(Order *aisc, UnitPtr un) {
 
 static void SetupVAndTargetV(QVector &targetv, QVector &targetpos, UnitPtr un) {
     UnitPtr targ;
-    if ((targ = un->Target())) {
+    if ((targ = un->getTargetWeakPtr())) {
         targetv = targ->GetVelocity().Cast();
         targetpos = targ->Position();
     }
@@ -877,7 +877,7 @@ void Stop(Order *aisc, UnitPtr un) {
 void AfterburnTurnAway(Order *aisc, UnitPtr un) {
     QVector v(un->Position());
     QVector u(v);
-    UnitPtr targ = un->Target();
+    UnitPtr targ = un->getTargetWeakPtr();
     if (targ) {
         u = targ->Position();
     }
@@ -894,7 +894,7 @@ void AfterburnTurnAway(Order *aisc, UnitPtr un) {
 void TurnAway(Order *aisc, UnitPtr un) {
     QVector v(un->Position());
     QVector u(v);
-    UnitPtr targ = un->Target();
+    UnitPtr targ = un->getTargetWeakPtr();
     if (targ) {
         u = targ->Position();
     }

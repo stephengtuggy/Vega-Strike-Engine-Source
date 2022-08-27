@@ -92,12 +92,12 @@ void Ikarus::WillFire(UnitPtr target) {
 
 ///you should certainly edit this!!
 void Ikarus::DecideTarget() {
-    UnitPtr targ = parent->Target();
+    UnitPtr targ = parent->getTargetWeakPtr();
     if (!targ || /*some other qualifying factor for changing targets*/ 0) {
         UnitPtr un = NULL;
         for (UniverseUtil::PythonUnitIter i = UniverseUtil::getUnitList(); (un = *i); ++i) {
             if (parent->getRelation(un) < 0) {
-                parent->Target(un);
+                parent->getTargetWeakPtr(un);
                 break;
             }
         }
@@ -111,7 +111,7 @@ void Ikarus::Execute() {
     CommunicatingAI::Execute();
     DecideTarget();
     if (!ProcessCurrentFgDirective(fg)) {
-        UnitPtr target = parent->Target();
+        UnitPtr target = parent->getTargetWeakPtr();
         bool isjumpable = target ? ((!target->GetDestinations().empty()) && parent->GetJumpStatus().drive >= 0) : false;
         if (isjumpable) {
             AfterburnTurnTowards(this, parent);

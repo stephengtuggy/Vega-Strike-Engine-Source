@@ -112,7 +112,7 @@ bool Track::HasLock() const {
     assert(player);
     assert(target);
 
-    return (player == target->Target());
+    return (player == target->getTargetWeakPtr());
 }
 
 bool Track::HasWeaponLock() const {

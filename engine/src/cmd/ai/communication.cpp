@@ -537,7 +537,7 @@ void LeadMe(UnitPtr un, string directive, string speech, bool changetarget) {
             }
             fg->directive = directive;
             if (changetarget) {
-                fg->target.SetUnit(un->Target());
+                fg->target.SetUnit(un->getTargetWeakPtr());
             }
             if ((directive == "")) {
                 fg->target.setNull();

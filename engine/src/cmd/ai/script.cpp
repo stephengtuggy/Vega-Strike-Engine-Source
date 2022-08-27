@@ -341,7 +341,7 @@ void AIScript::beginElement(const string &name, const AttributeList &attributes)
                         if ((tmp = this->parent->Threat())) {
                             topv() = (tmp->Position());
                         } else {
-                            if ((tmp = this->parent->Target())) {
+                            if ((tmp = this->parent->getTargetWeakPtr())) {
                                 topv() = (tmp->Position());
                             } else {
                                 topv() = (xml->defaultvec);
@@ -349,7 +349,7 @@ void AIScript::beginElement(const string &name, const AttributeList &attributes)
                         }
                         break;
                     case TARGETPOS:
-                        if ((tmp = this->parent->Target())) {
+                        if ((tmp = this->parent->getTargetWeakPtr())) {
                             topv() = (tmp->Position());
                         } else {
                             topv() = (xml->defaultvec);
@@ -364,7 +364,7 @@ void AIScript::beginElement(const string &name, const AttributeList &attributes)
                         if ((tmp = this->parent->Threat())) {
                             topv() = (tmp->GetVelocity());
                         } else {
-                            if ((tmp = this->parent->Target())) {
+                            if ((tmp = this->parent->getTargetWeakPtr())) {
                                 topv() = (tmp->GetVelocity());
                             } else {
                                 topv() = (xml->defaultvec);
@@ -372,7 +372,7 @@ void AIScript::beginElement(const string &name, const AttributeList &attributes)
                         }
                         break;
                     case TARGETV:
-                        if ((tmp = this->parent->Target())) {
+                        if ((tmp = this->parent->getTargetWeakPtr())) {
                             topv() = (tmp->GetVelocity());
                         } else {
                             topv() = (xml->defaultvec);
@@ -575,7 +575,7 @@ void AIScript::endElement(const string &name) {
             if ((tmp = parent->Threat())) {
                 xml->vectors.push(tmp->ToWorldCoordinates(topv()));
             } else {
-                if ((tmp = parent->Target())) {
+                if ((tmp = parent->getTargetWeakPtr())) {
                     xml->vectors.push(tmp->ToWorldCoordinates(topv()));
                 } else {
                     xml->vectors.push(xml->defaultvec);
@@ -587,7 +587,7 @@ void AIScript::endElement(const string &name) {
             if ((tmp = parent->Threat())) {
                 xml->vectors.push(tmp->ToLocalCoordinates(topv()));
             } else {
-                if ((tmp = parent->Target())) {
+                if ((tmp = parent->getTargetWeakPtr())) {
                     xml->vectors.push(tmp->ToLocalCoordinates(topv()));
                 } else {
                     xml->vectors.push(xml->defaultvec);
@@ -597,7 +597,7 @@ void AIScript::endElement(const string &name) {
 
         case TARGETWORLD:
             xml->unitlevel++;
-            if ((tmp = parent->Target())) {
+            if ((tmp = parent->getTargetWeakPtr())) {
                 xml->vectors.push(tmp->ToWorldCoordinates(topv()));
             } else {
                 xml->vectors.push(xml->defaultvec);
@@ -605,7 +605,7 @@ void AIScript::endElement(const string &name) {
             break;
         case TARGETLOCAL:
             xml->unitlevel++;
-            if ((tmp = parent->Target())) {
+            if ((tmp = parent->getTargetWeakPtr())) {
                 xml->vectors.push(tmp->ToLocalCoordinates(topv()));
             } else {
                 xml->vectors.push(xml->defaultvec);
@@ -809,12 +809,12 @@ void AIScript::LoadXML() {
                     % parent->name
                     % parent->GetComputerData().threatlevel));
         }
-        if (_Universe->isPlayerStarship(parent->Target())) {
+        if (_Universe->isPlayerStarship(parent->getTargetWeakPtr())) {
             float value;
             static float game_speed = XMLSupport::parse_float(vs_config->getVariable("physics", "game_speed", "1"));
             static float game_accel = XMLSupport::parse_float(vs_config->getVariable("physics", "game_accel", "1"));
             {
-                UnitPtr targ = parent->Target();
+                UnitPtr targ = parent->getTargetWeakPtr();
                 if (targ) {
                     Vector PosDifference = (targ->Position() - parent->Position()).Cast();
                     float pdmag = PosDifference.Magnitude();

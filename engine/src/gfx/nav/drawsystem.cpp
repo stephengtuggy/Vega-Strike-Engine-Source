@@ -378,7 +378,7 @@ void NavigationSystem::DrawSystem() {
             system_item_scale_temp = (system_item_scale * 3);
         }
         insert_size *= system_item_scale_temp;
-        if (_Universe->AccessCockpit()->GetParent()->Target() == (*blah)) {
+        if (_Universe->AccessCockpit()->GetParent()->getTargetWeakPtr() == (*blah)) {
             //Get a color from the config
             static GFXColor col = vs_config->getColor("nav", "targetted_unit", GFXColor(1, 0.3, 0.3, 0.8));
             DrawTargetCorners(the_x, the_y, insert_size, col);

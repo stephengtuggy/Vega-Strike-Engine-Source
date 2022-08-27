@@ -329,7 +329,7 @@ void Cockpit::recreate(const std::string &pilot_name) {
 }
 
 static void FaceTarget(UnitPtr un) {
-    UnitPtr targ = un->Target();
+    UnitPtr targ = un->getTargetWeakPtr();
     if (targ) {
         QVector dir(targ->Position() - un->Position());
         dir.Normalize();
@@ -393,7 +393,7 @@ void SwitchUnits(UnitPtr ol, UnitPtr nw) {
         }
     }
     if (ol && (!pointingtool)) {
-        UnitPtr oltarg = ol->Target();
+        UnitPtr oltarg = ol->getTargetWeakPtr();
         if (oltarg) {
             if (ol->getRelation(oltarg) >= 0) {
                 ol->Target(NULL);
@@ -499,7 +499,7 @@ void Cockpit::updateAttackers() {
     }
     UnitPtr un;
     if (attack_iterator.isDone() == false && (un = *attack_iterator) != NULL) {
-        UnitPtr targ = un->Target();
+        UnitPtr targ = un->getTargetWeakPtr();
         float speed = 0, range = 0, mmrange = 0;
         if (parent == targ && targ != NULL) {
             un->getAverageGunSpeed(speed, range, mmrange);
@@ -622,7 +622,7 @@ bool Cockpit::Update() {
     }
     static bool autoclear = XMLSupport::parse_bool(vs_config->getVariable("AI", "autodock", "false"));
     if (autoclear && par) {
-        UnitPtr targ = par->Target();
+        UnitPtr targ = par->getTargetWeakPtr();
         if (targ) {
             static float autopilot_term_distance =
                     XMLSupport::parse_float(vs_config->getVariable("physics",

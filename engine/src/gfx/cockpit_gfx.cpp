@@ -681,7 +681,7 @@ void DrawTargetBox(const Radar::Sensor& sensor, bool draw_line_to_target, bool d
         return;
     UnitPtr player = sensor.GetPlayer();
     assert(player);
-    UnitPtr target = player->Target();
+    UnitPtr target = player->getTargetWeakPtr();
     if (!target)
         return;
 
@@ -710,7 +710,7 @@ void DrawTargetBox(const Radar::Sensor& sensor, bool draw_line_to_target, bool d
         GFXEnable( SMOOTH );
         QVector myLoc( _Universe->AccessCamera()->GetPosition() );
 
-        UnitPtr targets_target = target->Target();
+        UnitPtr targets_target = target->getTargetWeakPtr();
         if (draw_line_to_targets_target && targets_target != NULL) {
             QVector ttLoc = targets_target->Position();
             const float verts[3 * 3] = {
@@ -836,7 +836,7 @@ void DrawTurretTargetBoxes(const Radar::Sensor& sensor)
     for (un_iter iter = sensor.GetPlayer()->getSubUnits(); (subunit=*iter)!=NULL; ++iter) {
         if (!subunit)
             return;
-        UnitPtr target = subunit->Target();
+        UnitPtr target = subunit->getTargetWeakPtr();
         if (!target || (drawn_targets.find(target) != drawn_targets.end()))
             continue;
         drawn_targets.insert(target);

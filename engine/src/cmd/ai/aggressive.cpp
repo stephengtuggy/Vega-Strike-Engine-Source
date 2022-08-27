@@ -291,7 +291,7 @@ void AggressiveAI::SetParent(UnitParentPtr parent1) {
 
 void AggressiveAI::SignalChosenTarget() {
     if (parent) {
-        logic = getProperScript(parent, parent->Target(), false, personalityseed);
+        logic = getProperScript(parent, parent->getTargetWeakPtr(), false, personalityseed);
     }
     FireAt::SignalChosenTarget();
 }
@@ -314,7 +314,7 @@ bool AggressiveAI::ProcessLogicItem(const AIEvents::AIEvresult &item) {
             value = distance;
             break;
         case METERDISTANCE: {
-            UnitPtr targ = parent->Target();
+            UnitPtr targ = parent->getTargetWeakPtr();
             if (targ) {
                 Vector PosDifference = targ->Position().Cast() - parent->Position().Cast();
                 float pdmag = PosDifference.Magnitude();
@@ -432,7 +432,7 @@ bool AggressiveAI::ProcessLogicItem(const AIEvents::AIEvresult &item) {
         }
         case TARGET_FACES_YOU: {
             value = 0.0;
-            UnitPtr targ = parent->Target();
+            UnitPtr targ = parent->getTargetWeakPtr();
             if (targ) {
                 Vector Q;
                 Vector P;
@@ -447,7 +447,7 @@ bool AggressiveAI::ProcessLogicItem(const AIEvents::AIEvresult &item) {
         }
         case TARGET_IN_FRONT_OF_YOU: {
             value = 0.0;
-            UnitPtr targ = parent->Target();
+            UnitPtr targ = parent->getTargetWeakPtr();
             if (targ) {
                 Vector Q;
                 Vector P;
@@ -462,7 +462,7 @@ bool AggressiveAI::ProcessLogicItem(const AIEvents::AIEvresult &item) {
         }
         case TARGET_GOING_YOUR_DIRECTION: {
             value = 0.0;
-            UnitPtr targ = parent->Target();
+            UnitPtr targ = parent->getTargetWeakPtr();
             if (targ) {
                 Vector Q;
                 Vector P;
@@ -549,7 +549,7 @@ UnitPtr GetThreat(UnitPtr parent, UnitPtr leader) {
             ++ui) {
         if (parent->getRelation(un) < 0) {
             float d = (un->Position() - leader->Position()).Magnitude();
-            bool thistargetted = (un->Target() == leader);
+            bool thistargetted = (un->getTargetWeakPtr() == leader);
             if (!th || (thistargetted && !targetted) || ((thistargetted || (!targetted)) && d < mindist)) {
                 th = un;
                 targetted = thistargetted;
@@ -576,14 +576,14 @@ bool AggressiveAI::ProcessCurrentFgDirective(Flightgroup *fg) {
             if (obedient) {
                 eraseType(Order::FACING);
                 eraseType(Order::MOVEMENT);
-                UnitPtr targ = parent->Target();
+                UnitPtr targ = parent->getTargetWeakPtr();
                 if (targ) {
                     bool attacking = fg->directive.length() > 0;
                     if (attacking) {
                         attacking = tolower(fg->directive[0]) == 'a';
                     }
                     if ((!isJumpablePlanet(targ)) && attacking == false) {
-                        parent->Target(NULL);
+                        parent->getTargetWeakPtr(NULL);
                     }
                 }
             } else {
@@ -608,10 +608,10 @@ bool AggressiveAI::ProcessCurrentFgDirective(Flightgroup *fg) {
                         CommunicationMessage c(parent, leader, NULL, 0);
                         c.SetCurrentState(c.fsm->GetNoNode(), NULL, 0);
                         if (parent->InRange(targ, true, false)) {
-                            if (targ != parent->Target()) {
+                            if (targ != parent->getTargetWeakPtr()) {
                                 callme = true;
                             }
-                            parent->Target(targ);
+                            parent->getTargetWeakPtr(targ);
                             parent->SetTurretAI();
                             parent->TargetTurret(targ);
                             //if I am the capship, go into defensive mode.
@@ -653,12 +653,12 @@ bool AggressiveAI::ProcessCurrentFgDirective(Flightgroup *fg) {
                 //a is now used for AI, for backward compatibility. do not use for player
             } else if (fg->directive.find("a") != string::npos || fg->directive.find("A") != string::npos) {
                 UnitPtr targ = fg->leader.GetUnit();
-                targ = targ != NULL ? targ->Target() : NULL;
+                targ = targ != NULL ? targ->getTargetWeakPtr() : NULL;
                 if (targ) {
                     if (targ->InCorrectStarSystem(_Universe->activeStarSystem())) {
                         CommunicationMessage c(parent, leader, NULL, 0);
                         if (parent->InRange(targ, true, false)) {
-                            parent->Target(targ);
+                            parent->getTargetWeakPtr(targ);
                             parent->TargetTurret(targ);
                             c.SetCurrentState(c.fsm->GetYesNode(), NULL, 0);
                         } else {
@@ -886,7 +886,7 @@ bool AggressiveAI::ProcessCurrentFgDirective(Flightgroup *fg) {
                                         true);
                                 ord->SetParent(parent);
                                 ReplaceOrder(ord);
-                                if (parent->Target() != NULL) {
+                                if (parent->getTargetWeakPtr() != NULL) {
                                     ord = new Orders::FaceTarget(false, 3);
                                 } else {
                                     ord = new Orders::FaceDirection(-dist * turn_leader);
@@ -1050,7 +1050,7 @@ bool AggressiveAI::ProcessCurrentFgDirective(Flightgroup *fg) {
                         if ((th = leader->Threat())) {
                             CommunicationMessage c(parent, leader, NULL, 0);
                             if (parent->InRange(th, true, false)) {
-                                parent->Target(th);
+                                parent->getTargetWeakPtr(th);
                                 parent->TargetTurret(th);
                                 c.SetCurrentState(c.fsm->GetYesNode(), NULL, 0);
                             } else {
@@ -1066,7 +1066,7 @@ bool AggressiveAI::ProcessCurrentFgDirective(Flightgroup *fg) {
                             if (th) {
                                 if (parent->InRange(th, true, false)) {
                                     c.SetCurrentState(c.fsm->GetYesNode(), NULL, 0);
-                                    parent->Target(th);
+                                    parent->getTargetWeakPtr(th);
                                     parent->TargetTurret(th);
 //if I am the capship, go into defensive mode.
                                     if (parent == leader->owner) {
@@ -1083,7 +1083,7 @@ bool AggressiveAI::ProcessCurrentFgDirective(Flightgroup *fg) {
                                                         true);
                                         ord->SetParent(parent);
                                         ReplaceOrder(ord);
-                                        if (parent->Target() != NULL) {
+                                        if (parent->getTargetWeakPtr() != NULL) {
                                             ord = new Orders::FaceTarget(false, 3);
                                             ord->SetParent(parent);
                                             ReplaceOrder(ord);
@@ -1110,7 +1110,7 @@ bool AggressiveAI::ProcessCurrentFgDirective(Flightgroup *fg) {
                         if (targ && (th = targ->Threat())) {
                             CommunicationMessage c(parent, leader, NULL, 0);
                             if (parent->InRange(th, true, false)) {
-                                parent->Target(th);
+                                parent->getTargetWeakPtr(th);
                                 parent->TargetTurret(th);
                                 c.SetCurrentState(c.fsm->GetYesNode(), NULL, 0);
                                 fg->directive = "";
@@ -1127,10 +1127,10 @@ bool AggressiveAI::ProcessCurrentFgDirective(Flightgroup *fg) {
                             if (th) {
                                 if (parent->InRange(th, true, false)) {
                                     c.SetCurrentState(c.fsm->GetYesNode(), NULL, 0);
-                                    if (th != parent->Target()) {
+                                    if (th != parent->getTargetWeakPtr()) {
                                         callme = true;
                                     }
-                                    parent->Target(th);
+                                    parent->getTargetWeakPtr(th);
                                     parent->TargetTurret(th);
 //if I am the capship, go into defensive mode.
                                     if (parent == leaderowner) {
@@ -1146,7 +1146,7 @@ bool AggressiveAI::ProcessCurrentFgDirective(Flightgroup *fg) {
                                                         true);
                                         ord->SetParent(parent);
                                         ReplaceOrder(ord);
-                                        if (parent->Target() != NULL) {
+                                        if (parent->getTargetWeakPtr() != NULL) {
                                             ord = new Orders::FaceTarget(false, 3);
                                             ord->SetParent(parent);
                                             ReplaceOrder(ord);
@@ -1444,7 +1444,7 @@ public:
                 WarpToP(parent, un, true);
             } else {
                 UnitPtr playa = _Universe->AccessCockpit()->GetParent();
-                if (playa == NULL || playa->Target() != parent || 1) {
+                if (playa == NULL || playa->getTargetWeakPtr() != parent || 1) {
                     WarpToP(parent, targetlocation, 0, true);
                 }
             }
@@ -1544,7 +1544,7 @@ void AggressiveAI::ExecuteNoEnemies() {
                 if (fgname.find(insysString) == string::npos && dest->GetDestinations().size() > 0
                         && UniverseUtil::systemInMemory(dest->GetDestinations()[0])) {
                     parent->ActivateJumpDrive(0);
-                    parent->Target(dest);                     //fly there, baby!
+                    parent->getTargetWeakPtr(dest);                     //fly there, baby!
                 } else if (dest->GetDestinations().size() == 0 && false == UnitUtil::isCapitalShip(parent)
                         && UnitUtil::isDockableUnit(dest)) {
                     Order *ai = parent->aistate;
@@ -1636,7 +1636,7 @@ void AggressiveAI::Execute() {
         counterforce.k = 0;
         parent->NetLocalForce += counterforce * force_resistance_percent;
     }
-    UnitPtr target = parent->Target();
+    UnitPtr target = parent->getTargetWeakPtr();
 
     bool isjumpable = target ? (!target->GetDestinations().empty()) : false;
     if (!ProcessCurrentFgDirective(fg)) {
@@ -1656,7 +1656,7 @@ void AggressiveAI::Execute() {
                         }
                         parent->jump.drive = -1;
                     } else {
-                        parent->Target(NULL);
+                        parent->getTargetWeakPtr(NULL);
                     }
                 } else if (parent->GetJumpStatus().drive < 0) {
                     static bool
@@ -1730,7 +1730,7 @@ void AggressiveAI::Execute() {
                 parent->GetVelocity() * (mag * parent->GetComputerData().max_speed() / getTimeCompression()));
         parent->NetLocalForce = parent->NetForce = Vector(0, 0, 0);
     }
-    target = parent->Target();
+    target = parent->getTargetWeakPtr();
 
     isjumpable = target ? (!target->GetDestinations().empty()) : false;
     if (!isjumpable) {

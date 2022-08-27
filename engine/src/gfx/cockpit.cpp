@@ -599,7 +599,7 @@ float GameCockpit::LookupUnitStat(int stat, UnitPtr target) {
                     abletoautopilot = (target->AutoPilotTo(target, false) ? 1 : 0);
                     static float no_auto_light_below =
                             XMLSupport::parse_float(vs_config->getVariable("physics", "no_auto_light_below", "2000"));
-                    UnitPtr targtarg = target->Target();
+                    UnitPtr targtarg = target->getTargetWeakPtr();
                     if (targtarg) {
                         if ((target->Position() - targtarg->Position()).Magnitude() - targtarg->rSize()
                                 - target->rSize()
@@ -740,7 +740,7 @@ float GameCockpit::LookupUnitStat(int stat, UnitPtr target) {
                 return (float) UnitImages<void>::TOOFAR;
             }
         case UnitImages<void>::CANDOCK_MODAL: {
-            UnitPtr station = target->Target();
+            UnitPtr station = target->getTargetWeakPtr();
             if (station) {
                 if (station->CanDockWithMe(target, true) != -1) {
                     if (station->CanDockWithMe(target, false) != -1) {
@@ -1410,8 +1410,8 @@ static void DrawHeadingMarker(Cockpit &cp, const GFXColor &col) {
 
     // flight direcion (unit vel direction)
     Vector v = u->GetWarpVelocity();
-    if (u->VelocityReference()) {
-        v -= u->VelocityReference()->GetWarpVelocity();
+    if (u->getVelocityReferenceWeakPtr()) {
+        v -= u->getVelocityReferenceWeakPtr()->GetWarpVelocity();
     }
     float v2 = v.MagnitudeSquared();
     if (v2 > 0.25) { // 1/2 m/s seems reasonable for a speed marker
@@ -1808,7 +1808,7 @@ void GameCockpit::Draw() {
     for (unsigned int vd = 0; vd < vdu.size(); vd++) {
         if (vdu[vd]->getMode() == VDU::TARGET) {
             if ((un = parent.GetUnit())) {
-                UnitPtr target = parent.GetUnit()->Target();
+                UnitPtr target = parent.GetUnit()->getTargetWeakPtr();
                 if (target != NULL) {
                     if (view == CP_FRONT
                             || (view == CP_CHASE
@@ -1939,7 +1939,7 @@ void GameCockpit::Draw() {
                         .hud
                         .draw_arrow_on_chase_cam)) {
                 } else {
-                    DrawArrowToTarget(sensor, parent->Target(), projection_limit_x, projection_limit_y,
+                    DrawArrowToTarget(sensor, parent->getTargetWeakPtr(), projection_limit_x, projection_limit_y,
                                       inv_screen_aspect_ratio);
                     if (draw_star_destination_arrow
                             && (destination_system_location.i || destination_system_location.j
@@ -2348,10 +2348,10 @@ void GameCockpit::SetCommAnimation(Animation *ani, UnitPtr un) {
 string GameCockpit::getTargetLabel() {
     UnitPtr par = GetParent();
     if ((!targetLabel.empty())
-            && (!par || ((void *) par->Target()) != labeledTargetUnit)) {
+            && (!par || ((void *) par->getTargetWeakPtr()) != labeledTargetUnit)) {
         targetLabel = string();
         if (par) {
-            labeledTargetUnit = par->Target();
+            labeledTargetUnit = par->getTargetWeakPtr();
         }
     }
     return targetLabel;
@@ -2360,7 +2360,7 @@ string GameCockpit::getTargetLabel() {
 void GameCockpit::setTargetLabel(const string &newLabel) {
     if (GetParent()) {
         targetLabel = newLabel;
-        labeledTargetUnit = GetParent()->Target();
+        labeledTargetUnit = GetParent()->getTargetWeakPtr();
     }
 }
 
@@ -2464,7 +2464,7 @@ void GameCockpit::SetupViewPort(bool clip) {
                 Transform(panMatrix, q),
                 Transform(panMatrix, r));
 
-        tgt = un->Target();
+        tgt = un->getTargetWeakPtr();
         if (tgt) {
             un->GetOrientation(p, q, r);
             r = (tgt->Position() - un->Position()).Cast();

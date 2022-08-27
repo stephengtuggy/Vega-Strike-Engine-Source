@@ -63,7 +63,7 @@ float Pilot::adjustSpecificRelationship(UnitPtr parent, void *aggressor, float f
             factor *= slowrel;
         }
         (*i).second += factor;
-        if (rel + factor < 0 && parent->Target() == NULL && parent->aistate) {
+        if (rel + factor < 0 && parent->getTargetWeakPtr() == NULL && parent->aistate) {
             parent->aistate->ChooseTarget();
         }
     } else {
@@ -75,7 +75,7 @@ float Pilot::adjustSpecificRelationship(UnitPtr parent, void *aggressor, float f
             factor *= slowrel;
         }
         (*i).second += factor;
-        if ((*i).second < lessrel && parent->Target() == NULL && parent->aistate) {
+        if ((*i).second < lessrel && parent->getTargetWeakPtr() == NULL && parent->aistate) {
             parent->aistate->ChooseTarget();
         }
     }

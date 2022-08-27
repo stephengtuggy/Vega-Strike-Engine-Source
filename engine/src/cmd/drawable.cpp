@@ -766,7 +766,7 @@ void Drawable::DrawSubunits(bool on_screen, Matrix wmat, int cloak, float averag
                 unit->mounts[i].ref.gun->Draw(*ct, wmat,
                         (isAutoTrackingMount(unit->mounts[i].size)
                                 && (unit->mounts[i].time_to_lock <= 0)
-                                && unit->TargetTracked()) ? unit->Target() : NULL,
+                                && unit->TargetTracked()) ? unit->getTargetWeakPtr() : NULL,
                         unit->computer.radar.trackingcone);
             }
         }

@@ -838,7 +838,7 @@ void FireKeyboard::JoinFg(const KBData &, KBSTATE k) {
     if (k == PRESS) {
         UnitPtr un = _Universe->AccessCockpit()->GetParent();
         if (un) {
-            UnitPtr targ = un->Target();
+            UnitPtr targ = un->getTargetWeakPtr();
             if (targ) {
                 if (targ->faction == un->faction) {
                     Flightgroup *fg = targ->getFlightgroup();
@@ -1056,7 +1056,7 @@ bool TargMissile(UnitPtr me, UnitPtr target) {
 }
 
 bool TargIncomingMissile(UnitPtr me, UnitPtr target) {
-    UnitPtr tt = target->Target();
+    UnitPtr tt = target->getTargetWeakPtr();
     return TargMissile(me, target)
             && (tt == me || (me->isSubUnit() && tt == _Universe->AccessCockpit()->GetSaveParent()));
 }
@@ -1083,7 +1083,7 @@ bool TargThreat(UnitPtr me, UnitPtr target) {
     if (target->isUnit() == Vega_UnitType::missile) {
         return false;
     }
-    if (target->Target() == me) {
+    if (target->getTargetWeakPtr() == me) {
         return true;
     }
     if (me->Threat() == target) {
@@ -1136,7 +1136,7 @@ bool getNearestTargetUnit(UnitPtr me, int iType) {
         if ((iType == 1)
                 && ((un->isUnit() != Vega_UnitType::unit)
                         || (!me->isEnemy(un)
-                                && (un->Target() != me)))) {
+                                && (un->getTargetWeakPtr() != me)))) {
             continue;
         }
         if ((iType == 2)
@@ -1188,7 +1188,7 @@ bool ChooseTargets(UnitPtr me, bool (*typeofunit)(UnitPtr, UnitPtr), bool revers
     if (reverse) {
         std::reverse(vec.begin(), vec.end());
     }
-    std::vector<UnitPtr>::const_iterator veciter = std::find(vec.begin(), vec.end(), me->Target());
+    std::vector<UnitPtr>::const_iterator veciter = std::find(vec.begin(), vec.end(), me->getTargetWeakPtr());
     if (veciter != vec.end()) {
         ++veciter;
     }
@@ -1229,21 +1229,21 @@ bool ChooseTargets(UnitPtr me, bool (*typeofunit)(UnitPtr, UnitPtr), bool revers
 }
 
 void ChooseSubTargets(UnitPtr me) {
-    UnitPtr parent = UnitUtil::owner(me->Target());
+    UnitPtr parent = UnitUtil::owner(me->getTargetWeakPtr());
     if (!parent) {
         return;
     }
     un_iter uniter = parent->getSubUnits();
-    if (parent == me->Target()) {
+    if (parent == me->getTargetWeakPtr()) {
         if (!(*uniter)) {
             return;
         }
-        me->Target(*uniter);
+        me->getTargetWeakPtr(*uniter);
         return;
     }
     UnitPtr tUnit;
     for (; (tUnit = *uniter) != NULL; ++uniter) {
-        if (tUnit == me->Target()) {
+        if (tUnit == me->getTargetWeakPtr()) {
             ++uniter;
             tUnit = *uniter;
             break;
@@ -1270,7 +1270,7 @@ bool FireKeyboard::ShouldFire(UnitPtr targ) {
     }
     float angle = parent->cosAngleTo(targ, dist, gunspeed, gunrange);
     targ->Threaten(parent, angle / (dist < .8 ? .8 : dist));
-    if (targ == parent->Target()) {
+    if (targ == parent->getTargetWeakPtr()) {
         distance = dist;
     }
     return dist < .8 && angle > 1;
@@ -1615,7 +1615,7 @@ void Arrested(UnitPtr parent) {
                 (un = *i) != NULL;
                 ++i) {
             if (un->faction == own || un->faction == police || un->faction == police2) {
-                if (un->Target() == parent || un->getRelation(parent) < 0) {
+                if (un->getTargetWeakPtr() == parent || un->getRelation(parent) < 0) {
                     int parentCp = _Universe->whichPlayerStarship(parent);
                     if (parentCp != -1) {
                         UniverseUtil::adjustRelationModifier(parentCp, fac, -ownrel - .1);
@@ -1677,16 +1677,16 @@ void Arrested(UnitPtr parent) {
 }
 
 static void ForceChangeTarget(UnitPtr parent) {
-    UnitPtr curtarg = parent->Target();
+    UnitPtr curtarg = parent->getTargetWeakPtr();
     ChooseTargets(parent, TargUn, false);
     static bool force_change_only_unit =
             XMLSupport::parse_bool(vs_config->getVariable("graphics", "target_null_if_no_unit", "false"));
-    if (parent->Target() == curtarg) {
+    if (parent->getTargetWeakPtr() == curtarg) {
         if (force_change_only_unit) {
             parent->Target(NULL);
         } else {
             ChooseTargets(parent, TargNear, false);
-            if (parent->Target() == curtarg) {
+            if (parent->getTargetWeakPtr() == curtarg) {
                 ChooseTargets(parent, TargAll, false);
             }
         }
@@ -1710,20 +1710,20 @@ void FireKeyboard::Execute() {
         vectorOfKeyboardInput.push_back(FIREKEYBOARDTYPE());
     }
     ProcessCommunicationMessages(SIMULATION_ATOM, true);
-    UnitPtr targ = parent->Target();
+    UnitPtr targ = parent->getTargetWeakPtr();
     DoDockingOps(parent, targ, whichplayer, parent->pilot->getGender());
 
     if (targ) {
         double mm = 0.0;
         ShouldFire(targ);
         if (targ->GetHull() < 0) {
-            parent->Target(NULL);
+            parent->getTargetWeakPtr(NULL);
             ForceChangeTarget(parent);
             refresh_target = true;
         } else if (false == parent->InRange(targ, mm, true, true, true) && !parent->TargetLocked()) {
             ChooseTargets(parent, TargUn, false);                 //only go for other active units in cone
-            if (parent->Target() == NULL) {
-                parent->Target(targ);
+            if (parent->getTargetWeakPtr() == NULL) {
+                parent->getTargetWeakPtr(targ);
             }
         }
     } else {
@@ -1822,7 +1822,7 @@ void FireKeyboard::Execute() {
         f().targetukey = DOWN;
         static bool smart_targetting =
                 XMLSupport::parse_bool(vs_config->getVariable("graphics", "smart_targetting_key", "true"));
-        UnitPtr tmp = parent->Target();
+        UnitPtr tmp = parent->getTargetWeakPtr();
         bool sysobj = false;
         if (tmp) {
             if (tmp->owner == getTopLevelOwner()) {
@@ -1830,9 +1830,9 @@ void FireKeyboard::Execute() {
             }
         }
         ChooseTargets(parent, TargUn, false);
-        if ((parent->Target() == NULL) && tmp == parent->Target() && sysobj && smart_targetting) {
+        if ((parent->getTargetWeakPtr() == NULL) && tmp == parent->getTargetWeakPtr() && sysobj && smart_targetting) {
             ChooseTargets(parent, TargSig, false);
-            if (tmp == parent->Target()) {
+            if (tmp == parent->getTargetWeakPtr()) {
                 ChooseTargets(parent, TargAll, false);
             }
         }
@@ -1903,7 +1903,7 @@ void FireKeyboard::Execute() {
         f().rtargetukey = DOWN;
         static bool smart_targetting =
                 XMLSupport::parse_bool(vs_config->getVariable("graphics", "smart_targetting_key", "true"));
-        UnitPtr tmp = parent->Target();
+        UnitPtr tmp = parent->getTargetWeakPtr();
         bool sysobj = false;
         if (tmp) {
             if (tmp->owner == getTopLevelOwner()) {
@@ -1911,9 +1911,9 @@ void FireKeyboard::Execute() {
             }
         }
         ChooseTargets(parent, TargUn, true);
-        if (tmp == parent->Target() && sysobj && smart_targetting) {
+        if (tmp == parent->getTargetWeakPtr() && sysobj && smart_targetting) {
             ChooseTargets(parent, TargFront, true);
-            if (tmp == parent->Target()) {
+            if (tmp == parent->getTargetWeakPtr()) {
                 ChooseTargets(parent, TargAll, true);
             }
         }
@@ -1921,7 +1921,7 @@ void FireKeyboard::Execute() {
     }
     if (f().turretaikey == PRESS) {
         parent->SetTurretAI();
-        parent->TargetTurret(parent->Target());
+        parent->TargetTurret(parent->getTargetWeakPtr());
         f().turretaikey = DOWN;
     }
     static bool noturretai = XMLSupport::parse_bool(vs_config->getVariable("AI", "no_turret_ai", "false"));
@@ -1939,21 +1939,21 @@ void FireKeyboard::Execute() {
     }
     if (f().turrettargetkey == PRESS) {
         f().turrettargetkey = DOWN;
-        parent->TargetTurret(parent->Target());
+        parent->TargetTurret(parent->getTargetWeakPtr());
         refresh_target = true;
     }
     if (f().pickturrettargetkey == PRESS) {
         f().pickturrettargetkey = DOWN;
-        parent->TargetTurret(parent->Target());
+        parent->TargetTurret(parent->getTargetWeakPtr());
         refresh_target = true;
     }
     if (f().nearturrettargetkey == PRESS) {
-        parent->TargetTurret(parent->Target());
+        parent->TargetTurret(parent->getTargetWeakPtr());
         f().nearturrettargetkey = DOWN;
         refresh_target = true;
     }
     if (f().threatturrettargetkey == PRESS) {
-        parent->TargetTurret(parent->Target());
+        parent->TargetTurret(parent->getTargetWeakPtr());
         f().threatturrettargetkey = DOWN;
         refresh_target = true;
     }
@@ -2059,7 +2059,7 @@ void FireKeyboard::Execute() {
     for (i = 0; i < NUMSAVEDTARGETS; i++) {
         if (f().saveTargetKeys[i] == PRESS) {
             f().saveTargetKeys[i] = RELEASE;
-            savedTargets[i] = parent->Target();
+            savedTargets[i] = parent->getTargetWeakPtr();
         }
         if (f().restoreTargetKeys[i] == PRESS && parent->GetComputerData().radar.canlock) {
             f().restoreTargetKeys[i] = RELEASE;
@@ -2068,7 +2068,7 @@ void FireKeyboard::Execute() {
                     (un = *u) != NULL;
                     ++u) {
                 if (un == savedTargets[i]) {
-                    parent->Target(un);
+                    parent->getTargetWeakPtr(un);
                     break;
                 }
             }
@@ -2077,7 +2077,7 @@ void FireKeyboard::Execute() {
     for (i = 0; i < NUMCOMMKEYS; i++) {
         if (f().commKeys[i] == PRESS) {
             f().commKeys[i] = RELEASE;
-            UnitPtr targ = parent->Target();
+            UnitPtr targ = parent->getTargetWeakPtr();
             if (targ) {
                 CommunicationMessage *mymsg = GetTargetMessageQueue(targ, resp);
                 FSM *fsm = FactionUtil::GetConversation(parent->faction, targ->faction);
@@ -2117,7 +2117,7 @@ void FireKeyboard::Execute() {
     }
     if (refresh_target) {
         UnitPtr targ;
-        if ((targ = parent->Target())) {
+        if ((targ = parent->getTargetWeakPtr())) {
             if (parent->isSubUnit()) {
                 parent->TargetTurret(targ);
             }

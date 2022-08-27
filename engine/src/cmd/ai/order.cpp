@@ -135,7 +135,7 @@ bool Order::AttachOrder(UnitPtr targets1) {
 
         return false;
     }
-    parent->Target(targets1);
+    parent->getTargetWeakPtr(targets1);
     return true;
 }
 

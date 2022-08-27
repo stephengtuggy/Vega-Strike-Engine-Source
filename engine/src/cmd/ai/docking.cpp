@@ -36,7 +36,7 @@
 static void DockedScript(UnitPtr docker, UnitPtr base) {
     static string script = vs_config->getVariable("AI", "DockedToScript", "");
     if (script.length() > 0) {
-        UnitPtr targ = docker->Target();
+        UnitPtr targ = docker->getTargetWeakPtr();
         docker->GetComputerData().target.SetUnit(base);
         UniverseUtil::setScratchUnit(docker);
         CompileRunPython(script);

@@ -80,8 +80,13 @@ public:
     UnitWeakPtr getWeakUnitPtr() {
         return UnitWeakPtr(unit);
     }
+    UnitWeakPtr getWeakUnitPtrConst() const;
 
     UnitSharedPtr getSharedUnitPtr() {
+        return unit;
+    }
+
+    UnitSharedPtr getSharedUnitPtrConst() const {
         return unit;
     }
 
@@ -90,6 +95,7 @@ public:
             unit.reset();
         }
     }
+
 };
 
 #endif

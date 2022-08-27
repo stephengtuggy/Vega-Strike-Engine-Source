@@ -327,7 +327,7 @@ int Armed::LockMissile() const {
 void Armed::LockTarget(bool myboo) {
     UnitPtr unit = static_cast<UnitPtr>(this);
     unit->computer.radar.locked = myboo;
-    if (myboo && unit->computer.radar.canlock == false && false == UnitUtil::isSignificant(unit->Target())) {
+    if (myboo && unit->computer.radar.canlock == false && false == UnitUtil::isSignificant(unit->getTargetWeakPtr())) {
         unit->computer.radar.locked = false;
     }
 }

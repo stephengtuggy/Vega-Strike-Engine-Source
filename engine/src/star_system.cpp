@@ -326,7 +326,7 @@ void StarSystem::Draw(bool DrawCockpit) {
         par->cumulative_transformation = linear_interpolate(par->prev_physical_state,
                 par->curr_physical_state,
                 interpolation_blend_factor);
-        UnitPtr targ = par->Target();
+        UnitPtr targ = par->getTargetWeakPtr();
         if (targ && !targ->isSubUnit()) {
             targ->cumulative_transformation = linear_interpolate(targ->prev_physical_state,
                     targ->curr_physical_state,
@@ -341,7 +341,7 @@ void StarSystem::Draw(bool DrawCockpit) {
         UnitPtr saveparent = _Universe->AccessCockpit()->GetSaveParent();
         UnitPtr targ = nullptr;
         if (saveparent) {
-            targ = saveparent->Target();
+            targ = saveparent->getTargetWeakPtr();
         }
         //Array containing the two interesting units, so as not to have to copy-paste code
         UnitPtr camunits[2] = {saveparent, targ};
@@ -391,7 +391,7 @@ void StarSystem::Draw(bool DrawCockpit) {
     boost::shared_ptr<Unit> unit{};
     drawer.action.parent = _Universe->AccessCockpit()->GetParent();
     if (!drawer.action.parent.empty()) {
-        drawer.action.parent_target = drawer.action.parent.lock()->Target();
+        drawer.action.parent_target = drawer.action.parent.lock()->getTargetWeakPtr();
     }
     for (auto& each : this->gravitational_units) {
 
