@@ -655,7 +655,7 @@ varInst *Mission::call_unit(missionNode *node, int mode) {
         } else if (method_id == CMT_UNIT_getFgLeader) {
             UnitPtrForPy ret_unit = nullptr;
             if (mode == SCRIPT_RUN) {
-                ret_unit = (my_unit->getFlightgroup() != nullptr) ? my_unit->getFlightgroup()->leader.GetUnit() : my_unit;
+                ret_unit = (my_unit->getFlightgroup() != nullptr) ? my_unit->getFlightgroup()->leader.getSharedUnitPtr() : my_unit;
                 if (ret_unit == nullptr) {
                     ret_unit = my_unit;
                 }
@@ -983,15 +983,18 @@ UnitPtrForPy Mission::call_unit_launch(CreateFlightgroup *fg, int type, const st
     int faction_nr = FactionUtil::GetFactionIndex(fg->fg->faction);
     UnitPtrForPy * units = new UnitPtrForPy[fg->nr_ships];
     int u;
-    UnitPtr par = _Universe->AccessCockpit()->GetParent();
+    UnitParentPtr par1 = _Universe->AccessCockpit()->GetParent();
     CollideMap::iterator metahint[2] = {
             _Universe->scriptStarSystem()->collide_map[Unit::UNIT_ONLY]->begin(),
             _Universe->scriptStarSystem()->collide_map[Unit::UNIT_BOLT]->begin()
     };
     CollideMap::iterator *hint = metahint;
-    if (par && !is_null(par->location[Unit::UNIT_ONLY]) && !is_null(par->location[Unit::UNIT_BOLT])
-            && par->activeStarSystem == _Universe->scriptStarSystem()) {
-        hint = par->location;
+    {
+        UnitPtr par = par1.lock();
+        if (par && !is_null(par->location[Unit::UNIT_ONLY]) && !is_null(par->location[Unit::UNIT_BOLT])
+                && par->activeStarSystem == _Universe->scriptStarSystem()) {
+            hint = par->location;
+        }
     }
     for (u = 0; u < fg->nr_ships; u++) {
         UnitPtrForPy my_unit;
@@ -1016,11 +1019,13 @@ UnitPtrForPy Mission::call_unit_launch(CreateFlightgroup *fg, int type, const st
             if (bsrc[0] != '\0') {
                 s = parse_alpha(bsrc);
             }
-            my_unit = vega_dynamic_cast_ptr<Unit>(new Planet(QVector(0, 0, 0), QVector(0, 0, 0), 0, Vector(0, 0, 0),
-                    0, 0, radius, tex, "", "", s,
-                    d, ParseDestinations(destinations),
-                    QVector(0, 0, 0), nullptr, mat,
-                    vector<GFXLightLocal>(), faction_nr, nam));
+            boost::shared_ptr<Planet> planet =
+                    make_shared_from_intrusive(new Planet(QVector(0, 0, 0), QVector(0, 0, 0), 0, Vector(0, 0, 0),
+                            0, 0, radius, tex, "", "", s,
+                            d, ParseDestinations(destinations),
+                            QVector(0, 0, 0), nullptr, mat,
+                            vector<GFXLightLocal>(), faction_nr, nam));
+            my_unit = vega_dynamic_cast_boost_shared_ptr<Unit>(planet);
             free(bsrc);
             free(bdst);
             free(tex);

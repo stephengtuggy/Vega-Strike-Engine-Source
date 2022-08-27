@@ -46,7 +46,7 @@ void Order::Execute() {
             (suborders[i])->Execute();
             completed |= (suborders[i])->getType();
             if ((suborders[i])->Done()) {
-                vector<Order *>::iterator ord = suborders.begin() + i;
+                vector<boost::shared_ptr<Order>>::iterator ord = suborders.begin() + i;
                 (*ord)->Destroy();
                 suborders.erase(ord);
                 i--;
@@ -60,7 +60,7 @@ void Order::Execute() {
     }
 }
 
-Order *Order::queryType(unsigned int type) {
+boost::shared_ptr<Order> Order::queryType(unsigned int type) {
     for (unsigned int i = 0; i < suborders.size(); i++) {
         if ((suborders[i]->type & type) == type) {
             return suborders[i];
@@ -69,7 +69,7 @@ Order *Order::queryType(unsigned int type) {
     return nullptr;
 }
 
-Order *Order::queryAny(unsigned int type) {
+boost::shared_ptr<Order> Order::queryAny(unsigned int type) {
     for (unsigned int i = 0; i < suborders.size(); i++) {
         if ((suborders[i]->type & type) != 0) {
             return suborders[i];
@@ -79,19 +79,20 @@ Order *Order::queryAny(unsigned int type) {
 }
 
 void Order::eraseType(unsigned int type) {
+    // FIXME: Incorrect deletion logic
     for (unsigned int i = 0; i < suborders.size(); i++) {
         if ((suborders[i]->type & type) == type) {
             suborders[i]->Destroy();
-            vector<Order *>::iterator j = suborders.begin() + i;
+            vector<boost::shared_ptr<Order>>::iterator j = suborders.begin() + i;
             suborders.erase(j);
             i--;
         }
     }
 }
 
-Order *Order::EnqueueOrder(Order *ord) {
+boost::shared_ptr<Order> Order::EnqueueOrder(boost::shared_ptr<Order> ord) {
     if (ord == nullptr) {
-        VS_LOG(warning, "NOT ENQEUEING NULL ORDER");
+        VS_LOG(warning, "NOT ENQUEUEING NULL ORDER");
         VS_LOG(warning, (boost::format("this order: %1%") % getOrderDescription().c_str()));
         return nullptr;
     }
@@ -100,9 +101,9 @@ Order *Order::EnqueueOrder(Order *ord) {
     return this;
 }
 
-Order *Order::EnqueueOrderFirst(Order *ord) {
+boost::shared_ptr<Order> Order::EnqueueOrderFirst(boost::shared_ptr<Order> ord) {
     if (ord == nullptr) {
-        VS_LOG(warning, "NOT ENQEUEING NULL ORDER");
+        VS_LOG(warning, "NOT ENQUEUEING NULL ORDER");
         VS_LOG(warning, (boost::format("this order: %1%") % getOrderDescription().c_str()));
         return nullptr;
     }
@@ -113,7 +114,7 @@ Order *Order::EnqueueOrderFirst(Order *ord) {
     return this;
 }
 
-Order *Order::ReplaceOrder(Order *ord) {
+boost::shared_ptr<Order> Order::ReplaceOrder(boost::shared_ptr<Order> ord) {
     for (vector<Order *>::iterator ordd = suborders.begin(); ordd != suborders.end();) {
         if ((ord->getType() & (*ordd)->getType() & (ALLTYPES))) {
             (*ordd)->Destroy();
@@ -154,7 +155,7 @@ bool Order::AttachOrder(QVector targetv) {
     return true;
 }
 
-Order *Order::findOrder(Order *ord) {
+boost::shared_ptr<Order> Order::findOrder(boost::shared_ptr<Order> ord) {
     if (ord == nullptr) {
         VS_LOG(warning, "FINDING EMPTY ORDER");
         VS_LOG(warning, (boost::format("this order: %1%") % getOrderDescription().c_str()));
@@ -169,7 +170,7 @@ Order *Order::findOrder(Order *ord) {
 }
 
 Order::~Order() {
-    VSDESTRUCT1
+
 }
 
 void Order::Destructor() {
@@ -209,7 +210,7 @@ void Order::ClearMessages() {
     messagequeue.clear();
 }
 
-void Order::eraseOrder(Order *ord) {
+void Order::eraseOrder(boost::shared_ptr<Order> ord) {
     bool found = false;
     if (ord == nullptr) {
         VS_LOG(warning, "NOT ERASING A NULL ORDER");

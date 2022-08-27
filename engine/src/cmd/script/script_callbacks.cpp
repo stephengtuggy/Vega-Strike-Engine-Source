@@ -707,7 +707,7 @@ int Mission::getIntArg(missionNode *node, int mode, int arg_nr) {
     return res;
 }
 
-Unit * Mission::getUnitArg(missionNode *node, int mode, int arg_nr) {
+UnitPtrForPy Mission::getUnitArg(missionNode *node, int mode, int arg_nr) {
     Unit * ret = nullptr;
 
     missionNode *unit_node = getArgument(node, mode, arg_nr);

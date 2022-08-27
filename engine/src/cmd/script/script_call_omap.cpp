@@ -137,10 +137,10 @@ varInst *Mission::call_omap(missionNode *node, int mode) {
     return NULL;     //never reach
 }
 
-omap_t *Mission::getOMapObject(missionNode *node, int mode, varInst *ovi) {
-    omap_t *my_object = NULL;
+boost::shared_ptr<omap_t> Mission::getOMapObject(missionNode *node, int mode, varInst *ovi) {
+    boost::shared_ptr<omap_t> my_object{nullptr};
     if (mode == SCRIPT_RUN) {
-        my_object = (omap_t *) ovi->object;
+        my_object = boost::reinterpret_pointer_cast<omap_t>(ovi->object);
         if (my_object == NULL) {
             fatalError(node, mode, "omap: no object");
             assert(0);
@@ -152,12 +152,12 @@ omap_t *Mission::getOMapObject(missionNode *node, int mode, varInst *ovi) {
 varInst *Mission::call_omap_new(missionNode *node, int mode) {
     varInst *viret = newVarInst(VI_TEMP);
 
-    omap_t *my_object = new omap_t;
+    boost::shared_ptr<omap_t> my_object = boost::make_shared<omap_t>();
 
     viret->type = VAR_OBJECT;
     viret->objectname = "omap";
 
-    viret->object = (void *) my_object;
+    viret->object = my_object;
 
     debug(3, node, mode, "omap new object: ");
     printVarInst(3, viret);

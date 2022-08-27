@@ -165,10 +165,10 @@ varInst *Mission::call_olist(missionNode *node, int mode) {
     return NULL; //never reach
 }
 
-olist_t *Mission::getOListObject(missionNode *node, int mode, varInst *ovi) {
-    olist_t *my_object = NULL;
+boost::shared_ptr<olist_t> Mission::getOListObject(missionNode *node, int mode, varInst *ovi) {
+    boost::shared_ptr<olist_t> my_object{nullptr};
     if (mode == SCRIPT_RUN) {
-        my_object = (olist_t *) ovi->object;
+        my_object = boost::reinterpret_pointer_cast<olist_t>(ovi->object);
         if (my_object == NULL) {
             fatalError(node, mode, "olist: no object");
             assert(0);
@@ -178,7 +178,7 @@ olist_t *Mission::getOListObject(missionNode *node, int mode, varInst *ovi) {
 }
 
 void Mission::call_olist_set(missionNode *node, int mode, varInst *ovi, int index, varInst *new_vi) {
-    olist_t *olist = getOListObject(node, mode, ovi);
+    boost::shared_ptr<olist_t> olist = getOListObject(node, mode, ovi);
     if (((unsigned int) index) >= olist->size()) {
         char buffer[200];
         sprintf(buffer, "olist.set: index out of range size=%u, index=%u\n", (unsigned int) olist->size(), index);
@@ -229,12 +229,12 @@ void Mission::call_olist_toxml(missionNode *node, int mode, varInst *ovi) {
 }
 
 void Mission::call_vector_into_olist(varInst *vec_vi, QVector vec3) {
-    olist_t *my_object = new olist_t;
+    boost::shared_ptr<olist_t> my_object = boost::make_shared<olist_t>();
     olist_counter++;
 
     vec_vi->type = VAR_OBJECT;
     vec_vi->objectname = "olist";
-    vec_vi->object = (void *) my_object;
+    vec_vi->object = my_object;
 
     varInst *push_vi;
 
@@ -271,11 +271,11 @@ QVector Mission::call_olist_tovector(missionNode *node, int mode, varInst *ovi) 
 
 varInst *Mission::call_olist_new(missionNode *node, int mode) {
     varInst *viret = newVarInst(VI_TEMP);
-    olist_t *my_object = new olist_t;
+    boost::shared_ptr<olist_t> my_object = boost::make_shared<olist_t>();
     olist_counter++;
     viret->type = VAR_OBJECT;
     viret->objectname = "olist";
-    viret->object = (void *) my_object;
+    viret->object = my_object;
     debug(3, node, mode, "olist new object: ");
     printVarInst(3, viret);
     return viret;

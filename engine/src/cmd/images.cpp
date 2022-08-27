@@ -53,7 +53,7 @@ UnitImages<BOGUS>::~UnitImages() {
         delete pHudImage;
         pHudImage = nullptr;
     }
-    VSDESTRUCT1
+
 }
 
 //explicit instantiation needed

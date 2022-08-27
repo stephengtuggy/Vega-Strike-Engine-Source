@@ -4990,7 +4990,7 @@ Vector Unit::ResolveForces(const Transformation &trans, const Matrix &transmat) 
 void Unit::UpdatePhysics3(const Transformation &trans,
         const Matrix &transmat,
         bool lastframe,
-        UnitCollection *uc,
+        boost::shared_ptr<VegaUnitCollection> uc,
         UnitPtr superunit) {
     ActTurn();
 

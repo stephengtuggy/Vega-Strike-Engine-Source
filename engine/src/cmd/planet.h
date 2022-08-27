@@ -62,10 +62,10 @@ protected:
     bool atmospheric = false; //then users can go inside!
     float radius = 0.0f;
     float gravity{};
-    UnitCollection insiders;
+    VegaUnitCollection insiders{};
     std::vector<int> lights;
 public:
-    UnitCollection satellites = UnitCollection();
+    VegaUnitCollection satellites{};
 
 public:
     Planet();

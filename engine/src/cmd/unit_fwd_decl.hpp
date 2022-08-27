@@ -40,7 +40,7 @@ using UnitWeakPtr = boost::weak_ptr<Unit>;
 
 using UnitPtr = UnitSharedPtr;
 using UnitParentPtr = UnitWeakPtr;
-using UnitPtrForPy = UnitRawPtr;
+using UnitPtrForPy = UnitSharedPtr; //UnitRawPtr;
 
 using UnitRef = Unit &;
 

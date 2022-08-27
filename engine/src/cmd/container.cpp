@@ -37,7 +37,7 @@ UnitContainer::UnitContainer(UnitRawPtr un) : unit(nullptr) {
 }
 
 UnitContainer::~UnitContainer() {
-    VSDESTRUCT1
+
     if (unit) {
         unit->Kill(); // TODO: Should we do this here?
     }

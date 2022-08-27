@@ -69,14 +69,14 @@ varInst *Mission::call_order(missionNode *node, int mode) {
     if (method_id == CMT_ORDER_newAggressiveAI) {
         string filestr = getStringArgument(node, mode, 0);
         string intstr = getStringArgument(node, mode, 1);
-        Order *my_order = NULL;
+        boost::shared_ptr<Order> my_order{nullptr};
         if (mode == SCRIPT_RUN) {
-            my_order = new Orders::AggressiveAI(filestr.c_str());
+            my_order = boost::make_shared<Orders::AggressiveAI>(filestr.c_str());
         }
         viret = newVarInst(VI_TEMP);
         viret->type = VAR_OBJECT;
         viret->objectname = "order";
-        viret->object = (void *) my_order;
+        viret->object = my_order;
         return viret;
     } else if (method_id == CMT_ORDER_newMoveTo) {
         missionNode *pos_node = getArgument(node, mode, 0);
@@ -85,15 +85,15 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         bool afterburn = checkBoolExpr(ab_node, mode);
         missionNode *sw_node = getArgument(node, mode, 2);
         int nr_switchbacks = checkIntExpr(sw_node, mode);
-        Order *my_order = NULL;
+        boost::shared_ptr<Order> my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             QVector vec3 = call_olist_tovector(pos_node, mode, pos_vi);
-            my_order = new Orders::MoveTo(vec3, afterburn, nr_switchbacks);
+            my_order = boost::make_shared<Orders::MoveTo>(vec3, afterburn, nr_switchbacks);
         }
         viret = newVarInst(VI_TEMP);
         viret->type = VAR_OBJECT;
         viret->objectname = "order";
-        viret->object = (void *) my_order;
+        viret->object = my_order;
         deleteVarInst(pos_vi);
         return viret;
     } else if (method_id == CMT_ORDER_newChangeHeading) {
@@ -101,15 +101,15 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         varInst *pos_vi = checkObjectExpr(pos_node, mode);
         missionNode *sw_node = getArgument(node, mode, 1);
         int nr_switchbacks = checkIntExpr(sw_node, mode);
-        Order *my_order = NULL;
+        boost::shared_ptr<Order> my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             QVector vec3 = call_olist_tovector(pos_node, mode, pos_vi);
-            my_order = new Orders::ChangeHeading(vec3, nr_switchbacks);
+            my_order = boost::make_shared<Orders::ChangeHeading>(vec3, nr_switchbacks);
         }
         viret = newVarInst(VI_TEMP);
         viret->type = VAR_OBJECT;
         viret->objectname = "order";
-        viret->object = (void *) my_order;
+        viret->object = my_order;
         deleteVarInst(pos_vi);
         return viret;
     } else if (method_id == CMT_ORDER_newFaceTarget) {
@@ -119,45 +119,45 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         bool fini = checkBoolExpr(fini_node, mode);
         missionNode *acc_node = getArgument(node, mode, 2);
         int acc = checkIntExpr(acc_node, mode);
-        Order *my_order = NULL;
+        boost::shared_ptr<Order> my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             if (itts) {
-                my_order = new Orders::FaceTargetITTS(fini, acc);
+                my_order = boost::make_shared<Orders::FaceTargetITTS>(fini, acc);
             } else {
-                my_order = new Orders::FaceTarget(fini, acc);
+                my_order = boost::make_shared<Orders::FaceTarget>(fini, acc);
             }
         }
         viret = newVarInst(VI_TEMP);
         viret->type = VAR_OBJECT;
         viret->objectname = "order";
-        viret->object = (void *) my_order;
+        viret->object = my_order;
         return viret;
     } else if (method_id == CMT_ORDER_newFireAt) {
         missionNode *aggr_node = getArgument(node, mode, 1);
         float aggr = checkFloatExpr(aggr_node, mode);
-        Order *my_order = NULL;
+        boost::shared_ptr<Order> my_order{nullptr};
         if (mode == SCRIPT_RUN) {
-            my_order = new Orders::FireAt(aggr);
+            my_order = boost::make_shared<Orders::FireAt>(aggr);
         }
         viret = newVarInst(VI_TEMP);
         viret->type = VAR_OBJECT;
         viret->objectname = "order";
-        viret->object = (void *) my_order;
+        viret->object = my_order;
         return viret;
     } else if (method_id == CMT_ORDER_newExecuteFor) {
         missionNode *enq_node = getArgument(node, mode, 0);
         varInst *enq_vi = checkObjectExpr(enq_node, mode);
-        Order *enq_order = getOrderObject(enq_node, mode, enq_vi);
+        boost::shared_ptr<Order> enq_order = getOrderObject(enq_node, mode, enq_vi);
         missionNode *time_node = getArgument(node, mode, 1);
         float fortime = checkFloatExpr(time_node, mode);
-        Order *my_order = NULL;
+        boost::shared_ptr<Order> my_order{nullptr};
         if (mode == SCRIPT_RUN) {
-            my_order = new Orders::ExecuteFor(enq_order, fortime);
+            my_order = boost::make_shared<Orders::ExecuteFor>(enq_order, fortime);
         }
         viret = newVarInst(VI_TEMP);
         viret->type = VAR_OBJECT;
         viret->objectname = "order";
-        viret->object = (void *) my_order;
+        viret->object = my_order;
         deleteVarInst(enq_vi);
         return viret;
     } else if (method_id == CMT_ORDER_newCloakFor) {
@@ -165,14 +165,14 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         bool res = checkBoolExpr(val_node, mode);
         missionNode *time_node = getArgument(node, mode, 1);
         float fortime = checkFloatExpr(time_node, mode);
-        Order *my_order = NULL;
+        boost::shared_ptr<Order> my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             my_order = new CloakFor(res, fortime);
         }
         viret = newVarInst(VI_TEMP);
         viret->type = VAR_OBJECT;
         viret->objectname = "order";
-        viret->object = (void *) my_order;
+        viret->object = my_order;
         return viret;
     } else if (method_id == CMT_ORDER_newMatchVelocity) {
         missionNode *des_node = getArgument(node, mode, 0);
@@ -185,16 +185,16 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         bool afburn = checkBoolExpr(afburn_node, mode);
         missionNode *fini_node = getArgument(node, mode, 4);
         bool fini = checkBoolExpr(fini_node, mode);
-        Order *my_order = NULL;
+        boost::shared_ptr<Order> my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             Vector des3 = call_olist_tovector(des_node, mode, des_vi).Cast();
             Vector desa3 = call_olist_tovector(desa_node, mode, desa_vi).Cast();
-            my_order = new Orders::MatchVelocity(des3, desa3, local, afburn, fini);
+            my_order = boost::make_shared<Orders::MatchVelocity>(des3, desa3, local, afburn, fini);
         }
         viret = newVarInst(VI_TEMP);
         viret->type = VAR_OBJECT;
         viret->objectname = "order";
-        viret->object = (void *) my_order;
+        viret->object = my_order;
         deleteVarInst(des_vi);
         deleteVarInst(desa_vi);
         return viret;
@@ -205,15 +205,15 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         bool local = checkBoolExpr(local_node, mode);
         missionNode *fini_node = getArgument(node, mode, 2);
         bool fini = checkBoolExpr(fini_node, mode);
-        Order *my_order = NULL;
+        boost::shared_ptr<Order> my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             Vector des3 = call_olist_tovector(des_node, mode, des_vi).Cast();
-            my_order = new Orders::MatchAngularVelocity(des3, local, fini);
+            my_order = boost::make_shared<Orders::MatchAngularVelocity>(des3, local, fini);
         }
         viret = newVarInst(VI_TEMP);
         viret->type = VAR_OBJECT;
         viret->objectname = "order";
-        viret->object = (void *) my_order;
+        viret->object = my_order;
         deleteVarInst(des_vi);
         return viret;
     } else if (method_id == CMT_ORDER_newMatchLinearVelocity) {
@@ -225,15 +225,15 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         bool afburn = checkBoolExpr(afburn_node, mode);
         missionNode *fini_node = getArgument(node, mode, 3);
         bool fini = checkBoolExpr(fini_node, mode);
-        Order *my_order = NULL;
+        boost::shared_ptr<Order> my_order{nullptr};
         if (mode == SCRIPT_RUN) {
-            Vector des3 = call_olist_tovector(des_node, mode, des_vi).Cast();
-            my_order = new Orders::MatchLinearVelocity(des3, local, afburn, fini);
+            Vector des3 = call_olist_tovector(des_node, mode, des_vi).Cast();s
+            my_order = boost::make_shared<Orders::MatchLinearVelocity>(des3, local, afburn, fini);
         }
         viret = newVarInst(VI_TEMP);
         viret->type = VAR_OBJECT;
         viret->objectname = "order";
-        viret->object = (void *) my_order;
+        viret->object = my_order;
         deleteVarInst(des_vi);
         return viret;
     } else if (method_id == CMT_ORDER_newFlyToWaypoint) {
@@ -242,7 +242,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         float vel = getFloatArg(node, mode, 1);
         bool afburn = getBoolArg(node, mode, 2);
         float range = getFloatArg(node, mode, 3);
-        Order *my_order = NULL;
+        boost::shared_ptr<Order> my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             QVector des3 = call_olist_tovector(des_node, mode, des_vi);
             my_order = new AIFlyToWaypoint(des3, vel, afburn, range);
@@ -250,7 +250,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         viret = newVarInst(VI_TEMP);
         viret->type = VAR_OBJECT;
         viret->objectname = "order";
-        viret->object = (void *) my_order;
+        viret->object = my_order;
         deleteVarInst(des_vi);
         return viret;
     } else if (method_id == CMT_ORDER_newFlyToWaypointDefend) {
@@ -260,7 +260,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         bool afburn = getBoolArg(node, mode, 2);
         float range = getFloatArg(node, mode, 3);
         float defend_range = getFloatArg(node, mode, 4);
-        Order *my_order = NULL;
+        boost::shared_ptr<Order> my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             QVector des3 = call_olist_tovector(des_node, mode, des_vi);
             my_order = new AIFlyToWaypointDefend(des3, vel, afburn, range, defend_range);
@@ -268,7 +268,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         viret = newVarInst(VI_TEMP);
         viret->type = VAR_OBJECT;
         viret->objectname = "order";
-        viret->object = (void *) my_order;
+        viret->object = my_order;
         deleteVarInst(des_vi);
         return viret;
     } else if (method_id == CMT_ORDER_newFlyToJumppoint) {
@@ -277,14 +277,14 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         UnitPtr des_unit = getUnitObject(des_node, mode, des_vi);
         float vel = getFloatArg(node, mode, 1);
         bool afburn = getBoolArg(node, mode, 2);
-        Order *my_order = NULL;
+        boost::shared_ptr<Order> my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             my_order = new AIFlyToJumppoint(des_unit, vel, afburn);
         }
         viret = newVarInst(VI_TEMP);
         viret->type = VAR_OBJECT;
         viret->objectname = "order";
-        viret->object = (void *) my_order;
+        viret->object = my_order;
         deleteVarInst(des_vi);
         return viret;
     } else if (method_id == CMT_ORDER_newPatrol) {
@@ -296,7 +296,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         varInst *unit_vi = checkObjectExpr(unit_node, mode);
         UnitPtr around_unit = getUnitObject(unit_node, mode, unit_vi);
         float patrol_speed = getFloatArg(node, mode, 4);
-        Order *my_order = NULL;
+        boost::shared_ptr<Order> my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             QVector des3 = call_olist_tovector(des_node, mode, des_vi);
             my_order = new AIPatrol(patrol_mode, des3, range, around_unit, patrol_speed);
@@ -304,7 +304,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         viret = newVarInst(VI_TEMP);
         viret->type = VAR_OBJECT;
         viret->objectname = "order";
-        viret->object = (void *) my_order;
+        viret->object = my_order;
         deleteVarInst(des_vi);
         deleteVarInst(unit_vi);
         return viret;
@@ -312,29 +312,29 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         missionNode *unit_node = getArgument(node, mode, 0);
         varInst *unit_vi = checkObjectExpr(unit_node, mode);
         olist_t *orderlist = getOListObject(unit_node, mode, unit_vi);
-        Order *my_order = NULL;
+        boost::shared_ptr<Order> my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             my_order = new AIOrderList(orderlist);
         }
         viret = newVarInst(VI_TEMP);
         viret->type = VAR_OBJECT;
         viret->objectname = "order";
-        viret->object = (void *) my_order;
+        viret->object = my_order;
         deleteVarInst(unit_vi);
         return viret;
     } else if (method_id == CMT_ORDER_newSuperiority) {
-        Order *my_order = NULL;
+        boost::shared_ptr<Order> my_order{nullptr};
         if (mode == SCRIPT_RUN) {
             my_order = new AISuperiority();
         }
         viret = newVarInst(VI_TEMP);
         viret->type = VAR_OBJECT;
         viret->objectname = "order";
-        viret->object = (void *) my_order;
+        viret->object = my_order;
         return viret;
     } else {
         varInst *ovi = getObjectArg(node, mode);
-        Order *my_order = getOrderObject(node, mode, ovi);
+        boost::shared_ptr<Order> my_order = getOrderObject(node, mode, ovi);
         if (mode == SCRIPT_RUN) {
             UnitPtr player = _Universe->AccessCockpit()->GetParent();
             if (player) {
@@ -367,7 +367,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         } else if (method_id == CMT_ORDER_eraseOrder) {
             missionNode *enq_node = getArgument(node, mode, 1);
             varInst *enq_vi = checkObjectExpr(enq_node, mode);
-            Order *enq_order = getOrderObject(enq_node, mode, enq_vi);
+            boost::shared_ptr<Order> enq_order = getOrderObject(enq_node, mode, enq_vi);
             if (mode == SCRIPT_RUN) {
                 my_order->eraseOrder(enq_order);
                 debug(3, node, mode, "erasing order");
@@ -378,15 +378,15 @@ varInst *Mission::call_order(missionNode *node, int mode) {
         } else if (method_id == CMT_ORDER_findOrder) {
             missionNode *enq_node = getArgument(node, mode, 1);
             varInst *enq_vi = checkObjectExpr(enq_node, mode);
-            Order *enq_order = getOrderObject(enq_node, mode, enq_vi);
-            Order *res_order = NULL;
+            boost::shared_ptr<Order> enq_order = getOrderObject(enq_node, mode, enq_vi);
+            boost::shared_ptr<Order> res_order{nullptr};
             if (mode == SCRIPT_RUN) {
                 res_order = my_order->findOrder(enq_order);
             }
             viret = newVarInst(VI_TEMP);
             viret->type = VAR_OBJECT;
             viret->objectname = "order";
-            viret->object = (void *) res_order;
+            viret->object = res_order;
             deleteVarInst(enq_vi);
         } else if (method_id == CMT_ORDER_SteerUp) {
             missionNode *val_node = getArgument(node, mode, 1);
@@ -394,7 +394,7 @@ varInst *Mission::call_order(missionNode *node, int mode) {
             if (mode == SCRIPT_RUN) {
                 //this will crash if order is no FlyByWire
                 //is there a way to check that?
-                ((FlyByWire *) my_order)->Up(val);
+                (vega_dynamic_cast_boost_shared_ptr<FlyByWire>(my_order))->Up(val);
             }
             viret = newVarInst(VI_TEMP);
             viret->type = VAR_VOID;
@@ -481,10 +481,10 @@ varInst *Mission::call_order(missionNode *node, int mode) {
     return NULL;     //never reach
 }
 
-Order *Mission::getOrderObject(missionNode *node, int mode, varInst *ovi) {
-    Order *my_object = NULL;
+boost::shared_ptr<Order> Mission::getOrderObject(missionNode *node, int mode, varInst *ovi) {
+    boost::shared_ptr<Order> my_object{nullptr};
     if (mode == SCRIPT_RUN) {
-        my_object = (Order *) ovi->object;
+        my_object = boost::reinterpret_pointer_cast<Order>(ovi->object);
         if (my_object == NULL) {
             fatalError(node, mode, "order: no object");
             assert(0);

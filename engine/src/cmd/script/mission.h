@@ -319,7 +319,7 @@ public:
     std::string string_val;
 
     std::string objectname;
-    void *object;
+    boost::shared_ptr<void> object;
 
     missionNode *defvar_node;
     missionNode *block_node;
@@ -715,7 +715,7 @@ private:
     missionNode *getArgument(missionNode *node, int mode, int arg_nr);
 
     varInst *call_olist(missionNode *node, int mode);
-    olist_t *getOListObject(missionNode *node, int mode, varInst *ovi);
+    boost::shared_ptr<olist_t> getOListObject(missionNode *node, int mode, varInst *ovi);
     varInst *call_olist_new(missionNode *node, int mode);
     void call_olist_pop_back(missionNode *node, int mode, varInst *ovi);
     void call_olist_push_back(missionNode *node, int mode, varInst *ovi, varInst *push);
@@ -726,7 +726,7 @@ private:
     void call_olist_set(missionNode *node, int mode, varInst *ovi, int index, varInst *new_vi);
 
     varInst *call_omap(missionNode *node, int mode);
-    omap_t *getOMapObject(missionNode *node, int mode, varInst *ovi);
+    boost::shared_ptr<vsUMap < std::string, varInst *>> getOMapObject(missionNode *node, int mode, varInst *ovi);
     varInst *call_omap_new(missionNode *node, int mode);
 
     varInst *getObjectArg(missionNode *node, int mode);
@@ -761,13 +761,13 @@ private:
     varInst *call_terminateMission(missionNode *node, int mode);
 
     varInst *call_order(missionNode *node, int mode);
-    Order *getOrderObject(missionNode *node, int mode, varInst *ovi);
+    boost::shared_ptr<Order> getOrderObject(missionNode *node, int mode, varInst *ovi);
 
     QVector getVec3Arg(missionNode *node, int mode, int arg_nr);
     double getFloatArg(missionNode *node, int mode, int arg_nr);
     int getIntArg(missionNode *node, int mode, int arg_nr);
     bool getBoolArg(missionNode *node, int mode, int arg_nr);
-    Unit * getUnitArg(missionNode *node, int mode, int arg_nr);
+    UnitPtrForPy getUnitArg(missionNode *node, int mode, int arg_nr);
 #endif //VS_MIS_SEL
 };
 

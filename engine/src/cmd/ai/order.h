@@ -45,11 +45,12 @@
 
 class Animation;
 typedef std::vector<class varInst *> olist_t;
-class Order {
+class Order : public boost::enable_shared_from_this<Order> {
 private:
 
-protected:
+public:
     virtual ~Order();
+protected:
 ///The unit this order is attached to
     UnitPtr parent;
 ///The bit code (from ORDERTYPES) that this order is (for parallel execution)
@@ -63,7 +64,7 @@ protected:
 ///If this order applies to a physical location in world space
     QVector targetlocation;
 ///The queue of suborders that will be executed in parallel according to bit code
-    std::vector<Order *> suborders;
+    std::vector<boost::shared_ptr<Order>> suborders;
 ///a bunch of communications that have not been answered CommunicationMessages are actually containing reference to a nice Finite State Machine that can allow a player to have a reasonable conversation with an AI
     std::list<class CommunicationMessage *> messagequeue;
 ///changes the local relation of this unit to another...may inform superiors about "good" or bad! behavior depending on the AI
@@ -114,9 +115,9 @@ public:
 ///The function that gets called and executes all queued suborders
     virtual void Execute();
 ///returns a pointer to the first order that may be bitwised ored with that type
-    Order *queryType(unsigned int type);
+    boost::shared_ptr<Order> queryType(unsigned int type);
 ///returns a pointer to the first order that may be bitwise ored with any type
-    Order *queryAny(unsigned int type);
+    boost::shared_ptr<Order> queryAny(unsigned int type);
 ///Erases all orders that bitwise OR with that type
     void eraseType(unsigned int type);
 ///Attaches a group of targets to this order (used for strategery-type games)
@@ -126,9 +127,9 @@ public:
 ///Attaches a group (form up) to this order
     bool AttachSelfOrder(UnitPtr targets);
 ///Enqueues another order that will be executed (in parallel perhaps) when next void Execute() is called
-    Order *EnqueueOrder(Order *ord);
+    boost::shared_ptr<Order> EnqueueOrder(boost::shared_ptr<Order> ord);
 ///Replaces the first order of that type in the order queue
-    Order *ReplaceOrder(Order *ord);
+    boost::shared_ptr<Order> ReplaceOrder(boost::shared_ptr<Order> ord);
 
     bool Done() {
         return done;
@@ -158,11 +159,11 @@ public:
 ///responds (or does not) to certain messages in the message queue
     virtual void ProcessCommunicationMessages(float CommRepsonseTime, bool RemoveMessageProcessed);
 /// return pointer to order or NULL if not found
-    Order *findOrder(Order *ord);
+    boost::shared_ptr<Order> findOrder(boost::shared_ptr<Order> ord);
 /// erase that order from the list
-    void eraseOrder(Order *ord);
+    void eraseOrder(boost::shared_ptr<Order> ord);
 /// enqueue order as first order
-    Order *EnqueueOrderFirst(Order *ord);
+    boost::shared_ptr<Order> EnqueueOrderFirst(boost::shared_ptr<Order> ord);
 
 /// returns the orderlist (NULL for orders that haven't got any)
     virtual olist_t *getOrderList() {
@@ -216,23 +217,23 @@ class ExecuteFor : public Order {
 private:
 
 ///The child order to execute
-    Order *child;
+    boost::shared_ptr<Order> child;
 ///the time it has executed the child order for
     float time;
 ///the total time it can execute child order
     float maxtime;
-protected:
+public:
     virtual ~ExecuteFor() {
     }
 
 public:
-    ExecuteFor(Order *chld, float seconds) : Order(chld->getType(), chld->getSubType()),
+    ExecuteFor(boost::shared_ptr<Order> chld, float seconds) : Order(chld->getType(), chld->getSubType()),
             child(chld),
             time(0),
             maxtime(seconds) {
     }
 
-///Executes child order and then any suborders that may be pertinant
+///Executes child order and then any suborders that may be pertinent
     void Execute();
 
 ///Removes this order

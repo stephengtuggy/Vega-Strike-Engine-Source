@@ -287,7 +287,7 @@ public:
     virtual void UpdatePhysics3(const Transformation &trans,
             const Matrix &transmat,
             bool lastframe,
-            UnitCollection *uc,
+            boost::shared_ptr<VegaUnitCollection> uc,
             UnitPtr superunit) = 0;
 };
 

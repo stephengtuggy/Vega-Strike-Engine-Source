@@ -34,7 +34,6 @@ inline void VS_DEBUG_ERROR() {
 }
 
 #define VSCONSTRUCT1(a)
-#define VSDESTRUCT1
 #define VSCONSTRUCT2(a)
 #define VSDESTRUCT2
 #define VSCONSTRUCT3(a)

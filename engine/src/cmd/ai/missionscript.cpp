@@ -196,7 +196,7 @@ AIPatrolDefend::AIPatrolDefend(int mode, const QVector &area, float range, UnitP
     vi_unit->object = around_unit;
 }
 
-AIOrderList::AIOrderList(olist_t *orderlist) : AImissionScript("ai_orderlist") {
+AIOrderList::AIOrderList(boost::shared_ptr<olist_t> orderlist) : AImissionScript("ai_orderlist") {
     varInst *vi_unit = mission->lookupClassVariable(modulename, "my_order_list", classid);
     vi_unit->objectname = "olist";
     vi_unit->object = orderlist;

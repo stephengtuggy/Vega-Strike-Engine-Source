@@ -97,14 +97,14 @@ public:
 
 class AIOrderList : public AImissionScript {
 public:
-    AIOrderList(olist_t *orderlist);
+    AIOrderList(boost::shared_ptr<olist_t> orderlist);
 
     virtual olist_t *getOrderList() {
         return my_orderlist;
     }
 
 private:
-    olist_t *my_orderlist;
+    boost::shared_ptr<olist_t> my_orderlist;
 };
 
 #endif
