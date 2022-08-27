@@ -46,6 +46,7 @@
 #include <boost/algorithm/string.hpp>
 #include "vega_cast_utils.hpp"
 #include "unit_base_class.hpp"
+#include "collection.h"
 
 // Dupe to same function in unit.cpp
 // TODO: remove duplication

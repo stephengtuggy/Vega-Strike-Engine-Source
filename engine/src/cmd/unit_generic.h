@@ -78,7 +78,7 @@ void UncheckUnit( UnitPtr un );
     #include "xml_support.h"
     #include "container.h"
 //#include "collection.h"
-    #include "unit_collection.hpp"
+//    #include "unit_collection.hpp"
     #include "script/flightgroup.h"
     #include "faction_generic.h"
     #include "star_system_generic.h"
@@ -90,6 +90,7 @@ void UncheckUnit( UnitPtr un );
 
     #include "configuration/configuration.h"
     #include "configuration/game_config.h"
+#include "collection.h"
 
 extern char *GetUnitDir(const char *filename);
 
@@ -275,7 +276,7 @@ public:
             const boost::shared_ptr<Unit> templ,
             double &percentage);
 //the turrets and spinning parts fun, fun stuff
-    VegaUnitCollection SubUnits;
+    UnitCollection SubUnits;
 
 /**
  * Contains information about a particular Mount on a unit.

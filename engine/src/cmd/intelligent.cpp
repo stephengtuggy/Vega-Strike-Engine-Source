@@ -41,6 +41,7 @@
 #include "ai/turretai.h"
 #include "collide2/CSopcodecollider.h"
 #include "unit_base_class.hpp"
+#include "collection.h"
 
 #include <string>
 

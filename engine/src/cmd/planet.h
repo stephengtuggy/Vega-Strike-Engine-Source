@@ -35,6 +35,7 @@
 #include "ai/order.h"
 #include "collection.h"
 #include "unit_base_class.hpp"
+#include "collection.h"
 #include <vector>
 #include <string>
 

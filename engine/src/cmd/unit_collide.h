@@ -36,6 +36,7 @@
 #include "collection.h"
 #include "cmd/unit_generic.h"
 #include "vs_logging.h"
+#include "collection.h"
 #include <set>
 #define COLLIDETABLESIZE sizeof (CTSIZ)
 #define COLLIDETABLEACCURACY sizeof (CTACCURACY)

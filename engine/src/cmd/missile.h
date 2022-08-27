@@ -28,6 +28,7 @@
 
 #include "unit_util.h"
 #include "unit_generic.h"
+#include "collection.h"
 
 class MissileEffect {
 private:

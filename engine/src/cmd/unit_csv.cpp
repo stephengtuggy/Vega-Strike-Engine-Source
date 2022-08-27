@@ -50,6 +50,7 @@
 #include "unit_csv_factory.h"
 #include "movable.h"
 #include "unit_base_class.hpp"
+#include "collection.h"
 
 CSVRow LookupUnitRow(const string &unitname, const string &faction) {
     string hashname = unitname + "__" + faction;

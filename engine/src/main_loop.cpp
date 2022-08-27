@@ -88,6 +88,7 @@
 #include "gldrv/gl_globals.h"
 #include "movable.h"
 #include "unit_base_class.hpp"
+#include "collection.h"
 #endif
 
 #define KEYDOWN(name, key) (name[key]&0x80)

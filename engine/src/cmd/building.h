@@ -29,6 +29,7 @@
 #define __BUILDING_H
 
 #include "unit_generic.h"
+#include "collection.h"
 
 class Terrain;
 class ContinuousTerrain;

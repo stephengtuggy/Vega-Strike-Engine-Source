@@ -48,6 +48,7 @@
 #include "gfx/cockpit.h"
 #include "movable.h"
 #include "unit_base_class.hpp"
+#include "collection.h"
 #endif
 UnitConstRawPtr makeTemplateUpgrade(string name, int faction); //for percentoperational
 UnitConstRawPtr getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0); //for percentoperational

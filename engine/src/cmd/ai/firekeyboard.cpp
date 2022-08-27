@@ -58,6 +58,7 @@
 #include "vs_logging.h"
 #include "movable.h"
 #include "unit_base_class.hpp"
+#include "collection.h"
 
 extern bool toggle_pause();
 

@@ -34,6 +34,7 @@
 #include "gfxlib_struct.h"
 
 #include "star_xml.h"
+#include "collection.h"
 
 #include <string>
 #include <vector>

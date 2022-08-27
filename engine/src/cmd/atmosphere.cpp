@@ -35,6 +35,7 @@
 #include "cmd/unit_generic.h"
 #include "universe.h"
 #include "movable.h"
+#include "collection.h"
 
 Atmosphere::SunBox::~SunBox() {
     if (sunbox != nullptr) {

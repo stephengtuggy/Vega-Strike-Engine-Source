@@ -29,6 +29,7 @@
 #include "cmd/collection.h"
 #include "gfx/vec.h"
 #include "cmd/unit_util.h"
+#include "collection.h"
 
 #include <string>
 #include <vector>

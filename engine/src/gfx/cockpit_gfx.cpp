@@ -41,6 +41,7 @@
 #include "cockpit_gfx_utils.h"
 #include "movable.h"
 #include "unit_base_class.hpp"
+#include "collection.h"
 
 #include <algorithm>
 

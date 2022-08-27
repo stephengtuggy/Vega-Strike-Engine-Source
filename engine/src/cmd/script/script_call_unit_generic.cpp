@@ -71,6 +71,7 @@
 #include "movable.h"
 #include "vega_string_utils.hpp"
 #include "unit_base_class.hpp"
+#include "collection.h"
 
 extern const vector<string> &ParseDestinations(const string &value);
 extern Unit &GetUnitMasterPartList();

@@ -42,7 +42,7 @@
 #include <boost/smart_ptr/make_shared.hpp>
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include "unit_base_class.hpp"
-#include "unit_collection.hpp"
+//#include "unit_collection.hpp"
 //class Unit;
 
 //using ::boost::multi_index_container;
@@ -71,7 +71,5 @@ typedef VegaUnitCollection::index_iterator<UnitByIdentity>::type UnitIdentityIte
 typedef VegaUnitCollection::index_const_iterator<UnitByIdentity>::type UnitIdentityConstIterator;
 typedef VegaUnitCollection::index_iterator<UnitFlightgroup>::type UnitFlightgroupIterator;
 typedef VegaUnitCollection::index_const_iterator<UnitFlightgroup>::type UnitFlightgroupConstIterator;
-typedef UnitSequencedIterator un_iter;
-typedef UnitSequencedConstIterator un_kiter;
 
 #endif //VEGA_STRIKE_SRC_CMD_UNIT_COLLECTION_HPP_

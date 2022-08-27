@@ -37,6 +37,7 @@
 #include "gfx/mesh.h"
 #include "gfx/cockpit.h"
 #include "universe.h"
+#include "collection.h"
 
 #undef BOOST_NO_CWCHAR
 

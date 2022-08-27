@@ -30,6 +30,7 @@
 #include "faction_generic.h"
 #include "galaxy_xml.h"
 #include "stardate.h"
+#include "collection.h"
 
 /**
  * Class Universe Deals with universal constants. It is a global,

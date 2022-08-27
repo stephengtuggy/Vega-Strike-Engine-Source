@@ -122,6 +122,7 @@ bool BaseInterface::Room::BaseTalk::hastalked = false;
 #include "../gui/eventmanager.h"
 #include "movable.h"
 #include "unit_base_class.hpp"
+#include "collection.h"
 #endif
 
 using namespace VSFileSystem;

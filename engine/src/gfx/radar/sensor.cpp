@@ -31,6 +31,7 @@
 #include "cmd/unit_find.h"
 #include "sensor.h"
 #include "universe.h"
+#include "collection.h"
 
 extern UnitPtr getTopLevelOwner(); // WTF... located in star_system_generic.cpp
 

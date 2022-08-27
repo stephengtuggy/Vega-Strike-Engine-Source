@@ -85,6 +85,7 @@
 #include "vega_cast_utils.hpp"
 #include "movable.h"
 #include "unit_base_class.hpp"
+#include "collection.h"
 
 #include <boost/python/errors.hpp>
 

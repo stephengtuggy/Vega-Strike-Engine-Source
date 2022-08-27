@@ -88,7 +88,8 @@
 #include "pilot.h"
 #include "movable.h"
 #include "unit_base_class.hpp"
-#include "unit_collection.hpp"
+#include "collection.h"
+//#include "unit_collection.hpp"
 
 #include <iostream>
 #define DEBUG_MESH_ANI
@@ -125,7 +126,7 @@ void Unit::setFaceCamera() {
 void Unit::SetNebula(Nebula *neb) {
     nebula = neb;
     if (!SubUnits.empty()) {
-        for (auto & un : SubUnits.get<UnitSequenced>()) {
+        for (auto & un : SubUnits) {
             un.SetNebula(neb);
         }
     }

@@ -35,7 +35,7 @@
 #include "star_system_generic.h"
 #include "faction_generic.h"
 #include "script/flightgroup.h"
-#include "unit_collection.hpp"
+//#include "unit_collection.hpp"
 #include "container.h"
 #include "xml_support.h"
 #include "gfxlib_struct.h"

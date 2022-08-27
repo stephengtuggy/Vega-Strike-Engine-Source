@@ -32,6 +32,7 @@
 #include "vsfilesystem.h"
 #include "movable.h"
 #include "unit_base_class.hpp"
+#include "collection.h"
 
 // TODO: once implementation is refactored, deal with this too
 extern QVector RealPosition(UnitConstRawPtr un);

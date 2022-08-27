@@ -30,6 +30,7 @@
 #include "gfx/matrix.h"
 #include "collection.h"
 #include "star_system.h"
+#include "collection.h"
 Vector MouseCoordinate(int x, int y); //FIXME
 
 class ClickList {

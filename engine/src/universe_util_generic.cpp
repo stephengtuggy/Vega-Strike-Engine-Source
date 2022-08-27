@@ -56,6 +56,7 @@
 #include "star_system.h"
 #include "universe.h"
 #include "unit_base_class.hpp"
+#include "collection.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/chrono/time_point.hpp>

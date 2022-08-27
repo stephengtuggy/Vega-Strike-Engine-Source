@@ -1,5 +1,5 @@
 /*
- * oldcollection.h
+ * vega_stl_collection_of_smart_ptrs.hpp
  *
  * Copyright (C) 2001-2022 Daniel Horn, pyramid3d, Stephen G. Tuggy,
  * and other Vega Strike contributors
@@ -10,7 +10,7 @@
  *
  * Vega Strike is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Vega Strike is distributed in the hope that it will be useful,
@@ -22,16 +22,9 @@
  * along with Vega Strike. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef VEGA_STRIKE_SRC_CMD_VEGA_STL_COLLECTION_OF_SMART_PTRS_HPP_
+#define VEGA_STRIKE_SRC_CMD_VEGA_STL_COLLECTION_OF_SMART_PTRS_HPP_
 
-/* unitCollection.h
- *
- *****/
+#error "Vega STL Collection of Smart Ptrs not implemented yet"
 
-#ifndef _OLDCOLLECTION_H_
-#define _OLDCOLLECTION_H_
-#include <stdlib.h>
-
-class Unit;
-
-#endif
-
+#endif //VEGA_STRIKE_SRC_CMD_VEGA_STL_COLLECTION_OF_SMART_PTRS_HPP_

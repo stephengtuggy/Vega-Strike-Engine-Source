@@ -28,6 +28,7 @@
 #include "gfx/vec.h"
 #include "gfx/quaternion.h"
 #include "gfx/matrix.h"
+#include "collection.h"
 
 static void RecursiveSetSchedule(UnitPtr un) {
     if (un) {

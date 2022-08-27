@@ -64,6 +64,7 @@
 #include "options.h"
 #include "movable.h"
 #include "unit_base_class.hpp"
+#include "collection.h"
 
 // Using
 using namespace VSFileSystem;

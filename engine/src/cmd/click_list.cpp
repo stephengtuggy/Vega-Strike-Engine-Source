@@ -30,6 +30,7 @@
 #include "vs_globals.h"
 #include "gfx/camera.h"
 #include "universe.h"
+#include "collection.h"
 // #include "vs_logging.h"
 
 extern Vector mouseline;

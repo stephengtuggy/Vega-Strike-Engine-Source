@@ -48,6 +48,7 @@
 #include "options.h"
 
 #include "system_factory.h"
+#include "collection.h"
 
 #include <stdlib.h>
 

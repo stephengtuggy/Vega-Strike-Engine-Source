@@ -37,6 +37,7 @@
 #include "json.h"
 #include "movable.h"
 #include "unit_base_class.hpp"
+#include "collection.h"
 
 // TODO: find out where this is and maybe refactor
 extern int SelectDockPort(UnitPtr, UnitPtr parent);

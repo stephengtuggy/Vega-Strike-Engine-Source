@@ -37,6 +37,7 @@
 #include "unit_util.h"
 #include "vs_logging.h"
 #include "resource/resource.h"
+#include "collection.h"
 
 #include <vector>
 

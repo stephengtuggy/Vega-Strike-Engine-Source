@@ -25,6 +25,7 @@
 #define _NEBULA_H_
 
 #include "unit_generic.h"
+#include "collection.h"
 
 class Nebula : public Unit {
 public:
