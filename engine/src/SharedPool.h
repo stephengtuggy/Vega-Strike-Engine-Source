@@ -25,44 +25,48 @@
 #ifndef __STRINGPOOL_H__INCLUDED__
 #define __STRINGPOOL_H__INCLUDED__
 
-#include <string>
-#include <boost/multi_index_container.hpp>
-#include <boost/multi_index/identity.hpp>
-#include <boost/smart_ptr.hpp>
-//#include "gnuhash.h"
+#error "SharedPool.h shouldn't be included anywhere any longer. It is a failed attempt at a one-size-fits-all solution"
 
-//#ifndef INITIAL_STRINGPOOL_SIZE
-//#define INITIAL_STRINGPOOL_SIZE (1<<15)
-//#endif
+//#include <string>
+//#include <boost/multi_index_container.hpp>
+//#include <boost/multi_index/identity.hpp>
+//#include <boost/smart_ptr.hpp>
+////#include "gnuhash.h"
+//
+////#ifndef INITIAL_STRINGPOOL_SIZE
+////#define INITIAL_STRINGPOOL_SIZE (1<<15)
+////#endif
+//
+////Need reference counted strings, or we'll eat memory like crazy
+//
+//typedef boost::multi_index_container<boost::shared_ptr<std::string>,
+//        boost::multi_index::indexed_by<boost::multi_index::ordered_unique<boost::multi_index::identity<std::string>
+//>>> VegaStringPool;
+//typedef boost::shared_ptr<std::string> VegaStringPtr;
+//
+//VegaStringPool& stringPoolSingleton() {
+//    static VegaStringPool kStringPool{};
+//    return kStringPool;
+//}
+//
+//VegaStringPtr stringPoolUpsert(std::string my_str) {
+//    if (!stringPoolSingleton().contains(my_str)) {
+//        stringPoolSingleton().get<0>().emplace(boost::make_shared<std::string>(my_str));
+//    }
+//    return *(stringPoolSingleton().get<0>().find(my_str));
+//}
+//
+//VegaStringPtr stringPoolUpsert(const char * my_str) {
+//    std::string temp_string{my_str};
+//    return stringPoolUpsert(temp_string);
+//}
+//
+//VegaStringPtr stringPoolUpsert(char * my_str) {
+//    std::string temp_string{my_str};
+//    return stringPoolUpsert(temp_string);
+//}
 
-//Need reference counted strings, or we'll eat memory like crazy
-
-typedef boost::multi_index_container<boost::shared_ptr<std::string>,
-        boost::multi_index::indexed_by<boost::multi_index::ordered_unique<boost::multi_index::identity<std::string>
->>> VegaStringPool;
-typedef boost::shared_ptr<std::string> VegaStringPtr;
-
-VegaStringPool& stringPoolSingleton() {
-    static VegaStringPool kStringPool{};
-    return kStringPool;
-}
-
-VegaStringPtr stringPoolUpsert(std::string my_str) {
-    if (!stringPoolSingleton().contains(my_str)) {
-        stringPoolSingleton().get<0>().emplace(boost::make_shared<std::string>(my_str));
-    }
-    return *(stringPoolSingleton().get<0>().find(my_str));
-}
-
-VegaStringPtr stringPoolUpsert(const char * my_str) {
-    std::string temp_string{my_str};
-    return stringPoolUpsert(temp_string);
-}
-
-VegaStringPtr stringPoolUpsert(char * my_str) {
-    std::string temp_string{my_str};
-    return stringPoolUpsert(temp_string);
-}
+/**********************************************************/
 
 //template<class T, class RefcounterTraits = vsHashComp<T> >
 //class SharedPool {

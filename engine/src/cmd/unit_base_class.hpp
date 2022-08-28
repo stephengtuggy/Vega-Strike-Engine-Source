@@ -28,7 +28,6 @@
 //#include "configuration/game_config.h"
 //#include "configuration/configuration.h"
 //#include "role_bitmask.h"
-#include "vega_string_pool.hpp"
 //#include "SharedPool.h"
 //#include "collide_map.h"
 //#include "vsfilesystem.h"
@@ -67,6 +66,7 @@
 #include <boost/smart_ptr/intrusive_ptr.hpp>
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include "vega_intrusive_ptr.hpp"
+#include "vega_string_pool.hpp"
 
 class Flightgroup;
 
@@ -99,41 +99,39 @@ public:
     virtual int32_t getFlightgroupSubNumber() const;
 
     virtual std::string toString() const;
-//get the full flightgroup ID (i.e 'green-4')
+    //get the full flightgroup ID (i.e 'green-00004')
     virtual std::string getFgID() const;
     virtual void SetFaction(int new_faction);
     void SetFg(Flightgroup *fg, int fg_snumber);
-//the flightgroup this ship is in
+    //the flightgroup this ship is in
     Flightgroup *flightgroup = nullptr;
-//the flightgroup subnumber
+    //the flightgroup subnumber
     int32_t flightgroup_subnumber = 0;
-//The faction of this unit
-int faction = 0;
+    //The faction of this unit
+    int faction = 0;
 
-//get the flightgroup description
-Flightgroup *getFlightgroup() const {
-    return flightgroup;
-}
-
-//get the subnumber
-int32_t getFgSubnumber() const {
-    return flightgroup_subnumber;
-}
-
-    void setFullname(std::string name) {
-        fullname = name;
+    //get the flightgroup description
+    Flightgroup *getFlightgroup() const {
+        return flightgroup;
     }
 
-    const string &getFullname() const {
+    //get the subnumber
+    int32_t getFgSubnumber() const {
+        return flightgroup_subnumber;
+    }
+
+    void setFullname(std::string new_name) {
+        fullname = new_name;
+    }
+
+    const std::string &getFullname() const {
         return fullname;
     }
 
-    const string &getFilename() const {
-        return filename.get();
+    const std::string &getFilename() const {
+        return *filename.get();
     }
 
-    std::string getFlightgroupName() const;
-    int32_t getFlightgroupSubNumber() const;
     virtual std::string getName() const;
     virtual void setName(std::string new_name);
 
