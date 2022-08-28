@@ -1,5 +1,5 @@
 /*
- * vega_stl_collection_of_smart_ptrs.hpp
+ * vega_circular_buffer.cpp
  *
  * Copyright (C) 2001-2022 Daniel Horn, pyramid3d, Stephen G. Tuggy,
  * and other Vega Strike contributors
@@ -22,21 +22,4 @@
  * along with Vega Strike. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef VEGA_STRIKE_SRC_CMD_VEGA_STL_COLLECTION_OF_SMART_PTRS_HPP_
-#define VEGA_STRIKE_SRC_CMD_VEGA_STL_COLLECTION_OF_SMART_PTRS_HPP_
-
-#include <set>
-#include <boost/shared_ptr.hpp>
-#include "unit_base_class.hpp"
-
-struct UnitBaseClassCompare {
-    bool operator()(boost::shared_ptr<UnitBaseClass> unit_a, boost::shared_ptr<UnitBaseClass> unit_b) {
-        return unit_a->getFgID() < unit_b->getFgID();
-    }
-};
-
-class UnitCollection : public std::set<boost::shared_ptr<UnitBaseClass>, UnitBaseClassCompare> {
-
-};
-
-#endif //VEGA_STRIKE_SRC_CMD_VEGA_STL_COLLECTION_OF_SMART_PTRS_HPP_
+#include "vega_circular_buffer.hpp"

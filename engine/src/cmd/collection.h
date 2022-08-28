@@ -32,9 +32,10 @@
 
 //Collection type:
 //#define USE_OLD_COLLECTION
-#define USE_STL_COLLECTION
+//#define USE_STL_COLLECTION
 //#define USE_BOOST_MULTI_INDEX
-//#define USE_STL_COLLECTION_OF_SMART_PTRS
+#define USE_STL_COLLECTION_OF_SMART_PTRS
+//#define USE_CIRCULAR_BUFFER
 
 #if defined (USE_OLD_COLLECTION)
 #include "oldcollection.h"
@@ -44,8 +45,10 @@
     #include "unit_collection.hpp"
 #elif defined (USE_STL_COLLECTION_OF_SMART_PTRS)
     #include "vega_stl_collection_of_smart_ptrs.hpp"
+#elif defined (USE_CIRCULAR_BUFFER)
+    #include "vega_circular_buffer.hpp"
 #else
-#error "No collection type chosen in collection.h:10"
+#error "No collection type chosen in collection.h:33"
 #endif //USE_STL_COLLECTION
 
 #endif

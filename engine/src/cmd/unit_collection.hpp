@@ -25,51 +25,51 @@
 #ifndef VEGA_STRIKE_SRC_CMD_UNIT_COLLECTION_HPP_
 #define VEGA_STRIKE_SRC_CMD_UNIT_COLLECTION_HPP_
 
-#if !defined(NDEBUG)
-#define BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING
-#define BOOST_MULTI_INDEX_ENABLE_SAFE_MODE
-#endif
-
-#include <utility>
-#include <string>
-#include <cstdint>
-#include <boost/multi_index_container.hpp>
-#include <boost/multi_index/sequenced_index.hpp>
-#include <boost/multi_index/ordered_index.hpp>
-#include <boost/multi_index/identity.hpp>
-#include <boost/multi_index/composite_key.hpp>
-#include <boost/multi_index/mem_fun.hpp>
-#include <boost/smart_ptr/make_shared.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
-#include "unit_base_class.hpp"
-//#include "unit_collection.hpp"
-//class Unit;
-
-//using ::boost::multi_index_container;
-//using namespace ::boost::multi_index;
-
-
-struct UnitSequenced {};
-struct UnitByIdentity {};
-struct UnitFlightgroup {};
-
-typedef ::boost::multi_index_container<::boost::shared_ptr<UnitBaseClass>,
-        ::boost::multi_index::indexed_by<
-                ::boost::multi_index::sequenced<::boost::multi_index::tag<UnitSequenced>>,
-                ::boost::multi_index::ordered_unique<::boost::multi_index::tag<UnitByIdentity>,
-                        ::boost::multi_index::identity<UnitBaseClass>>,
-                ::boost::multi_index::ordered_unique<::boost::multi_index::tag<UnitFlightgroup>,
-                        BOOST_MULTI_INDEX_CONST_MEM_FUN(UnitBaseClass, ::std::string, getFgID)
-                >
-        >
-> UnitBaseClassMultiIndexContainer;
-typedef UnitBaseClassMultiIndexContainer VegaUnitCollection;
-typedef VegaUnitCollection::index<UnitSequenced>::type BySequence;
-typedef VegaUnitCollection::index_iterator<UnitSequenced>::type UnitSequencedIterator;
-typedef VegaUnitCollection::index_const_iterator<UnitSequenced>::type UnitSequencedConstIterator;
-typedef VegaUnitCollection::index_iterator<UnitByIdentity>::type UnitIdentityIterator;
-typedef VegaUnitCollection::index_const_iterator<UnitByIdentity>::type UnitIdentityConstIterator;
-typedef VegaUnitCollection::index_iterator<UnitFlightgroup>::type UnitFlightgroupIterator;
-typedef VegaUnitCollection::index_const_iterator<UnitFlightgroup>::type UnitFlightgroupConstIterator;
+//#if !defined(NDEBUG)
+//#define BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING
+//#define BOOST_MULTI_INDEX_ENABLE_SAFE_MODE
+//#endif
+//
+//#include <utility>
+//#include <string>
+//#include <cstdint>
+//#include <boost/multi_index_container.hpp>
+//#include <boost/multi_index/sequenced_index.hpp>
+//#include <boost/multi_index/ordered_index.hpp>
+//#include <boost/multi_index/identity.hpp>
+//#include <boost/multi_index/composite_key.hpp>
+//#include <boost/multi_index/mem_fun.hpp>
+//#include <boost/smart_ptr/make_shared.hpp>
+//#include <boost/smart_ptr/shared_ptr.hpp>
+//#include "unit_base_class.hpp"
+////#include "unit_collection.hpp"
+////class Unit;
+//
+////using ::boost::multi_index_container;
+////using namespace ::boost::multi_index;
+//
+//
+//struct UnitSequenced {};
+//struct UnitByIdentity {};
+//struct UnitFlightgroup {};
+//
+//typedef ::boost::multi_index_container<::boost::shared_ptr<UnitBaseClass>,
+//        ::boost::multi_index::indexed_by<
+//                ::boost::multi_index::sequenced<::boost::multi_index::tag<UnitSequenced>>,
+//                ::boost::multi_index::ordered_unique<::boost::multi_index::tag<UnitByIdentity>,
+//                        ::boost::multi_index::identity<UnitBaseClass>>,
+//                ::boost::multi_index::ordered_unique<::boost::multi_index::tag<UnitFlightgroup>,
+//                        BOOST_MULTI_INDEX_CONST_MEM_FUN(UnitBaseClass, ::std::string, getFgID)
+//                >
+//        >
+//> UnitBaseClassMultiIndexContainer;
+//typedef UnitBaseClassMultiIndexContainer VegaUnitCollection;
+//typedef VegaUnitCollection::index<UnitSequenced>::type BySequence;
+//typedef VegaUnitCollection::index_iterator<UnitSequenced>::type UnitSequencedIterator;
+//typedef VegaUnitCollection::index_const_iterator<UnitSequenced>::type UnitSequencedConstIterator;
+//typedef VegaUnitCollection::index_iterator<UnitByIdentity>::type UnitIdentityIterator;
+//typedef VegaUnitCollection::index_const_iterator<UnitByIdentity>::type UnitIdentityConstIterator;
+//typedef VegaUnitCollection::index_iterator<UnitFlightgroup>::type UnitFlightgroupIterator;
+//typedef VegaUnitCollection::index_const_iterator<UnitFlightgroup>::type UnitFlightgroupConstIterator;
 
 #endif //VEGA_STRIKE_SRC_CMD_UNIT_COLLECTION_HPP_

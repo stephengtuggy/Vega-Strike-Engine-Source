@@ -111,8 +111,8 @@ public:
             this->nr_waves_left = num_waves - 1;
             mission->AddFlightgroup(this);
         }
-        this->target = NULL;
-        this->leader = NULL;
+        this->target.setNull();
+        this->leader.setNull();
         this->ainame = order;
         this->type = type;
         this->nr_ships += num_ships;

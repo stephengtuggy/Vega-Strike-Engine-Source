@@ -855,7 +855,7 @@ SET(LIBCMD_SOURCES
     src/cmd/weapon_info.cpp
     src/cmd/mount_size.cpp
     src/cmd/weapon_type.cpp
-        src/cmd/unit_base_class.cpp src/cmd/unit_base_class.hpp)
+        src/cmd/unit_base_class.cpp src/cmd/unit_base_class.hpp src/cmd/vega_circular_buffer.cpp src/cmd/vega_circular_buffer.hpp)
 
 SET(LIBCMDSERVER_SOURCES
     src/cmd/atmosphere_server.cpp
