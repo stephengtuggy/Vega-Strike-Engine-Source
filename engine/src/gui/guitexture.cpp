@@ -25,12 +25,9 @@
 
 #include "guitexture.h"
 
-#include <gnuhash.h>
-
 #include <string>
 #include <png.h>
-#include "vsfilesystem.h"
-#include "gfx/vsimage.h"
+//#include "vs_umap.hpp"
 #include "gldrv/gl_globals.h"
 #include "gfx/aux_texture.h"
 

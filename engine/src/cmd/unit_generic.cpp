@@ -1736,6 +1736,7 @@ void Unit::Kill(bool erasefromsave, bool quitting) {
     }
 }
 
+// FIXME: Eliminate this method
 void Unit::UnRef() {
     intrusive_ptr_release(this);
     if (killed && use_count() == 0U) {
@@ -5575,7 +5576,7 @@ void Unit::SetFaction(int new_faction) {
     UnitSequencedIterator un_iter_1 = my_sub_units.begin();
     UnitSequencedIterator un_iter_end = my_sub_units.end();
     while (un_iter_1 != un_iter_end) {
-        my_sub_units.modify(un_iter_1, [new_faction](boost::shared_ptr<UnitBaseClass>& un){ vega_dynamic_cast_boost_shared_ptr<Unit>(un)->SetFaction(new_faction); });
+        my_sub_units.modify(un_iter_1, [new_faction](UnitBaseClassPtr& un){ vega_dynamic_cast_boost_shared_ptr<Unit>(un)->SetFaction(new_faction); });
         ++un_iter_1;
     }
 }

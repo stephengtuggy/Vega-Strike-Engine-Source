@@ -26,6 +26,7 @@
 //#include <stdlib.h>
 #include "container.h"
 #include "unit_generic.h"
+#include "damageable.h"
 
 UnitContainer::UnitContainer() : unit(nullptr) {
     VSCONSTRUCT1('U')

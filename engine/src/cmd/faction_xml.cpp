@@ -27,16 +27,14 @@
 
 #include <vector>
 #include <string>
-#include <gnuhash.h>
-#include <expat.h>
 #include "vegastrike.h"
 #include "xml_support.h"
 #include <assert.h>
 #include "ai/communication.h"
-#include "cmd/music.h"
 #include "faction_generic.h"
 #include "faction_factory.h"
 #include "unit_base_class.hpp"
+#include "vs_umap.hpp"
 
 using namespace XMLSupport;
 

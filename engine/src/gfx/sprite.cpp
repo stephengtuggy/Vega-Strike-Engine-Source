@@ -39,7 +39,7 @@
 #include "../gldrv/gl_globals.h"
 #include <assert.h>
 #include <math.h>
-#include "gnuhash.h"
+#include "vs_umap.hpp"
 
 #ifdef _WIN32
 #include <direct.h>

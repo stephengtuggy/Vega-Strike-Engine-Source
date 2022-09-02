@@ -33,13 +33,12 @@
 
 #ifndef _MISSION_H_
 #define _MISSION_H_
-#include <gnuhash.h>
 
 #include <expat.h>
 #include <string>
 #include <fstream>
 
-//#include "xml_support.h"
+#include "vs_umap.hpp"
 #include "easydom.h"
 
 #ifndef VS_MIS_SEL

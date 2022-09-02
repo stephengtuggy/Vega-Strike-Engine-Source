@@ -77,7 +77,6 @@ void UncheckUnit( UnitPtr un );
     #include "gfxlib_struct.h"
     #include "xml_support.h"
     #include "container.h"
-//#include "collection.h"
 //    #include "unit_collection.hpp"
     #include "script/flightgroup.h"
     #include "faction_generic.h"
@@ -85,7 +84,7 @@ void UncheckUnit( UnitPtr un );
     #include "gfx/cockpit_generic.h"
     #include "vsfilesystem.h"
     #include "collide_map.h"
-    #include "SharedPool.h"
+//    #include "SharedPool.h"
     #include "role_bitmask.h"
 
     #include "configuration/configuration.h"
@@ -440,8 +439,8 @@ public:
 /* Updates the collide Queue with any possible change in sectors
  *  Split this mesh with into 2^level submeshes at arbitrary planes
  *  Uses Mesh so only in Unit and maybe in NetUnit */
-    virtual void Split(int level) {
-    }
+//    virtual void Split(int level) {
+//    }
 
     virtual void addHalo(const char *filename,
             const Matrix &trans,
@@ -632,11 +631,6 @@ public:
     virtual void Cloak(bool cloak);
 //deletes
     void Kill(bool eraseFromSave = true, bool quitting = false);
-
-//Is dead yet?
-    inline bool Killed() const {
-        return killed;
-    }
 
     bool IsExploding() const {
         return pImage->timeexplode > 0;

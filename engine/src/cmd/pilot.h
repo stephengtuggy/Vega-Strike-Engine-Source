@@ -23,7 +23,7 @@
  */
 
 
-#include "gnuhash.h"
+#include "vs_umap.hpp"
 #include <vector>
 
 class Animation;

@@ -111,26 +111,16 @@ public:
     int faction = 0;
 
     //get the flightgroup description
-    Flightgroup *getFlightgroup() const {
-        return flightgroup;
-    }
+    Flightgroup *getFlightgroup() const;
 
     //get the subnumber
-    int32_t getFgSubnumber() const {
-        return flightgroup_subnumber;
-    }
+    int32_t getFgSubnumber() const;
 
-    void setFullname(std::string new_name) {
-        fullname = new_name;
-    }
+    void setFullname(std::string new_name);
 
-    const std::string &getFullname() const {
-        return fullname;
-    }
+    const std::string &getFullname() const;
 
-    const std::string &getFilename() const {
-        return *filename.get();
-    }
+    const std::string &getFilename() const;
 
     virtual std::string getName() const;
     virtual void setName(std::string new_name);
@@ -143,7 +133,9 @@ public:
     VegaStringPtr name;
 };
 
-inline std::ostream & operator<<(std::ostream & os, boost::shared_ptr<UnitBaseClass> unit_base_class_ptr) {
+using UnitBaseClassPtr = boost::shared_ptr<UnitBaseClass>;
+
+inline std::ostream & operator<<(std::ostream & os, UnitBaseClassPtr unit_base_class_ptr) {
     os << unit_base_class_ptr->toString();
     return os;
 }

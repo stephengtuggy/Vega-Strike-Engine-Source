@@ -29,7 +29,7 @@
 #include "mission.h"
 #include <string>
 #include <vector>
-#include <gnuhash.h>
+#include "vs_umap.hpp"
 
 class Texture;
 

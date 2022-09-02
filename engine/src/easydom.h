@@ -31,8 +31,8 @@
 #include <string>
 #include <vector>
 #include <stack>
-#include <gnuhash.h>
 #include <stdlib.h>
+#include "vs_umap.hpp"
 #include "vsfilesystem.h"
 #include "vs_globals.h"
 #include "xml_support.h"

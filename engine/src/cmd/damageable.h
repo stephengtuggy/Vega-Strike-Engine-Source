@@ -26,6 +26,39 @@
 #ifndef DAMAGEABLE_H
 #define DAMAGEABLE_H
 
+#include "collection.h"
+#include "configuration/game_config.h"
+#include "configuration/configuration.h"
+#include "role_bitmask.h"
+#include "collide_map.h"
+#include "vsfilesystem.h"
+#include "gfx/cockpit_generic.h"
+#include "star_system_generic.h"
+#include "faction_generic.h"
+#include "script/flightgroup.h"
+#include "container.h"
+#include "xml_support.h"
+#include "gfx/quaternion.h"
+#include "gfx/matrix.h"
+#include "vega_cast_utils.hpp"
+#include <map>
+#include <set>
+#include <string>
+#include "vs_globals.h"
+#include "vegastrike.h"
+#include "damage/damage.h"
+#include "mount.h"
+#include "jump_capable.h"
+#include "carrier.h"
+#include "energetic.h"
+#include "intelligent.h"
+#include "computer.h"
+#include "movable.h"
+#include "drawable.h"
+#include "audible.h"
+#include "armed.h"
+#include "unit_base_class.hpp"
+#include <boost/smart_ptr/shared_ptr.hpp>
 #include "damageable_object.h"
 #include "gfx/vec.h"
 #include "mount_size.h"
@@ -56,6 +89,13 @@ public:
     bool killed;
 
     // Methods
+    /**
+     * Is dead yet?
+     */
+    inline bool Killed() const {
+        return killed;
+    }
+
 public:
     Damageable() : hull(&layers[0]),
             armor(&layers[1]),

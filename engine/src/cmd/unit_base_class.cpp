@@ -22,24 +22,24 @@
  * along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "movable.h"
-#include "pilot.h"
-#include "mount_size.h"
-#include "weapon_info.h"
-#include "universe.h"
-#include "gfx/camera.h"
-#include "galaxy_xml.h"
-#include "vs_random.h"
-#include "csv.h"
-#include "gfx/vsbox.h"
-#include "missile.h"
-#include "python/python_class.h"
-#include "cmd/ai/script.h"
-#include "cmd/ai/communication.h"
+//#include "movable.h"
+//#include "pilot.h"
+//#include "mount_size.h"
+//#include "weapon_info.h"
+//#include "universe.h"
+//#include "gfx/camera.h"
+//#include "galaxy_xml.h"
+//#include "vs_random.h"
+//#include "csv.h"
+//#include "gfx/vsbox.h"
+//#include "missile.h"
+//#include "python/python_class.h"
+//#include "cmd/ai/script.h"
+//#include "cmd/ai/communication.h"
 #include "script/flightgroup.h"
-#include "xml_serializer.h"
-#include "beam.h"
-#include "base.h"
+//#include "xml_serializer.h"
+//#include "beam.h"
+//#include "base.h"
 #include "unit_base_class.hpp"
 #include <boost/format.hpp>
 
@@ -127,4 +127,25 @@ bool UnitBaseClass::loadedSuccessfully() const {
 
 void UnitBaseClass::setFailedToLoad() {
     setName(kLoadFailed);
+}
+
+Flightgroup *UnitBaseClass::getFlightgroup() const {
+    return flightgroup;
+}
+
+int32_t UnitBaseClass::getFgSubnumber() const {
+    return flightgroup_subnumber;
+}
+
+// TODO: Add some more logic related to potentially changing the Unit's key in various collections
+void UnitBaseClass::setFullname(std::string new_name) {
+    fullname = new_name;
+}
+
+const std::string &UnitBaseClass::getFullname() const {
+    return fullname;
+}
+
+const std::string &UnitBaseClass::getFilename() const {
+    return *filename.get();
 }

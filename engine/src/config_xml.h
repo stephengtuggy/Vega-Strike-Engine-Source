@@ -29,7 +29,7 @@
 
 #include <expat.h>
 #include <string>
-#include <gnuhash.h>
+#include "vs_umap.hpp"
 #include "configxml.h"
 #include "xml_support.h"
 #include "easydom.h"

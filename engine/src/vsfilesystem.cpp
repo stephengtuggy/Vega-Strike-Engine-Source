@@ -54,7 +54,7 @@ struct dirent
 #include "galaxy_gen.h"
 #include "pk3.h"
 
-#include "gnuhash.h"
+#include "vs_umap.hpp"
 
 #include "options.h"
 

@@ -39,7 +39,7 @@
 #include "pythonmission.h"
 #include "mission.h"
 #include "savegame.h"
-#include "gnuhash.h"
+#include "vs_umap.hpp"
 #include "universe.h"
 #include "vs_logging.h"
 

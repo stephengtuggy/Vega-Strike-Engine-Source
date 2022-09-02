@@ -135,7 +135,7 @@ public:
     void DrawSubunits(bool on_screen, Matrix wmat, int cloak, float average_scale, unsigned char char_damage);
 
     //Split this mesh with into 2^level submeshes at arbitrary planes
-    void Split(int level);
+    virtual void Split(int level);
 
     unsigned int nummesh() const {
         // Return number of meshes except shield

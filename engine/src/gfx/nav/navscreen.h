@@ -35,7 +35,7 @@
 #include "navcomputer.h"
 #include "navpath.h"
 #include "gfx/hud.h"
-#include "gnuhash.h"
+#include "vs_umap.hpp"
 
 #include <map>
 

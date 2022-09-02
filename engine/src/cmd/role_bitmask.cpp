@@ -26,13 +26,13 @@
 
 #include "role_bitmask.h"
 #include "xml_support.h"
-#include <gnuhash.h>
 
 #include "vs_globals.h"
-#include "config_xml.h"
 #include "vsfilesystem.h"
 #include "vs_logging.h"
 #include "csv.h"
+#include "vs_umap.hpp"
+
 using std::string;
 using std::pair;
 using namespace VSFileSystem;   // FIXME -- Shouldn't import an entire namespace like this, at least according to Google Style Guide

@@ -365,12 +365,12 @@ public:
         return textureUnits.size();
     }
 
-    /** Get the specified texture UnitPtr/
+    /** Get the specified texture Unit */
     const TextureUnit &getTextureUnit(int index) const {
         return textureUnits[index];
     }
 
-    /** Get the specified texture UnitPtr/
+    /** Get the specified texture Unit */
     TextureUnit &getTextureUnit(int index) {
         return textureUnits[index];
     }

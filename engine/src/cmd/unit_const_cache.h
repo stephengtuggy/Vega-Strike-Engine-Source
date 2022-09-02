@@ -29,7 +29,7 @@
 #define __UNIT_CONST_CACHE_H
 #include "hashtable.h"
 #include <string>
-#include <gnuhash.h>
+#include "vs_umap.hpp"
 #include <functional>
 
 class Mesh;

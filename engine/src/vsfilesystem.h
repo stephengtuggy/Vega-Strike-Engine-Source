@@ -30,7 +30,7 @@
 #include <cstdarg>
 #include "gfx/vec.h"
 #include "pk3.h"
-#include <gnuhash.h>
+#include "vs_umap.hpp"
 #include "vs_logging.h"
 
 #include <boost/filesystem.hpp>

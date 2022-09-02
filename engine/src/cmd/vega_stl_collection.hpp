@@ -77,10 +77,10 @@ public:
         /*  Move argument list to the beginning of current list */
         void moveBefore(UnitCollection &);
 
-        /* Insert unit before current UnitPtr/
+        /* Insert unit before current Unit */
         void preinsert(UnitPtr);
 
-        /* Insert unit after current UnitPtr/
+        /* Insert unit after current Unit */
         void postinsert(UnitPtr unit);
 
         /* increment to next valid unit (may iterate many times) */

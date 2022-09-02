@@ -22,6 +22,8 @@
  * along with Vega Strike. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#error "Should not be including gnuhash.h any longer"
+
 #ifndef _GNUHASH_H_
 #define _GNUHASH_H_
 
