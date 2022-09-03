@@ -68,7 +68,7 @@ public:
     }
 
     virtual ~UnitContainer();
-    void SetUnit(Unit * un);
+    void SetUnit(UnitConstRawPtr un);
     void SetUnit(UnitSharedPtr un);
     void SetUnit(UnitWeakPtr un);
     UnitRawPtr GetUnit() const;

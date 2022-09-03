@@ -45,7 +45,7 @@ UnitContainer::~UnitContainer() {
     //bad idea...arrgh!
 }
 
-void UnitContainer::SetUnit(Unit * un) {
+void UnitContainer::SetUnit(UnitConstRawPtr un) {
     //if the unit is null then go here otherwise if the unit is killed then go here
     if (un == nullptr || un->Killed()) {
         if (unit) {
