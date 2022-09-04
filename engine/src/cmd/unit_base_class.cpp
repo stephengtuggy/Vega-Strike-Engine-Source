@@ -83,7 +83,7 @@ bool UnitBaseClass::operator<(const UnitBaseClass &other) const {
 
 std::string UnitBaseClass::getFgID() const {
     if (flightgroup != nullptr) {
-        return (boost::format("%1$s-%2$4d") % flightgroup->name % flightgroup_sub_number_).str();
+        return (boost::format("%1$s-%2$5d") % flightgroup->name % flightgroup_sub_number_).str();
     } else {
         return fullname;
     }

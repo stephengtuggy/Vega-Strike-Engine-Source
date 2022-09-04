@@ -27,22 +27,25 @@
 #define _UNITCONTAINER_H_
 
 #include "debug_vs.h"
-//#include "unit_base_class.hpp"
+#include <boost/smart_ptr/intrusive_ref_counter.hpp>
+#include <boost/smart_ptr/intrusive_ptr.hpp>
+#include <boost/smart_ptr/shared_ptr.hpp>
+#include "vega_intrusive_ptr.hpp"
+#include "unit_base_class.hpp"
 #include "unit_fwd_decl.hpp"
-//#include "vega_intrusive_ptr.hpp"
 #include "unit_generic.h"
 
 class UnitContainer {
 protected:
-    UnitSharedPtr unit;
+    UnitRawPtr unit;
 public:
     UnitContainer();
     explicit UnitContainer(UnitRawPtr un);
 
     UnitContainer(const UnitContainer &un) {
         VSCONSTRUCT1('U')
-        //unit = nullptr;
-        unit.reset();
+        unit = nullptr;
+        //unit.reset();
         SetUnit(un.unit);
     }
 
@@ -52,11 +55,11 @@ public:
     }
 
     bool operator==(UnitConstRawPtr oth) const {
-        return unit.get() == oth;
+        return unit == oth;
     }
 
     bool operator!=(UnitConstRawPtr oth) const {
-        return unit.get() != oth;
+        return unit != oth;
     }
 
     bool operator==(const UnitContainer &oth) const {
@@ -74,11 +77,11 @@ public:
     UnitRawPtr GetUnit() const;
 
     UnitConstRawPtr GetConstUnit() const {
-        return unit.get();
+        return unit;
     }
 
     UnitWeakPtr getWeakUnitPtr() {
-        return UnitWeakPtr(unit);
+        return make_shared_from_intrusive(unit);
     }
     UnitWeakPtr getWeakUnitPtrConst() const;
 
@@ -92,7 +95,8 @@ public:
 
     virtual void setNull() {
         if (unit) {
-            unit.reset();
+            unit = nullptr;
+            //unit.reset();
         }
     }
 
