@@ -190,6 +190,7 @@ void Python::init() {
     Python::reseterrors();
     free(temppython);
 
+#ifndef _DEBUG
     const std::string python_snippet_to_run_2{
             "import VS\n"
             "print("
@@ -203,6 +204,8 @@ void Python::init() {
     PyRun_SimpleString(temp_python2);
     Python::reseterrors();
     free(temp_python2);
+#endif
+
 #if (PY_VERSION_HEX < 0x03000000)
     InitDirector2();
     InitBase2();
