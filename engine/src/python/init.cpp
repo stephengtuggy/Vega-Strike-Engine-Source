@@ -190,7 +190,8 @@ void Python::init() {
     Python::reseterrors();
     free(temppython);
 
-#ifndef _DEBUG
+#if defined(_DEBUG) && defined(_WINDOWS)
+#else
     const std::string python_snippet_to_run_2{
             "import VS\n"
             "print("
