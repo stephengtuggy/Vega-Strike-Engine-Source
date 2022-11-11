@@ -22,11 +22,14 @@
     "openal-soft",
     "opengl",
     "opengl-registry",
-    {
-      "name": "openssl",
-      "version>=": "1.1.1m"
-    },
+    "openssl",
     "sdl1",
     "zlib"
+  ],
+  "overrides": [
+    {
+      "name": "openssl",
+      "version-string": "1.1.1n#1"
+    }
   ]
 }
