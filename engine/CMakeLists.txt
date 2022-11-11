@@ -363,7 +363,7 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${Vega_Strike_SOURCE_DIR})
 # so that we can handle the special cases for Xenial and stretch
 FIND_PACKAGE(LinuxDistro REQUIRED)
 
-FIND_PACKAGE(Python3 REQUIRED COMPONENTS Development)
+FIND_PACKAGE(Python3 REQUIRED COMPONENTS Interpreter Development)
 MESSAGE("++ Python library : ${Python3_LIBRARIES} (${Python3_VERSION})")
 MESSAGE("++ Python include dir : ${Python3_INCLUDE_DIRS}")
 IF (Python3_FOUND)
