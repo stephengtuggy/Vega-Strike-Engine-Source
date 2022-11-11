@@ -337,6 +337,7 @@ add_compile_definitions("NV_CUBE_MAP"
         "$<$<CXX_COMPILER_ID:MSVC>:__x86_64__>"
         "$<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>"
         "$<$<CXX_COMPILER_ID:MSVC>:_CRT_NONSTDC_NO_DEPRECATE>"
+        "$<$<CXX_COMPILER_ID:MSVC>:BOOST_USE_WINAPI_VERSION=0x0602>"
         )
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/FI${Vega_Strike_BINARY_DIR}/config.h>"
         "$<$<CXX_COMPILER_ID:MSVC>:/wd4244>"
