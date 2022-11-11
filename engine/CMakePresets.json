@@ -1,0 +1,241 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 13
+  },
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "Default Config",
+      "description": "Default build using Ninja generator",
+      "generator": "Ninja"
+    },
+    {
+      "name": "pie-enabled",
+      "inherits": "default",
+      "displayName": "PIE Enabled",
+      "description": "Enable Position-Independent Executables (PIE)",
+      "cacheVariables": {
+        "ENABLE_PIE": true
+      }
+    },
+    {
+      "name": "pie-disabled",
+      "inherits": "default",
+      "displayName": "PIE Disabled",
+      "description": "Build with Position-Independent Executables (PIE) turned off",
+      "cacheVariables": {
+        "ENABLE_PIE": false
+      }
+    },
+    {
+      "name": "legacy-gl",
+      "displayName": "Legacy OpenGL",
+      "cacheVariables": {
+        "OpenGL_GL_PREFERENCE": {
+          "type": "string",
+          "value": "LEGACY"
+        }
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "glvnd",
+      "displayName": "GLVND",
+      "cacheVariables": {
+        "OpenGL_GL_PREFERENCE": {
+          "type": "string",
+          "value": "GLVND"
+        }
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "pie-enabled-glvnd",
+      "inherits": [
+        "pie-enabled",
+        "glvnd"
+      ],
+      "displayName": "PIE Enabled, GLVND"
+    },
+    {
+      "name": "pie-enabled-legacy-gl",
+      "inherits": [
+        "pie-enabled",
+        "legacy-gl"
+      ],
+      "displayName": "PIE Enabled, Legacy OpenGL"
+    },
+    {
+      "name": "pie-disabled-glvnd",
+      "inherits": [
+        "pie-disabled",
+        "glvnd"
+      ],
+      "displayName": "PIE Disabled, GLVND"
+    },
+    {
+      "name": "pie-disabled-legacy-gl",
+      "inherits": [
+        "pie-disabled",
+        "legacy-gl"
+      ],
+      "displayName": "PIE Disabled, Legacy OpenGL"
+    },
+    {
+      "name": "windows-default",
+      "inherits": "pie-enabled",
+      "displayName": "Windows Default",
+      "description": "Default build for Windows",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "VS2019Win64",
+      "inherits": "windows-default",
+      "displayName": "Visual Studio 2019 on Windows x64",
+      "generator": "Visual Studio 16 2019",
+      "architecture": "X64"
+    },
+    {
+      "name": "VS2022Win64",
+      "inherits": "windows-default",
+      "displayName": "Visual Studio 2022 on Windows x64",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "X64"
+    },
+    {
+      "name": "ninja-windows",
+      "inherits": "windows-default",
+      "displayName": "Ninja on Windows",
+      "generator": "Ninja"
+    },
+    {
+      "name": "ninja-multi-config-windows",
+      "inherits": "windows-default",
+      "displayName": "Ninja Multi-Config on Windows",
+      "generator": "Ninja Multi-Config"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "pie-enabled-glvnd-debug",
+      "displayName": "PIE Enabled, GLVND, Debug",
+      "configurePreset": "pie-enabled-glvnd",
+      "configuration": "Debug",
+      "cleanFirst": true
+    },
+    {
+      "name": "pie-enabled-glvnd-release",
+      "displayName": "PIE Enabled, GLVND, Release",
+      "configurePreset": "pie-enabled-glvnd",
+      "configuration": "Release",
+      "cleanFirst": true
+    },
+    {
+      "name": "pie-disabled-glvnd-debug",
+      "displayName": "PIE Disabled, GLVND, Debug",
+      "configurePreset": "pie-disabled-glvnd",
+      "configuration": "Debug",
+      "cleanFirst": true
+    },
+    {
+      "name": "pie-disabled-glvnd-release",
+      "displayName": "PIE Disabled, GLVND, Release",
+      "configurePreset": "pie-disabled-glvnd",
+      "configuration": "Release",
+      "cleanFirst": true
+    },
+    {
+      "name": "pie-enabled-legacy-gl-debug",
+      "displayName": "PIE Enabled, Legacy OpenGL, Debug",
+      "configurePreset": "pie-enabled-legacy-gl",
+      "configuration": "Debug",
+      "cleanFirst": true
+    },
+    {
+      "name": "pie-enabled-legacy-gl-release",
+      "displayName": "PIE Enabled, Legacy OpenGL, Release",
+      "configurePreset": "pie-enabled-legacy-gl",
+      "configuration": "Release",
+      "cleanFirst": true
+    },
+    {
+      "name": "pie-disabled-legacy-gl-debug",
+      "displayName": "PIE Disabled, Legacy OpenGL, Debug",
+      "configurePreset": "pie-disabled-legacy-gl",
+      "configuration": "Debug",
+      "cleanFirst": true
+    },
+    {
+      "name": "pie-disabled-legacy-gl-release",
+      "displayName": "PIE Disabled, Legacy OpenGL, Release",
+      "configurePreset": "pie-disabled-legacy-gl",
+      "configuration": "Release",
+      "cleanFirst": true
+    },
+    {
+      "name": "VS2019Win64-debug",
+      "displayName": "Visual Studio 2019 on Windows x64, Debug",
+      "configurePreset": "VS2019Win64",
+      "configuration": "Debug",
+      "cleanFirst": true
+    },
+    {
+      "name": "VS2019Win64-release",
+      "displayName": "Visual Studio 2019 on Windows x64, Release",
+      "configurePreset": "VS2019Win64",
+      "configuration": "Release",
+      "cleanFirst": true
+    },
+    {
+      "name": "VS2022Win64-debug",
+      "displayName": "Visual Studio 2022 on Windows x64, Debug",
+      "configurePreset": "VS2022Win64",
+      "configuration": "Debug"
+    },
+    {
+      "name": "VS2022Win64-release",
+      "displayName": "Visual Studio 2022 on Windows x64, Release",
+      "configurePreset": "VS2022Win64",
+      "configuration": "Release"
+    },
+    {
+      "name": "ninja-windows-debug",
+      "displayName": "Ninja on Windows, Debug",
+      "configurePreset": "ninja-windows",
+      "configuration": "Debug"
+    },
+    {
+      "name": "ninja-windows-release",
+      "displayName": "Ninja on Windows, Release",
+      "configurePreset": "ninja-windows",
+      "configuration": "Release"
+    },
+    {
+      "name": "ninja-multi-config-windows-debug",
+      "displayName": "Ninja Multi-Config on Windows, Debug",
+      "configurePreset": "ninja-multi-config-windows",
+      "configuration": "Debug"
+    },
+    {
+      "name": "ninja-multi-config-windows-release",
+      "displayName": "Ninja Multi-Config on Windows, Release",
+      "configurePreset": "ninja-multi-config-windows",
+      "configuration": "Release"
+    }
+  ]
+}
