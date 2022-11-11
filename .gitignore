@@ -15,3 +15,4 @@ engine/.idea/
 
 engine/src/version.h
 engine/setup/src/include/version.h
+CMakeUserPresets.json
