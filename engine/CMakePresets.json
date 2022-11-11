@@ -205,37 +205,43 @@
       "name": "VS2022Win64-debug",
       "displayName": "Visual Studio 2022 on Windows x64, Debug",
       "configurePreset": "VS2022Win64",
-      "configuration": "Debug"
+      "configuration": "Debug",
+      "cleanFirst": true
     },
     {
       "name": "VS2022Win64-release",
       "displayName": "Visual Studio 2022 on Windows x64, Release",
       "configurePreset": "VS2022Win64",
-      "configuration": "Release"
+      "configuration": "Release",
+      "cleanFirst": true
     },
     {
       "name": "ninja-windows-debug",
       "displayName": "Ninja on Windows, Debug",
       "configurePreset": "ninja-windows",
-      "configuration": "Debug"
+      "configuration": "Debug",
+      "cleanFirst": true
     },
     {
       "name": "ninja-windows-release",
       "displayName": "Ninja on Windows, Release",
       "configurePreset": "ninja-windows",
-      "configuration": "Release"
+      "configuration": "Release",
+      "cleanFirst": true
     },
     {
       "name": "ninja-multi-config-windows-debug",
       "displayName": "Ninja Multi-Config on Windows, Debug",
       "configurePreset": "ninja-multi-config-windows",
-      "configuration": "Debug"
+      "configuration": "Debug",
+      "cleanFirst": true
     },
     {
       "name": "ninja-multi-config-windows-release",
       "displayName": "Ninja Multi-Config on Windows, Release",
       "configurePreset": "ninja-multi-config-windows",
-      "configuration": "Release"
+      "configuration": "Release",
+      "cleanFirst": true
     }
   ]
 }
