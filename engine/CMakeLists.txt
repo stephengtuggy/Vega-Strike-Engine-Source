@@ -279,7 +279,7 @@ IF (CPU_SMP GREATER 1)
 ENDIF (CPU_SMP GREATER 1)
 
 IF (DATADIR)
-    SET(DEFINES "${DEFINES} -DDATA_DIR='\"${DATADIR}\"'")
+    add_compile_definitions("DATA_DIR='${DATADIR}'")
 ENDIF (DATADIR)
 
 # On some Ubuntu versions and derivatives, a bug exists whereby enabling
@@ -337,7 +337,8 @@ add_compile_definitions("NV_CUBE_MAP"
         "$<$<CXX_COMPILER_ID:MSVC>:__x86_64__>"
         "$<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>"
         "$<$<CXX_COMPILER_ID:MSVC>:_CRT_NONSTDC_NO_DEPRECATE>"
-        "$<$<CXX_COMPILER_ID:MSVC>:BOOST_USE_WINAPI_VERSION=0x0602>"
+        "BOOST_USE_WINAPI_VERSION=0x0602"
+        "_WIN32_WINNT=0x0602"
         )
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/FI${Vega_Strike_BINARY_DIR}/config.h>"
         "$<$<CXX_COMPILER_ID:MSVC>:/wd4244>"
