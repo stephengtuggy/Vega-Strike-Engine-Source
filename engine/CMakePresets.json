@@ -9,7 +9,10 @@
       "name": "default",
       "displayName": "Default Config",
       "description": "Default build using Ninja generator",
-      "generator": "Ninja"
+      "generator": "Ninja",
+      "debug": {
+        "output": true
+      }
     },
     {
       "name": "pie-enabled",
@@ -225,7 +228,8 @@
       "name": "ninja-multi-config-windows-release",
       "displayName": "Ninja Multi-Config on Windows, Release",
       "configurePreset": "ninja-multi-config-windows",
-      "configuration": "Release"
+      "configuration": "Release",
+      "verbose": true
     }
   ]
 }
