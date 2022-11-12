@@ -135,113 +135,97 @@
       "name": "pie-enabled-glvnd-debug",
       "displayName": "PIE Enabled, GLVND, Debug",
       "configurePreset": "pie-enabled-glvnd",
-      "configuration": "Debug",
-      "cleanFirst": true
+      "configuration": "Debug"
     },
     {
       "name": "pie-enabled-glvnd-release",
       "displayName": "PIE Enabled, GLVND, Release",
       "configurePreset": "pie-enabled-glvnd",
-      "configuration": "Release",
-      "cleanFirst": true
+      "configuration": "Release"
     },
     {
       "name": "pie-disabled-glvnd-debug",
       "displayName": "PIE Disabled, GLVND, Debug",
       "configurePreset": "pie-disabled-glvnd",
-      "configuration": "Debug",
-      "cleanFirst": true
+      "configuration": "Debug"
     },
     {
       "name": "pie-disabled-glvnd-release",
       "displayName": "PIE Disabled, GLVND, Release",
       "configurePreset": "pie-disabled-glvnd",
-      "configuration": "Release",
-      "cleanFirst": true
+      "configuration": "Release"
     },
     {
       "name": "pie-enabled-legacy-gl-debug",
       "displayName": "PIE Enabled, Legacy OpenGL, Debug",
       "configurePreset": "pie-enabled-legacy-gl",
-      "configuration": "Debug",
-      "cleanFirst": true
+      "configuration": "Debug"
     },
     {
       "name": "pie-enabled-legacy-gl-release",
       "displayName": "PIE Enabled, Legacy OpenGL, Release",
       "configurePreset": "pie-enabled-legacy-gl",
-      "configuration": "Release",
-      "cleanFirst": true
+      "configuration": "Release"
     },
     {
       "name": "pie-disabled-legacy-gl-debug",
       "displayName": "PIE Disabled, Legacy OpenGL, Debug",
       "configurePreset": "pie-disabled-legacy-gl",
-      "configuration": "Debug",
-      "cleanFirst": true
+      "configuration": "Debug"
     },
     {
       "name": "pie-disabled-legacy-gl-release",
       "displayName": "PIE Disabled, Legacy OpenGL, Release",
       "configurePreset": "pie-disabled-legacy-gl",
-      "configuration": "Release",
-      "cleanFirst": true
+      "configuration": "Release"
     },
     {
       "name": "VS2019Win64-debug",
       "displayName": "Visual Studio 2019 on Windows x64, Debug",
       "configurePreset": "VS2019Win64",
-      "configuration": "Debug",
-      "cleanFirst": true
+      "configuration": "Debug"
     },
     {
       "name": "VS2019Win64-release",
       "displayName": "Visual Studio 2019 on Windows x64, Release",
       "configurePreset": "VS2019Win64",
-      "configuration": "Release",
-      "cleanFirst": true
+      "configuration": "Release"
     },
     {
       "name": "VS2022Win64-debug",
       "displayName": "Visual Studio 2022 on Windows x64, Debug",
       "configurePreset": "VS2022Win64",
-      "configuration": "Debug",
-      "cleanFirst": true
+      "configuration": "Debug"
     },
     {
       "name": "VS2022Win64-release",
       "displayName": "Visual Studio 2022 on Windows x64, Release",
       "configurePreset": "VS2022Win64",
-      "configuration": "Release",
-      "cleanFirst": true
+      "configuration": "Release"
     },
     {
       "name": "ninja-windows-debug",
       "displayName": "Ninja on Windows, Debug",
       "configurePreset": "ninja-windows",
-      "configuration": "Debug",
-      "cleanFirst": true
+      "configuration": "Debug"
     },
     {
       "name": "ninja-windows-release",
       "displayName": "Ninja on Windows, Release",
       "configurePreset": "ninja-windows",
-      "configuration": "Release",
-      "cleanFirst": true
+      "configuration": "Release"
     },
     {
       "name": "ninja-multi-config-windows-debug",
       "displayName": "Ninja Multi-Config on Windows, Debug",
       "configurePreset": "ninja-multi-config-windows",
-      "configuration": "Debug",
-      "cleanFirst": true
+      "configuration": "Debug"
     },
     {
       "name": "ninja-multi-config-windows-release",
       "displayName": "Ninja Multi-Config on Windows, Release",
       "configurePreset": "ninja-multi-config-windows",
-      "configuration": "Release",
-      "cleanFirst": true
+      "configuration": "Release"
     }
   ]
 }
