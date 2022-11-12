@@ -10,6 +10,7 @@
       "displayName": "Default Config",
       "description": "Default build using Ninja generator",
       "generator": "Ninja",
+      "binaryDir": "${sourceParentDir}/build/${presetName}",
       "debug": {
         "output": true
       }
@@ -198,13 +199,15 @@
       "name": "VS2022Win64-debug",
       "displayName": "Visual Studio 2022 on Windows x64, Debug",
       "configurePreset": "VS2022Win64",
-      "configuration": "Debug"
+      "configuration": "Debug",
+      "verbose": true
     },
     {
       "name": "VS2022Win64-release",
       "displayName": "Visual Studio 2022 on Windows x64, Release",
       "configurePreset": "VS2022Win64",
-      "configuration": "Release"
+      "configuration": "Release",
+      "verbose": true
     },
     {
       "name": "ninja-windows-debug",
