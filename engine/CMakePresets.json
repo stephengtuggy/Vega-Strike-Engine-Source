@@ -101,8 +101,7 @@
       "displayName": "Windows Default",
       "description": "Default build for Windows",
       "environment": {
-        "VCPKG_DEFAULT_TRIPLET": "x64-windows",
-        "VCPKG_DEFAULT_HOST_TRIPLET": "x64-windows"
+        "VCPKG_DEFAULT_TRIPLET": "x64-windows"
       },
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": {
