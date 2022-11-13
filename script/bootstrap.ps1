@@ -37,5 +37,3 @@ $newPath = $path + ";$VCKPG_PARENT_DIR\vcpkg\downloads\tools\cmake-$CMAKE_VERSIO
 [Environment]::SetEnvironmentVariable('PYTHONHOME', "$VCKPG_PARENT_DIR\vcpkg\packages\python3_x64-windows\tools\python3", 'User')
 
 Pop-Location
-
-. refreshenv
