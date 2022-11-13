@@ -30,10 +30,11 @@ git clone https://github.com/Microsoft/vcpkg.git
 [Environment]::SetEnvironmentVariable('VCPKG_ROOT', "$VCKPG_PARENT_DIR\vcpkg", 'User')
 
 $path = [Environment]::GetEnvironmentVariable('PATH', 'User')
-$newPath = $path + ";$VCKPG_PARENT_DIR\vcpkg\downloads\tools\cmake-$CMAKE_VERSION-windows\cmake-$CMAKE_VERSION-windows-i386\bin"
+$newPath = $path + ";$VCKPG_PARENT_DIR\vcpkg\packages\python3_x64-windows\tools\python3"
 [Environment]::SetEnvironmentVariable('PATH', $newPath, 'User')
 
 [Environment]::SetEnvironmentVariable('VCPKG_DEFAULT_TRIPLET', 'x64-windows', 'User')
+[Environment]::SetEnvironmentVariable('VCPKG_DEFAULT_HOST_TRIPLET', 'x64-windows', 'User')
 [Environment]::SetEnvironmentVariable('PYTHONHOME', "$VCKPG_PARENT_DIR\vcpkg\packages\python3_x64-windows\tools\python3", 'User')
 
 Pop-Location
