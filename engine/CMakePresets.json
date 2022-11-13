@@ -100,7 +100,12 @@
       "inherits": "pie-enabled",
       "displayName": "Windows Default",
       "description": "Default build for Windows",
-      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": {
+          "type": "FILEPATH",
+          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        }
+      },
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
