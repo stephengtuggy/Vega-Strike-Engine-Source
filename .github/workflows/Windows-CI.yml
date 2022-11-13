@@ -22,10 +22,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os:             windows-2019
-            cmakeGenerator: VS16Win64
-          - os:             windows-2022
-            cmakeGenerator: Ninja
+          - os:              windows-2019
+            configurePreset: VS2019Win64
+            buildPreset:     VS2019Win64-release
+          - os:              windows-2022
+            configurePreset: ninja-multi-config-windows
+            buildPreset:     ninja-multi-config-windows-release
 
     env:
       buildDir: '${{ github.workspace }}/build/'
@@ -37,49 +39,28 @@ jobs:
       - name: checkout
         uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 #v3.1.0
 
-      - name: install-cmake
+      - name: get-cmake
         uses: lukka/get-cmake@95a13ae7093741c6f226cc44307ba4435a43e1e2 #v3.24.3
 
-      - name: install-vcpkg
+      - name: run-vcpkg
         # You may pin to the exact commit or the version.
-        # uses: lukka/run-vcpkg@9c0ae56bad291f4b185cc433a9b56084b2962259
-        uses: lukka/run-vcpkg@55dacfc31e8e18d7db5616e325de5e2124b20d3b #v7.5
+        uses: lukka/run-vcpkg@831e6cd560cc8688a4967c5766e4215afbd196d9 #v10.6
         with:
           vcpkgDirectory: '${{ github.workspace }}/v'
-          setupOnly: true
           vcpkgGitCommitId: '8e74630b9e2b4db6740eff81b3b6e23260968321'
-          vcpkgTriplet: 'x64-windows'
-          appendedCacheKey: ${{ hashFiles( '**/vcpkg.json' ) }}
-          additionalCachedPaths: ${{ env.buildDir }}/vcpkg_installed
 
       - name: run-cmake
         # You may pin to the exact commit or the version.
-        # uses: lukka/run-cmake@7ba4481660f0f04c86cfa5f1f24b90effc97bde1
-        uses: lukka/run-cmake@v3.4
+        uses: lukka/run-cmake@e265d767c12ee0dc03becaa1d55155db4beb45f6 #v10
         with:
-          # Path to CMakeLists.txt. Used for both CMakeListsTxtBasic and CMakeListsTxtAdvanced modes.
           cmakeListsTxtPath: ${{ github.workspace }}/engine/CMakeLists.txt
-          # Indicates whether to use vcpkg's CMake toolchain file if RUNVCPKG_VCPKG_ROOT environment variable is defined, for example by a previous run-vcpkg action execution. If the variable is defined, its content would be passed with '-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=<RUNVCPKG_VCPKG_ROOT>/scripts/buildsystems/vcpkg.cmake'. Used by any mode.
-          useVcpkgToolchainFile: true
-          # Specify the triplet used with vcpkg. Default value is RUNVCPKG_VCPKG_TRIPLET environment variable, which is set e.g. by the run-vcpkg. Possible values include any file name with no extension present in the vcpkgroot/trplet directory, e.g. x64-linux, x64-windows, x64-osx and so forth. Used by any mode.
-          vcpkgTriplet: x64-windows
-          # Select the build configuration, typically Debug or Release. Used by CMakeListsTxtBasic mode.
-          cmakeBuildType: Release
-          # Specify the CMake generator to use. Possible values: Ninja: Ninja, NinjaMulti: Ninja Multi-Config UnixMakefiles: Unix Makefiles, VS16Win64: Visual Studio 2019 x64, VS16Arm64: Visual Studio 2019 ARM64, VS16Arm: Visual Studio 2019 ARM, VS16Win32: Visual Studio 2019 Win32, VS15Win64: Visual Studio 2017 x64, VS15Arm64: Visual Studio 2017 ARM64, VS15Arm: Visual Studio 2017 ARM, VS15Win32: Visual Studio 2017 Win32. Used by CMakeListsTxtBasic mode.
-          cmakeGenerator: ${{ matrix.cmakeGenerator }}
-          # Set the build directory, i.e. where CMake generates the build system files. Defaults to `$(Build.ArtifactStagingDirectory)` for CMakeLists.txt, and to `$(Build.ArtifactStagingDirectory)/<configuration-name>` for CMakeSettings.json. Used by any mode.
-          buildDirectory: ${{ env.buildDir }}
-          # Provides a mean to provide all the CMake arguments. This is required when using CMakeLists.txt in Advanced mode. For CMakeSettings.json, the arguments are already inferred, but you can append your arguments providing them here.  Used by CMakeListsTxtAdvanced and CMakeSettingsJson modes.
-          cmakeAppendedArgs: ""
-          # Indicates whether to run 'cmake --build' after CMake project files have been generated successfully. Used by any mode.
-          buildWithCMake: true
-          # Additional parameters for both CMake and the make program (e.g. ninja or make).  Separate CMake arguments to the native make program arguments with '--', such as: '--clean-first --config Debug -- -j0'. Used by both CMakeListsTxtBasic and CMakeListsTxtAdvanced modes
-          buildWithCMakeArgs: "--config Release"
+          configurePreset:   ${{ matrix.configurePreset }}
+          buildPreset:       ${{ matrix.buildPreset }}
 
       - name: copy-build-artifacts
         run: |
           New-Item bin -Force -Type Directory
-          $aPossibleBinaryDirs = @("build", "build\objconv", "build\Release", "build\objconv\Release")
+          $aPossibleBinaryDirs = @("build\${{ matrix.buildPreset }}", "build\${{ matrix.buildPreset }}\objconv", "build\${{ matrix.buildPreset }}\Release", "build\${{ matrix.buildPreset }}\objconv\Release", "build\${{ matrix.buildPreset }}\setup", "build\${{ matrix.buildPreset }}\setup\Release")
           $aPossibleBinaryDirs | ForEach-Object {
             if (Test-Path $_) {
               Copy-Item -Force -Verbose $_\*.* .\bin
@@ -87,7 +68,7 @@ jobs:
           }
 
       - name: Test
-        working-directory: ${{github.workspace}}/build
+        working-directory: ${{github.workspace}}/build/${{ matrix.buildPreset }}
         env:
           GTEST_OUTPUT: xml
           GTEST_COLOR: 1
@@ -98,4 +79,4 @@ jobs:
         if: failure()
         with:
             name: test_results_xml
-            path: ${{github.workspace}}/build/test-results/**/*.xml
+            path: ${{github.workspace}}/build/${{ matrix.buildPreset }}/test-results/**/*.xml
