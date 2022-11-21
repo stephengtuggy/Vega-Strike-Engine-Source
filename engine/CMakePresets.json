@@ -101,13 +101,15 @@
       "displayName": "Windows Default",
       "description": "Default build for Windows",
       "environment": {
-        "VCPKG_DEFAULT_TRIPLET": "x64-windows"
+        "VCPKG_DEFAULT_TRIPLET": "x64-windows-win10",
+        "VCPKG_DEFAULT_HOST_TRIPLET": "x64-windows-win10",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-win10",
+        "VCPKG_HOST_TRIPLET": "x64-windows-win10"
       },
-      "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": {
-          "type": "FILEPATH",
-          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-        }
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "debug": {
+        "output": true,
+        "find": true
       },
       "condition": {
         "type": "equals",

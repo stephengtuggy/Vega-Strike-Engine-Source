@@ -330,11 +330,17 @@ ENDIF (CMAKE_VERSION VERSION_LESS "3.14")
 #        COMPILE_DEFINITIONS $<MSVC:/FI\"${Vega_Strike_BINARY_DIR}\"/config.h >
 #        )
 
+IF (WIN32)
+    add_compile_definitions(BOOST_USE_WINAPI_VERSION=0x0A00
+        _WIN32_WINNT=0x0A00
+        WINVER=0x0A00
+        __x86_64__
+        )
+ENDIF ()
 add_compile_definitions("NV_CUBE_MAP"
         "BOOST_PYTHON_NO_PY_SIGNATURES"
         "BOOST_ALL_DYN_LINK"
         "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>"
-        "$<$<CXX_COMPILER_ID:MSVC>:__x86_64__>"
         "$<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>"
         "$<$<CXX_COMPILER_ID:MSVC>:_CRT_NONSTDC_NO_DEPRECATE>"
         )
