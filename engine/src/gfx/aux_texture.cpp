@@ -164,6 +164,8 @@ Texture *Texture::Clone() {
 }
 
 void Texture::FileNotFound(const string &texfilename) {
+    VS_LOG(warning, (boost::format("Texture::FileNotFound called with texfilename: '%1%'") % texfilename));
+
     //We may need to remove from texHashTable if we found the file but it is a bad one
     texHashTable.Delete(texfilename);
 
@@ -385,8 +387,10 @@ void Texture::Load(const char *FileName,
             }
         }
         if (main) {
+            VS_LOG(debug, "Texture::Load -- main is non-null");
             Bind(main, maxdimension, detailtexture);
         } else {
+            VS_LOG(debug, "Texture::Load -- main is null");
             Bind(maxdimension, detailtexture);
         }
         free(data);
