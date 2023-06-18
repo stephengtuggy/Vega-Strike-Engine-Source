@@ -41,7 +41,7 @@ typedef boost::python::dictionary BoostPythonDictionary;
 #include <boost/python/objects.hpp>
 #endif
 
-#include <Python.h> // TODO: Remove direct inclusion of this file?
+#include <Python.h>
 #include "python/python_class.h"
 #include "base.h"
 #include "base_util.h"

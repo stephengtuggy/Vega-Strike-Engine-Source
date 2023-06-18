@@ -21,10 +21,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+// NO HEADER GUARD
 
 #define PY_SSIZE_T_CLEAN
-#include <Python.h> // TODO: Remove direct inclusion of this file?
+#include <Python.h>
 #include "fire.h"
 #include <assert.h>
 

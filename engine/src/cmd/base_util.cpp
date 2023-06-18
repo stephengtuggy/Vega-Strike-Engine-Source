@@ -24,7 +24,7 @@
 
 
 #define PY_SSIZE_T_CLEAN
-#include <Python.h> // TODO: Remove direct inclusion of this file?
+#include <Python.h>
 
 #include <boost/version.hpp>
 #if BOOST_VERSION != 102800
