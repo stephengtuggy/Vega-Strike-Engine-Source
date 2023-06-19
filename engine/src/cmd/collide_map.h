@@ -23,8 +23,9 @@
  */
 
 
-#ifndef _COLLIDE_MAP_H_
-#define _COLLIDE_MAP_H_
+#ifndef VEGA_STRIKE_ENGINE_CMD_COLLIDE_MAP_H
+#define VEGA_STRIKE_ENGINE_CMD_COLLIDE_MAP_H
+
 #include "key_mutable_set.h"
 #include "vegastrike.h"
 #include "gfx/vec.h"
@@ -174,6 +175,8 @@ public:
     explicit CollideArray(unsigned int location_index) : toflattenhints(1), count(0) {
         this->location_index = location_index;
     }
+
+    // TODO: Add virtual destructor?
 };
 
 #ifdef VS_ENABLE_COLLIDE_KEY
@@ -198,6 +201,8 @@ public:
     bool CheckCollisions(Unit *un, const Collidable &updated); //will be handed off to a templated function
     bool CheckUnitCollisions(Unit *un,
             const Collidable &updated); //DANGER must be used on lists that are only populated with Units, not bolts
+
+    // TODO: Add virtual destructor?
 };
 
 #if defined (VS_ENABLE_COLLIDE_LIST) || defined (VS_ENABLE_COLLIDE_KEY)
@@ -238,5 +243,6 @@ inline void set_null(CollideMap::iterator &it) {
 }
 
 #endif
-#endif
+
+#endif //VEGA_STRIKE_ENGINE_CMD_COLLIDE_MAP_H
 

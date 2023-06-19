@@ -52,7 +52,7 @@
 #include "unit_csv_factory.h"
 
 #include "python/init.h"
-#include <Python.h> // TODO: Remove direct inclusion of this file?
+#include <Python.h>
 #include "options.h"
 
 #include "star_system.h"

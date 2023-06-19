@@ -34,7 +34,7 @@
 #if defined (_MSC_VER) && _MSC_VER <= 1200
 #undef Vector
 #endif
-#include <Python.h> // TODO: Remove direct inclusion of this file?
+#include <Python.h>
 #include <pyerrors.h>
 #include <pythonrun.h>
 #include <compile.h>

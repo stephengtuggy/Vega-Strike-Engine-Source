@@ -587,7 +587,7 @@ bool CollideMap::CheckUnitCollisions(Bolt *bol, const Collidable &updated) {
 
 bool CollideMap::CheckCollisions(Unit *un, const Collidable &updated) {
     //need to check beams
-    if (un->activeStarSystem == NULL) {
+    if (un->activeStarSystem == nullptr) {
         un->activeStarSystem = _Universe->activeStarSystem();
     } else
         assert(un->activeStarSystem == _Universe->activeStarSystem());
@@ -596,7 +596,7 @@ bool CollideMap::CheckCollisions(Unit *un, const Collidable &updated) {
 
 bool CollideMap::CheckUnitCollisions(Unit *un, const Collidable &updated) {
     //need to check beams
-    if (un->activeStarSystem == NULL) {
+    if (un->activeStarSystem == nullptr) {
         un->activeStarSystem = _Universe->activeStarSystem();
     } else
         assert(un->activeStarSystem == _Universe->activeStarSystem());

@@ -23,8 +23,8 @@
  */
 
 
-#ifndef _BASE_UTIL_H_
-#define _BASE_UTIL_H_
+#ifndef VEGA_STRIKE_ENGINE_CMD_BASE_UTIL_H
+#define VEGA_STRIKE_ENGINE_CMD_BASE_UTIL_H
 
 #define PY_SSIZE_T_CLEAN
 #include <string>
@@ -179,4 +179,4 @@ void refreshBaseComputerUI(const class Cargo *dirtyCarg);
 void ExitGame();
 }
 
-#endif
+#endif //VEGA_STRIKE_ENGINE_CMD_BASE_UTIL_H

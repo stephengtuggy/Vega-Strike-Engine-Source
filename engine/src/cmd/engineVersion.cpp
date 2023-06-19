@@ -1,7 +1,7 @@
 /*
  * engineVersion.cpp
  *
- * Copyright (C) 2001-2023 Daniel Horn, Benjamen Meyer, Stephen G. Tuggy,
+ * Copyright (C) 2001-2023 Daniel Horn, Benjamen R. Meyer, Stephen G. Tuggy,
  * and other Vega Strike contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source

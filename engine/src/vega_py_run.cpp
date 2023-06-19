@@ -23,7 +23,7 @@
  */
 
 #define PY_SSIZE_T_CLEAN
-#include <Python.h> // TODO: Remove direct inclusion of this file?
+#include <Python.h>
 #include <pyerrors.h>
 #include <pythonrun.h>
 #include "vega_py_run.h"

@@ -153,11 +153,11 @@ PFNGLDELETEPROGRAMPROC glDeleteProgram_p = nullptr;
 
 typedef void ( *(*get_gl_proc_fptr_t)(const GLubyte *))();
 #ifdef _WIN32
-typedef char*GET_GL_PTR_TYP;
-#define GET_GL_PROC wglGetProcAddress
+    typedef char * GET_GL_PTR_TYP;
+    #define GET_GL_PROC wglGetProcAddress
 #else
     #if defined(__HAIKU__)
-typedef char * GET_GL_PTR_TYP;
+        typedef char * GET_GL_PTR_TYP;
         #define GET_GL_PROC glutGetProcAddress
     #elif defined (__MACOSX__)
         typedef const char * GET_GL_PTR_TYP;
@@ -166,7 +166,7 @@ typedef char * GET_GL_PTR_TYP;
         }
         #define GET_GL_PROC vega_dlsym
     #else
-typedef GLubyte *GET_GL_PTR_TYP;
+        typedef GLubyte *GET_GL_PTR_TYP;
         #define GET_GL_PROC glXGetProcAddressARB
     #endif
 #endif
@@ -266,7 +266,7 @@ void init_opengl_extensions() {
         glLockArraysEXT_p   = &glLockArraysEXT;
         glUnlockArraysEXT_p = &glUnlockArraysEXT;
 #else
-        glLockArraysEXT_p = nullptr;
+        glLockArraysEXT_p   = nullptr;
         glUnlockArraysEXT_p = nullptr;
 #endif
 #else
@@ -282,13 +282,8 @@ void init_opengl_extensions() {
         VS_LOG(trace, "OpenGL::GL_EXT_compiled_vertex_array supported");
     } else {
 #ifdef __APPLE__
-#ifndef __APPLE_PANTHER_GCC33_CLI__
         glLockArraysEXT_p = nullptr;
         glUnlockArraysEXT_p = nullptr;
-#else
-        glLockArraysEXT_p = nullptr;
-        glUnlockArraysEXT_p = nullptr;
-#endif /*__APPLE_PANTHER_GCC33_CLI__*/
 #endif
         VS_LOG(debug, "OpenGL::GL_EXT_compiled_vertex_array unsupported");
     }

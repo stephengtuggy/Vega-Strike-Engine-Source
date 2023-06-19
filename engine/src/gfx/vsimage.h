@@ -1,7 +1,7 @@
 /*
  * vsimage.h
  *
- * Copyright (C) 2001-2023 Daniel Horn, pyramid3d, Roy Falk,
+ * Copyright (C) 2001-2023 Daniel Horn, pyramid3d, Roy Falk, Benjamen R. Meyer,
  * Stephen G. Tuggy, and other Vega Strike contributors
  *
  * This file is part of Vega Strike.
@@ -21,8 +21,8 @@
  */
 
 
-#ifndef VEGA_STRIKE_GFX_VSIMAGE_H
-#define VEGA_STRIKE_GFX_VSIMAGE_H
+#ifndef VEGA_STRIKE_ENGINE_GFX_VSIMAGE_H
+#define VEGA_STRIKE_ENGINE_GFX_VSIMAGE_H
 
 #include "preferred_types.h"
 #include "vsfilesystem.h"
@@ -307,5 +307,4 @@ public:
     }
 };
 
-#endif
-
+#endif //VEGA_STRIKE_ENGINE_GFX_VSIMAGE_H

@@ -31,7 +31,7 @@
 #include <boost/python/objects.hpp>
 #endif
 
-#include <Python.h> // TODO: Remove direct inclusion of this file?
+#include <Python.h>
 #include <vector>
 #include <string>
 #include <math.h>

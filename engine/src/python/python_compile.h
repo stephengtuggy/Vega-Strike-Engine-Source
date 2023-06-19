@@ -2,7 +2,7 @@
  * python_compile.h
  *
  * Copyright (C) 2001-2023 Daniel Horn, pyramid3d, Stephen G. Tuggy,
- * and other Vega Strike contributors.
+ * Benjamen R. Meyer, and other Vega Strike contributors.
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -22,8 +22,8 @@
  * along with Vega Strike. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _PYTHON_COMPILE_H_
-#define _PYTHON_COMPILE_H_
+#ifndef VEGA_STRIKE_ENGINE_PYTHON_PYTHON_COMPILE_H
+#define VEGA_STRIKE_ENGINE_PYTHON_PYTHON_COMPILE_H
 #define PY_SSIZE_T_CLEAN
 
 //Resets variable for use by python config.h
@@ -31,7 +31,7 @@
 #undef _POSIX_C_SOURCE
 #endif
 
-#include <Python.h> // TODO: Remove direct inclusion of this file?
+#include <Python.h>
 #include "hashtable.h"
 #include <string>
 #include <compile.h>
@@ -95,5 +95,5 @@ public:
         return *myitem;
     }
 };
-#endif
 
+#endif //VEGA_STRIKE_ENGINE_PYTHON_PYTHON_COMPILE_H
