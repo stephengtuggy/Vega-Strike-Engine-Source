@@ -29,7 +29,7 @@
 #include <boost/version.hpp>
 #include <boost/python/class.hpp>
 #ifdef HAVE_PYTHON
-#include <Python.h> // TODO: Remove direct inclusion of this file?
+#include <Python.h>
 #endif
 
 #include <math.h>

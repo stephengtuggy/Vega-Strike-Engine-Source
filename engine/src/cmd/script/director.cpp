@@ -63,7 +63,7 @@
 #include "cmd/briefing.h"
 #include "pythonmission.h"
 #ifdef HAVE_PYTHON
-#include <Python.h> // TODO: Remove direct inclusion of this file?
+#include <Python.h>
 #endif
 #include "flightgroup.h"
 #include "gldrv/winsys.h"

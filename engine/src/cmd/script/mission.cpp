@@ -27,7 +27,7 @@
  *  xml Mission written by Alexander Rawass <alexannika@users.sourceforge.net>
  */
 #define PY_SSIZE_T_CLEAN
-#include <Python.h> // TODO: Remove direct inclusion of this file?
+#include <Python.h>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>

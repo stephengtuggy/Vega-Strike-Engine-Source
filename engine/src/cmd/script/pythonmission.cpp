@@ -25,7 +25,7 @@
 
 #define PY_SSIZE_T_CLEAN
 #include <boost/version.hpp>
-#include <Python.h> // TODO: Remove direct inclusion of this file?
+#include <Python.h>
 #include <math.h>
 #include "pythonmission.h"
 #include "python/python_compile.h"

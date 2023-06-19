@@ -2,7 +2,7 @@
  * ani_texture.h
  *
  * Copyright (C) 2001-2023 Daniel Horn, pyramid3d, Stephen G. Tuggy,
- * and other Vega Strike contributors.
+ * Benjamen R. Meyer, and other Vega Strike contributors.
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -23,8 +23,8 @@
  */
 
 
-#ifndef __ANI_TEXTURE_H__
-#define __ANI_TEXTURE_H__
+#ifndef VEGA_STRIKE_ENGINE_GFX_ANI_TEXTURE_H
+#define VEGA_STRIKE_ENGINE_GFX_ANI_TEXTURE_H
 
 #include "aux_texture.h"
 #include "vsfilesystem.h"
@@ -215,5 +215,5 @@ public:
                                                                      bool detailtex = false);
 };
 
-#endif
+#endif //VEGA_STRIKE_ENGINE_GFX_ANI_TEXTURE_H
 

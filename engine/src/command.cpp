@@ -26,7 +26,7 @@
 #define PY_SSIZE_T_CLEAN
 #include "preferred_types.h"
 #include "command.h"
-#include <Python.h> // TODO: Remove direct inclusion of this file?
+#include <Python.h>
 #include <pyerrors.h>
 #include <pythonrun.h>
 #include "gldrv/winsys.h"

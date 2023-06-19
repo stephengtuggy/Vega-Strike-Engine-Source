@@ -25,7 +25,7 @@
 #ifdef HAVE_PYTHON
 #include <boost/version.hpp>
 #include <boost/python/class.hpp>
-#include <Python.h> // TODO: Remove direct inclusion of this file?
+#include <Python.h>
 #endif
 
 #include "cmd/unit_generic.h"
