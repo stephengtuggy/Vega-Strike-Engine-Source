@@ -15,175 +15,46 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - FROM:     'ubuntu:jammy'
-            COMPILER: 'gcc'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'ubuntu:jammy'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'ubuntu:jammy'
-            COMPILER: 'gcc'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'ubuntu:jammy'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'ubuntu:focal'
-            COMPILER: 'gcc'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'ubuntu:focal'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'ubuntu:focal'
-            COMPILER: 'gcc'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'ubuntu:focal'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'ubuntu:bionic'
-            COMPILER: 'gcc'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'ubuntu:bionic'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'ubuntu:bionic'
-            COMPILER: 'gcc'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'ubuntu:bionic'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'linuxmintd/mint21-amd64'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'linuxmintd/mint21-amd64'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'linuxmintd/mint20-amd64'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'linuxmintd/mint20-amd64'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'debian:bookworm'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'debian:bookworm'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'debian:bullseye'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'debian:bullseye'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'debian:buster'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'debian:buster'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'opensuse/leap:15.4'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'opensuse/leap:15.4'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'opensuse/leap:15.3'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'opensuse/leap:15.3'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'opensuse/leap:15.2'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'opensuse/leap:15.2'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'fedora:37'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'fedora:37'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'fedora:36'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'fedora:36'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'fedora:35'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'fedora:35'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'rockylinux:9.0'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'rockylinux:9.0'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'rockylinux:8.6'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'rockylinux:8.6'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'rockylinux:8.5'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: false
-          - FROM:     'rockylinux:8.5'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: false
-          - FROM:     'manjarolinux/base'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'LEGACY'
-            allow_failure: true
-          - FROM:     'manjarolinux/base'
-            COMPILER: 'clang'
-            OpenGL_GL_PREFERENCE: 'GLVND'
-            allow_failure: true
+        FROM:
+          - 'ubuntu:kinetic'
+          - 'ubuntu:jammy'
+          - 'ubuntu:focal'
+          - 'ubuntu:bionic'
+          - 'linuxmintd/mint21.1-amd64'
+          - 'linuxmintd/mint21-amd64'
+          - 'linuxmintd/mint20-amd64'
+          - 'debian:bookworm'
+          - 'debian:bullseye'
+          - 'debian:buster'
+          # - 'opensuse/leap:15.5'
+          - 'opensuse/leap:15.4'
+          - 'opensuse/leap:15.3'
+          - 'opensuse/leap:15.2'
+          # - 'fedora:38'
+          - 'fedora:37'
+          - 'fedora:36'
+          - 'fedora:35'
+          - 'fedora:34'
+          - 'rockylinux:9.1'
+          - 'rockylinux:9.0'
+          - 'rockylinux:8.7'
+          - 'rockylinux:8.6'
+          - 'rockylinux:8.5'
+          # - 'rockylinux:8.4'
+          - 'manjarolinux/base'
+          - 'funtoo/stage3-generic_64'
+        COMPILER:
+          - clang
+          - gcc
+        OpenGL_GL_PREFERENCE:
+          - LEGACY
+          - GLVND
+        ENABLE_PIE:
+          - ON
+          - OFF
+        allow_failure:
+          # - false
+          - true
 
     steps:
     - name: Check out repository
@@ -209,7 +80,7 @@ jobs:
       env:
         FROM:       ${{ matrix.FROM }}
         COMPILER:   ${{ matrix.COMPILER }}
-        FLAGS:      '-DOpenGL_GL_PREFERENCE=${{ matrix.OpenGL_GL_PREFERENCE }}'
+        FLAGS:      '-DOpenGL_GL_PREFERENCE=${{ matrix.OpenGL_GL_PREFERENCE }} -DENABLE_PIE=${{ matrix.ENABLE_PIE }}'
         MY_OS_NAME: linux
         IS_RELEASE: 0
       run: script/cibuild $FLAGS
