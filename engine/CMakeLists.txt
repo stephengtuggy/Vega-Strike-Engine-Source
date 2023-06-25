@@ -793,9 +793,11 @@ IF (NEED_LINKING_AGAINST_LIBM)
     TARGET_LINK_LIBRARIES(vegastrike-OPcollide m)
 ENDIF()
 target_compile_definitions(vegastrike-OPcollide PUBLIC "BOOST_ALL_DYN_LINK" "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>" "$<$<CONFIG:Debug>:Py_DEBUG>")
-target_compile_definitions(vegastrike-OPcollide PUBLIC BOOST_USE_WINAPI_VERSION=0x0A00)
-target_compile_definitions(vegastrike-OPcollide PUBLIC _WIN32_WINNT=0x0A00)
-target_compile_definitions(vegastrike-OPcollide PUBLIC WINVER=0x0A00)
+IF (WIN32)
+    target_compile_definitions(vegastrike-OPcollide PUBLIC BOOST_USE_WINAPI_VERSION=0x0A00)
+    target_compile_definitions(vegastrike-OPcollide PUBLIC _WIN32_WINNT=0x0A00)
+    target_compile_definitions(vegastrike-OPcollide PUBLIC WINVER=0x0A00)
+ENDIF()
 
 SET(LIBCMD_SOURCES
     src/cmd/alphacurve.cpp
@@ -1079,9 +1081,11 @@ IF (NEED_LINKING_AGAINST_LIBM)
     TARGET_LINK_LIBRARIES(vegastrike-engine_com m)
 ENDIF()
 target_compile_definitions(vegastrike-engine_com PUBLIC "BOOST_ALL_DYN_LINK" "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>" "$<$<CONFIG:Debug>:Py_DEBUG>")
-target_compile_definitions(vegastrike-engine_com PUBLIC BOOST_USE_WINAPI_VERSION=0x0A00)
-target_compile_definitions(vegastrike-engine_com PUBLIC _WIN32_WINNT=0x0A00)
-target_compile_definitions(vegastrike-engine_com PUBLIC WINVER=0x0A00)
+IF (WIN32)
+    target_compile_definitions(vegastrike-engine_com PUBLIC BOOST_USE_WINAPI_VERSION=0x0A00)
+    target_compile_definitions(vegastrike-engine_com PUBLIC _WIN32_WINNT=0x0A00)
+    target_compile_definitions(vegastrike-engine_com PUBLIC WINVER=0x0A00)
+ENDIF()
 
 SET(VEGASTRIKE_SOURCES
     ${LIBGUI_SOURCES}
@@ -1162,9 +1166,11 @@ IF (NOT DISABLE_CLIENT)
         TARGET_LINK_LIBRARIES(vegastrike-engine m)
     ENDIF()
     target_compile_definitions(vegastrike-engine PUBLIC "BOOST_ALL_DYN_LINK" "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>" "$<$<CONFIG:Debug>:Py_DEBUG>")
-    target_compile_definitions(vegastrike-engine PUBLIC BOOST_USE_WINAPI_VERSION=0x0A00)
-    target_compile_definitions(vegastrike-engine PUBLIC _WIN32_WINNT=0x0A00)
-    target_compile_definitions(vegastrike-engine PUBLIC WINVER=0x0A00)
+    IF (WIN32)
+        target_compile_definitions(vegastrike-engine PUBLIC BOOST_USE_WINAPI_VERSION=0x0A00)
+        target_compile_definitions(vegastrike-engine PUBLIC _WIN32_WINNT=0x0A00)
+        target_compile_definitions(vegastrike-engine PUBLIC WINVER=0x0A00)
+    ENDIF()
 
     ADD_DEPENDENCIES(vegastrike-engine OpenGL::GL OpenGL::GLU)
 
@@ -1643,9 +1649,11 @@ IF (USE_GTEST)
         ${LIBVS_LOGGING}
     )
     target_compile_definitions(vegastrike-testing PUBLIC "BOOST_ALL_DYN_LINK" "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>" "$<$<CONFIG:Debug>:Py_DEBUG>")
-    target_compile_definitions(vegastrike-testing PUBLIC BOOST_USE_WINAPI_VERSION=0x0A00)
-    target_compile_definitions(vegastrike-testing PUBLIC _WIN32_WINNT=0x0A00)
-    target_compile_definitions(vegastrike-testing PUBLIC WINVER=0x0A00)
+    IF (WIN32)
+        target_compile_definitions(vegastrike-testing PUBLIC BOOST_USE_WINAPI_VERSION=0x0A00)
+        target_compile_definitions(vegastrike-testing PUBLIC _WIN32_WINNT=0x0A00)
+        target_compile_definitions(vegastrike-testing PUBLIC WINVER=0x0A00)
+    ENDIF()
 
     TARGET_LINK_LIBRARIES(
         ${TEST_NAME}
@@ -1655,9 +1663,11 @@ IF (USE_GTEST)
         Boost::log_setup
     )
     target_compile_definitions(${TEST_NAME} PUBLIC "BOOST_ALL_DYN_LINK" "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>" "$<$<CONFIG:Debug>:Py_DEBUG>")
-    target_compile_definitions(${TEST_NAME} PUBLIC BOOST_USE_WINAPI_VERSION=0x0A00)
-    target_compile_definitions(${TEST_NAME} PUBLIC _WIN32_WINNT=0x0A00)
-    target_compile_definitions(${TEST_NAME} PUBLIC WINVER=0x0A00)
+    IF (WIN32)
+        target_compile_definitions(${TEST_NAME} PUBLIC BOOST_USE_WINAPI_VERSION=0x0A00)
+        target_compile_definitions(${TEST_NAME} PUBLIC _WIN32_WINNT=0x0A00)
+        target_compile_definitions(${TEST_NAME} PUBLIC WINVER=0x0A00)
+    ENDIF()
 
     FILE(
         COPY "src/configuration/tests/vegastrike.config"
