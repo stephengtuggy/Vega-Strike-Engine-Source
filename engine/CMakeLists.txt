@@ -836,11 +836,12 @@ set_property(TARGET vegastrike-OPcollide PROPERTY POSITION_INDEPENDENT_CODE TRUE
 IF (NEED_LINKING_AGAINST_LIBM)
     TARGET_LINK_LIBRARIES(vegastrike-OPcollide m)
 ENDIF()
-target_compile_definitions(vegastrike-OPcollide PUBLIC "BOOST_ALL_DYN_LINK" "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>" "$<$<CONFIG:Debug>:Py_DEBUG>")
+target_compile_definitions(vegastrike-OPcollide PUBLIC "BOOST_ALL_DYN_LINK" "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>")
 IF (WIN32)
     target_compile_definitions(vegastrike-OPcollide PUBLIC BOOST_USE_WINAPI_VERSION=0x0A00)
     target_compile_definitions(vegastrike-OPcollide PUBLIC _WIN32_WINNT=0x0A00)
     target_compile_definitions(vegastrike-OPcollide PUBLIC WINVER=0x0A00)
+    target_compile_definitions(vegastrike-OPcollide PUBLIC "$<$<CONFIG:Debug>:Py_DEBUG>")
 ENDIF()
 
 SET(LIBCMD_SOURCES
@@ -1125,11 +1126,12 @@ set_property(TARGET vegastrike-engine_com PROPERTY POSITION_INDEPENDENT_CODE TRU
 IF (NEED_LINKING_AGAINST_LIBM)
     TARGET_LINK_LIBRARIES(vegastrike-engine_com m)
 ENDIF()
-target_compile_definitions(vegastrike-engine_com PUBLIC "BOOST_ALL_DYN_LINK" "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>" "$<$<CONFIG:Debug>:Py_DEBUG>")
+target_compile_definitions(vegastrike-engine_com PUBLIC "BOOST_ALL_DYN_LINK" "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>")
 IF (WIN32)
     target_compile_definitions(vegastrike-engine_com PUBLIC BOOST_USE_WINAPI_VERSION=0x0A00)
     target_compile_definitions(vegastrike-engine_com PUBLIC _WIN32_WINNT=0x0A00)
     target_compile_definitions(vegastrike-engine_com PUBLIC WINVER=0x0A00)
+    target_compile_definitions(vegastrike-engine_com PUBLIC "$<$<CONFIG:Debug>:Py_DEBUG>")
 ENDIF()
 
 SET(VEGASTRIKE_SOURCES
@@ -1210,11 +1212,12 @@ IF (NOT DISABLE_CLIENT)
     IF (NEED_LINKING_AGAINST_LIBM)
         TARGET_LINK_LIBRARIES(vegastrike-engine m)
     ENDIF()
-    target_compile_definitions(vegastrike-engine PUBLIC "BOOST_ALL_DYN_LINK" "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>" "$<$<CONFIG:Debug>:Py_DEBUG>")
+    target_compile_definitions(vegastrike-engine PUBLIC "BOOST_ALL_DYN_LINK" "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>")
     IF (WIN32)
         target_compile_definitions(vegastrike-engine PUBLIC BOOST_USE_WINAPI_VERSION=0x0A00)
         target_compile_definitions(vegastrike-engine PUBLIC _WIN32_WINNT=0x0A00)
         target_compile_definitions(vegastrike-engine PUBLIC WINVER=0x0A00)
+        target_compile_definitions(vegastrike-engine PUBLIC "$<$<CONFIG:Debug>:Py_DEBUG>")
     ENDIF()
 
     #ADD_DEPENDENCIES(vegastrike-engine OpenGL::GL OpenGL::GLU)
@@ -1693,12 +1696,13 @@ IF (USE_GTEST)
         ${LIBCMD_SOURCES}
         ${LIBVS_LOGGING}
     )
-    target_compile_definitions(vegastrike-testing PUBLIC "BOOST_ALL_DYN_LINK" "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>" "$<$<CONFIG:Debug>:Py_DEBUG>")
+    target_compile_definitions(vegastrike-testing PUBLIC "BOOST_ALL_DYN_LINK" "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>")
     set_property(TARGET vegastrike-testing PROPERTY POSITION_INDEPENDENT_CODE TRUE)
     IF (WIN32)
         target_compile_definitions(vegastrike-testing PUBLIC BOOST_USE_WINAPI_VERSION=0x0A00)
         target_compile_definitions(vegastrike-testing PUBLIC _WIN32_WINNT=0x0A00)
         target_compile_definitions(vegastrike-testing PUBLIC WINVER=0x0A00)
+        target_compile_definitions(vegastrike-testing PUBLIC "$<$<CONFIG:Debug>:Py_DEBUG>")
     ENDIF()
 
     TARGET_LINK_LIBRARIES(
@@ -1708,11 +1712,12 @@ IF (USE_GTEST)
         Boost::log
         Boost::log_setup
     )
-    target_compile_definitions(${TEST_NAME} PUBLIC "BOOST_ALL_DYN_LINK" "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>" "$<$<CONFIG:Debug>:Py_DEBUG>")
+    target_compile_definitions(${TEST_NAME} PUBLIC "BOOST_ALL_DYN_LINK" "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>")
     IF (WIN32)
         target_compile_definitions(${TEST_NAME} PUBLIC BOOST_USE_WINAPI_VERSION=0x0A00)
         target_compile_definitions(${TEST_NAME} PUBLIC _WIN32_WINNT=0x0A00)
         target_compile_definitions(${TEST_NAME} PUBLIC WINVER=0x0A00)
+        target_compile_definitions(${TEST_NAME} PUBLIC "$<$<CONFIG:Debug>:Py_DEBUG>")
     ENDIF()
 
     FILE(
