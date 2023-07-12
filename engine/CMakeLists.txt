@@ -1217,10 +1217,10 @@ IF (NOT DISABLE_CLIENT)
         target_compile_definitions(vegastrike-engine PUBLIC WINVER=0x0A00)
     ENDIF()
 
-    ADD_DEPENDENCIES(vegastrike-engine OpenGL::GL OpenGL::GLU)
+    #ADD_DEPENDENCIES(vegastrike-engine OpenGL::GL OpenGL::GLU)
 
-    TARGET_LINK_LIBRARIES(vegastrike-engine OpenGL::GL OpenGL::GLU ${TST_LIBS})
-    IF (MSVC)
+    TARGET_LINK_LIBRARIES(vegastrike-engine ${TST_LIBS} OpenGL::GL OpenGL::GLU)
+    #IF (MSVC)
         SET_TARGET_PROPERTIES(vegastrike-engine PROPERTIES LINK_FLAGS "${TST_LFLAGS}")
     ELSE (MSVC)
         SET_TARGET_PROPERTIES(vegastrike-engine PROPERTIES LINK_FLAGS "-L/usr/lib -L/usr/local/lib ${TST_LFLAGS}")
