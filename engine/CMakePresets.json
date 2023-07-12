@@ -213,8 +213,7 @@
         "VERBOSE": "ON"
       },
       "cacheVariables": {
-        "CMAKE_FIND_FRAMEWORK": "LAST",
-        "USE_PYTHON_DYNAMIC_LIB": "OFF"
+        "CMAKE_FIND_FRAMEWORK": "LAST"
       }
     },
     {
