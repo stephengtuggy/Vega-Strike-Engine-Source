@@ -1222,7 +1222,7 @@ IF (NOT DISABLE_CLIENT)
 
     #ADD_DEPENDENCIES(vegastrike-engine OpenGL::GL OpenGL::GLU)
 
-    TARGET_LINK_LIBRARIES(vegastrike-engine ${TST_LIBS} OpenGL::GL OpenGL::GLU)
+    TARGET_LINK_LIBRARIES(vegastrike-engine OpenGL::GL OpenGL::GLU ${TST_LIBS})
     #IF (MSVC)
         SET_TARGET_PROPERTIES(vegastrike-engine PROPERTIES LINK_FLAGS "${TST_LFLAGS}")
     #ELSE (MSVC)
