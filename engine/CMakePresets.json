@@ -210,7 +210,7 @@
         "rhs": "Darwin"
       },
       "environment": {
-        "VERBOSE": true
+        "VERBOSE": "ON"
       },
       "cacheVariables": {
         "CMAKE_FIND_FRAMEWORK": "LAST",
