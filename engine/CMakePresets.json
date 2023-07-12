@@ -208,6 +208,13 @@
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Darwin"
+      },
+      "environment": {
+        "VERBOSE": true
+      },
+      "cacheVariables": {
+        "CMAKE_FIND_FRAMEWORK": "LAST",
+        "USE_PYTHON_DYNAMIC_LIB": "OFF"
       }
     },
     {
