@@ -23,7 +23,7 @@
 #
 
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.16 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.13 FATAL_ERROR)
 
 IF (UNIX)
 	MESSAGE("Always using preferred method now to install man pages")
