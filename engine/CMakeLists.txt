@@ -831,7 +831,7 @@ ADD_LIBRARY(vegastrike-OPcollide
     src/cmd/collide2/CSopcodecollider.cpp
 )
 
-TARGET_COMPILE_FEATURES(vegastrike-OPcollide PUBLIC cxx_std_11)
+#TARGET_COMPILE_FEATURES(vegastrike-OPcollide PUBLIC cxx_std_11)
 set_property(TARGET vegastrike-OPcollide PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 IF (NEED_LINKING_AGAINST_LIBM)
     TARGET_LINK_LIBRARIES(vegastrike-OPcollide m)
@@ -1120,7 +1120,7 @@ ADD_LIBRARY(vegastrike-engine_com
     ${LIBGFXGENERIC_SOURCES}
 )
 
-TARGET_COMPILE_FEATURES(vegastrike-engine_com PUBLIC cxx_std_11)
+#TARGET_COMPILE_FEATURES(vegastrike-engine_com PUBLIC cxx_std_11)
 set_property(TARGET vegastrike-engine_com PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 IF (NEED_LINKING_AGAINST_LIBM)
     TARGET_LINK_LIBRARIES(vegastrike-engine_com m)
@@ -1206,7 +1206,7 @@ SET(TST_LIBS vegastrike-engine_com vegastrike-OPcollide ${TST_LIBS})
 IF (NOT DISABLE_CLIENT)
     ADD_EXECUTABLE(vegastrike-engine ${VEGASTRIKE_SOURCES})
 
-    TARGET_COMPILE_FEATURES(vegastrike-engine PUBLIC cxx_std_11)
+    #TARGET_COMPILE_FEATURES(vegastrike-engine PUBLIC cxx_std_11)
     IF (NEED_LINKING_AGAINST_LIBM)
         TARGET_LINK_LIBRARIES(vegastrike-engine m)
     ENDIF()
