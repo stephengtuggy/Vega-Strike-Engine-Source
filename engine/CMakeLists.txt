@@ -86,8 +86,8 @@ PROJECT(Vega_Strike
 )
 
 # One version header generator to rule them all
-CONFIGURE_FILE(src/version.h.in ${CMAKE_SOURCE_DIR}/src/version.h)
-CONFIGURE_FILE(src/version.h.in ${CMAKE_SOURCE_DIR}/setup/src/include/version.h)
+CONFIGURE_FILE(src/version.h.in ${Vega_Strike_BINARY_DIR}/src/version.h)
+CONFIGURE_FILE(src/version.h.in ${Vega_Strike_BINARY_DIR}/setup/src/include/version.h)
 
 MESSAGE("== Vega Strike Version: ${VEGASTRIKE_VERSION_LONG_STR}")
 
@@ -638,7 +638,7 @@ CONFIGURE_FILE(${Vega_Strike_SOURCE_DIR}/cmake-config.h.in ${Vega_Strike_BINARY_
 INCLUDE_DIRECTORIES(${TST_INCLUDES})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_compile_options("$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-include>" "$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:config.h>")
-add_link_options("$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Bsymbolic>")
+#add_link_options("$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Bsymbolic>")
 
 # Now the source files are listed starting here!
 SET(LIBVS_LOGGING
