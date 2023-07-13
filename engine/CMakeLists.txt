@@ -31,7 +31,7 @@
 # along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
 
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.13 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.16 FATAL_ERROR)
 
 SET(VEGASTRIKE_VERSION_MAJOR "0")
 SET(VEGASTRIKE_VERSION_MINOR "9")
@@ -78,44 +78,44 @@ ENDIF ()
 # If a release is missing this value, then version `1` can be assumed.
 SET(VEGASTRIKE_ASSETS_API_VERSION "2")
 
-IF (COMMAND cmake_policy)
-    CMAKE_POLICY (SET CMP0003 NEW)
-ENDIF (COMMAND cmake_policy)
-
-# VERSION Policy
-IF (POLICY CMP0048)
-    CMAKE_POLICY (SET CMP0048 NEW)
-ENDIF (POLICY CMP0048)
-
-# Used to be that without this, CMake couldn't find pow() -- at least not on my Windows machine.
-IF (POLICY CMP0066)
-    CMAKE_POLICY (SET CMP0066 NEW)
-ENDIF ()
-
-# FindOpenGL prefers GLVND by default when available. But there is an option to override that.
-IF (POLICY CMP0072)
-    CMAKE_POLICY (SET CMP0072 NEW)
-ENDIF (POLICY CMP0072)
-
-# find_package() uses <PackageName>_ROOT variables
-IF (POLICY CMP0074)
-    CMAKE_POLICY (SET CMP0074 NEW)
-ENDIF (POLICY CMP0074)
-
-# Include file check macros honor CMAKE_REQUIRED_LIBRARIES
-IF (POLICY CMP0075)
-    CMAKE_POLICY (SET CMP0075 NEW)
-ENDIF ()
-
-# Concerning link time flags for turning on or off Position Independent Executables (PIE)
-IF (POLICY CMP0083)
-    CMAKE_POLICY (SET CMP0083 NEW)
-ENDIF ()
-
-# MSVC runtime library flags are selected by an abstraction. Supported by CMake 3.15 and up
-IF (POLICY CMP0091)
-    CMAKE_POLICY (SET CMP0091 NEW)
-ENDIF ()
+#IF (COMMAND cmake_policy)
+#    CMAKE_POLICY (SET CMP0003 NEW)
+#ENDIF (COMMAND cmake_policy)
+#
+## VERSION Policy
+#IF (POLICY CMP0048)
+#    CMAKE_POLICY (SET CMP0048 NEW)
+#ENDIF (POLICY CMP0048)
+#
+## Used to be that without this, CMake couldn't find pow() -- at least not on my Windows machine.
+#IF (POLICY CMP0066)
+#    CMAKE_POLICY (SET CMP0066 NEW)
+#ENDIF ()
+#
+## FindOpenGL prefers GLVND by default when available. But there is an option to override that.
+#IF (POLICY CMP0072)
+#    CMAKE_POLICY (SET CMP0072 NEW)
+#ENDIF (POLICY CMP0072)
+#
+## find_package() uses <PackageName>_ROOT variables
+#IF (POLICY CMP0074)
+#    CMAKE_POLICY (SET CMP0074 NEW)
+#ENDIF (POLICY CMP0074)
+#
+## Include file check macros honor CMAKE_REQUIRED_LIBRARIES
+#IF (POLICY CMP0075)
+#    CMAKE_POLICY (SET CMP0075 NEW)
+#ENDIF ()
+#
+## Concerning link time flags for turning on or off Position Independent Executables (PIE)
+#IF (POLICY CMP0083)
+#    CMAKE_POLICY (SET CMP0083 NEW)
+#ENDIF ()
+#
+## MSVC runtime library flags are selected by an abstraction. Supported by CMake 3.15 and up
+#IF (POLICY CMP0091)
+#    CMAKE_POLICY (SET CMP0091 NEW)
+#ENDIF ()
 
 PROJECT(Vega_Strike
     VERSION
