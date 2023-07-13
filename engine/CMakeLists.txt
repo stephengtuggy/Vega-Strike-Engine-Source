@@ -159,15 +159,7 @@ SET(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 SET(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
 INCLUDE(InstallRequiredSystemLibraries)
 
-IF (MSVC)
-INCLUDE_DIRECTORIES(
-    ${Vega_Strike_SOURCE_DIR}/src
-    ${Vega_Strike_SOURCE_DIR}/src/cmd
-    ${Vega_Strike_SOURCE_DIR}/src/damage
-    ${Vega_Strike_SOURCE_DIR}/src/resource
-    ${Vega_Strike_BINARY_DIR}
-)
-ELSE (MSVC)
+IF (UNIX)
 INCLUDE_DIRECTORIES(
     ${Vega_Strike_SOURCE_DIR}/src
     ${Vega_Strike_SOURCE_DIR}/src/cmd
@@ -176,7 +168,15 @@ INCLUDE_DIRECTORIES(
     ${Vega_Strike_BINARY_DIR}
     /usr/include/harfbuzz/
 )
-ENDIF (MSVC)
+ELSE ()
+INCLUDE_DIRECTORIES(
+    ${Vega_Strike_SOURCE_DIR}/src
+    ${Vega_Strike_SOURCE_DIR}/src/cmd
+    ${Vega_Strike_SOURCE_DIR}/src/damage
+    ${Vega_Strike_SOURCE_DIR}/src/resource
+    ${Vega_Strike_BINARY_DIR}
+)
+ENDIF ()
 
 # The source files used to be listed here...
 
