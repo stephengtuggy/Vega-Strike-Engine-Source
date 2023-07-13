@@ -160,22 +160,24 @@ SET(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
 INCLUDE(InstallRequiredSystemLibraries)
 
 IF (UNIX)
-INCLUDE_DIRECTORIES(
-    ${Vega_Strike_SOURCE_DIR}/src
-    ${Vega_Strike_SOURCE_DIR}/src/cmd
-    ${Vega_Strike_SOURCE_DIR}/src/damage
-    ${Vega_Strike_SOURCE_DIR}/src/resource
-    ${Vega_Strike_BINARY_DIR}
-    /usr/include/harfbuzz/
-)
+    INCLUDE_DIRECTORIES(
+        ${Vega_Strike_SOURCE_DIR}/src
+        ${Vega_Strike_SOURCE_DIR}/src/cmd
+        ${Vega_Strike_SOURCE_DIR}/src/damage
+        ${Vega_Strike_SOURCE_DIR}/src/resource
+        ${Vega_Strike_BINARY_DIR}
+        ${Vega_Strike_BINARY_DIR}/src
+        /usr/include/harfbuzz/
+    )
 ELSE ()
-INCLUDE_DIRECTORIES(
-    ${Vega_Strike_SOURCE_DIR}/src
-    ${Vega_Strike_SOURCE_DIR}/src/cmd
-    ${Vega_Strike_SOURCE_DIR}/src/damage
-    ${Vega_Strike_SOURCE_DIR}/src/resource
-    ${Vega_Strike_BINARY_DIR}
-)
+    INCLUDE_DIRECTORIES(
+        ${Vega_Strike_SOURCE_DIR}/src
+        ${Vega_Strike_SOURCE_DIR}/src/cmd
+        ${Vega_Strike_SOURCE_DIR}/src/damage
+        ${Vega_Strike_SOURCE_DIR}/src/resource
+        ${Vega_Strike_BINARY_DIR}
+        ${Vega_Strike_BINARY_DIR}/src
+    )
 ENDIF ()
 
 # The source files used to be listed here...
