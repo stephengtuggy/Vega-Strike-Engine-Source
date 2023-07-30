@@ -1,6 +1,7 @@
 bin/
 build/
 build-*/
+cmake-build-*/
 data/
 ext/
 *.pyc

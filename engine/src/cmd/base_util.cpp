@@ -1,7 +1,7 @@
 /*
  * base_util.cpp
  *
- * Copyright (C) 2001-2022 Daniel Horn, pyramid3d, Stephen G. Tuggy,
+ * Copyright (C) 2001-2023 Daniel Horn, pyramid3d, Stephen G. Tuggy,
  * and other Vega Strike contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
@@ -15,15 +15,16 @@
  *
  * Vega Strike is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
+ * along with Vega Strike. If not, see <https://www.gnu.org/licenses/>.
  */
 
 
-#include <Python.h>
+#define PY_SSIZE_T_CLEAN
+//#include <Python.h>
 
 #include <boost/version.hpp>
 #if BOOST_VERSION != 102800
@@ -159,22 +160,23 @@ int Room(std::string text) {
 }
 
 void Texture(int room, std::string index, std::string file, float x, float y) {
+    VS_LOG_AND_FLUSH(debug, (boost::format("BaseUtil::Texture called. room: %1%; index: '%2%'; file: '%3%'; x: %4%; y: %5%") % room % index % file % x % y));
     BaseInterface::Room *newroom = CheckRoom(room);
     if (!newroom) {
         return;
     }
-    newroom->objs.push_back(new BaseInterface::Room::BaseVSSprite(file.c_str(), index));
+    newroom->objs.push_back(new BaseInterface::Room::BaseVSSprite(file, index));
+    BaseInterface::Room::BaseVSSprite
+            *p_base_vs_sprite = vega_dynamic_cast_ptr<BaseInterface::Room::BaseVSSprite>( newroom->objs.back());
 #ifdef BASE_MAKER
-    ( (BaseInterface::Room::BaseVSSprite*) newroom->objs.back() )->texfile = file;
+    p_base_vs_sprite->texfile = file;
 #endif
     float tx = 0, ty = 0;
     static bool
             addspritepos = XMLSupport::parse_bool(vs_config->getVariable("graphics", "offset_sprites_by_pos", "true"));
     if (addspritepos) {
-        ((BaseInterface::Room::BaseVSSprite *) newroom->objs.back())->spr.GetPosition(tx, ty);
+        p_base_vs_sprite->spr.GetPosition(tx, ty);
     }
-    BaseInterface::Room::BaseVSSprite
-            *p_base_vs_sprite = vega_dynamic_cast_ptr<BaseInterface::Room::BaseVSSprite>( newroom->objs.back());
     p_base_vs_sprite->spr.SetPosition(x + tx, y + ty);
 }
 

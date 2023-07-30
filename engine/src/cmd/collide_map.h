@@ -1,10 +1,8 @@
-/**
+/*
  * collide_map.h
  *
- * Copyright (C) Daniel Horn
- * Copyright (C) 2020 pyramid3d, Stephen G. Tuggy, and other Vega Strike
- * contributors
- * Copyright (C) 2022 Stephen G. Tuggy
+ * Copyright (C) 2001-2023 Daniel Horn, pyramid3d, Stephen G. Tuggy,
+ * and other Vega Strike contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -25,8 +23,9 @@
  */
 
 
-#ifndef _COLLIDE_MAP_H_
-#define _COLLIDE_MAP_H_
+#ifndef VEGA_STRIKE_ENGINE_CMD_COLLIDE_MAP_H
+#define VEGA_STRIKE_ENGINE_CMD_COLLIDE_MAP_H
+
 #include "key_mutable_set.h"
 #include "vegastrike.h"
 #include "gfx/vec.h"
@@ -46,7 +45,7 @@ public:
         Unit *unit;
         unsigned int bolt_index;
     }
-            ref;
+            ref{};
 
     QVector GetPosition() const {
         return position;
@@ -95,7 +94,7 @@ public:
     ) {
     }
 
-    Collidable(Unit *un);
+    explicit Collidable(Unit *un);
 
     Collidable(unsigned int bolt_index, float speed, const QVector &p) {
         ref.bolt_index = bolt_index;
@@ -111,6 +110,8 @@ public:
         }
         this->SetPosition(p);
     }
+
+    virtual ~Collidable() = default;
 };
 
 class CollideArray {
@@ -122,12 +123,12 @@ public:
     class CollidableBackref : public Collidable {
     public:
 
-        size_t toflattenhints_offset;
+        size_t toflattenhints_offset{};
 
         CollidableBackref() : Collidable() {
         }
 
-        CollidableBackref(Unit *un) : Collidable(un) {
+        explicit CollidableBackref(Unit *un) : Collidable(un) {
         }
 
         CollidableBackref(unsigned int bolt_index, float speed, const QVector &p) : Collidable(bolt_index, speed, p) {
@@ -136,6 +137,8 @@ public:
         CollidableBackref(const Collidable &b, size_t offset) : Collidable(b) {
             toflattenhints_offset = offset;
         }
+
+        ~CollidableBackref() override = default;
     };
 
     void SetLocationIndex(unsigned int li) {
@@ -158,7 +161,7 @@ public:
     iterator changeKey(iterator iter, const Collidable &newKey, iterator tless, iterator tmore);
 
     iterator begin() {
-        return sorted.size() != 0 ? &*sorted.begin() : NULL;
+        return !sorted.empty() ? &*sorted.begin() : nullptr;
     }
 
     iterator end() {
@@ -169,9 +172,11 @@ public:
     void erase(iterator iter);
     void checkSet();
 
-    CollideArray(unsigned int location_index) : toflattenhints(1), count(0) {
+    explicit CollideArray(unsigned int location_index) : toflattenhints(1), count(0) {
         this->location_index = location_index;
     }
+
+    // TODO: Add virtual destructor?
 };
 
 #ifdef VS_ENABLE_COLLIDE_KEY
@@ -186,7 +191,7 @@ class CollideMap : public CollideArray {
 #endif
 #endif
 public:
-    CollideMap(unsigned int location_offset) : CollideArray(location_offset) {
+    explicit CollideMap(unsigned int location_offset) : CollideArray(location_offset) {
     }
 
 //Check collisions takes an item to check collisions with, and returns whether that item collided with a Unit only
@@ -196,6 +201,8 @@ public:
     bool CheckCollisions(Unit *un, const Collidable &updated); //will be handed off to a templated function
     bool CheckUnitCollisions(Unit *un,
             const Collidable &updated); //DANGER must be used on lists that are only populated with Units, not bolts
+
+    // TODO: Add virtual destructor?
 };
 
 #if defined (VS_ENABLE_COLLIDE_LIST) || defined (VS_ENABLE_COLLIDE_KEY)
@@ -228,13 +235,14 @@ inline void init_null_collide_iter() {
 }
 
 inline bool is_null(const CollideMap::iterator &it) {
-    return it == NULL;
+    return it == nullptr;
 }
 
 inline void set_null(CollideMap::iterator &it) {
-    it = NULL;
+    it = nullptr;
 }
 
 #endif
-#endif
+
+#endif //VEGA_STRIKE_ENGINE_CMD_COLLIDE_MAP_H
 

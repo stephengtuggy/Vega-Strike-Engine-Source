@@ -159,13 +159,17 @@ vega_types::SharedPtr<Texture> Texture::Clone() {
     //assert (!original->original);
 }
 
-void Texture::FileNotFound(const string &texfilename) {
+void Texture::FileNotFound(const string &tex_filename) {
+    VS_LOG(warning, (boost::format("Texture::FileNotFound called with tex_filename: '%1%'") % tex_filename));
     //We may need to remove from texHashTable if we found the file but it is a bad one
-    texHashTable.Delete(texfilename);
+    texHashTable.Delete(tex_filename);
 
-    setbad(texfilename);
+    setbad(tex_filename);
     name = -1;
-    data = nullptr;
+    if (data) {
+        free(data);
+        data = nullptr;
+    }
     if (original) {
         original->name = -1;
         original.reset();
@@ -272,8 +276,7 @@ void Texture::Load(const char *FileName,
     //this->texfilename = texfilename;
     //strcpy (filename,texfilename.c_str());
     VSFile f;
-    VSError err; //FIXME err not always initialized before use
-    err = Ok; //FIXME this line added temporarily by chuck_starchaser
+    VSError err = Ok;
     if (FileName) {
         if (FileName[0]) {
             err = f.OpenReadOnly(FileName, TextureFile);
@@ -285,7 +288,7 @@ void Texture::Load(const char *FileName,
         f.Close();
         err = Unspecified;
     }
-    if (err > Ok) { //FIXME err not guaranteed to have been initialized!
+    if (err > Ok) {
         FileNotFound(texfn);
         if (err2 <= Ok) {
             f2.Close();
@@ -302,9 +305,9 @@ void Texture::Load(const char *FileName,
     }
     //strcpy(filename, FileName);
     if (err2 > Ok) {
-        data = this->ReadImage(&f, NULL, true, NULL);
+        data = this->ReadImage(&f, nullptr, true, nullptr);
     } else {
-        data = this->ReadImage(&f, NULL, true, &f2);
+        data = this->ReadImage(&f, nullptr, true, &f2);
     }
     if (data) {
         if (mode >= _DXT1 && mode <= _DXT5) {
@@ -314,8 +317,10 @@ void Texture::Load(const char *FileName,
             }
         }
         if (main_texture) {
+            VS_LOG(debug, "Texture::Load -- main_texture is non-null");
             Bind(main_texture, maxdimension, detailtexture);
         } else {
+            VS_LOG(debug, "Texture::Load -- main_texture is null");
             Bind(maxdimension, detailtexture);
         }
         free(data);

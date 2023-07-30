@@ -41,10 +41,6 @@
  */
 ;
 class Texture : public ::VSImage /*, public vega_types::EnableSharedFromThis<Texture> */ {
-    Texture(const char *FileNameRGB, const char *FileNameA, int stage, FILTER mipmap, TEXTURE_TARGET target,
-            TEXTURE_IMAGE_TARGET imagetarget, float alpha, int zeroval, unsigned char force_load,
-            int max_dimension_size, unsigned char detail_texture, unsigned char nocache, ADDRESSMODE address_mode,
-            Texture *SDL_main);
 
     typedef unsigned int uint;
 public:
@@ -119,6 +115,7 @@ public:
 
 public:
 
+    // TODO: Separate into two constructors, one that takes no args and is public, and the other taking arguments and protected (or even removed altogether)
     ///Creates an unbounded texture. Set data and dimensions before binding. Or explicitly load a file.
     explicit Texture(int stage = 0,
             enum FILTER mipmap = MIPMAP,

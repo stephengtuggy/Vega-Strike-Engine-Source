@@ -1,7 +1,7 @@
 /*
  * base_util.h
  *
- * Copyright (C) 2001-2022 Daniel Horn, pyramid3d, Stephen G. Tuggy,
+ * Copyright (C) 2001-2023 Daniel Horn, pyramid3d, Stephen G. Tuggy,
  * and other Vega Strike Contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
@@ -15,7 +15,7 @@
  *
  * Vega Strike is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -23,9 +23,11 @@
  */
 
 
-#ifndef _BASE_UTIL_H_
-#define _BASE_UTIL_H_
+#ifndef VEGA_STRIKE_ENGINE_CMD_BASE_UTIL_H
+#define VEGA_STRIKE_ENGINE_CMD_BASE_UTIL_H
 
+#define PY_SSIZE_T_CLEAN
+#include <boost/python.hpp>
 #include <string>
 #include <boost/version.hpp>
 #if BOOST_VERSION != 102800
@@ -178,4 +180,4 @@ void refreshBaseComputerUI(const class Cargo *dirtyCarg);
 void ExitGame();
 }
 
-#endif
+#endif //VEGA_STRIKE_ENGINE_CMD_BASE_UTIL_H
