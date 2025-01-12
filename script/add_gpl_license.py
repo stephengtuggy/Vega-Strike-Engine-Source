@@ -124,7 +124,7 @@ def remove_license_header(filepath: Path) -> None:
     print(filepath.name)
 
     suffix: str = ''.join(filepath.suffixes)
-    comment_type: str = COMMENTS_BY_FILE_SUFFIX[suffix]
+    comment_type: tuple[str, str, str] = COMMENTS_BY_FILE_SUFFIX[suffix]
 
     with NamedTemporaryFile('w', delete=False) as output_file:
         with filepath.open('r') as input_file:
@@ -136,7 +136,7 @@ def remove_license_header(filepath: Path) -> None:
                 output_file.write('\n')
 
             # If first line isn't a comment, then short-circuit this whole process. There is no comment block to delete
-            elif not (first_line.startswith(comment_type)):
+            elif not (first_line.startswith(comment_type[0])) and not (first_line.startswith(comment_type[1])) and not (first_line.startswith(comment_type[2])):
                 output_file.close()
                 Path.unlink(Path(output_file.name))
                 return
@@ -155,7 +155,7 @@ def remove_license_header(filepath: Path) -> None:
                     # We've reached the end of the initial comment block
                     break
 
-                if not (line.startswith(comment_type)):
+                if not (line.startswith(comment_type[0])) and not (line.startswith(comment_type[1])) and not (line.startswith(comment_type[2])):
                     # We've reached the end of the initial comment block
                     output_file.write(line)
                     output_file.write('\n')
@@ -189,7 +189,7 @@ def add_gpl_license(filepath: Path, license_path: Path) -> None:
 
     # Construct comment for filetype
     suffix: str = ''.join(filepath.suffixes)
-    comment_type: str = COMMENTS_BY_FILE_SUFFIX[suffix]
+    comment_type: tuple[str, str, str] = COMMENTS_BY_FILE_SUFFIX[suffix]
     license_block: str = LICENSE_TEXT.format(
             filename=filepath.name,
             copyright_notice=get_copyright_notice(license_path))
