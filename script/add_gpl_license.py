@@ -2,8 +2,8 @@
 
 # add_gpl_license.py
 #
-# Copyright (C) 2021 David Wales and other Vega Strike
-# contributors
+# Copyright (C) 2021-2025 David Wales, Stephen G. Tuggy, and other
+# Vega Strike contributors
 #
 # https://github.com/vegastrike/Vega-Strike-Engine-Source
 #
@@ -28,12 +28,12 @@ with the Vega Strike GPL 3 copyright notice prepended to it.
 If no arguments are passed, the script will read from stdin.
 
 The Copyright text is copied from the LICENSE file, which is assumed to be at
-the root of the current git repository. Hence this script needs to be run from
-within a git repository containing a LICENSE file at the root. Lines
-containing the text 'Copyright (C)' at the start of the LICENSE file will be
-copied as the Copyright text for the GPL notice. e.g. If the LICENSE file
-contains the following lines, they will be copied in at the start of the GPL
-notice:
+the root of the current git repository. Hence, this script needs to be run from
+within a git repository containing a LICENSE file at the root. The lines at the
+start of the LICENSE file, starting with 'Copyright (C)' and ending just before
+'GNU GENERAL PUBLIC LICENSE', will be copied as the Copyright text for the GPL
+notice. e.g. If the LICENSE file contains the following lines, they will be copied
+in at the start of the GPL notice:
 
     Copyright (c) 2001-2002 Daniel Horn
     Copyright (c) 2002-2019 pyramid3d and other Vega Strike Contributors
@@ -59,7 +59,7 @@ This file is part of Vega Strike.
 
 Vega Strike is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or
+the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 Vega Strike is distributed in the hope that it will be useful,
@@ -68,7 +68,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Vega Strike. If not, see <https://www.gnu.org/licenses/>."""
+along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>."""
 
 # Characters to use for the start, middle and end of a comment block
 C_LIKE_COMMENT = ('/**', '*', '*/')
@@ -113,10 +113,9 @@ def get_copyright_notice(LICENSE: Path) -> str:
     copyright_lines = []
     with LICENSE.open() as file:
         for line in file:
-            if line.startswith('Copyright (c)'):
-                copyright_lines.append(line)
-            elif 'GNU GENERAL PUBLIC LICENSE' in line:
+            if 'GNU GENERAL PUBLIC LICENSE' in line:
                 break
+            copyright_lines.append(line)
 
     return ''.join(copyright_lines).removesuffix('\n')
 
