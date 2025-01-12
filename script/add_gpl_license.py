@@ -196,7 +196,7 @@ def add_gpl_license(filepath: Path, license_path: Path) -> None:
     comment_block: list[str] = [f'{comment_type[1]} {line}' if line else comment_type[1]
             for line in license_block.split('\n')]
 
-    comment: str = '\n'.join([comment_type[0], *comment_block, comment_type[2]])
+    comment: str = '\n'.join([comment_type[0], *comment_block, comment_type[2]]) + '\n'
 
     # Use binary mode for files to avoid encoding issues
     with NamedTemporaryFile('w', delete=False) as output_file:
