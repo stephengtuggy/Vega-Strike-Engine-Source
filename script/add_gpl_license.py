@@ -127,8 +127,8 @@ def remove_license_header(filepath: Path) -> None:
     suffix: str = ''.join(filepath.suffixes)
     comment_type: tuple[str, str, str] = COMMENTS_BY_FILE_SUFFIX[suffix]
 
-    with NamedTemporaryFile('w', delete=False) as output_file:
-        with filepath.open('r') as input_file:
+    with NamedTemporaryFile('w', delete=False, newline='\n') as output_file:
+        with filepath.open('rU') as input_file:
             first_line: str = input_file.readline()
 
             # If first line is a shebang, leave it intact
@@ -199,8 +199,8 @@ def add_gpl_license(filepath: Path, license_path: Path) -> None:
     comment: str = '\n'.join([comment_type[0], *comment_block, comment_type[2]]) + '\n'
 
     # Use binary mode for files to avoid encoding issues
-    with NamedTemporaryFile('w', delete=False) as output_file:
-        with filepath.open('r') as input_file:
+    with NamedTemporaryFile('w', delete=False, newline='\n') as output_file:
+        with filepath.open('rU') as input_file:
             first_line: str = input_file.readline()
             # If first line is a shebang, insert comment after first line.
             if first_line.startswith('#!'):
