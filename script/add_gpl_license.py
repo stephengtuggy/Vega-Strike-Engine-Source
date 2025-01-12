@@ -92,7 +92,7 @@ def find_git_root() -> Path:
     """If we're in a git repository, return the path to the git root directory.
     Otherwise, raise an error."""
 
-    pwd = Path.cwd()
+    pwd: Path = Path.cwd()
     # Check if we're already at the git root
     if (pwd/'.git').exists():
         return pwd
@@ -110,8 +110,8 @@ def get_copyright_notice(LICENSE: Path) -> str:
     LICENSE file. Stop reading the file after the license title is found:
         GNU GENERAL PUBLIC LICENSE
     """
-    copyright_lines = []
-    with LICENSE.open() as file:
+    copyright_lines: list[str] = []
+    with LICENSE.open('r') as file:
         for line in file:
             if 'GNU GENERAL PUBLIC LICENSE' in line:
                 break
@@ -123,21 +123,20 @@ def get_copyright_notice(LICENSE: Path) -> str:
 def remove_license_header(filepath: Path) -> None:
     print(filepath.name)
 
-    suffix = ''.join(filepath.suffixes)
-    comment_type = COMMENTS_BY_FILE_SUFFIX[suffix]
+    suffix: str = ''.join(filepath.suffixes)
+    comment_type: str = COMMENTS_BY_FILE_SUFFIX[suffix]
 
-    # Use binary mode for files to avoid encoding issues
-    with NamedTemporaryFile('w+b', delete=False) as output_file:
-        with filepath.open('r+b') as input_file:
-            first_line = input_file.readline()
+    with NamedTemporaryFile('w', delete=False) as output_file:
+        with filepath.open('r') as input_file:
+            first_line: str = input_file.readline()
 
             # If first line is a shebang, leave it intact
-            if first_line.startswith('#!'.encode()):
+            if first_line.startswith('#!'):
                 output_file.write(first_line)
-                output_file.write('\n'.encode())
+                output_file.write('\n')
 
             # If first line isn't a comment, then short-circuit this whole process. There is no comment block to delete
-            elif not (first_line.startswith(comment_type.encode())):
+            elif not (first_line.startswith(comment_type)):
                 output_file.close()
                 Path.unlink(Path(output_file.name))
                 return
@@ -146,20 +145,20 @@ def remove_license_header(filepath: Path) -> None:
 
             # Remove the initial comment block at the start of the file.
             while True:
-                line = input_file.readline()
+                line: str = input_file.readline()
 
                 # Check for GPL text snippet in each line in the initial comment block.
-                if 'GENERAL PUBLIC LICENSE' in line.decode():
+                if 'GENERAL PUBLIC LICENSE' in line:
                     found_gpl = True
 
                 if not line:
                     # We've reached the end of the initial comment block
                     break
 
-                if not (line.startswith(comment_type.encode())):
+                if not (line.startswith(comment_type)):
                     # We've reached the end of the initial comment block
                     output_file.write(line)
-                    output_file.write('\n'.encode())
+                    output_file.write('\n')
                     break
 
             # Only remove the copyright block if it contained a reference to the GPL.
@@ -189,31 +188,30 @@ def add_gpl_license(filepath: Path, license_path: Path) -> None:
     print(filepath.name)
 
     # Construct comment for filetype
-    suffix = ''.join(filepath.suffixes)
-    comment_type = COMMENTS_BY_FILE_SUFFIX[suffix]
-    license_block = LICENSE_TEXT.format(
+    suffix: str = ''.join(filepath.suffixes)
+    comment_type: str = COMMENTS_BY_FILE_SUFFIX[suffix]
+    license_block: str = LICENSE_TEXT.format(
             filename=filepath.name,
             copyright_notice=get_copyright_notice(license_path))
 
-    comment_block = [f'{comment_type[1]} {line}' if line else comment_type[1]
+    comment_block: list[str] = [f'{comment_type[1]} {line}' if line else comment_type[1]
             for line in license_block.split('\n')]
 
-    comment = '\n'.join([comment_type[0], *comment_block, comment_type[2]]) + '\n\n'
+    comment: str = '\n'.join([comment_type[0], *comment_block, comment_type[2]]) + '\n\n'
 
     # Use binary mode for files to avoid encoding issues
-    with NamedTemporaryFile('w+b', delete=False) as output_file:
-        output_filepath = output_file.name
-        with filepath.open('r+b') as input_file:
-            first_line = input_file.readline()
+    with NamedTemporaryFile('w', delete=False) as output_file:
+        with filepath.open('r') as input_file:
+            first_line: str = input_file.readline()
             # If first line is a shebang, insert comment after first line.
-            if first_line.startswith('#!'.encode()):
+            if first_line.startswith('#!'):
                 output_file.write(first_line)
-                output_file.write('\n'.encode())
-                output_file.write(comment.encode())
+                output_file.write('\n')
+                output_file.write(comment)
                 output_file.write(input_file.read())
             # Else insert comment as first line
             else:
-                output_file.write(comment.encode())
+                output_file.write(comment)
                 output_file.write(first_line)
                 output_file.write(input_file.read())
 
@@ -224,7 +222,7 @@ def add_gpl_license(filepath: Path, license_path: Path) -> None:
 
 
 def main():
-    license_path = find_git_root()/'LICENSE'
+    license_path: Path = find_git_root()/'LICENSE'
     if len(sys.argv) > 1 and sys.argv[1] in ('-h', '--help'):
         print(__doc__)
         return
