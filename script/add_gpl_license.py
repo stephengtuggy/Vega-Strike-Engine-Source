@@ -71,7 +71,7 @@ You should have received a copy of the GNU General Public License
 along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>."""
 
 # Characters to use for the start, middle and end of a comment block
-C_LIKE_COMMENT = ['/*', ' *', ' */', '/**', '*', '*/', '//']
+C_LIKE_COMMENT = ['/*', ' *', ' */', '/**', '*', '*/']
 SCRIPT_LIKE_COMMENT = ['##', '#', '#']
 
 COMMENTS_BY_FILE_SUFFIX = {
