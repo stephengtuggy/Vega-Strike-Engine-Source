@@ -120,6 +120,62 @@ def get_copyright_notice(LICENSE: Path) -> str:
     return ''.join(copyright_lines).removesuffix('\n')
 
 
+def remove_license_header(filepath: Path) -> None:
+    print(filepath.name)
+
+    suffix = ''.join(filepath.suffixes)
+    comment_type = COMMENTS_BY_FILE_SUFFIX[suffix]
+
+    # Use binary mode for files to avoid encoding issues
+    with NamedTemporaryFile('w+b', delete=False) as output_file:
+        with filepath.open('r+b') as input_file:
+            first_line = input_file.readline()
+
+            # If first line is a shebang, leave it intact
+            if first_line.startswith('#!'.encode()):
+                output_file.write(first_line)
+                output_file.write('\n'.encode())
+
+            # If first line isn't a comment, then short-circuit this whole process. There is no comment block to delete
+            elif not (first_line.startswith(comment_type.encode())):
+                output_file.close()
+                Path.unlink(Path(output_file.name))
+                return
+
+            found_gpl: bool = False
+
+            # Remove the initial comment block at the start of the file.
+            while True:
+                line = input_file.readline()
+
+                # Check for GPL text snippet in each line in the initial comment block.
+                if 'GENERAL PUBLIC LICENSE' in line.decode():
+                    found_gpl = True
+
+                if not line:
+                    # We've reached the end of the initial comment block
+                    break
+
+                if not (line.startswith(comment_type.encode())):
+                    # We've reached the end of the initial comment block
+                    output_file.write(line)
+                    output_file.write('\n'.encode())
+                    break
+
+            # Only remove the copyright block if it contained a reference to the GPL.
+            # Otherwise, short-circuit the rest of this process
+            if not found_gpl:
+                output_file.close()
+                Path.unlink(Path(output_file.name))
+                return
+
+            output_file.write(input_file.read())
+
+    # Copy original file attributes and permissions to temp file
+    copystat(filepath, output_file.name)
+    # Move temp file into place
+    move(output_file.name, filepath)
+
 def add_gpl_license(filepath: Path, license_path: Path) -> None:
     """Add a GPL license notice to the start of the given file.
     This function tries to choose sensible comment characters based on the file
@@ -171,12 +227,14 @@ def main():
     license_path = find_git_root()/'LICENSE'
     if len(sys.argv) > 1 and sys.argv[1] in ('-h', '--help'):
         print(__doc__)
+        return
     elif len(sys.argv) > 1:
         files = sys.argv[1:]
     else:
         files = sys.stdin
 
     for filepath in map(Path, (f.removesuffix('\n') for f in files)):
+        remove_license_header(filepath)
         add_gpl_license(filepath, license_path)
 
 if __name__ == '__main__':
