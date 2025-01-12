@@ -121,7 +121,8 @@ def get_copyright_notice(LICENSE: Path) -> str:
 
 
 def remove_license_header(filepath: Path) -> None:
-    print(filepath.name)
+    """Remove the GPL license notice at the start of the given file, if present."""
+    print(f"Removing license header from {filepath.name}")
 
     suffix: str = ''.join(filepath.suffixes)
     comment_type: tuple[str, str, str] = COMMENTS_BY_FILE_SUFFIX[suffix]
@@ -133,7 +134,6 @@ def remove_license_header(filepath: Path) -> None:
             # If first line is a shebang, leave it intact
             if first_line.startswith('#!'):
                 output_file.write(first_line)
-                output_file.write('\n')
 
             # If first line isn't a comment, then short-circuit this whole process. There is no comment block to delete
             elif not (first_line.startswith(comment_type[0])) and not (first_line.startswith(comment_type[1])) and not (first_line.startswith(comment_type[2])):
@@ -148,7 +148,7 @@ def remove_license_header(filepath: Path) -> None:
                 line: str = input_file.readline()
 
                 # Check for GPL text snippet in each line in the initial comment block.
-                if 'GENERAL PUBLIC LICENSE' in line:
+                if 'GENERAL PUBLIC LICENSE' in line or 'General Public License' in line:
                     found_gpl = True
 
                 if not line:
@@ -158,7 +158,6 @@ def remove_license_header(filepath: Path) -> None:
                 if not (line.startswith(comment_type[0])) and not (line.startswith(comment_type[1])) and not (line.startswith(comment_type[2])):
                     # We've reached the end of the initial comment block
                     output_file.write(line)
-                    output_file.write('\n')
                     break
 
             # Only remove the copyright block if it contained a reference to the GPL.
@@ -183,9 +182,9 @@ def add_gpl_license(filepath: Path, license_path: Path) -> None:
 
     However, it doesn't check if there is already a license notice in the file.
     Any file passed to this function will have a license notice added, even if
-    it already has a license notice already..."""
+    it already has a license notice..."""
 
-    print(filepath.name)
+    print(f"Adding license header to {filepath.name}")
 
     # Construct comment for filetype
     suffix: str = ''.join(filepath.suffixes)
@@ -206,7 +205,6 @@ def add_gpl_license(filepath: Path, license_path: Path) -> None:
             # If first line is a shebang, insert comment after first line.
             if first_line.startswith('#!'):
                 output_file.write(first_line)
-                output_file.write('\n')
                 output_file.write(comment)
                 output_file.write(input_file.read())
             # Else insert comment as first line
