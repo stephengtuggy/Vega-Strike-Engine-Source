@@ -142,6 +142,11 @@ def remove_license_header(filepath: Path) -> None:
             if first_line.startswith('#!'):
                 output_file.write(first_line)
 
+            # Handle the line that a few of our C++ source files have at or near the top that looks like this:
+            # // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
+            elif first_line.startswith('// -*- '):
+                output_file.write(first_line)
+
             # If first line isn't a comment, then short-circuit this whole process. There is no comment block to delete
             elif not is_a_comment(first_line, comment_type):
                 output_file.close()
