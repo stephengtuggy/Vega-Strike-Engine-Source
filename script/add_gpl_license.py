@@ -71,8 +71,8 @@ You should have received a copy of the GNU General Public License
 along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>."""
 
 # Characters to use for the start, middle and end of a comment block
-C_LIKE_COMMENT = ('/**', '*', '*/')
-SCRIPT_LIKE_COMMENT = ('##', '#', '#')
+C_LIKE_COMMENT = ['/*', ' *', ' */', '/**', '*', '*/', '//']
+SCRIPT_LIKE_COMMENT = ['##', '#', '#']
 
 COMMENTS_BY_FILE_SUFFIX = {
     '.c': C_LIKE_COMMENT,
@@ -120,12 +120,19 @@ def get_copyright_notice(LICENSE: Path) -> str:
     return ''.join(copyright_lines).removesuffix('\n')
 
 
+def is_a_comment(line: str, comment_prefixes: list[str]) -> bool:
+    for prefix in comment_prefixes:
+        if line.startswith(prefix):
+            return True
+    return False
+
+
 def remove_license_header(filepath: Path) -> None:
     """Remove the GPL license notice at the start of the given file, if present."""
     print(f"Removing license header from {filepath.name}")
 
     suffix: str = ''.join(filepath.suffixes)
-    comment_type: tuple[str, str, str] = COMMENTS_BY_FILE_SUFFIX[suffix]
+    comment_type: list[str] = COMMENTS_BY_FILE_SUFFIX[suffix]
 
     with NamedTemporaryFile('w', delete=False, newline='\n') as output_file:
         with filepath.open('r') as input_file:
@@ -136,7 +143,7 @@ def remove_license_header(filepath: Path) -> None:
                 output_file.write(first_line)
 
             # If first line isn't a comment, then short-circuit this whole process. There is no comment block to delete
-            elif not (first_line.startswith(comment_type[0])) and not (first_line.startswith(comment_type[1])) and not (first_line.startswith(comment_type[2])):
+            elif not is_a_comment(first_line, comment_type):
                 output_file.close()
                 Path.unlink(Path(output_file.name))
                 return
@@ -155,7 +162,7 @@ def remove_license_header(filepath: Path) -> None:
                     # We've reached the end of the initial comment block
                     break
 
-                if not (line.startswith(comment_type[0])) and not (line.startswith(comment_type[1])) and not (line.startswith(comment_type[2])):
+                if not is_a_comment(line, comment_type):
                     # We've reached the end of the initial comment block
                     output_file.write(line)
                     break
@@ -188,7 +195,7 @@ def add_gpl_license(filepath: Path, license_path: Path) -> None:
 
     # Construct comment for filetype
     suffix: str = ''.join(filepath.suffixes)
-    comment_type: tuple[str, str, str] = COMMENTS_BY_FILE_SUFFIX[suffix]
+    comment_type: list[str] = COMMENTS_BY_FILE_SUFFIX[suffix]
     license_block: str = LICENSE_TEXT.format(
             filename=filepath.name,
             copyright_notice=get_copyright_notice(license_path))
