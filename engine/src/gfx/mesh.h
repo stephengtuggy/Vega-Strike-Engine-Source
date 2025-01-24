@@ -6,7 +6,7 @@
  *  ace123, jacks, and other Vega Strike contributors
  * Copyright (C) 2020 pyramid3d, Stephen G. Tuggy, Roy Falk,
  *  and other Vega Strike contributors
- * Copyright (C) 2021-2023 Stephen G. Tuggy, Benjamen R. Meyer
+ * Copyright (C) 2021-2025 Stephen G. Tuggy, Benjamen R. Meyer
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -31,13 +31,12 @@
 #include <string>
 #include <vector>
 #include "xml_support.h"
-#include "quaternion.h"
 #include "matrix.h"
-#include "gfxlib.h"
 #include "gfxlib_struct.h"
 #include "vsfilesystem.h"
 #include "cmd/unit_generic.h"
 #include "gfx/technique.h"
+#include "gfx/bfxm_hashtable.h"
 
 using std::vector;
 using std::string;
@@ -51,8 +50,6 @@ class GFXVertexList;
 class GFXQuadstrip;
 struct GFXMaterial;
 class BoundingBox;
-
-#define MESH_HASTHABLE_SIZE (503)
 
 // Struct polygon format returned by GetPolys, usually a triangle
 struct mesh_polygon {
@@ -128,11 +125,11 @@ enum CLK_CONSTS { CLKSCALE = 2147483647 };
  */
 class Mesh {
 private:
-//make sure to only use TempGetTexture when xml-> is valid \|/
+    //make sure to only use TempGetTexture when xml-> is valid \|/
     Texture *TempGetTexture(struct MeshXML *, int index, std::string factionname) const;
     Texture *TempGetTexture(struct MeshXML *, std::string filename, std::string factionname, GFXBOOL detail) const;
-///Stores all the load-time vertex info in the XML struct FIXME light calculations
-///Loads XML data into this mesh.
+    ///Stores all the load-time vertex info in the XML struct FIXME light calculations
+    ///Loads XML data into this mesh.
     void LoadXML(const char *filename,
             const Vector &scale,
             int faction,
@@ -145,9 +142,9 @@ private:
             class Flightgroup *fg,
             bool orig,
             const vector<string> &overrideTexture);
-///loads binary data into this mesh
+    ///loads binary data into this mesh
     void LoadBinary(const char *filename, int faction);
-///Creates all logos with given XML data info
+    ///Creates all logos with given XML data info
     void CreateLogos(struct MeshXML *, int faction, class Flightgroup *fg);
     static void beginElement(void *userData, const XML_Char *name, const XML_Char **atts);
     static void endElement(void *userData, const XML_Char *name);
@@ -175,82 +172,82 @@ private:
             const std::vector<std::string> &textureOverride = std::vector<std::string>());
 
 protected:
-//only may be called from subclass. orig request may be denied if unit was in past usage. (not likely in the case where a unit must be constructed in orig)
+    //only may be called from subclass. orig request may be denied if unit was in past usage. (not likely in the case where a unit must be constructed in orig)
     Mesh(std::string filename, const Vector &scalex, int faction, class Flightgroup *fg, bool orig = false);
 
-///Loads a mesh that has been found in the hash table into this mesh (copying original data)
+    ///Loads a mesh that has been found in the hash table into this mesh (copying original data)
 public:
     bool LoadExistant(Mesh *mesh);
     bool LoadExistant(const string filehash, const Vector &scale, int faction);
 protected:
-///the position of the center of this mesh for collision detection
+    ///the position of the center of this mesh for collision detection
     Vector local_pos;
-///The hash table of all meshes
+    ///The hash table of all meshes
     static Hashtable<std::string, Mesh, MESH_HASTHABLE_SIZE> meshHashTable;
     static Hashtable<std::string, std::vector<int>, MESH_HASTHABLE_SIZE> animationSequences;
-///The refcount:: how many meshes are referencing the appropriate original
-    int refcount;
-///bounding box
+    ///The refcount:: how many meshes are referencing the appropriate original
+    int refcount{};
+    ///bounding box
     Vector mx;
     Vector mn;
-///The radial size of this mesh
-    float radialSize;
-///num lods contained in the array of Mesh "orig"
-    int numlods;
-    float framespersecond; //for animation
-    Mesh *orig;
-///The size that this LOD (if original) comes into effect
-    float lodsize;
-///The number of force logos on this mesh (original)
-    Logo *forcelogos;
-    int numforcelogo;
-///The number of squad logos on this mesh (original)
-    Logo *squadlogos;
-    int numsquadlogo;
-///tri,quad,line, strips, etc
-    GFXVertexList *vlist;
-///The number of the appropriate material for this mesh (default 0)
-    unsigned int myMatNum;
-///The technique used to render this mesh
+    ///The radial size of this mesh
+    float radialSize{};
+    ///num lods contained in the array of Mesh "orig"
+    int numlods{};
+    float framespersecond{}; //for animation
+    Mesh *orig{};
+    ///The size that this LOD (if original) comes into effect
+    float lodsize{};
+    ///The number of force logos on this mesh (original)
+    Logo *forcelogos{};
+    int numforcelogo{};
+    ///The number of squad logos on this mesh (original)
+    Logo *squadlogos{};
+    int numsquadlogo{};
+    ///tri,quad,line, strips, etc
+    GFXVertexList *vlist{};
+    ///The number of the appropriate material for this mesh (default 0)
+    unsigned int myMatNum{};
+    ///The technique used to render this mesh
     TechniquePtr technique;
-///The decal relevant to this mesh
+    ///The decal relevant to this mesh
     vector<Texture *> Decal;
-    Texture *detailTexture;
+    Texture *detailTexture{};
     vector<Vector> detailPlanes;
-    float polygon_offset;
-///whether this should be environment mapped 0x1 and 0x2 for if it should be lit (ored together)
-    char envMapAndLit;
-///Whether this original will be drawn this frame
-    GFXBOOL will_be_drawn;
-///The blend functions
-    bool convex;
-    unsigned char alphatest;
+    float polygon_offset{};
+    ///whether this should be environment mapped 0x1 and 0x2 for if it should be lit (ored together)
+    char envMapAndLit{};
+    ///Whether this original will be drawn this frame
+    GFXBOOL will_be_drawn{};
+    ///The blend functions
+    bool convex{};
+    unsigned char alphatest{};
     enum BLENDFUNC blendSrc;
     enum BLENDFUNC blendDst;
 
-/// Support for reorganized rendering
-    vector<MeshDrawContext> *draw_queue;
-/// How transparent this mesh is (in what order should it be rendered in
-    int draw_sequence;
-///The name of this unit
+    /// Support for reorganized rendering
+    vector<MeshDrawContext> *draw_queue{};
+    /// How transparent this mesh is (in what order should it be rendered in
+    int draw_sequence{};
+    ///The name of this unit
     string hash_name;
-///Setting all values to defaults (good for mesh copying and stuff)
+    ///Setting all values to defaults (good for mesh copying and stuff)
     void InitUnit();
-///Needs to have access to our class
+    ///Needs to have access to our class
     friend class OrigMeshContainer;
-///The enabled light effects on this mesh
+    ///The enabled light effects on this mesh
     vector<MeshFX> LocalFX;
-///Returing the mesh relevant to "size" pixels LOD of this mesh
+    ///Returing the mesh relevant to "size" pixels LOD of this mesh
     Mesh *getLOD(float lod, bool bBypassDamping = true);
 
 private:
-///Implement fixed-function draw queue processing (the referenced pass must be of Fixed type) - internal usage
+    ///Implement fixed-function draw queue processing (the referenced pass must be of Fixed type) - internal usage
     void ProcessFixedDrawQueue(size_t whichpass, int whichdrawqueue, bool zsort, const QVector &sortctr);
 
-///Implement programmable draw queue processing (the referenced pass must be of Shader type) - internal usage
+    ///Implement programmable draw queue processing (the referenced pass must be of Shader type) - internal usage
     void ProcessShaderDrawQueue(size_t whichpass, int whichdrawqueue, bool zsort, const QVector &sortctr);
 
-///Activate a texture unit - internal usage
+    ///Activate a texture unit - internal usage
     void activateTextureUnit(const Pass::TextureUnit &tu, bool deflt = false);
 
 public:
@@ -287,7 +284,7 @@ public:
         return blendDst;
     }
 
-///Loading a mesh from an XML file.  faction specifies the logos.  Orig is for internal (LOD) use only!
+    ///Loading a mesh from an XML file.  faction specifies the logos.  Orig is for internal (LOD) use only!
 //private:
 //public:
     static Mesh *LoadMesh(const char *filename, const Vector &scalex, int faction, class Flightgroup *fg,
@@ -298,17 +295,17 @@ public:
             std::string hash_name,
             const std::vector<std::string> &textureOverride = std::vector<std::string>());
 
-///Forks the mesh across the plane a,b,c,d into two separate meshes...upon which this may be deleted
+    ///Forks the mesh across the plane a,b,c,d into two separate meshes...upon which this may be deleted
     void Fork(Mesh *&one, Mesh *&two, float a, float b, float c, float d);
-///Destructor... kills orig if refcount of orig becomes zero
+    ///Destructor... kills orig if refcount of orig becomes zero
     virtual ~Mesh();
 
-///Gets number of specialFX
+    ///Gets number of specialFX
     unsigned int numFX() const {
         return LocalFX.size();
     }
 
-///Turns on SpecialFX
+    ///Turns on SpecialFX
     void EnableSpecialFX();
 
     unsigned int numTextures() const {
@@ -320,28 +317,28 @@ public:
     }
 
     void SetBlendMode(BLENDFUNC src, BLENDFUNC dst, bool lodcascade = false);
-///Gets all polygons in this mesh for collision computation
+    ///Gets all polygons in this mesh for collision computation
     void GetPolys(vector<mesh_polygon> &);
-///Sets the material of this mesh to mat (affects original as well)
+    ///Sets the material of this mesh to mat (affects original as well)
     void SetMaterial(const GFXMaterial &mat);
-//Gets the material back from the mesh.
+    //Gets the material back from the mesh.
     const GFXMaterial &GetMaterial() const;
-///If it has already been drawn this frame
+    ///If it has already been drawn this frame
     GFXBOOL HasBeenDrawn() const {
         return will_be_drawn;
     }
 
-///so one can query if it has or not been drawn
+    ///so one can query if it has or not been drawn
     void UnDraw() {
         will_be_drawn = GFXFALSE;
     }
 
-///Returns center of this mesh
+    ///Returns center of this mesh
     Vector const &Position() const {
         return local_pos;
     }
 
-///Draws lod pixel wide mesh at Transformation LATER
+    ///Draws lod pixel wide mesh at Transformation LATER
     void Draw(float lod,
               const Matrix &m = identity_matrix,
               float toofar = 1,
@@ -350,22 +347,22 @@ public:
               unsigned char damage = 0,
               bool renormalize_normals = false,
               const MeshFX *mfx = NULL);  //short fix
-///Draws lod pixels wide, mesh at Transformation NOW. If centered, then will center on camera and disable cull
+    ///Draws lod pixels wide, mesh at Transformation NOW. If centered, then will center on camera and disable cull
     void DrawNow(float lod,
             bool centered,
             const Matrix &m = identity_matrix,
             int cloak = -1,
             float nebdist = 0); //short fix
-///Will draw all undrawn meshes of this type
+    ///Will draw all undrawn meshes of this type
     virtual void ProcessDrawQueue(size_t whichpass, int whichdrawqueue, bool zsort, const QVector &sortctr);
-///Will draw all undrawn far meshes beyond the range of zbuffer (better be convex).
+    ///Will draw all undrawn far meshes beyond the range of zbuffer (better be convex).
     virtual void SelectCullFace(int whichdrawqueue);
     virtual void RestoreCullFace(int whichdrawqueue);
     static void ProcessZFarMeshes(bool nocamerasetup = false);
-///Will draw all undrawn meshes in total If pushSpclFX, the last series of meshes will be drawn with other lighting off
+    ///Will draw all undrawn meshes in total If pushSpclFX, the last series of meshes will be drawn with other lighting off
     static void ProcessUndrawnMeshes(bool pushSpecialEffects = false, bool nocamerasetup = false);
 
-///Sets whether or not this unit should be environment mapped
+    ///Sets whether or not this unit should be environment mapped
     void forceCullFace(GFXBOOL newValue) {
         if (newValue) {
             envMapAndLit = (envMapAndLit & ~(0x8 | 0x4));
@@ -409,7 +406,7 @@ public:
         return (envMapAndLit & 0x2) != 0;
     }
 
-///Returns bounding box values
+    ///Returns bounding box values
     Vector corner_min() {
         return mn;
     }
@@ -418,14 +415,14 @@ public:
         return mx;
     }
 
-///Returns a physical boudning box in 3space instead of in current unit space
+    ///Returns a physical bounding box in 3space instead of in current unit space
     BoundingBox *getBoundingBox();
-///queries this bounding box with a vector and radius
+    ///queries this bounding box with a vector and radius
     bool queryBoundingBox(const QVector &start, const float err) const;
-///Queries bounding box with a ray
+    ///Queries bounding box with a ray
     bool queryBoundingBox(const QVector &start, const QVector &end, const float err) const;
 
-///returns the radial size of this
+    ///returns the radial size of this
     float rSize() const {
         return radialSize;
     }
@@ -434,9 +431,9 @@ public:
         return radialSize;
     }
 
-///based on TTL, etc, updates shield effects
+    ///based on TTL, etc., updates shield effects
     void UpdateFX(float ttime);
-///Adds a new damage effect with %age damage to the part of the unit. Color specifies the shield oclor
+    ///Adds a new damage effect with %age damage to the part of the unit. Color specifies the shield oclor
     void AddDamageFX(const Vector &LocalPos,
             const Vector &LocalNorm,
             const float percentage,

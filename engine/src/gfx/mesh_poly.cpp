@@ -3,8 +3,7 @@
  *
  * Copyright (c) 2001-2002 Daniel Horn
  * Copyright (c) 2002-2019 pyramid3d and other Vega Strike Contributors
- * Copyright (c) 2019-2021 Stephen G. Tuggy, and other Vega Strike Contributors
- * Copyright (C) 2022 Stephen G. Tuggy
+ * Copyright (c) 2019-2025 Stephen G. Tuggy, and other Vega Strike Contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -107,7 +106,7 @@ void Mesh::Fork(Mesh *&x, Mesh *&y, float a, float b, float c, float d) {
     free(Orig);
     enum POLYTYPE polytypes[2] = {GFXTRI, GFXQUAD};
     if ((!(numtqx[0] || numtqx[1])) || (!(numtqy[0] || numtqy[1]))) {
-        x = y = NULL;
+        x = y = nullptr;
         delete[] X;
         delete[] Y;
         return;
@@ -122,29 +121,29 @@ void Mesh::Fork(Mesh *&x, Mesh *&y, float a, float b, float c, float d) {
     y->setEnvMap(getEnvMap());
 
     y->forceCullFace(GFXFALSE);
-    x->forcelogos = x->squadlogos = NULL;
+    x->forcelogos = x->squadlogos = nullptr;
     x->numforcelogo = x->numsquadlogo = 0;
     x->setLighting(getLighting());
     x->setEnvMap(getEnvMap());
     x->blendSrc = y->blendSrc = blendSrc;
     x->blendDst = y->blendDst = blendDst;
     while (x->Decal.size() < Decal.size()) {
-        x->Decal.push_back(NULL);
+        x->Decal.push_back(nullptr);
     }
     {
-        for (unsigned int i = 0; i < Decal.size(); i++) {
-            if (Decal[i]) {
-                x->Decal[i] = Decal[i]->Clone();
+        for (unsigned int i2 = 0; i2 < Decal.size(); ++i2) {
+            if (Decal[i2]) {
+                x->Decal[i2] = Decal[i2]->Clone();
             }
         }
     }
 
-    y->squadlogos = y->forcelogos = NULL;
+    y->squadlogos = y->forcelogos = nullptr;
     y->numforcelogo = y->numsquadlogo = 0;
     y->setLighting(getLighting());
     y->setEnvMap(getEnvMap());
     while (y->Decal.size() < Decal.size()) {
-        y->Decal.push_back(NULL);
+        y->Decal.push_back(nullptr);
     }
     {
         for (unsigned int i = 0; i < Decal.size(); i++) {
@@ -193,13 +192,13 @@ void Mesh::Fork(Mesh *&x, Mesh *&y, float a, float b, float c, float d) {
     x->orig->refcount = 1;
     y->orig->refcount = 1;
     x->numforcelogo = 0;
-    x->forcelogos = NULL;
+    x->forcelogos = nullptr;
     x->numsquadlogo = 0;
-    x->squadlogos = NULL;
+    x->squadlogos = nullptr;
     x->numforcelogo = 0;
-    x->forcelogos = NULL;
+    x->forcelogos = nullptr;
     x->numsquadlogo = 0;
-    x->squadlogos = NULL;
+    x->squadlogos = nullptr;
 
     delete[] X;
     delete[] Y;
@@ -243,4 +242,3 @@ void Mesh::GetPolys(vector<mesh_polygon> &polys) {
     }
     free(tmpres);
 }
-

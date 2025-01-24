@@ -1,10 +1,8 @@
 /**
  * mesh_xml.h
  *
- * Copyright (C) Daniel Horn
- * Copyright (C) 2020 pyramid3d, Stephen G. Tuggy, and other Vega Strike
- *  contributors
- * Copyright (C) 2023 Stephen G. Tuggy, Benjamen R. Meyer
+ * Copyright (C) 2001-2025 Daniel Horn, pyramid3d, Stephen G. Tuggy,
+ * Benjamen R. Meyer, and other Vega Strike contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -144,22 +142,22 @@ struct MeshXML {
     static const EnumMap attribute_map;
 
     MeshXML()
-            : sharevert(false),
-            usenormals(false),
-            usetangents(false),
-            reverse(false),
-            force_texture(false),
-            load_stage(0),
-            point_state(0),
-            vertex_state(0),
-            recalc_norm(false),
-            num_vertices(0),
-            tstrcnt(0),
-            tfancnt(0),
-            qstrcnt(0),
-            lstrcnt(0),
-            faction(0),
-            mesh(0) {
+        : fg(nullptr), sharevert(false),
+          usenormals(false),
+          usetangents(false),
+          reverse(false),
+          force_texture(false),
+          load_stage(0),
+          point_state(0),
+          vertex_state(0),
+          recalc_norm(false),
+          num_vertices(0),
+          tstrcnt(0),
+          tfancnt(0),
+          qstrcnt(0),
+          lstrcnt(0), active_shade(nullptr), active_list(nullptr), active_ind(nullptr), material(),
+          faction(0),
+          mesh(nullptr) {
     }
 
     ///All logos on this unit

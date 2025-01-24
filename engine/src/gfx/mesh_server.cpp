@@ -3,8 +3,7 @@
  *
  * Copyright (c) 2001-2002 Daniel Horn
  * Copyright (c) 2002-2019 pyramid3d and other Vega Strike Contributors
- * Copyright (c) 2019-2021 Stephen G. Tuggy, and other Vega Strike Contributors
- * Copyright (C) 2022 Stephen G. Tuggy
+ * Copyright (c) 2019-2025 Stephen G. Tuggy, and other Vega Strike Contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -111,7 +110,6 @@ Logo *createLogo(int numberlogos,
     return NULL;
 }
 
-extern Hashtable<std::string, std::vector<Mesh *>, MESH_HASTHABLE_SIZE> bfxmHashTable;
 
 Mesh::~Mesh() {
     if (!orig || orig == this) {
@@ -119,14 +117,14 @@ Mesh::~Mesh() {
         if (meshHashTable.Get(hash_name) == this) {
             meshHashTable.Delete(hash_name);
         }
-        vector<Mesh *> *hashers = bfxmHashTable.Get(hash_name);
+        vector<Mesh *> *hashers = vega_gfx::bfxmHashtable::instance().Get(hash_name);
         vector<Mesh *>::iterator finder;
         if (hashers) {
             for (int i = hashers->size() - 1; i >= 0; --i) {
                 if ((*hashers)[i] == this) {
                     hashers->erase(hashers->begin() + i);
                     if (hashers->empty()) {
-                        bfxmHashTable.Delete(hash_name);
+                        vega_gfx::bfxmHashtable::instance().Delete(hash_name);
                         delete hashers;
                     }
                 }

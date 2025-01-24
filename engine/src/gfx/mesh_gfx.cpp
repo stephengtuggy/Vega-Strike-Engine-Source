@@ -74,19 +74,17 @@ private:
     std::string _message;
 
 public:
-    Exception() {
-    }
+    Exception() = default;
 
     Exception(const Exception &other) : _message(other._message) {
     }
 
-    explicit Exception(const std::string &message) : _message(message) {
+    explicit Exception(std::string message) : _message(std::move(message)) {
     }
 
-    virtual ~Exception() {
-    }
+    ~Exception() override = default;
 
-    virtual const char *what() const noexcept {
+    const char *what() const noexcept override {
         return _message.c_str();
     }
 };
@@ -96,8 +94,7 @@ public:
     explicit MissingTexture(const string &msg) : Exception(msg) {
     }
 
-    MissingTexture() {
-    }
+    MissingTexture() = default;
 };
 
 class OrigMeshContainer {
@@ -404,7 +401,6 @@ AnimatedTexture *createAnimatedTexture(char const *c, int i, enum FILTER f) {
     return new AnimatedTexture(c, i, f);
 }
 
-extern Hashtable<std::string, std::vector<Mesh *>, MESH_HASTHABLE_SIZE> bfxmHashTable;
 
 Mesh::~Mesh() {
     if (!orig || orig == this) {
@@ -427,6 +423,7 @@ Mesh::~Mesh() {
                 texture = nullptr;
             }
         }
+        Decal.clear();
         if (squadlogos != nullptr) {
             delete squadlogos;
             squadlogos = nullptr;
@@ -438,8 +435,7 @@ Mesh::~Mesh() {
         if (meshHashTable.Get(hash_name) == this) {
             meshHashTable.Delete(hash_name);
         }
-        vector<Mesh *> *hashers = bfxmHashTable.Get(hash_name);
-        vector<Mesh *>::iterator finder;
+        vector<Mesh *> *hashers = vega_gfx::bfxmHashtable::instance().Get(hash_name);
         if (hashers && !hashers->empty()) {
             const auto first_to_remove = std::stable_partition(hashers->begin(), hashers->end(),
                 [this](const Mesh * pi) { return pi != this; });
@@ -449,7 +445,7 @@ Mesh::~Mesh() {
                 VS_LOG(debug, (boost::format("Mesh::~Mesh(): erased %1% meshes from hashers") % num_meshes_removed));
             }
             if (hashers->empty()) {
-                bfxmHashTable.Delete(hash_name);
+                vega_gfx::bfxmHashtable::instance().Delete(hash_name);
                 delete hashers;
                 hashers = nullptr;
                 VS_LOG(debug, "Mesh::~Mesh(): deleted hashers");
@@ -544,7 +540,7 @@ void Mesh::Draw(float lod,
 void Mesh::DrawNow(float lod, bool centered, const Matrix &m, int cloak, float nebdist) {
     //short fix
     Mesh *o = getLOD(lod);
-    //fixme: cloaking not delt with.... not needed for backgroudn anyway
+    //fixme: cloaking not delt with.... not needed for background anyway
     if (nebdist < 0) {
         Nebula *t = _Universe->AccessCamera()->GetNebula();
         if (t) {
@@ -1630,8 +1626,7 @@ void Mesh::ProcessFixedDrawQueue(size_t techpass, int whichdrawqueue, bool zsort
     }
 
     //Map texture units
-    Texture *Decal[NUM_PASSES];
-    memset(Decal, 0, sizeof(Decal));
+    Texture *Decal[NUM_PASSES] = {};
     for (unsigned int tui = 0; tui < pass.getNumTextureUnits(); ++tui) {
         const Pass::TextureUnit &tu = pass.getTextureUnit(tui);
         switch (tu.sourceType) {
@@ -1658,7 +1653,7 @@ void Mesh::ProcessFixedDrawQueue(size_t techpass, int whichdrawqueue, bool zsort
                                 Decal[tu.targetIndex] = this->Decal[tu.defaultIndex];
                             } else {
                                 //Invalid reference, activate global default (null)
-                                Decal[tu.targetIndex] = NULL;
+                                Decal[tu.targetIndex] = nullptr;
                             }
                             break;
                         case Pass::TextureUnit::None: //chuck_starchaser

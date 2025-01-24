@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2001-2022 Daniel Horn, chuck_starchaser, pyramid3d,
+ * mesh_xml.cpp
+ *
+ * Copyright (C) 2001-2025 Daniel Horn, chuck_starchaser, pyramid3d,
  * Stephen G. Tuggy, and other Vega Strike contributors.
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
@@ -1303,7 +1305,6 @@ Mesh *Mesh::LoadMesh(const char *filename,
     return m[0];
 }
 
-Hashtable<std::string, std::vector<Mesh *>, MESH_HASTHABLE_SIZE> bfxmHashTable;
 
 vector<Mesh *> Mesh::LoadMeshes(const char *filename,
         const Vector &scale,
@@ -1318,10 +1319,10 @@ vector<Mesh *> Mesh::LoadMeshes(const char *filename,
      *  return ret;
      *  }*/
     string hash_name = VSFileSystem::GetHashName(filename, scale, faction);
-    vector<Mesh *> *oldmesh = bfxmHashTable.Get(hash_name);
+    vector<Mesh *> *oldmesh = vega_gfx::bfxmHashtable::instance().Get(hash_name);
     if (oldmesh == 0) {
         hash_name = VSFileSystem::GetSharedMeshHashName(filename, scale, faction);
-        oldmesh = bfxmHashTable.Get(hash_name);
+        oldmesh = vega_gfx::bfxmHashtable::instance().Get(hash_name);
     }
     if (0 != oldmesh) {
         vector<Mesh *> ret;
@@ -1369,7 +1370,7 @@ vector<Mesh *> Mesh::LoadMeshes(const char *filename,
             }
             (*newvec)[i] = retval[i]->orig ? retval[i]->orig : retval[i];
         }
-        bfxmHashTable.Put(hash_name, newvec);
+        vega_gfx::bfxmHashtable::instance().Put(hash_name, newvec);
         return retval;
     } else {
         f.Close();
@@ -2099,4 +2100,3 @@ void Mesh::PostProcessLoading(MeshXML *xml, const vector<string> &textureOverrid
     }
     GFXSetMaterial(myMatNum, xml->material);
 }
-
