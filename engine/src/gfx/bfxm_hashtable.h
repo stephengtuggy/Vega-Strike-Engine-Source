@@ -39,7 +39,7 @@ namespace vega_gfx {
 
 class bfxmHashtable : Hashtable<std::string, std::vector<Mesh *>, MESH_HASTHABLE_SIZE> {
 private:
-    bfxmHashtable();
+    bfxmHashtable() = default;
 
     inline ~bfxmHashtable() {
         VS_LOG_AND_FLUSH(info, "Destroying bfxmHashtable");
