@@ -30,6 +30,9 @@
 
 #include <string>
 #include <vector>
+#include <deque>
+#include <map>
+#include <memory>
 #include "xml_support.h"
 #include "matrix.h"
 #include "gfxlib_struct.h"
@@ -62,26 +65,26 @@ struct mesh_polygon {
  */
 class MeshFX : public GFXLight {
 public:
-///The ammt of change that such meshFX objects attenuation get
+    ///The amt of change that such meshFX objects attenuation get
     float delta;
-///The Time to live of the current light effect
+    ///The Time to live of the current light effect
     float TTL;
-///After it has achieved its time to live max it has to slowly fade out and die
+    ///After it has achieved its time to live max it has to slowly fade out and die
     float TTD;
 
     MeshFX() : GFXLight() {
         TTL = TTD = delta = 0;
     }
 
-///Makes a meshFX given TTL and delta values.
+    ///Makes a meshFX given TTL and delta values.
     MeshFX(const float TTL, const float delta, const bool enabled, const GFXColor &vect,
             const GFXColor &diffuse = GFXColor(0, 0, 0, 1),
             const GFXColor &specular = GFXColor(0, 0, 0, 1),
             const GFXColor &ambient = GFXColor(0, 0, 0, 1),
             const GFXColor &attenuate = GFXColor(1, 0, 0));
-///Merges two MeshFX in a given way to seamlessly blend multiple hits on a shield
+    ///Merges two MeshFX in a given way to seamlessly blend multiple hits on a shield
     void MergeLights(const MeshFX &other);
-///updates the growth and death of the FX. Returns false if dead
+    ///updates the growth and death of the FX. Returns false if dead
     bool Update(float ttime); //if false::dead
 };
 /**
@@ -99,7 +102,8 @@ struct MeshDrawContext {
     char cloaked;
     char mesh_seq;
     unsigned char damage;     //0 is perfect 255 is dead
-    MeshDrawContext(const Matrix &m) : mat(m), CloakFX(1, 1, 1, 1), cloaked(NONE), damage(0) {
+    MeshDrawContext(const Matrix &m) : mat(m), SpecialFX(nullptr), CloakFX(1, 1, 1, 1), cloaked(NONE), mesh_seq(0),
+                                       damage(0) {
         useXtraFX = false;
     }
 };
@@ -123,7 +127,13 @@ enum CLK_CONSTS { CLKSCALE = 2147483647 };
  * Also meshe contain Logos, flags based on squadron and faction that may be user-edited and appear in pleasing
  * places on the hull.
  */
-class Mesh {
+class Mesh : public std::enable_shared_from_this<Mesh> {
+private:
+    //struct Private { explicit Private() = default; };
+
+protected:
+    struct Protected { explicit Protected() = default; };
+
 private:
     //make sure to only use TempGetTexture when xml-> is valid \|/
     Texture *TempGetTexture(struct MeshXML *, int index, std::string factionname) const;
@@ -168,42 +178,119 @@ public:
     }
 
 private:
-    Mesh(const char *filename, const Vector &scalex, int faction, class Flightgroup *fg, bool orig,
-            const std::vector<std::string> &textureOverride = std::vector<std::string>());
+    static std::shared_ptr<Mesh> create(const char *filename, const Vector &scalex, int faction, class Flightgroup *fg,
+            bool orig, const std::vector<std::string> &textureOverride) {
+        std::shared_ptr<Mesh> return_value = std::make_shared<Mesh>();
+        return_value->hash_name = filename;
+        return_value->convex = false;
+        return_value->orig = nullptr;
+        return_value->InitUnit();
+        std::shared_ptr<Mesh> old_mesh;
+        if (return_value->LoadExistant(filename, scalex, faction)) {
+            return return_value;
+        }
+        bool shared = false;
+        VSFileSystem::VSFile f;
+        VSFileSystem::VSError err = VSFileSystem::Unspecified;
+        err = f.OpenReadOnly(filename, VSFileSystem::MeshFile);
+        if (err > VSFileSystem::Ok) {
+            VS_LOG(error, (boost::format("Cannot Open Mesh File %1$s") % filename));
+            return nullptr;
+        }
+        shared = (err == VSFileSystem::Shared);
+
+        bool xml = true;
+        if (xml) {
+            return_value->LoadXML(filename, scalex, faction, fg, orig, textureOverride);
+            old_mesh = return_value->orig;
+        } else {
+            return_value->LoadBinary(shared ? (VSFileSystem::sharedmeshes + "/" + (filename)).c_str() : filename, faction);
+            old_mesh = nullptr;  // ??
+        }
+        if (err <= VSFileSystem::Ok) {
+            f.Close();
+        }
+        return_value->draw_queue = new vector<MeshDrawContext>[NUM_ZBUF_SEQ + 1];
+        if (!orig) {
+            return_value->hash_name = shared ? VSFileSystem::GetSharedMeshHashName(filename, scalex, faction) : VSFileSystem::GetHashName(filename, scalex, faction);
+            meshHashTable.Put(return_value->hash_name, old_mesh);  // FIXME -- shouldn't convert to raw pointer here
+            *old_mesh = *return_value;
+            old_mesh->orig = nullptr;
+        } else {
+            return_value->orig = nullptr;
+        }
+
+        return return_value;
+    }
 
 protected:
-    //only may be called from subclass. orig request may be denied if unit was in past usage. (not likely in the case where a unit must be constructed in orig)
-    Mesh(std::string filename, const Vector &scalex, int faction, class Flightgroup *fg, bool orig = false);
+    static std::shared_ptr<Mesh> create(std::string filename, const Vector &scalex, int faction, class Flightgroup *fg, bool orig) {
+        std::shared_ptr<Mesh> return_value = std::make_shared<Mesh>();
+        return_value->hash_name = filename;
+        return_value->convex = false;
+        std::shared_ptr<Mesh> cpy = LoadMesh(filename.c_str(), scalex, faction, fg, {});
+        if (cpy->orig) {
+            return_value->LoadExistant(cpy->orig);
+            delete cpy;         //wasteful, but hey
+            cpy = nullptr;
+            if (orig) {
+                orig = false;
+                const std::shared_ptr<std::deque<std::shared_ptr<Mesh>>> tmp = vega_gfx::bfxmHashtable::instance().Get(return_value->orig->hash_name);
+                if (tmp && !tmp->empty() && tmp->at(0) == return_value->orig) {
+                    if (return_value->orig.use_count() == 1) {
+                        vega_gfx::bfxmHashtable::instance().Delete(return_value->orig->hash_name);
+                        return_value->orig.reset();
+                        // delete tmp;
+                        orig = true;
+                    }
+                }
+                if (meshHashTable.Get(return_value->hash_name) == return_value->orig.get()) {
+                    if (return_value->orig.use_count() == 1) {
+                        meshHashTable.Delete(return_value->orig->hash_name);
+                        orig = true;
+                    }
+                }
+                if (orig) {
+                    const std::shared_ptr<Mesh> tmp2 = return_value->orig;
+                    tmp2->orig = return_value;
+                    return_value->orig = nullptr;
+                }
+            }
+        } else {
+            delete cpy;
+            VS_LOG(error, (boost::format("fallback, %1$s unable to be loaded as bfxm") % filename));
+        }
+        return return_value;
+    }
 
     ///Loads a mesh that has been found in the hash table into this mesh (copying original data)
 public:
-    bool LoadExistant(Mesh *mesh);
+    bool LoadExistant(std::shared_ptr<Mesh> mesh);
     bool LoadExistant(const string filehash, const Vector &scale, int faction);
 protected:
     ///the position of the center of this mesh for collision detection
     Vector local_pos;
     ///The hash table of all meshes
-    static Hashtable<std::string, Mesh, MESH_HASTHABLE_SIZE> meshHashTable;
-    static Hashtable<std::string, std::vector<int>, MESH_HASTHABLE_SIZE> animationSequences;
-    ///The refcount:: how many meshes are referencing the appropriate original
-    int refcount{};
+    static vega_collection::SharedPtrHashtable<std::string, Mesh, vega_gfx::kMeshHashtableSize> meshHashTable;
+    static vega_collection::SharedPtrHashtable<std::string, std::vector<int>, vega_gfx::kMeshHashtableSize> animationSequences;
     ///bounding box
     Vector mx;
     Vector mn;
     ///The radial size of this mesh
     float radialSize{};
-    ///num lods contained in the array of Mesh "orig"
-    int numlods{};
     float framespersecond{}; //for animation
-    Mesh *orig{};
+    std::shared_ptr<Mesh> orig{};
+    std::map<float, std::shared_ptr<Mesh>> levels_of_detail{};
+    ///How many LODs (levels of detail) we have
+    inline size_t NumberOfLODs() const { return levels_of_detail.size(); }
     ///The size that this LOD (if original) comes into effect
     float lodsize{};
-    ///The number of force logos on this mesh (original)
-    Logo *forcelogos{};
-    int numforcelogo{};
-    ///The number of squad logos on this mesh (original)
-    Logo *squadlogos{};
-    int numsquadlogo{};
+    ///The force logos on this mesh (original)
+    std::vector<std::shared_ptr<Logo>> forcelogos{};
+    inline size_t NumberOfForceLogos() const { return forcelogos.size(); }
+    ///The squad logos on this mesh (original)
+    std::vector<std::shared_ptr<Logo>> squadlogos{};
+    inline size_t NumberOfSquadLogos() const { return squadlogos.size(); }
     ///tri,quad,line, strips, etc
     GFXVertexList *vlist{};
     ///The number of the appropriate material for this mesh (default 0)
@@ -215,7 +302,7 @@ protected:
     Texture *detailTexture{};
     vector<Vector> detailPlanes;
     float polygon_offset{};
-    ///whether this should be environment mapped 0x1 and 0x2 for if it should be lit (ored together)
+    ///whether this should be environment mapped 0x1 and 0x2 for if it should be lit (OR'ed together)
     char envMapAndLit{};
     ///Whether this original will be drawn this frame
     GFXBOOL will_be_drawn{};
@@ -227,18 +314,18 @@ protected:
 
     /// Support for reorganized rendering
     vector<MeshDrawContext> *draw_queue{};
-    /// How transparent this mesh is (in what order should it be rendered in
+    /// How transparent this mesh is (in what order should it be rendered)
     int draw_sequence{};
     ///The name of this unit
     string hash_name;
-    ///Setting all values to defaults (good for mesh copying and stuff)
+    ///Sets all values to defaults (good for mesh copying and stuff)
     void InitUnit();
     ///Needs to have access to our class
     friend class OrigMeshContainer;
     ///The enabled light effects on this mesh
     vector<MeshFX> LocalFX;
-    ///Returing the mesh relevant to "size" pixels LOD of this mesh
-    Mesh *getLOD(float lod, bool bBypassDamping = true);
+    ///Returns the mesh relevant to "size" pixels LOD of this mesh
+    std::shared_ptr<Mesh> getLOD(float lod, bool bBypassDamping = true);
 
 private:
     ///Implement fixed-function draw queue processing (the referenced pass must be of Fixed type) - internal usage
@@ -287,16 +374,16 @@ public:
     ///Loading a mesh from an XML file.  faction specifies the logos.  Orig is for internal (LOD) use only!
 //private:
 //public:
-    static Mesh *LoadMesh(const char *filename, const Vector &scalex, int faction, class Flightgroup *fg,
+    static std::shared_ptr<Mesh> LoadMesh(const char *filename, const Vector &scalex, int faction, class Flightgroup *fg,
             const std::vector<std::string> &textureOverride = std::vector<std::string>());
-    static vector<Mesh *> LoadMeshes(const char *filename, const Vector &scalex, int faction, class Flightgroup *fg,
+    static std::deque<std::shared_ptr<Mesh>> LoadMeshes(const char *filename, const Vector &scalex, int faction, class Flightgroup *fg,
             const std::vector<std::string> &textureOverride = std::vector<std::string>());
-    static vector<Mesh *> LoadMeshes(VSFileSystem::VSFile &f, const Vector &scalex, int faction, class Flightgroup *fg,
+    static std::deque<std::shared_ptr<Mesh>> LoadMeshes(VSFileSystem::VSFile &f, const Vector &scalex, int faction, class Flightgroup *fg,
             std::string hash_name,
             const std::vector<std::string> &textureOverride = std::vector<std::string>());
 
     ///Forks the mesh across the plane a,b,c,d into two separate meshes...upon which this may be deleted
-    void Fork(Mesh *&one, Mesh *&two, float a, float b, float c, float d);
+    void Fork(std::shared_ptr<Mesh> &one, std::shared_ptr<Mesh> &two, float a, float b, float c, float d);
     ///Destructor... kills orig if refcount of orig becomes zero
     virtual ~Mesh();
 
@@ -383,7 +470,7 @@ public:
     void setEnvMap(GFXBOOL newValue, bool lodcascade = false) {
         envMapAndLit = (newValue ? (envMapAndLit | 0x1) : (envMapAndLit & (~0x1)));
         if (lodcascade && orig) {
-            for (int i = 0; i < numlods; i++) {
+            for (int i = 0; i < num_lods; i++) {
                 orig[i].setEnvMap(newValue);
             }
         }
@@ -396,7 +483,7 @@ public:
     void setLighting(GFXBOOL newValue, bool lodcascade = false) {
         envMapAndLit = (newValue ? (envMapAndLit | 0x2) : (envMapAndLit & (~0x2)));
         if (lodcascade && orig) {
-            for (int i = 0; i < numlods; i++) {
+            for (int i = 0; i < num_lods; i++) {
                 orig[i].setLighting(newValue);
             }
         }

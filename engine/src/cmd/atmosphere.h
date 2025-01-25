@@ -56,19 +56,19 @@ private:
 
     class SunBox {
     public:
-        SunBox(Mesh *m) : sunbox(m) {
+        SunBox(std::shared_ptr<Mesh> m) : sunbox(m) {
         }
 
         ~SunBox();
-        Mesh *sunbox;
+        std::shared_ptr<Mesh> sunbox;
     };
     void setArray(float *, const GFXColor &);
     void setArray1(float *, const GFXColor &);
 /* Internal state information */
-    Mesh *dome;                                        /* entire sky; for texture mapping */
+    std::shared_ptr<Mesh> dome;                                        /* entire sky; for texture mapping */
 /* 3 rendering passes, to preserve framerate */
-    Mesh *cap;                                         /* mid to zenith */
-    Mesh *stack;                               /* horizon to zenith */
+    std::shared_ptr<Mesh> cap;                                         /* mid to zenith */
+    std::shared_ptr<Mesh> stack;                               /* horizon to zenith */
 /* box around the sun (single star for now) */
     std::vector<SunBox *> sunboxes;
     Matrix tmatrix;
@@ -96,4 +96,3 @@ public:
  *                                                                                the transformation matrix  */
     static void DrawAtmospheres();
 };
-

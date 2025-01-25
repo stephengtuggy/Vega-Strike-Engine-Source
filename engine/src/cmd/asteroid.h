@@ -48,7 +48,7 @@ private:
 /// default constructor forbidden
     Asteroid();
 
-    Asteroid(std::vector<Mesh *> m, bool b, int i) : Unit(m, b, i) {
+    Asteroid(std::deque<std::shared_ptr<Mesh>> m, bool b, int i) : Unit(m, b, i) {
     }
 
 /// copy constructor forbidden

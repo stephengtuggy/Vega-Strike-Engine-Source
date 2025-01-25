@@ -46,7 +46,7 @@ class Briefing {
 public:
 //Very reduced unit class
     class Ship {
-        std::vector<class Mesh *> meshdata;
+        std::vector<class std::shared_ptr<Mesh> > meshdata;
         Vector pos;
         std::list<BriefingOrder> orders;
     public:
@@ -86,4 +86,3 @@ public:
     Briefing();
     ~Briefing();
 };
-

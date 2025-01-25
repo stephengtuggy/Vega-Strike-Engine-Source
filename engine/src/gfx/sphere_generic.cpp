@@ -110,7 +110,7 @@ void SphereMesh::InitSphere(float radius,
     if (numspheres < 1) {
         numspheres = 1;
     }
-    Mesh *oldmesh;
+    std::shared_ptr<Mesh> oldmesh;
     char ab[3];
     ab[2] = '\0';
     ab[1] = b + '0';
@@ -125,7 +125,7 @@ void SphereMesh::InitSphere(float radius,
     this->orig = AllocNewMeshesEachInSizeofMeshSpace(numspheres); //FIXME::RISKY::MIGHT HAVE...
     //... DIFFERENT SIZES!!  DON"T YOU DARE ADD XTRA VARS TO SphereMesh calsshave to!
     oldmesh = this->orig;
-    numlods = numspheres;
+    num_lods = numspheres;
     meshHashTable.Put(hash_name, oldmesh);
     radialSize = radius; //MAKE SURE FRUSTUM CLIPPING IS DONE CORRECTLY!!!!!
     mn = Vector(-radialSize, -radialSize, -radialSize);
@@ -249,7 +249,7 @@ void SphereMesh::InitSphere(float radius,
         if (Insideout) {
             draw_sequence = 0;
         }
-        Mesh *oldorig = orig;
+        std::shared_ptr<Mesh> oldorig = orig;
         refcount = 1;
         orig = NULL;
         if (l >= 1) {
@@ -327,4 +327,3 @@ CityLights::CityLights(float radius,
             reversed_normals,
             zzwrapx != 1 || zzwrapy != 1);
 }
-

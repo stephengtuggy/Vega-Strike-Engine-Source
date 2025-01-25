@@ -149,7 +149,7 @@ void addRapidMesh(Unit::XML *xml, const char *filename, const float scale, int f
     xml->rapidmesh = Mesh::LoadMesh(filename, Vector(scale, scale, scale), faction, fg);
 }
 
-void pushMesh(std::vector<Mesh *> &meshes,
+void pushMesh(std::deque<std::shared_ptr<Mesh>> &meshes,
         float &randomstartframe,
         float &randomstartseconds,
         const char *filename,
@@ -158,7 +158,7 @@ void pushMesh(std::vector<Mesh *> &meshes,
         class Flightgroup *fg,
         int startframe,
         double texturestarttime) {
-    vector<Mesh *> m = Mesh::LoadMeshes(filename, Vector(scale, scale, scale), faction, fg);
+    std::deque<std::shared_ptr<Mesh>> m = Mesh::LoadMeshes(filename, Vector(scale, scale, scale), faction, fg);
     for (unsigned int i = 0; i < m.size(); ++i) {
         meshes.push_back(m[i]);
         if (startframe >= 0) {

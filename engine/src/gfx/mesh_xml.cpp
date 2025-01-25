@@ -848,11 +848,12 @@ void Mesh::beginElement(MeshXML *xml, const string &name, const AttributeList &a
                         break;
                     case MeshXML::LODFILE:
                         xml->lod
-                                .push_back(new Mesh((*iter).value.c_str(),
+                                .push_back(Mesh::create((*iter).value.c_str(),
                                         xml->lodscale,
                                         xml->faction,
                                         xml->fg,
-                                        true));                   //make orig mesh
+                                        true,
+                                        {}).get());                   //make orig mesh    // FIXME: Shouldn't convert to raw pointer
                         break;
                     case MeshXML::SIZE:
                         flotsize = XMLSupport::parse_float((*iter).value);
@@ -1287,12 +1288,12 @@ bool loadObj( VSFile &f, std::string str )
 const bool USE_RECALC_NORM = true;
 const bool FLAT_SHADE = true;
 
-Mesh *Mesh::LoadMesh(const char *filename,
+std::shared_ptr<Mesh> Mesh::LoadMesh(const char *filename,
         const Vector &scale,
         int faction,
         Flightgroup *fg,
         const std::vector<std::string> &overridetextures) {
-    vector<Mesh *> m = LoadMeshes(filename, scale, faction, fg, overridetextures);
+    std::deque<std::shared_ptr<Mesh>> m = LoadMeshes(filename, scale, faction, fg, overridetextures);
     if (m.empty()) {
         return 0;
     }
@@ -1306,29 +1307,29 @@ Mesh *Mesh::LoadMesh(const char *filename,
 }
 
 
-vector<Mesh *> Mesh::LoadMeshes(const char *filename,
+std::deque<std::shared_ptr<Mesh>> Mesh::LoadMeshes(const char *filename,
         const Vector &scale,
         int faction,
         Flightgroup *fg,
         const std::vector<std::string> &overrideTextures) {
     /*
      *  if (strstr(filename,".xmesh")) {
-     *  Mesh * m = new Mesh (filename,scale,faction,fg);
+     *  std::shared_ptr<Mesh>  m = new Mesh (filename,scale,faction,fg);
      *  vector <Mesh*> ret;
      *  ret.push_back(m);
      *  return ret;
      *  }*/
     string hash_name = VSFileSystem::GetHashName(filename, scale, faction);
-    vector<Mesh *> *oldmesh = vega_gfx::bfxmHashtable::instance().Get(hash_name);
+    std::deque<std::shared_ptr<Mesh>> *oldmesh = vega_gfx::bfxmHashtable::instance().Get(hash_name);
     if (oldmesh == 0) {
         hash_name = VSFileSystem::GetSharedMeshHashName(filename, scale, faction);
         oldmesh = vega_gfx::bfxmHashtable::instance().Get(hash_name);
     }
     if (0 != oldmesh) {
-        vector<Mesh *> ret;
+        std::deque<std::shared_ptr<Mesh>> ret;
         for (unsigned int i = 0; i < oldmesh->size(); ++i) {
             ret.push_back(new Mesh());
-            Mesh *m = (*oldmesh)[i];
+            std::shared_ptr<Mesh> m = (*oldmesh)[i];
             ret.back()->LoadExistant(m->orig ? m->orig : m);
         }
         return ret;
@@ -1337,7 +1338,7 @@ vector<Mesh *> Mesh::LoadMeshes(const char *filename,
     VSError err = f.OpenReadOnly(filename, MeshFile);
     if (err > Ok) {
         VS_LOG(error, (boost::format("Cannot Open Mesh File %1%") % filename));
-        return vector<Mesh *>();
+        return std::deque<std::shared_ptr<Mesh>>();
     }
     char bfxm[4];
     f.Read(&bfxm[0], sizeof(bfxm[0]) * 4);
@@ -1350,7 +1351,7 @@ vector<Mesh *> Mesh::LoadMeshes(const char *filename,
 */
 //cleanexit=1;
 //winsys_exit(1);
-            //    return vector< Mesh* > ();
+            //    return std::deque<std::shared_ptr<Mesh>> ();
             // }
         }
         f.GoTo(0);
@@ -1361,8 +1362,8 @@ vector<Mesh *> Mesh::LoadMeshes(const char *filename,
                         filename,
                         scale,
                         faction);
-        vector<Mesh *> retval(LoadMeshes(f, scale, faction, fg, hash_name, overrideTextures));
-        vector<Mesh *> *newvec = new vector<Mesh *>(retval);
+        std::deque<std::shared_ptr<Mesh>> retval(LoadMeshes(f, scale, faction, fg, hash_name, overrideTextures));
+        std::deque<std::shared_ptr<Mesh>> *newvec = new std::deque<std::shared_ptr<Mesh>>(retval);
         for (unsigned int i = 0; i < retval.size(); ++i) {
             retval[i]->hash_name = hash_name;
             if (retval[i]->orig) {
@@ -1375,8 +1376,8 @@ vector<Mesh *> Mesh::LoadMeshes(const char *filename,
     } else {
         f.Close();
         bool original = false;
-        Mesh *m = new Mesh(filename, scale, faction, fg, original);
-        vector<Mesh *> ret;
+        std::shared_ptr<Mesh> m = Mesh::create(filename, scale, faction, fg, original, {}).get();   // FIXME: Stop using raw pointers
+         ret;
         ret.push_back(m);
         return ret;
     }
@@ -1432,11 +1433,11 @@ void Mesh::LoadXML(VSFileSystem::VSFile &f,
         VSExit(-1);
     }
     PostProcessLoading(xml, textureOverride);
-    numlods = xml->lod.size() + 1;
+    num_lods = xml->lod.size() + 1;
     if (origthis) {
         orig = NULL;
     } else {
-        orig = new Mesh[numlods];
+        orig = new Mesh[num_lods];
         unsigned int i;
         for (i = 0; i < xml->lod.size(); i++) {
             orig[i + 1] = *xml->lod[i];

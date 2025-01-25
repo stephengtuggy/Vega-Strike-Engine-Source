@@ -72,7 +72,7 @@ Drawable::Drawable() :
 }
 
 Drawable::~Drawable() {
-    for (Mesh *mesh : meshdata) {
+    for (std::shared_ptr<Mesh> mesh : meshdata) {
         if (mesh != nullptr) {
             delete mesh;
             mesh = nullptr;
@@ -92,7 +92,7 @@ bool Drawable::DrawableInit(const char *filename, int faction,
         anifilename += string("_") + string(animationExt);
     }
 
-    std::vector<Mesh *> *meshes = new vector<Mesh *>();
+    std::deque<std::shared_ptr<Mesh>> *meshes = new std::deque<std::shared_ptr<Mesh>>();
     int i = 1;
     char count[30] = "1";
     string dir = anifilename;
@@ -120,7 +120,7 @@ bool Drawable::DrawableInit(const char *filename, int faction,
         unit_name += count;
         string path = dir + "/" + unit_name + ".bfxm";
         if (VSFileSystem::FileExistsData(path, VSFileSystem::MeshFile) != -1) {
-            Mesh *m = Mesh::LoadMesh(path.c_str(), Vector(1, 1, 1), faction, flightgrp);
+            std::shared_ptr<Mesh> m = Mesh::LoadMesh(path.c_str(), Vector(1, 1, 1), faction, flightgrp);
             meshes->push_back(m);
             #ifdef DEBUG_MESH_ANI
             VS_LOG(debug, (boost::format("Animated Mesh: %1% loaded - with: %2% vertices.") % path % m->getVertexList()->GetNumVertices()));
@@ -450,7 +450,7 @@ void Drawable::DrawNow(const Matrix &mato, float lod) {
         Mount *mahnt = &unit->mounts[i];
         if (game_options()->draw_weapons) {
             if (mahnt->xyscale != 0 && mahnt->zscale != 0) {
-                Mesh *gun = mahnt->type->gun;
+                std::shared_ptr<Mesh> gun = mahnt->type->gun;
                 if (gun && mahnt->status != Mount::UNCHOSEN) {
                     Transformation mountLocation(mahnt->GetMountOrientation(), mahnt->GetMountLocation().Cast());
                     mountLocation.Compose(Transformation::from_matrix(mat), wmat);
@@ -517,7 +517,7 @@ void Drawable::UpdateFrames() {
     }
 }
 
-void Drawable::addAnimation(std::vector<Mesh *> *meshes, const char *name) {
+void Drawable::addAnimation(std::deque<std::shared_ptr<Mesh>> *meshes, const char *name) {
     if ((meshes->size() > 0) && animatedMesh) {
         vecAnimations.push_back(meshes);
         vecAnimationNames.push_back(string(name));
@@ -749,7 +749,7 @@ void Drawable::DrawSubunits(bool on_screen, Matrix wmat, Cloak cloak, float aver
 
     for (int i = 0; (int) i < unit->getNumMounts(); i++) {
         Mount *mount = &unit->mounts[i];
-        Mesh *gun = mount->type->gun;
+        std::shared_ptr<Mesh> gun = mount->type->gun;
 
         // Has to come before check for on screen, as a fired beam can still be seen
         // even if the subunit firing it isn't on screen.
@@ -855,14 +855,14 @@ void Drawable::Split(int level) {
     if (nm <= 0 && num_chunks == 0) {
         return;
     }
-    vector<Mesh *> old = this->meshdata;
-    Mesh *shield = old.back();
+    std::deque<std::shared_ptr<Mesh>> old = this->meshdata;
+    std::shared_ptr<Mesh> shield = old.back();
     old.pop_back();
 
     vector<unsigned int> meshsizes;
     if (num_chunks) {
         size_t i;
-        vector<Mesh *> nw;
+        std::deque<std::shared_ptr<Mesh>> nw;
         unsigned int which_chunk = rand() % num_chunks;
         string chunkname = UniverseUtil::LookupUnitStat(unit->name, fac, "Chunk_" + XMLSupport::tostring(which_chunk));
         string dir = UniverseUtil::LookupUnitStat(unit->name, fac, "Directory");
@@ -888,7 +888,7 @@ void Drawable::Split(int level) {
         old = nw;
     } else {
         for (int split = 0; split < level; split++) {
-            vector<Mesh *> nw;
+            std::deque<std::shared_ptr<Mesh>> nw;
             size_t oldsize = old.size();
             for (size_t i = 0; i < oldsize; i++) {
                 PlaneNorm.Set(rand() - RAND_MAX / 2, rand() - RAND_MAX / 2, rand() - RAND_MAX / 2 + .5);
@@ -921,8 +921,8 @@ void Drawable::Split(int level) {
     }
     nm = old.size() - 1;
     unsigned int k = 0;
-    vector<Mesh *> tempmeshes;
-    for (vector<Mesh *>::size_type i = 0; i < meshsizes.size(); i++) {
+    std::deque<std::shared_ptr<Mesh>> tempmeshes;
+    for (std::deque<std::shared_ptr<Mesh>>::size_type i = 0; i < meshsizes.size(); i++) {
         Unit *splitsub;
         tempmeshes.clear();
         tempmeshes.reserve(meshsizes[i]);
@@ -961,7 +961,7 @@ void Drawable::LightShields(const Vector &pnt, const Vector &normal, float amt, 
     // Not sure about shield percentage - more variance for more damage?
     // TODO: figure out the above comment
 
-    Mesh *mesh = meshdata.back();
+    std::shared_ptr<Mesh> mesh = meshdata.back();
 
     if (!mesh) {
         return;

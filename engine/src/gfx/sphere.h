@@ -41,7 +41,7 @@ protected:
     virtual float GetT(float rho, float rho_min, float rho_max) const;
     virtual float GetS(float theta, float theta_min, float theta_max) const;
 
-    virtual Mesh *AllocNewMeshesEachInSizeofMeshSpace(int num) {
+    virtual std::shared_ptr<Mesh> AllocNewMeshesEachInSizeofMeshSpace(int num) {
         assert(sizeof(Mesh) == sizeof(*this));
         return new SphereMesh[num];
     }
@@ -122,7 +122,7 @@ protected:
     virtual float GetT(float rho, float rho_min, float rho_max) const;
     virtual float GetS(float theta, float theta_min, float theta_max) const;
 
-    virtual Mesh *AllocNewMeshesEachInSizeofMeshSpace(int num) {
+    virtual std::shared_ptr<Mesh> AllocNewMeshesEachInSizeofMeshSpace(int num) {
         assert(sizeof(Mesh) == sizeof(*this));
         return new CityLights[num];
     }

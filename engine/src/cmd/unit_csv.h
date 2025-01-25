@@ -26,7 +26,7 @@
 #ifndef VEGA_STRIKE_ENGINE_CMD_UNIT_CSV_H
 #define VEGA_STRIKE_ENGINE_CMD_UNIT_CSV_H
 
-extern void AddMeshes(std::vector<Mesh *> &xmeshes,
+extern void AddMeshes(std::deque<std::shared_ptr<Mesh>> &xmeshes,
         float &randomstartframe,
         float &randomstartseconds,
         float unitscale,

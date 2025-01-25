@@ -73,7 +73,7 @@ void DestroyMount(Mount *mount) {
     mount->status = Mount::DESTROYED;
 }
 
-float Mount::ComputeAnimatedFrame(Mesh *gun) {
+float Mount::ComputeAnimatedFrame(std::shared_ptr<Mesh> gun) {
     if (type->type == WEAPON_TYPE::BEAM) {
         if (ref.gun) {
             if (ref.gun->Ready()) {

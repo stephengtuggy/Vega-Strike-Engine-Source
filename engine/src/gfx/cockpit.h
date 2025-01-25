@@ -105,7 +105,7 @@ class GameCockpit : public Cockpit {
     float smooth_fov;
     float last_locktime;
     float last_mlocktime;
-    std::vector<class Mesh *> mesh;
+    std::vector<class std::shared_ptr<Mesh> > mesh;
     int soundfile;
     VSSprite *Pit[4];
     VSSprite *radarSprites[2];

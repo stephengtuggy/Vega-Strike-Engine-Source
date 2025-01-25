@@ -170,7 +170,7 @@ private:
     CachedSectorIterator sectorIter;
     std::vector<unsigned> path;
     class navscreenoccupied *screenoccupation;
-    class Mesh *mesh[NAVTOTALMESHCOUNT];
+    class std::shared_ptr<Mesh> mesh[NAVTOTALMESHCOUNT];
     int reverse;
     int rotations; //tried to change to unsigned but gazillions of comparisons to int crop up --chuck_starchaser
     int axis;

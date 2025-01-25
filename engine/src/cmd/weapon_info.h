@@ -63,8 +63,8 @@ struct WeaponInfo {
     /*const*/ float b = 127;
     /*const*/ float a = 127;
 
-    mutable class Mesh *gun = nullptr;      //requires nonconst to add to orig drawing queue when drawing
-    mutable class Mesh *gun1 = nullptr;     //requires nonconst to add to orig drawing queue when drawing
+    mutable class std::shared_ptr<Mesh> gun = nullptr;      //requires nonconst to add to orig drawing queue when drawing
+    mutable class std::shared_ptr<Mesh> gun1 = nullptr;     //requires nonconst to add to orig drawing queue when drawing
 
     // Constructors
     WeaponInfo();

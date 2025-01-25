@@ -34,14 +34,14 @@
 #include "universe.h"
 
 struct warptrails {
-    vector<Mesh *> factions;
+     factions;
     vector<struct WarpTrail *> warps;
     void Draw();
 };
 
 warptrails wt;
 
-Mesh *GetWarpMesh(int faction, warptrails *wt);
+std::shared_ptr<Mesh> GetWarpMesh(int faction, warptrails *wt);
 
 struct WarpTrail {
     QVector start;
@@ -84,7 +84,7 @@ struct WarpTrail {
         if (!un) {
             return false;
         }
-        Mesh *m = GetWarpMesh(un->faction, w);
+        std::shared_ptr<Mesh> m = GetWarpMesh(un->faction, w);
         if (!m) {
             return false;
         }
@@ -132,7 +132,7 @@ void WarpTrailDraw() {
     wt.Draw();
 }
 
-Mesh *GetWarpMesh(int faction, warptrails *w) {
+std::shared_ptr<Mesh> GetWarpMesh(int faction, warptrails *w) {
     using namespace VSFileSystem;
     while (faction >= static_cast<int>(w->factions.size())) {
         w->factions.push_back(NULL);
@@ -151,4 +151,3 @@ Mesh *GetWarpMesh(int faction, warptrails *w) {
     }
     return w->factions[faction];
 }
-

@@ -97,7 +97,7 @@ Unit *UnitFactory::createServerSideUnit(const char *filename,
             fg_subnumber);
 }
 
-Unit *UnitFactory::createUnit(vector<Mesh *> &meshes, bool Subunit, int faction) {
+Unit *UnitFactory::createUnit(std::deque<std::shared_ptr<Mesh>> &meshes, bool Subunit, int faction) {
     return new Unit(meshes,
             Subunit,
             faction);
@@ -285,4 +285,3 @@ void UnitFactory::broadcastUnit(Unit *unit, unsigned short zone) {
         }
     }
 }
-

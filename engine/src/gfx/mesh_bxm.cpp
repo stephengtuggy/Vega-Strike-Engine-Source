@@ -77,7 +77,7 @@ Texture * LoadAnimation( string Name )
 #endif
 
 struct OrigMeshLoader {
-    Mesh *m;
+    std::shared_ptr<Mesh> m;
     vector<float> sizes;
     unsigned int num;
 
@@ -259,7 +259,7 @@ void reverse_vector(vector<T> &vec) {
 #define bxmfprintf fprintf
 #define bxmfopen fopen
 
-void Mesh::BFXMToXmesh( FILE *Inputfile, FILE *Outputfile, vector< Mesh* > &output, Vector overallscale, int fac )
+void Mesh::BFXMToXmesh( FILE *Inputfile, FILE *Outputfile, std::deque<std::shared_ptr<Mesh>> &output, Vector overallscale, int fac )
 {
     Flightgroup *fg = 0;
 
@@ -269,13 +269,13 @@ static inline void fignoref(FILE *f, ...) {
 }
 
 static inline FILE *fignorefopen(const char *, const char *) {
-    return 0;
+    return nullptr;
 }
 
 #define bxmfprintf fignoref
 #define bxmfopen fignorefopen
 
-vector<Mesh *> Mesh::LoadMeshes(VSFileSystem::VSFile &Inputfile,
+std::deque<std::shared_ptr<Mesh>> Mesh::LoadMeshes(VSFileSystem::VSFile &Inputfile,
         const Vector &scalex,
         int faction,
         class Flightgroup *fg,
@@ -284,7 +284,7 @@ vector<Mesh *> Mesh::LoadMeshes(VSFileSystem::VSFile &Inputfile,
     Vector overallscale = scalex;
     int fac = faction;
     FILE *Outputfile = 0;
-    vector<Mesh *> output;
+    std::deque<std::shared_ptr<Mesh>> output;
 
 #endif
 
@@ -365,7 +365,7 @@ vector<Mesh *> Mesh::LoadMeshes(VSFileSystem::VSFile &Inputfile,
         meshes.back().sizes.insert(meshes.back().sizes.begin(), nummeshes, 0);
         //For each mesh
         for (uint32bit meshindex = 0; meshindex < nummeshes; meshindex++) {
-            Mesh *mesh = &meshes.back().m[meshindex];
+            std::shared_ptr<Mesh> mesh = &meshes.back().m[meshindex];
             mesh->draw_queue = new vector<MeshDrawContext>[NUM_ZBUF_SEQ + 1];
             MeshXML xml;
             xml.fg = fg;
@@ -1071,7 +1071,7 @@ vector<Mesh *> Mesh::LoadMeshes(VSFileSystem::VSFile &Inputfile,
         for (int i = 0; i < (int) meshes.back().sizes.size() - 1; ++i) {
             output.back()->orig[i + 1].lodsize = meshes.back().sizes[i];
         }
-        output.back()->numlods = output.back()->orig->numlods = meshes.back().num;
+        output.back()->num_lods = output.back()->orig->num_lods = meshes.back().num;
     }
     free(inmemfile);
     inmemfile = NULL;
@@ -1079,4 +1079,3 @@ vector<Mesh *> Mesh::LoadMeshes(VSFileSystem::VSFile &Inputfile,
     return output;
 #endif
 }
-

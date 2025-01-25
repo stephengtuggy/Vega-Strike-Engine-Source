@@ -47,11 +47,11 @@ using std::map;
 class Drawable {
 public:
     //number of meshes (each with separate texture) this unit has
-    std::vector<Mesh *> meshdata;
+    std::deque<std::shared_ptr<Mesh>> meshdata;
     std::unique_ptr<HaloSystem> halos;
 
 protected:
-    vector<vector<Mesh *> *> vecAnimations;
+    vector<std::deque<std::shared_ptr<Mesh>> *> vecAnimations;
     vector<string> vecAnimationNames;
 
     bool animatedMesh;
@@ -117,7 +117,7 @@ public:
 
     bool isContinuousLoop() const;
 
-    void addAnimation(std::vector<Mesh *> *meshes, const char *name);
+    void addAnimation(std::deque<std::shared_ptr<Mesh>> *meshes, const char *name);
 
     double framesPerSecond() const;
 

@@ -32,7 +32,7 @@
 class StarSystem;
 const int numcontterr = 4;
 struct MeshDat {
-    class Mesh *mesh;
+    class std::shared_ptr<Mesh> mesh;
     class csOPCODECollider *collider;
     Matrix mat;
 };
@@ -76,4 +76,3 @@ public:
         Z = sizeZ;
     }
 };
-

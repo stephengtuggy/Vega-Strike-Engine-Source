@@ -100,7 +100,7 @@ public:
 class OrigMeshContainer {
 public:
     float d{};
-    Mesh *orig;
+    std::shared_ptr<Mesh> orig;
     int program{};
 
     unsigned int transparent{1};
@@ -112,7 +112,7 @@ public:
         orig = nullptr;
     }
 
-    OrigMeshContainer(Mesh *orig, float d, int passno) {
+    OrigMeshContainer(std::shared_ptr<Mesh> orig, float d, int passno) {
         assert(passno < orig->technique->getNumPasses());
 
         const Pass &pass = orig->technique->getPass(passno);
@@ -435,10 +435,10 @@ Mesh::~Mesh() {
         if (meshHashTable.Get(hash_name) == this) {
             meshHashTable.Delete(hash_name);
         }
-        vector<Mesh *> *hashers = vega_gfx::bfxmHashtable::instance().Get(hash_name);
+        std::deque<std::shared_ptr<Mesh>> *hashers = vega_gfx::bfxmHashtable::instance().Get(hash_name);
         if (hashers && !hashers->empty()) {
             const auto first_to_remove = std::stable_partition(hashers->begin(), hashers->end(),
-                [this](const Mesh * pi) { return pi != this; });
+                [this](const std::shared_ptr<Mesh>  pi) { return pi != this; });
             const intmax_t num_meshes_removed = hashers->end() - first_to_remove;
             hashers->erase(first_to_remove, hashers->end());
             if (num_meshes_removed > 0) {
@@ -474,7 +474,7 @@ void Mesh::Draw(float lod,
                 bool renormalize,
                 const MeshFX *mfx) //short fix
 {
-    Mesh *origmesh = getLOD(lod);
+    std::shared_ptr<Mesh> origmesh = getLOD(lod);
     if (origmesh->rSize() > 0) {
         //Vector pos (local_pos.Transform(m));
         MeshDrawContext c(m);
@@ -539,7 +539,7 @@ void Mesh::Draw(float lod,
 
 void Mesh::DrawNow(float lod, bool centered, const Matrix &m, int cloak, float nebdist) {
     //short fix
-    Mesh *o = getLOD(lod);
+    std::shared_ptr<Mesh> o = getLOD(lod);
     //fixme: cloaking not delt with.... not needed for background anyway
     if (nebdist < 0) {
         Nebula *t = _Universe->AccessCamera()->GetNebula();
@@ -612,12 +612,12 @@ void Mesh::ProcessZFarMeshes(bool nocamerasetup) {
 
         std::sort(undrawn_meshes[a].begin(), undrawn_meshes[a].end());
         for (OrigMeshVector::iterator it = undrawn_meshes[a].begin(); it < undrawn_meshes[a].end(); ++it) {
-            Mesh *m = it->orig;
+            std::shared_ptr<Mesh> m = it->orig;
             m->ProcessDrawQueue(it->passno, a, it->zsort, _Universe->AccessCamera()->GetPosition());
             m->will_be_drawn &= (~(1 << a));           //not accurate any more
         }
         for (OrigMeshVector::iterator it = undrawn_meshes[a].begin(); it < undrawn_meshes[a].end(); ++it) {
-            Mesh *m = it->orig;
+            std::shared_ptr<Mesh> m = it->orig;
             m->draw_queue[a].clear();
         }
         undrawn_meshes[a].clear();
@@ -667,12 +667,12 @@ void Mesh::ProcessUndrawnMeshes(bool pushSpecialEffects, bool nocamerasetup) {
         }
         std::sort(undrawn_meshes[a].begin(), undrawn_meshes[a].end());
         for (OrigMeshVector::iterator it = undrawn_meshes[a].begin(); it < undrawn_meshes[a].end(); ++it) {
-            Mesh *m = it->orig;
+            std::shared_ptr<Mesh> m = it->orig;
             m->ProcessDrawQueue(it->passno, a, it->zsort, _Universe->AccessCamera()->GetPosition());
             m->will_be_drawn &= (~(1 << a));               //not accurate any more
         }
         for (OrigMeshVector::iterator it = undrawn_meshes[a].begin(); it < undrawn_meshes[a].end(); ++it) {
-            Mesh *m = it->orig;
+            std::shared_ptr<Mesh> m = it->orig;
             m->draw_queue[a].clear();
         }
         undrawn_meshes[a].clear();

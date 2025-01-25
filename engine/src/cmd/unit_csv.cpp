@@ -53,7 +53,7 @@
 #include "components/component_utils.h"
 
 extern int GetModeFromName(const char *input_buffer);
-extern void pushMesh(std::vector<Mesh *> &mesh,
+extern void pushMesh(std::deque<std::shared_ptr<Mesh>> &mesh,
         float &randomstartframe,
         float &randomstartseconds,
         const char *filename,
@@ -65,7 +65,7 @@ extern void pushMesh(std::vector<Mesh *> &mesh,
 void addShieldMesh(Unit::XML *xml, const char *filename, const float scale, int faction, class Flightgroup *fg);
 void addRapidMesh(Unit::XML *xml, const char *filename, const float scale, int faction, class Flightgroup *fg);
 
-void AddMeshes(std::vector<Mesh *> &xmeshes,
+void AddMeshes(std::deque<std::shared_ptr<Mesh>> &xmeshes,
                float &randomstartframe,
                float &randomstartseconds,
                float unitscale,

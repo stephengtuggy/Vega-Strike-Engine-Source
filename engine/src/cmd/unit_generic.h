@@ -251,7 +251,7 @@ public:
  *  of them) as either as subunit with faction faction
  */
     // Called by Missile
-    Unit(std::vector<Mesh *> &meshes, bool Subunit, int faction);
+    Unit(std::deque<std::shared_ptr<Mesh>> &meshes, bool Subunit, int faction);
 
 /** Constructor that creates a mesh from an XML file If it is a
  *  customizedUnit, it will check in that directory in the home dir for
@@ -490,7 +490,7 @@ public:
             float activation);
 
 //Uses Mesh -> in NetUnit and Unit only
-    std::vector<Mesh *> StealMeshes();
+    std::deque<std::shared_ptr<Mesh>> StealMeshes();
 /* Begin and continue explosion
  *  Uses GFX so only in Unit class
  *  But should always return true on server side = assuming explosion time=0 here */
@@ -1042,10 +1042,10 @@ struct Unit::XML {
     float randomstartframe;
     float randomstartseconds;
     std::vector<Mount *> mountz;
-    std::vector<Mesh *> meshes;
+    std::deque<std::shared_ptr<Mesh>> meshes;
     std::vector<std::string> meshes_str;
-    Mesh *shieldmesh;
-    Mesh *rapidmesh;
+    std::shared_ptr<Mesh> shieldmesh;
+    std::shared_ptr<Mesh> rapidmesh;
     std::string shieldmesh_str;
     std::string rapidmesh_str;
     void *data;
@@ -1095,4 +1095,3 @@ extern void ClearDowngradeMap();
 void rechargeShip(Unit *unit, unsigned int cockpit);
 
 #endif //VEGA_STRIKE_ENGINE_CMD_UNIT_GENERIC_H
-

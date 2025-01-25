@@ -47,7 +47,7 @@ public:
 //for guns!
     float xyscale;
     float zscale;
-    float ComputeAnimatedFrame(Mesh *gun);
+    float ComputeAnimatedFrame(std::shared_ptr<Mesh> gun);
 //pass inunit so it can update gunspeed
     void ReplaceMounts(Unit *unit, const Mount *other);
     double Percentage(const Mount *newammo) const;

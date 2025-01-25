@@ -42,7 +42,7 @@ private:
     struct Halo {
         Matrix trans;
         Vector size;
-        Mesh *mesh;
+        std::shared_ptr<Mesh> mesh;
         double sparkle_accum;
         float sparkle_rate;
         float activation;

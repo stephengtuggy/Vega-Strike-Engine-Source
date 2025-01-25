@@ -711,6 +711,8 @@ SET(LIBGFXGENERIC_SOURCES
     src/gfx/soundcontainer_generic.cpp
     src/gfx/sphere_generic.cpp
     src/gfx/tvector.cpp
+        src/gfx/lod_coll.cpp
+        src/gfx/lod_coll.h
 )
 
 SET(LIBGFXCLIENT_SOURCES

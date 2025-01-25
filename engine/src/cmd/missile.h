@@ -70,7 +70,7 @@ public:
             float radmult,
             float detonation_radius);
 
-    Missile(std::vector<Mesh *> m, bool b, int i) :
+    Missile(std::deque<std::shared_ptr<Mesh>> m, bool b, int i) :
             Unit(m, b, i) {
     }
 

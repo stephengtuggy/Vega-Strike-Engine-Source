@@ -208,12 +208,12 @@ struct MeshXML {
     vector<int> *active_shade;
     vector<GFXVertex> *active_list;
     vector<int> *active_ind;
-    vector<Mesh *> lod;
+     lod;
     vector<float> lodsize;
     GFXVertex vertex;
     GFXMaterial material;
     int faction;
-    Mesh *mesh;
+    std::shared_ptr<Mesh> mesh;
 };
 
 #endif //VEGA_STRIKE_ENGINE_GFX_MESH_XML_H

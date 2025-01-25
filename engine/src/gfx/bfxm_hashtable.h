@@ -27,23 +27,26 @@
 #define VEGA_STRIKE_ENGINE_GFX_BFXM_HASHTABLE_H
 
 #include <string>
+#include <utility>
 #include <vector>
+#include <deque>
 #include "hashtable.h"
+#include "shared_ptr_hashtable.h"
 #include "vs_logging.h"
 
 class Mesh;
 
 namespace vega_gfx {
 
-#define MESH_HASTHABLE_SIZE (503)
+constexpr int kMeshHashtableSize = 503;
 
-class bfxmHashtable : Hashtable<std::string, std::vector<Mesh *>, MESH_HASTHABLE_SIZE> {
+class bfxmHashtable : vega_collection::SharedPtrHashtable<std::string, std::deque<std::shared_ptr<Mesh>>, kMeshHashtableSize> {
 private:
     bfxmHashtable() = default;
 
     inline ~bfxmHashtable() {
         VS_LOG_AND_FLUSH(info, "Destroying bfxmHashtable");
-        clear();
+        Clear();
     }
 
 public:
@@ -53,31 +56,35 @@ public:
     }
 
     static size_t hash(const int key) {
-        return Hashtable::hash(key);
+        return vega_collection::SharedPtrHashtable<std::string, std::deque<std::shared_ptr<Mesh>>, kMeshHashtableSize>::hash(key);
     }
 
     static size_t hash(const char *key) {
-        return Hashtable::hash(key);
+        return vega_collection::SharedPtrHashtable<std::string, std::deque<std::shared_ptr<Mesh>>, kMeshHashtableSize>::hash(key);
     }
 
     static size_t hash(const std::string &key) {
-        return Hashtable::hash(key);
+        return vega_collection::SharedPtrHashtable<std::string, std::deque<std::shared_ptr<Mesh>>, kMeshHashtableSize>::hash(key);
     }
 
-    std::vector<std::vector<Mesh *> *> GetAll() const {
-        return Hashtable::GetAll();
+    std::vector<std::shared_ptr<std::deque<std::shared_ptr<Mesh>>>> GetAll() const {
+        return vega_collection::SharedPtrHashtable<std::string, std::deque<std::shared_ptr<Mesh>>, kMeshHashtableSize>::GetAll();
     }
 
-    std::vector<Mesh *> *Get(const std::string &key) const {
-        return Hashtable::Get(key);
+    std::shared_ptr<std::deque<std::shared_ptr<Mesh>>> Get(const std::string &key) const {
+        return vega_collection::SharedPtrHashtable<std::string, std::deque<std::shared_ptr<Mesh>>, kMeshHashtableSize>::Get(key);
     }
 
-    void Put(const std::string &key, std::vector<Mesh *> *value) {
-        Hashtable::Put(key, value);
+    void Put(const std::string &key, std::shared_ptr<std::deque<std::shared_ptr<Mesh>>> value) {
+        vega_collection::SharedPtrHashtable<std::string, std::deque<std::shared_ptr<Mesh>>, kMeshHashtableSize>::Put(key, std::move(value));
     }
 
     void Delete(const std::string &key) {
-        Hashtable::Delete(key);
+        vega_collection::SharedPtrHashtable<std::string, std::deque<std::shared_ptr<Mesh>>, kMeshHashtableSize>::Delete(key);
+    }
+
+    void Clear() {
+        vega_collection::SharedPtrHashtable<std::string, std::deque<std::shared_ptr<Mesh>>, kMeshHashtableSize>::Clear();
     }
 };
 

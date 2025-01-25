@@ -299,7 +299,7 @@ Unit::Unit() : Drawable(), Damageable(), Movable() //: cumulative_transformation
 }
 
 // Called by Missile
-Unit::Unit(std::vector<Mesh *> &meshes, bool SubU, int fact)
+Unit::Unit(std::deque<std::shared_ptr<Mesh>> &meshes, bool SubU, int fact)
         : Drawable(), Damageable(), Movable() //: cumulative_transformation_matrix( identity_matrix )
 {
     pImage = (new UnitImages<void>);
@@ -511,10 +511,10 @@ void Unit::Init(const char *filename,
     }
 }
 
-vector<Mesh *> Unit::StealMeshes() {
-    vector<Mesh *> ret;
+std::deque<std::shared_ptr<Mesh>> Unit::StealMeshes() {
+    std::deque<std::shared_ptr<Mesh>> ret;
 
-    Mesh *shield = meshdata.empty() ? NULL : meshdata.back();
+    std::shared_ptr<Mesh> shield = meshdata.empty() ? NULL : meshdata.back();
     for (unsigned int i = 0; i <= nummesh(); ++i) {
         ret.push_back(meshdata[i]);
     }
@@ -3998,7 +3998,7 @@ static inline void parseFloat4(const std::string &s, float value[4]) {
 
 void Unit::applyTechniqueOverrides(const std::map<std::string, std::string> &overrides) {
     //for (vector<Mesh*>::iterator mesh = this->meshdata.begin(); mesh != this->meshdata.end(); ++mesh) {
-    for (Mesh *mesh : meshdata) {
+    for (std::shared_ptr<Mesh> mesh : meshdata) {
         if (mesh == nullptr) {
             continue;
         }

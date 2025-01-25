@@ -53,7 +53,7 @@ void RingMesh::InitRing(float iradius,
     if (numspheres < 1) {
         numspheres = 1;
     }
-    Mesh *oldmesh;
+    std::shared_ptr<Mesh> oldmesh;
     char ab[3];
     ab[2] = '\0';
     ab[1] = b + '0';
@@ -66,7 +66,7 @@ void RingMesh::InitRing(float iradius,
     }
     oldmesh =
             AllocNewMeshesEachInSizeofMeshSpace(numspheres);     //FIXME::RISKY::MIGHT HAVE DIFFERENT SIZES!! DON"T YOU DARE ADD XTRA VARS TO SphereMesh calsshave to!
-    numlods = numspheres;
+    num_lods = numspheres;
     meshHashTable.Put(hash_name = VSFileSystem::GetSharedMeshHashName(hash_name, Vector(iradius,
             iradius,
             iradius), 0), oldmesh);
@@ -164,7 +164,7 @@ void RingMesh::InitRing(float iradius,
                     g_game.use_planet_textures ? GFXTRUE : GFXFALSE);
         }
         setEnvMap(envMapping);
-        Mesh *oldorig = orig;
+        std::shared_ptr<Mesh> oldorig = orig;
         refcount = 1;
         orig = NULL;
         if (l >= 1) {
@@ -188,4 +188,3 @@ void RingMesh::InitRing(float iradius,
 float RingMesh::clipRadialSize() const {
     return /*mx.Magnitude()*.33+*/ rSize();
 }
-

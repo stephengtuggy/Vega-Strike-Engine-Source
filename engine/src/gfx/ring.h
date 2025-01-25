@@ -30,7 +30,7 @@
 #include "vegastrike.h"
 
 class RingMesh : public Mesh {
-    virtual Mesh *AllocNewMeshesEachInSizeofMeshSpace(int num) {
+    virtual std::shared_ptr<Mesh> AllocNewMeshesEachInSizeofMeshSpace(int num) {
         return new RingMesh[num];
     }
 

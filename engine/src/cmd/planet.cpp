@@ -110,7 +110,7 @@ string GetElMeshName(string name, string faction, char direction) {
     return elevator_mesh;
 }
 
-static void SetFogMaterialColor(Mesh *thus, const GFXColor &color, const GFXColor &dcolor) {
+static void SetFogMaterialColor(std::shared_ptr<Mesh> thus, const GFXColor &color, const GFXColor &dcolor) {
     GFXMaterial m{};
     setMaterialAmbient(m, 0.0);
     setMaterialDiffuse(m, configuration()->graphics_config.atmosphere_diffuse * dcolor);
@@ -120,7 +120,7 @@ static void SetFogMaterialColor(Mesh *thus, const GFXColor &color, const GFXColo
     thus->SetMaterial(m);
 }
 
-Mesh *MakeFogMesh(const AtmosphericFogMesh &f, float radius) {
+std::shared_ptr<Mesh> MakeFogMesh(const AtmosphericFogMesh &f, float radius) {
     static int count = 0;
     count++;
     string nam = f.meshname + XMLSupport::tostring(count) + ".png";
@@ -149,7 +149,7 @@ Mesh *MakeFogMesh(const AtmosphericFogMesh &f, float radius) {
     }
     vector<string> override;
     override.push_back(nam);
-    Mesh *ret = Mesh::LoadMesh(f.meshname.c_str(),
+    std::shared_ptr<Mesh> ret = Mesh::LoadMesh(f.meshname.c_str(),
             Vector(f.scale * radius, f.scale * radius, f.scale * radius),
             0,
             nullptr,
@@ -166,7 +166,7 @@ class AtmosphereHalo : public Unit {
 public:
     float planetRadius;
 
-    AtmosphereHalo(float radiusOfPlanet, vector<Mesh *> &meshes, int faction) :
+    AtmosphereHalo(float radiusOfPlanet, std::deque<std::shared_ptr<Mesh>> &meshes, int faction) :
             Unit(meshes, true, faction) {
         planetRadius = radiusOfPlanet;
     }
@@ -260,7 +260,7 @@ Planet::Planet(QVector x,
             if (jump->name != "LOAD_FAILED") {
                 anytrue = true;
                 radius = jump->rSize();
-                Mesh *shield = jump->meshdata.size() ? jump->meshdata.back() : nullptr;
+                std::shared_ptr<Mesh> shield = jump->meshdata.size() ? jump->meshdata.back() : nullptr;
                 if (jump->meshdata.size()) {
                     jump->meshdata.pop_back();
                 }
@@ -496,7 +496,7 @@ void Planet::AddAtmosphere(const std::string &texture,
     if (meshdata.empty()) {
         meshdata.push_back(nullptr);
     }
-    Mesh *shield = meshdata.back();
+    std::shared_ptr<Mesh> shield = meshdata.back();
     meshdata.pop_back();
     const int stacks = configuration()->graphics_config.planet_detail_stacks;
     meshdata.push_back(new SphereMesh(radius,
@@ -533,7 +533,7 @@ void Planet::AddCity(const std::string &texture,
     if (meshdata.empty()) {
         meshdata.push_back(nullptr);
     }
-    Mesh *shield = meshdata.back();
+    std::shared_ptr<Mesh> shield = meshdata.back();
     meshdata.pop_back();
     const float materialweight = configuration()->graphics_config.city_light_strength;
     const float daymaterialweight = configuration()->graphics_config.day_city_light_strength;
@@ -557,12 +557,12 @@ void Planet::AddFog(const std::vector<AtmosphericFogMesh> &v, bool opticalillusi
         meshdata.push_back(nullptr);
     }
 #ifdef MESHONLY
-    Mesh *shield = meshdata.back();
+    std::shared_ptr<Mesh> shield = meshdata.back();
     meshdata.pop_back();
 #endif
-    std::vector<Mesh *> fogs;
+    std::deque<std::shared_ptr<Mesh>> fogs;
     for (unsigned int i = 0; i < v.size(); ++i) {
-        Mesh *fog = MakeFogMesh(v[i], rSize());
+        std::shared_ptr<Mesh> fog = MakeFogMesh(v[i], rSize());
         fogs.push_back(fog);
     }
     Unit *fawg;
@@ -594,7 +594,7 @@ void Planet::AddRing(const std::string &texture,
     if (meshdata.empty()) {
         meshdata.push_back(nullptr);
     }
-    Mesh *shield = meshdata.back();
+    std::shared_ptr<Mesh> shield = meshdata.back();
     meshdata.pop_back();
     int stacks = configuration()->graphics_config.planet_detail_stacks;
     if (slices > 0) {
@@ -650,9 +650,9 @@ Vector Planet::AddSpaceElevator(const std::string &name, const std::string &fact
     }
     Matrix ElevatorLoc(Vector(dir.j, dir.k, dir.i), dir, Vector(dir.k, dir.i, dir.j));
     scale = dir * radius + Vector(1, 1, 1) - dir;
-    Mesh *shield = meshdata.back();
+    std::shared_ptr<Mesh> shield = meshdata.back();
     string elevator_mesh = GetElMeshName(name, faction, direction);     //filename
-    Mesh *tmp = meshdata.back() = Mesh::LoadMesh(elevator_mesh.c_str(),
+    std::shared_ptr<Mesh> tmp = meshdata.back() = Mesh::LoadMesh(elevator_mesh.c_str(),
             scale,
             FactionUtil::
             GetFactionIndex(faction),
@@ -958,4 +958,3 @@ bool operator==(const Planet &lhs, const Planet &rhs) {
 
     return equal;
 }
-

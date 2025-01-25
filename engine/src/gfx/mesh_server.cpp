@@ -117,8 +117,8 @@ Mesh::~Mesh() {
         if (meshHashTable.Get(hash_name) == this) {
             meshHashTable.Delete(hash_name);
         }
-        vector<Mesh *> *hashers = vega_gfx::bfxmHashtable::instance().Get(hash_name);
-        vector<Mesh *>::iterator finder;
+        std::deque<std::shared_ptr<Mesh>> *hashers = vega_gfx::bfxmHashtable::instance().Get(hash_name);
+        std::deque<std::shared_ptr<Mesh>>::iterator finder;
         if (hashers) {
             for (int i = hashers->size() - 1; i >= 0; --i) {
                 if ((*hashers)[i] == this) {
