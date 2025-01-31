@@ -51,7 +51,7 @@ public:
     LodColl(LodColl&&) noexcept;
     LodColl& operator=(LodColl&&) noexcept;
 
-    static std::shared_ptr<LodColl> Create(const std::string& hash_name, std::shared_ptr<Mesh> original);
+    static std::shared_ptr<LodColl> Create(const std::string& filename, int faction, Flightgroup *fg, const std::vector<std::string> &override_texture);
 
     size_t NumberOfLODs() const;
 

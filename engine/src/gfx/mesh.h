@@ -178,7 +178,7 @@ public:
     }
 
 private:
-    static std::shared_ptr<Mesh> create(const char *filename, const Vector &scalex, int faction, class Flightgroup *fg,
+    static std::shared_ptr<Mesh> Create(const char *filename, const Vector &scalex, int faction, class Flightgroup *fg,
             bool orig, const std::vector<std::string> &textureOverride) {
         std::shared_ptr<Mesh> return_value = std::make_shared<Mesh>();
         return_value->hash_name = filename;
@@ -223,8 +223,8 @@ private:
         return return_value;
     }
 
-protected:
-    static std::shared_ptr<Mesh> create(std::string filename, const Vector &scalex, int faction, class Flightgroup *fg, bool orig) {
+public:
+    static std::shared_ptr<Mesh> Create(std::string filename, const Vector &scalex, int faction, class Flightgroup *fg, bool orig) {
         std::shared_ptr<Mesh> return_value = std::make_shared<Mesh>();
         return_value->hash_name = filename;
         return_value->convex = false;
@@ -264,7 +264,6 @@ protected:
     }
 
     ///Loads a mesh that has been found in the hash table into this mesh (copying original data)
-public:
     bool LoadExistant(std::shared_ptr<Mesh> mesh);
     bool LoadExistant(const string filehash, const Vector &scale, int faction);
 protected:

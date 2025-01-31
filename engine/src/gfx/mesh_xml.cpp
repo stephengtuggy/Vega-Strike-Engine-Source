@@ -848,7 +848,7 @@ void Mesh::beginElement(MeshXML *xml, const string &name, const AttributeList &a
                         break;
                     case MeshXML::LODFILE:
                         xml->lod
-                                .push_back(Mesh::create((*iter).value.c_str(),
+                                .push_back(Mesh::Create((*iter).value.c_str(),
                                         xml->lodscale,
                                         xml->faction,
                                         xml->fg,
@@ -1376,7 +1376,7 @@ std::deque<std::shared_ptr<Mesh>> Mesh::LoadMeshes(const char *filename,
     } else {
         f.Close();
         bool original = false;
-        std::shared_ptr<Mesh> m = Mesh::create(filename, scale, faction, fg, original, {}).get();   // FIXME: Stop using raw pointers
+        std::shared_ptr<Mesh> m = Mesh::Create(filename, scale, faction, fg, original, {}).get();   // FIXME: Stop using raw pointers
          ret;
         ret.push_back(m);
         return ret;

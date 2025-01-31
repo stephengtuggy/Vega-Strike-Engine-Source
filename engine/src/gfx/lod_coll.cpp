@@ -50,16 +50,17 @@ LodColl & LodColl::operator=(LodColl && other) noexcept {
     return *this;
 }
 
-std::shared_ptr<LodColl> LodColl::Create(const std::string &hash_name, std::shared_ptr<Mesh> original) {
+std::shared_ptr<LodColl> LodColl::Create(const std::string &filename, const int faction, Flightgroup *fg, const std::vector<std::string> &override_texture) {
     std::shared_ptr<LodColl> return_value = std::make_shared<LodColl>(Private());
-    return_value->LoadMesh(hash_name, original);
+
+    // return_value->LoadMesh(filename, original);
     return return_value;
 }
 
-void LodColl::LoadMesh(const std::string &hash_name, std::shared_ptr<Mesh> original) {
-    this->hash_name_ = hash_name;
-    this->original_mesh_ = original;
-    // ...
-}
+// void LodColl::LoadMesh(const std::string &hash_name, std::shared_ptr<Mesh> original) {
+//     this->hash_name_ = hash_name;
+//     this->original_mesh_ = original;
+//     // ...
+// }
 
 } // vega_gfx
