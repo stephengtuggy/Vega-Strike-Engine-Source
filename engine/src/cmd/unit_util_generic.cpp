@@ -453,9 +453,8 @@ void SetHull(Unit *my_unit, float newhull) {
     if (!my_unit) {
         return;
     }
-    // TODO: replace with a proper API in both lib_damage and damageable
-    // damageable SetHull linked to SetHealth which checks validity
-    my_unit->hull->facets[0].health = newhull;
+    
+    my_unit->hull.Set(newhull);
 }
 
 float getCredits(const Unit *my_unit) {
@@ -578,6 +577,9 @@ void RecomputeUnitUpgrades(Unit *un) {
     for (i = 0; i < un->numCargo(); ++i) {
         Cargo *c = &un->GetCargo(i);
         if (c->GetCategory().find("upgrades") == 0 && c->GetCategory().find(DamagedCategory) != 0) {
+            if(c->GetCategory().find("upgrades/integral") == 0) {
+                continue;
+            }
             if (c->GetName().find("mult_") != 0
                     && c->GetName().find("add_") != 0) {
                 un->Upgrade(c->GetName(), 0, 0, true, false);
@@ -587,6 +589,9 @@ void RecomputeUnitUpgrades(Unit *un) {
     for (i = 0; i < un->numCargo(); ++i) {
         Cargo *c = &un->GetCargo(i);
         if (c->GetCategory().find("upgrades") == 0 && c->GetCategory().find(DamagedCategory) != 0) {
+            if(c->GetCategory().find("upgrades/integral") == 0) {
+                continue;
+            }
             if (c->GetName().find("add_") == 0) {
                 for (int j = 0; j < c->GetQuantity(); ++j) {
                     un->Upgrade(c->GetName(), 0, 0, true, false);
@@ -597,6 +602,9 @@ void RecomputeUnitUpgrades(Unit *un) {
     for (i = 0; i < un->numCargo(); ++i) {
         Cargo *c = &un->GetCargo(i);
         if (c->GetCategory().find("upgrades") == 0 && c->GetCategory().find(DamagedCategory) != 0) {
+            if(c->GetCategory().find("upgrades/integral") == 0) {
+                continue;
+            }
             if (c->GetName().find("mult_") == 0) {
                 for (int j = 0; j < c->GetQuantity(); ++j) {
                     un->Upgrade(c->GetName(), 0, 0, true, false);
@@ -854,7 +862,7 @@ void setECM(Unit *my_unit, int NewECM) {
     if (!my_unit) {
         return;
     }
-    my_unit->ecm = NewECM;
+    my_unit->ecm.Set(NewECM);
 }
 
 int getECM(const Unit *my_unit) {
@@ -862,7 +870,8 @@ int getECM(const Unit *my_unit) {
     if (!my_unit) {
         return 0;
     }
-    return my_unit->computer.ecmactive ? my_unit->ecm : 0;
+
+    return my_unit->ecm.Get();
 }
 
 static bool ishere(const Unit *par, const Unit *look) {
@@ -909,27 +918,62 @@ float PercentOperational(Unit *un, std::string name, std::string category, bool 
     }
 
     const std::string upgrade_category = UnitCSVFactory::GetVariable(unit_key, "Upgrade_Type", std::string());
+    if(upgrade_category == "Hull") {
+        return un->hull.PercentOperational();
+    } 
+    
+    if(upgrade_category == "Armor") {
+        return un->armor.PercentOperational();
+    } 
+
+    if(upgrade_category == "Shield") {
+        return un->shield.PercentOperational();
+    } 
+    
+    if(upgrade_category == "Afterburner") {
+        return un->afterburner.PercentOperational();
+    } 
+
+    if(upgrade_category == "Drive") {
+        return un->drive.PercentOperational();
+    }
+
+    if(upgrade_category == "FTL_Drive") {
+        return un->ftl_drive.PercentOperational();
+    } 
+
     if(upgrade_category == "Reactor") {
         return un->reactor.PercentOperational();
     } 
     
     if(upgrade_category == "Capacitor") {
-        return un->reactor.PercentOperational();
+        return un->energy.PercentOperational();
     } 
     
     if(upgrade_category == "FTL_Capacitor") {
-        return un->reactor.PercentOperational();
+        return un->ftl_energy.PercentOperational();
     }
 
     if(upgrade_category == "Jump_Drive") {
         return un->jump_drive.PercentOperational();
     }
 
-    if(upgrade_category == "FTL Drive") {
+    if(upgrade_category == "FTL_Drive") {
         return un->ftl_drive.PercentOperational();
     }
 
     if(upgrade_category == "Cloak") {
+        return un->cloak.PercentOperational();
+    }
+
+    if(upgrade_category == "Radar") {
+        return un->radar.PercentOperational();
+    }
+    if(upgrade_category == "ECM") {
+        return un->ftl_drive.PercentOperational();
+    }
+
+    if(upgrade_category == "Repair_Bot") {
         return un->cloak.PercentOperational();
     }
 
@@ -959,15 +1003,6 @@ float PercentOperational(Unit *un, std::string name, std::string category, bool 
             }
         }
     } else if (name.find("add_") != 0 && name.find("mult_") != 0) {
-        float armor[8];
-        upgrade->ArmorData(armor);
-        if (upgrade->layers[0].facets[0].health > 1 || armor[0] || armor[1] || armor[2] || armor[3] || armor[4] || armor[5]
-                || armor[6]
-                || armor[7]) {
-            if (countHullAndArmorAsFull) {
-                return 1.0f;
-            }
-        }
         double percent = 0;
         if (un->canUpgrade(upgrade, -1, -1, 0, true, percent, makeTemplateUpgrade(un->name, un->faction), false)) {
             if (percent > 0 && percent < 1) {

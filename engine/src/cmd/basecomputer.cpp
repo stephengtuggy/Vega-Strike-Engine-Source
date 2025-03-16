@@ -245,7 +245,7 @@ string buildShipDescription(Cargo &item, string &descriptiontexture);
 string buildCargoDescription(const Cargo &item, BaseComputer &computer, float price);
 //put in buffer a pretty prepresentation of the POSITIVE float f (ie 4,732.17)
 void prettyPrintFloat(char *buffer, float f, int digitsBefore, int digitsAfter, int bufferLen = 128);
-string buildUpgradeDescription(Cargo &item);
+string buildUpgradeDescription(Cargo &item, std::map<std::string, std::string> ship_map);
 int basecargoassets(Unit *base, string cargoname);
 
 //"Basic Repair" item that is added to Buy UPGRADE mode.
@@ -1754,6 +1754,10 @@ bool BaseComputer::configureUpgradeCommitControls(const Cargo &item, Transaction
                 commitButton->setLabel("Fix1st");
                 commitButton->setCommand("");
             }
+            
+            if(item.GetCategory().find("upgrades/integral") == 0) {
+                commitButton->setHidden(true);
+            }
         }
         NewButton *commitFixButton = static_cast< NewButton * > ( window()->findControlById("CommitFix"));
         bool unhidden = true;
@@ -1922,7 +1926,7 @@ void BaseComputer::updateTransactionControlsForSelection(TransactionList *tlist)
                 }
                 descString += tempString;
                 if (item.GetDescription() == "" || item.GetDescription()[0] != '#') {
-                    item.SetDescription(buildUpgradeDescription(item));
+                    item.SetDescription(buildUpgradeDescription(item, std::map<std::string, std::string>()));
                 }
                 break;
             case BUY_SHIP:
@@ -1989,8 +1993,8 @@ void BaseComputer::updateTransactionControlsForSelection(TransactionList *tlist)
 
                 //********************************************************************************************
             {
-                double percent_working = m_player.GetUnit() ? UnitUtil::PercentOperational(
-                        m_player.GetUnit(), item.GetName(), item.GetCategory(), false) : 0.0;
+                double percent_working = UnitUtil::PercentOperational(
+                        m_player.GetUnit(), item.GetName(), item.GetCategory(), false);
                 if (percent_working < 1) {
                     //IF DAMAGED
                     tempString = (boost::format("Damaged and Used value: #b#%1$.2f#-b, purchased for %2$.2f#n1.5#")
@@ -1998,10 +2002,11 @@ void BaseComputer::updateTransactionControlsForSelection(TransactionList *tlist)
                             % item.GetPrice())
                             .str();
                     descString += tempString;
-
+                    double repair_price = RepairPrice(percent_working, baseUnit->PriceCargo(item.GetName()));
+                    
                     tempString = (boost::format("Percent Working: #b#%1$.2f#-b, Repair Cost: %2$.2f#n1.5#")
                             % (percent_working * 100)
-                            % RepairPrice(percent_working, baseUnit->PriceCargo(item.GetName())))
+                            % repair_price)
                             .str();
                     descString += tempString;
                 } else {
@@ -2017,7 +2022,8 @@ void BaseComputer::updateTransactionControlsForSelection(TransactionList *tlist)
                 }
                 //********************************************************************************************
                 if (item.GetDescription() == "" || item.GetDescription()[0] != '#') {
-                    item.SetDescription(buildUpgradeDescription(item));
+                    std::map<std::string, std::string> ship_map = m_player.GetUnit()->UnitToMap();
+                    item.SetDescription(buildUpgradeDescription(item, ship_map));
                 }
                 break;
             }
@@ -3781,6 +3787,7 @@ bool BaseComputer::fixUpgrade(const EventCommandId &command, Control *control) {
     Cargo *item = selectedItem();
     Unit *playerUnit = m_player.GetUnit();
     Unit *baseUnit = m_base.GetUnit();
+
     if (baseUnit && playerUnit && item) {
         float *credits = NULL;
         Cockpit *cp = _Universe->isPlayerStarship(playerUnit);
@@ -3940,11 +3947,11 @@ string buildShipDescription(Cargo &item, std::string &texturedescription) {
 }
 
 //UNDER CONSTRUCTION
-string buildUpgradeDescription(Cargo &item) {
+string buildUpgradeDescription(Cargo &item, std::map<std::string, std::string> ship_map) {
     const std::string key = item.GetName() + "__upgrades";
-     PyObject* args = PyTuple_Pack(1, PyUnicode_FromString(key.c_str()));
+    ship_map["upgrade_key"] = key;
     const std::string text = GetString("get_upgrade_info", "upgrade_view",
-        "upgrade_view.py", args);
+        "upgrade_view.py", ship_map);
     return text;
 }
 

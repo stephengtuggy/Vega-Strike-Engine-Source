@@ -312,22 +312,7 @@ void GameCockpit::AutoLanding() {
 }
 
 
-float GameCockpit::LookupTargetStat(int stat, Unit *target) {
-    switch (stat) {
-        case UnitImages<void>::TARGETSHIELDF:
-            return target->FShieldData();
 
-        case UnitImages<void>::TARGETSHIELDR:
-            return target->RShieldData();
-
-        case UnitImages<void>::TARGETSHIELDL:
-            return target->LShieldData();
-
-        case UnitImages<void>::TARGETSHIELDB:
-            return target->BShieldData();
-    }
-    return 1;
-}
 
 float GameCockpit::LookupUnitStat(int stat, Unit *target) {
     static float game_speed = XMLSupport::parse_float(vs_config->getVariable("physics", "game_speed", "1"));
@@ -347,50 +332,54 @@ float GameCockpit::LookupUnitStat(int stat, Unit *target) {
 
     switch (stat) {
         case UnitImages<void>::SHIELDF:
-            return target->FShieldData();
-
-        case UnitImages<void>::SHIELDR:
-            return target->RShieldData();
+            return target->shield.Percent(Shield::front);
+        
+        case UnitImages<void>::SHIELDB:
+            return target->shield.Percent(Shield::back);
 
         case UnitImages<void>::SHIELDL:
-            return target->LShieldData();
+            return target->shield.Percent(Shield::left);
 
-        case UnitImages<void>::SHIELDB:
-            return target->BShieldData();
+        case UnitImages<void>::SHIELDR:
+            return target->shield.Percent(Shield::right);
 
         case UnitImages<void>::ARMORF:
-            return target->armor->facets[1].Percent();
-        case UnitImages<void>::ARMORR:
-            return target->armor->facets[0].Percent();
-        case UnitImages<void>::ARMORL:
-            return target->armor->facets[1].Percent();
+            return target->armor.Percent(Armor::front);
+        
         case UnitImages<void>::ARMORB:
-            return target->armor->facets[0].Percent();
+            return target->armor.Percent(Armor::back);
+            
+        case UnitImages<void>::ARMORL:
+            return target->armor.Percent(Armor::left);
+        
+        case UnitImages<void>::ARMORR:
+            return target->armor.Percent(Armor::right);
+        
         case UnitImages<void>::ARMOR4:
-            return target->armor->facets[2].Percent();
+            return target->armor.Percent(Armor::left);
         case UnitImages<void>::ARMOR5:
-            return target->armor->facets[2].Percent();
+            return target->armor.Percent(Armor::left);
         case UnitImages<void>::ARMOR6:
-            return target->armor->facets[3].Percent();
+            return target->armor.Percent(Armor::right);
         case UnitImages<void>::ARMOR7:
-            return target->armor->facets[3].Percent();
+            return target->armor.Percent(Armor::right);
         case UnitImages<void>::FUEL:
             return target->fuel.Percent();
 
         case UnitImages<void>::ENERGY:
-            return target->energyData();
+            return target->energy.Percent();
 
         case UnitImages<void>::WARPENERGY: {
             const bool warpifnojump = configuration()->graphics_config.hud.display_warp_energy_if_no_jump_drive;
             return (warpifnojump || target->jump_drive.Installed()) ? target->ftl_energy.Percent() : 0;
         }
         case UnitImages<void>::HULL:
-            return target->hull->facets[0].Percent();
+            return target->hull.Percent();
             
         case UnitImages<void>::EJECT: {
             int go =
-                    ((target->hull->facets[0].Percent() < .25)
-                            && (target->BShieldData() < .25 || target->FShieldData() < .25)) ? 1 : 0;
+                    ((target->hull.Percent() < .25)
+                            && (target->shield.Percent() < .25)) ? 1 : 0;
             static int overload = 0;
             if (overload != go) {
                 if (go == 0) {
@@ -623,8 +612,8 @@ float GameCockpit::LookupUnitStat(int stat, Unit *target) {
                 return (float) UnitImages<void>::OFF;
             }
         case UnitImages<void>::ECM_MODAL:
-            if (target->ecm > 0) {
-                return (target->GetComputerData().ecmactive ? (float) UnitImages<void>::ACTIVE
+            if (target->ecm.Get() > 0) {
+                return (target->ecm.Active() ? (float) UnitImages<void>::ACTIVE
                         : (float) UnitImages<void>::READY);
             } else {
                 return (float) UnitImages<void>::NOTAPPLICABLE;
@@ -1798,7 +1787,7 @@ void GameCockpit::Draw() {
                 if (vdu[vd]) {
                     vdu[vd]->Draw(this, un, textcol);
                     GFXColor4f(1, 1, 1, 1);
-                    float damage = un->GetImageInformation().cockpit_damage[(1 + vd) % (MAXVDUS + 1)];
+                    float damage = un->ship_functions.Value(Function::cockpit);
                     if (vdu[vd]->staticable()) {
                         if (damage < .985) {
                             if (vdu_time[vd] >= 0) {
@@ -1866,7 +1855,7 @@ void GameCockpit::Draw() {
             //////////////////////////////////////////////////////////////////////////
         }
         GFXColor4f(1, 1, 1, 1);
-        if (un->GetHull() >= 0) {
+        if (!un->Destroyed()) {
             die = false;
         }
         if (un->Threat() != NULL) {
@@ -1934,7 +1923,7 @@ void GameCockpit::Draw() {
     static float dietime = 0;
     if (die) {
         if (un) {
-            if (un->GetHull() >= 0) {
+            if (!un->Destroyed()) {
                 die = false;
             }
         }
@@ -2655,26 +2644,29 @@ void GameCockpit::OnPauseEnd() {
 }
 
 void GameCockpit::updateRadar(Unit *ship) {
-    if (ship) {
-        // We may have bought a new radar brand while docked, so the actual
-        // radar display is instantiated when we undock.
-        switch (ship->GetComputerData().radar.GetBrand()) {
-            case Computer::RADARLIM::Brand::BUBBLE:
-                radarDisplay = Radar::Factory(Radar::Type::BubbleDisplay);
-                break;
-
-            case Computer::RADARLIM::Brand::PLANE:
-                radarDisplay = Radar::Factory(Radar::Type::PlaneDisplay);
-                break;
-
-            default:
-                radarDisplay = Radar::Factory(Radar::Type::SphereDisplay);
-                break;
-        }
-        // Send notification that I have undocked
-        radarDisplay->OnDockEnd();
+    if (!ship) {
+        return;
     }
 
+    // We may have bought a new radar brand while docked, so the actual
+    // radar display is instantiated when we undock.
+    RadarType type = ship->radar.GetType();
+    Radar::Type::Value displayType = Radar::Type::Value::NullDisplay;
+
+    if(type == RadarType::BUBBLE) {
+        displayType = Radar::Type::BubbleDisplay;
+    } else if(type == RadarType::PLANE) {
+        displayType = Radar::Type::PlaneDisplay;
+    } else if(type == RadarType::SPHERE) {
+        displayType = Radar::Type::SphereDisplay;
+    }
+
+    if(displayType != Radar::Type::Value::NullDisplay) {
+        radarDisplay = Radar::Factory(displayType);
+    }
+
+    // Send notification that I have undocked
+    radarDisplay->OnDockEnd();
 }
 
 void GameCockpit::SetParent(Unit *unit, const char *filename, const char *unitmodname, const QVector &startloc) {

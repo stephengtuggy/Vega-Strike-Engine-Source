@@ -187,10 +187,6 @@ Missile::Missile(const char *filename,
         discharged(false),
         retarget(-1),
         had_target(false) {
-    // TODO: why would a sparkling missile be four times as hard to kill???
-    if (configuration()->graphics_config.missile_sparkle) {
-        layers[0].facets[0] = Health(0, layers[0].facets[0].max_health * 4);
-    }
 }
 
 void Missile::Discharge() {
@@ -293,25 +289,11 @@ Unit *Missile::breakECMLock(Unit *target) {
         return nullptr;
     }
 
-    // There are two separate checks for ECM breaking lock here
-    // TODO: pick one
-    float r = rand();
-    float rand_max = static_cast<float>(RAND_MAX);
-    float ecm_value =
-            static_cast<float>(UnitUtil::getECM(target)) * simulation_atom_var / 32768;
-
-    if (r / rand_max < ecm_value) {
+    if(target->ecm.BreakLock(this)) {
         return nullptr;
+    } else {
+        return target;
     }
-
-    // Second check
-    uintmax_t missile_hash = reinterpret_cast<uintmax_t>(this) / 16383ULL;
-
-    if (static_cast<int>(missile_hash % configuration()->physics_config.max_ecm) < UnitUtil::getECM(target)) {
-        return nullptr;
-    }
-
-    return target;
 }
 
 bool Missile::proximityFuse(Unit *target) {

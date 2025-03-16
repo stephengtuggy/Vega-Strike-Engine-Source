@@ -574,30 +574,6 @@ void HudDamage(float *dam, const string &damages) {
     }
 }
 
-string WriteHudDamage(Unit *un) {
-    string ret;
-    const string semi = ";";
-    if (un->pImage->cockpit_damage) {
-        for (int i = 0; i < 1 + MAXVDUS + UnitImages<void>::NUMGAUGES; ++i) {
-            ret += XMLSupport::tostring(un->pImage->cockpit_damage[i]);
-            ret += semi;
-        }
-    }
-    return ret;
-}
-
-string WriteHudDamageFunc(Unit *un) {
-    string ret;
-    const string semi = ";";
-    if (un->pImage->cockpit_damage) {
-        int numg = 1 + MAXVDUS + UnitImages<void>::NUMGAUGES;
-        for (int i = numg; i < 2 * numg; ++i) {
-            ret += XMLSupport::tostring(un->pImage->cockpit_damage[i]);
-            ret += semi;
-        }
-    }
-    return ret;
-}
 
 void LoadCockpit(Unit *thus, const string &cockpit) {
     string::size_type elemstart = 0, elemend = string::npos;
@@ -706,7 +682,6 @@ void Unit::LoadRow(std::string unit_identifier, string modification, bool saved_
     this->CargoVolume = UnitCSVFactory::GetVariable(unit_key, "Hold_Volume", 0.0f);
     this->HiddenCargoVolume = UnitCSVFactory::GetVariable(unit_key, "Hidden_Hold_Volume", 0.0f);
     this->UpgradeVolume = UnitCSVFactory::GetVariable(unit_key, "Upgrade_Storage_Volume", 0.0f);
-    this->equipment_volume = UnitCSVFactory::GetVariable(unit_key, "Equipment_Space", 0.0f);
 
     std::string cargo_import_string = UnitCSVFactory::GetVariable(unit_key, "Cargo_Import", std::string());
     ImportCargo(this, cargo_import_string);     //if this changes change planet_generic.cpp
@@ -726,194 +701,10 @@ void Unit::LoadRow(std::string unit_identifier, string modification, bool saved_
     
 
     // Hull
-    float temp_hull = UnitCSVFactory::GetVariable(unit_key, "Hull", 0.0f);
-    float hull_values[1] = {temp_hull};
-    hull->UpdateFacets(1, hull_values);
+    hull.Load(unit_key);
+    armor.Load(unit_key);
+    shield.Load(unit_key);
 
-    specInterdiction = UnitCSVFactory::GetVariable(unit_key, "Spec_Interdiction", 0.0f);
-
-
-    // Armor
-    // We support 3 options:
-    // 1. Minimized armor = x (single value). 
-    // 2. New detailed armor (Front, back, left, right).
-    // 3. Old detailed (Front-left-top, ...). 8 facets converted to 4. 
-    const std::string armor_single_value_string = UnitCSVFactory::GetVariable(unit_key, "armor", std::string());
-
-    if(armor_single_value_string != "") {
-        // Minimized
-        const double armor_single_value = std::stod(armor_single_value_string, 0);
-        armor->UpdateFacets(armor_single_value);
-    } else {
-        // Try new
-        std::string armor_keys[] = {"armor_front", "armor_back",
-            "armor_left", "armor_right"};
-        bool new_form = true;
-        for (int i = 0; i < 4; i++) {
-            const std::string armor_string_value = UnitCSVFactory::GetVariable(unit_key, armor_keys[i], std::string());
-            if(armor_string_value.empty()) {
-                new_form = false;
-                break;
-            }
-
-            double armor_value = std::stod(armor_string_value);
-            armor->facets[i].health = armor_value;
-            armor->facets[i].max_health = armor_value;
-            armor->facets[i].adjusted_health = armor_value;
-        }
-
-        // Fallback to old
-        if(!new_form) {
-            const std::string armor_keys[] = {"Armor_Front_Top_Left", 
-                                              "Armor_Front_Top_Right",
-                                              "Armor_Front_Bottom_Left", 
-                                              "Armor_Front_Bottom_Right",
-                                              "Armor_Back_Top_Left", 
-                                              "Armor_Back_Top_Right",
-                                              "Armor_Back_Bottom_Left", 
-                                              "Armor_Back_Bottom_Right"};
-
-            double old_armor_values[8];
-            float new_armor_values[4];
-            for (int i = 0; i < 8; i++) {
-                old_armor_values[i] = UnitCSVFactory::GetVariable(unit_key, armor_keys[i], 0.0f);
-            }
-
-            // Conversion is tricky because new values are a square and old values are
-            // a two layered diamond.
-            new_armor_values[0] = (old_armor_values[0] + old_armor_values[1] + old_armor_values[2] + old_armor_values[3])/2;
-            new_armor_values[1] = (old_armor_values[4] + old_armor_values[5] + old_armor_values[5] + old_armor_values[5])/2;
-            new_armor_values[2] = (old_armor_values[0] + old_armor_values[2] + old_armor_values[4] + old_armor_values[6])/2;
-            new_armor_values[3] = (old_armor_values[1] + old_armor_values[3] + old_armor_values[5] + old_armor_values[7])/2;
-            armor->UpdateFacets(4,new_armor_values);
-        }
-    }
-       
-    // shield
-
-    // We support 3 options:
-    // 1. Minimized shield_strength = x (single value). 
-    // 2. New detailed shield (Front, back, left, right).
-    // 3. Old detailed (Front-left-top, ...). 4/2 facets converted to 4/2. 
-    
-    // Some basic shield variables
-    // TODO: lib_damage figure out how leak and efficiency work
-    //char leak = static_cast<char>(UnitCSVFactory::GetVariable(unit_key, "Shield_Leak", 0.0f) * 100);
-
-    float regeneration = UnitCSVFactory::GetVariable(unit_key, "Shield_Recharge", 0.0f);
-
-    // This is necessary for upgrading shields, as it's done with an ugly macro in
-    // unit_generic STDUPGRADE
-    shield_regeneration = regeneration;
-    shield->UpdateRegeneration(regeneration);
-    //float efficiency = UnitCSVFactory::GetVariable(unit_key, "Shield_Efficiency", 1.0f );
-
-    // Get shield count
-    std::map<std::string, float> shield_sections{};
-    std::vector<std::string> shield_string_values{};
-
-    const std::string shield_strength_string = UnitCSVFactory::GetVariable(unit_key, "shield_strength", std::string());
-    const std::string shield_facets_string = UnitCSVFactory::GetVariable(unit_key, "shield_facets", std::string());
-    
-    if(!shield_facets_string.empty()) {
-        try {
-            int shield_facets = std::stoi(shield_facets_string);
-            shield->number_of_facets = shield_facets;
-        } catch (std::invalid_argument const& ex) {
-            VS_LOG(error, (boost::format("%1%: %2% trying to convert shield_facets_string '%3%' to int") % __FUNCTION__ % ex.what() % shield_facets_string));
-            shield->number_of_facets = 1;
-        } catch (std::out_of_range const& ex) {
-            VS_LOG(error, (boost::format("%1%: %2% trying to convert shield_facets_string '%3%' to int") % __FUNCTION__ % ex.what() % shield_facets_string));
-            shield->number_of_facets = 1;
-        }
-    }
-
-    if(!shield_strength_string.empty()) {
-        try {
-            int shield_strength = std::stoi(shield_strength_string);
-            shield->UpdateFacets(static_cast<float>(shield_strength));
-        } catch (std::invalid_argument const& ex) {
-            VS_LOG(error, (boost::format("%1%: %2% trying to convert shield_strength_string '%3%' to int") % __FUNCTION__ % ex.what() % shield_strength_string));
-            shield->UpdateFacets(0.0F);
-        } catch (std::out_of_range const& ex) {
-            VS_LOG(error, (boost::format("%1%: %2% trying to convert shield_strength_string '%3%' to int") % __FUNCTION__ % ex.what() % shield_strength_string));
-            shield->UpdateFacets(0.0F);
-        }
-    } else if(!shield_facets_string.empty()) {
-        // Try new longform
-        std::vector<float> shield_values{};
-        std::string shield_keys[] = {"shield_front", "shield_back",
-            "shield_left", "shield_right"};
-        
-        for (int i = 0; i < shield->number_of_facets; ++i) {
-            const std::string shield_string_value = UnitCSVFactory::GetVariable(unit_key, shield_keys[i], std::string());
-            if (shield_string_value.empty()) {
-                shield_sections[shield_keys[i]] = 0.0F;
-                shield_values.emplace_back(0.0F);
-            } else {
-                try {
-                    float tmp = static_cast<float>(std::stoi(shield_string_value));
-                    shield_sections[shield_keys[i]] = tmp;
-                    shield_values.emplace_back(tmp);
-                } catch (const std::invalid_argument& ex) {
-                    VS_LOG(error, (boost::format("%1%: Unable to convert shield value '%2%' to a number: %3%") % __FUNCTION__ % shield_string_value % ex.what()));
-                    shield_sections[shield_keys[i]] = 0.0F;
-                    shield_values.emplace_back(0.0F);
-                } catch (std::out_of_range const& ex) {
-                    VS_LOG(error, (boost::format("%1%: Unable to convert shield value '%2%' to a number: %3%") % __FUNCTION__ % shield_string_value % ex.what()));
-                    shield_sections[shield_keys[i]] = 0.0F;
-                    shield_values.emplace_back(0.0F);
-                }
-            }
-        }
-
-        if (shield->number_of_facets == 4 || shield->number_of_facets == 2) {
-            shield->UpdateFacets(shield->number_of_facets, shield_values.data());
-        }
-    } else {
-        // Fallback to old shield_keys
-        int shield_count = 0;
-        std::vector<std::string> tmp_keys{"Shield_Front_Top_Right", "Shield_Back_Top_Left", "Shield_Front_Bottom_Right", "Shield_Front_Bottom_Left"};
-        std::vector<float> shield_values{};
-
-        try {
-            for (auto &key : tmp_keys) {
-                std::string tmp_string_value = UnitCSVFactory::GetVariable(unit_key, key, std::string());
-                float tmp_float_value = std::stof(tmp_string_value);
-                shield_sections[key] = tmp_float_value;
-                shield_values.emplace_back(tmp_float_value);
-                shield_string_values.emplace_back(tmp_string_value);
-                ++shield_count;
-            }
-        } catch (std::exception const& ex) {
-            shield_count = 0;
-            shield_string_values.clear();
-            shield_values.clear();
-            shield_sections.clear();
-            tmp_keys.clear();
-            tmp_keys.emplace_back("shield_front");
-            tmp_keys.emplace_back("shield_back");
-            tmp_keys.emplace_back("shield_left");
-            tmp_keys.emplace_back("shield_right");
-            try {
-                for (auto &key : tmp_keys) {
-                    std::string tmp_string_value = UnitCSVFactory::GetVariable(unit_key, key, std::string());
-                    float tmp_float_value = std::stof(tmp_string_value);
-                    shield_sections[key] = tmp_float_value;
-                    shield_values.emplace_back(tmp_float_value);
-                    shield_string_values.emplace_back(tmp_string_value);
-                    ++shield_count;
-                }
-            } catch (std::exception const& ex) {
-                VS_LOG(error, (boost::format("%1%: %2% trying to parse shield facets") % __FUNCTION__ % ex.what()));
-            }
-        }
-
-        if (shield_count == 4 || shield_count == 2) {
-            shield->number_of_facets = shield_count;
-            shield->UpdateFacets(shield_count, shield_values.data());
-        }
-    }
 
     // Energy 
     // TODO: The following code has a bug.
@@ -950,81 +741,17 @@ void Unit::LoadRow(std::string unit_identifier, string modification, bool saved_
     // End Drive Section
 
     computer.itts = UnitCSVFactory::GetVariable(unit_key, "ITTS", true);
-    computer.radar.canlock = UnitCSVFactory::GetVariable(unit_key, "Can_Lock", true);
 
-
-    // The Radar_Color column in the units.csv has been changed from a
-    // boolean value to a string. The boolean values are supported for
-    // backwardscompatibility.
-    // When we save this setting, it is simply converted from an integer
-    // number to a string, and we need to support this as well.
-    std::string iffval = UnitCSVFactory::GetVariable(unit_key, "Radar_Color", std::string());
-
-    if ((iffval.empty()) || (iffval == "FALSE") || (iffval == "0")) {
-        computer.radar.capability = Computer::RADARLIM::Capability::IFF_NONE;
-    } else if ((iffval == "TRUE") || (iffval == "1")) {
-        computer.radar.capability = Computer::RADARLIM::Capability::IFF_SPHERE
-                | Computer::RADARLIM::Capability::IFF_FRIEND_FOE;
-    } else if (iffval == "THREAT") {
-        computer.radar.capability = Computer::RADARLIM::Capability::IFF_SPHERE
-                | Computer::RADARLIM::Capability::IFF_FRIEND_FOE
-                | Computer::RADARLIM::Capability::IFF_THREAT_ASSESSMENT;
-    } else if (iffval == "BUBBLE_THREAT") {
-        computer.radar.capability = Computer::RADARLIM::Capability::IFF_BUBBLE
-                | Computer::RADARLIM::Capability::IFF_FRIEND_FOE
-                | Computer::RADARLIM::Capability::IFF_OBJECT_RECOGNITION
-                | Computer::RADARLIM::Capability::IFF_THREAT_ASSESSMENT;
-    } else if (iffval == "PLANE") {
-        computer.radar.capability = Computer::RADARLIM::Capability::IFF_PLANE
-                | Computer::RADARLIM::Capability::IFF_FRIEND_FOE;
-    } else if (iffval == "PLANE_THREAT") {
-        computer.radar.capability
-                = Computer::RADARLIM::Capability::IFF_PLANE
-                | Computer::RADARLIM::Capability::IFF_FRIEND_FOE
-                | Computer::RADARLIM::Capability::IFF_OBJECT_RECOGNITION
-                | Computer::RADARLIM::Capability::IFF_THREAT_ASSESSMENT;
-    } else {
-        unsigned int value = stoi(iffval, 0);
-        if (value == 0) {
-            // Unknown value
-            computer.radar.capability = Computer::RADARLIM::Capability::IFF_NONE;
-        } else {
-            computer.radar.capability = value;
-        }
-    }
-
-    computer.radar.maxrange = UnitCSVFactory::GetVariable(unit_key, "Radar_Range", FLT_MAX);
-    computer.radar.maxcone = cos(UnitCSVFactory::GetVariable(unit_key, "Max_Cone", 180.0f) * M_PI / 180);
-    computer.radar.trackingcone = cos(UnitCSVFactory::GetVariable(unit_key, "Tracking_Cone", 180.0f) * M_PI / 180);
-    computer.radar.lockcone = cos(UnitCSVFactory::GetVariable(unit_key, "Lock_Cone", 180.0f) * M_PI / 180);
+    radar.Load(unit_key);
 
     const static bool warp_energy_for_cloak = configuration()->warp_config.use_warp_energy_for_cloak;
     cloak.SetSource((warp_energy_for_cloak ? &ftl_energy : &energy));
     cloak.Load(unit_key);
 
-    repair_droid = UnitCSVFactory::GetVariable(unit_key, "Repair_Droid", 0);
-    ecm = UnitCSVFactory::GetVariable(unit_key, "ECM_Rating", 0);
-
-    this->HeatSink = UnitCSVFactory::GetVariable(unit_key, "Heat_Sink_Rating", 0.0f);
-    if (ecm < 0) {
-        ecm *= -1;
-    }
-    if (pImage->cockpit_damage) {
-        std::string hud_functionality = UnitCSVFactory::GetVariable(unit_key, "Hud_Functionality", std::string());
-        std::string
-                max_hud_functionality = UnitCSVFactory::GetVariable(unit_key, "Max_Hud_Functionality", std::string());
-
-        HudDamage(pImage->cockpit_damage, hud_functionality);
-        HudDamage(pImage->cockpit_damage + 1 + MAXVDUS + UnitImages<void>::NUMGAUGES, max_hud_functionality);
-    }
-    LifeSupportFunctionality = UnitCSVFactory::GetVariable(unit_key, "Lifesupport_Functionality", 1.0f);
-    LifeSupportFunctionalityMax = UnitCSVFactory::GetVariable(unit_key, "Max_Lifesupport_Functionality", 1.0f);
-    CommFunctionality = UnitCSVFactory::GetVariable(unit_key, "Comm_Functionality", 1.0f);
-    CommFunctionalityMax = UnitCSVFactory::GetVariable(unit_key, "Max_Comm_Functionality", 1.0f);
-    fireControlFunctionality = UnitCSVFactory::GetVariable(unit_key, "FireControl_Functionality", 1.0f);
-    fireControlFunctionalityMax = UnitCSVFactory::GetVariable(unit_key, "Max_FireControl_Functionality", 1.0f);
-    SPECDriveFunctionality = UnitCSVFactory::GetVariable(unit_key, "SPECDrive_Functionality", 1.0f);
-    SPECDriveFunctionalityMax = UnitCSVFactory::GetVariable(unit_key, "Max_SPECDrive_Functionality", 1.0f);
+    ecm.Load(unit_key);
+    repair_bot.Load(unit_key);
+    ship_functions.Load(unit_key);
+    
     computer.slide_start = UnitCSVFactory::GetVariable(unit_key, "Slide_Start", 0);
     computer.slide_end = UnitCSVFactory::GetVariable(unit_key, "Slide_End", 0);
 
@@ -1138,6 +865,19 @@ void Unit::LoadRow(std::string unit_identifier, string modification, bool saved_
 
     // From drawable
     this->num_chunks = UnitCSVFactory::GetVariable(unit_key, "Num_Chunks", 0);
+
+    // Add integral components
+    // Make this a factor of unit price
+    if(!saved_game) {
+        const std::string integral_components = 
+        "{hull;upgrades/integral;12000;1;0.1;0.1;1;1;@cargo/hull_patches.image@The ship's hull.;0;1}\
+        {afterburner;upgrades/integral;2000;1;0.1;0.1;1;1;@upgrades/afterburner_generic.image@Engine overdrive. Increases thrust at the expense of decreased fuel efficiency.;0;1}\
+        {drive;upgrades/integral;6000;1;0.1;0.1;1;1;@upgrades/afterburner_generic.image@The ship's engine.;0;1}\
+        {ftl_drive;upgrades/integral;4500;1;0.1;0.1;1;1;@upgrades/jump_drive.image@The ship's faster than light engine.;0;1}";
+    
+        AddCarg(this, integral_components);
+    }
+    
 }
 
 void Unit::WriteUnit(const char *modifications) {
@@ -1199,17 +939,25 @@ const std::map<std::string, std::string> Unit::UnitToMap() {
     string val;
 
     // Textual Descriptions
-    unit["Key"] = unit_key;            
+    unit["Key"] = unit_key;
     unit["Name"] = unit_name;
     unit["Textual_Description"] = unit_description; // Used in ship view
 
+    // Take some immutable stats directly from the original unit
+    const std::string immutable_stats[] = {"Directory", "STATUS", "Combat_Role", "Hud_image",
+                                           "Unit_Scale", "CockpitZ", "Mesh", "Prohibited_Upgrades",
+                                           "Light"};
+
+    for(const auto& stat : immutable_stats) {
+        unit[stat] = UnitCSVFactory::GetVariable(unit_key, stat, std::string());
+    }
+
     //mutable things
-    unit["Equipment_Space"] = XMLSupport::tostring(equipment_volume);
     unit["Hold_Volume"] = XMLSupport::tostring(CargoVolume);
     unit["Hidden_Hold_Volume"] = XMLSupport::tostring(HiddenCargoVolume);
     unit["Upgrade_Storage_Volume"] = XMLSupport::tostring(UpgradeVolume);
     string mountstr;
-    double unitScale = stof(unit["Unit_Scale"], 1);
+    double unitScale = UnitCSVFactory::GetVariable(unit_key, "Unit_Scale", 1.0f);
     {
         //mounts
         for (unsigned int j = 0; j < mounts.size(); ++j) {
@@ -1308,31 +1056,10 @@ const std::map<std::string, std::string> Unit::UnitToMap() {
         unit["Cargo"] = carg;
     }
     unit["Mass"] = tos(Mass);
-    unit["Hull"] = tos(GetHullLayer().facets[0].health);
-    unit["Spec_Interdiction"] = tos(specInterdiction);
 
-    // TODO: lib_damage figure out if this is correctly assigned
-    unit["armor_front"] = tos(GetArmorLayer().facets[0].health);
-    unit["armor_back"] = tos(GetArmorLayer().facets[1].health);
-    unit["armor_left"] = tos(GetArmorLayer().facets[2].health);
-    unit["armor_right"] = tos(GetArmorLayer().facets[3].health);
-    
-    unit["shield_facets"] = std::to_string(shield->number_of_facets);
-    switch (shield->number_of_facets) {
-        case 4:
-            unit["shield_left"] = tos(GetShieldLayer().facets[2].max_health);
-            unit["shield_right"] = tos(GetShieldLayer().facets[3].max_health);
-            // Fallthrough     
-        case 2:
-            unit["shield_front"] = tos(GetShieldLayer().facets[0].max_health);
-            unit["shield_back"] = tos(GetShieldLayer().facets[1].max_health);
-    }
-
-
-    //TODO: lib_damage shield leak and efficiency
-    unit["Shield_Leak"] = tos(0); //tos( shield.leak/100.0 );
-    unit["Shield_Efficiency"] = tos(1); //tos( shield.efficiency );
-    unit["Shield_Recharge"] = tos(shield->GetRegeneration()); //tos( shield.recharge );
+    hull.SaveToCSV(unit);
+    armor.SaveToCSV(unit);
+    shield.SaveToCSV(unit);  
     
     unit["Warp_Min_Multiplier"] = tos(graphicOptions.MinWarpMultiplier);
     unit["Warp_Max_Multiplier"] = tos(graphicOptions.MaxWarpMultiplier);
@@ -1348,34 +1075,18 @@ const std::map<std::string, std::string> Unit::UnitToMap() {
     jump_drive.SaveToCSV(unit);
     ftl_drive.SaveToCSV(unit);
 
+    radar.SaveToCSV(unit);
+    cloak.SaveToCSV(unit);
 
     unit["Wormhole"] = tos(forcejump != 0);
     
     
     unit["ITTS"] = tos(computer.itts);
-    unit["Can_Lock"] = tos(computer.radar.canlock);
-    unit["Radar_Color"] = std::to_string(computer.radar.capability);
-    unit["Radar_Range"] = tos(computer.radar.maxrange);
-    unit["Tracking_Cone"] = tos(acos(computer.radar.trackingcone) * 180. / M_PI);
-    unit["Max_Cone"] = tos(acos(computer.radar.maxcone) * 180. / M_PI);
-    unit["Lock_Cone"] = tos(acos(computer.radar.lockcone) * 180. / M_PI);
 
-    cloak.SaveToCSV(unit);
-    unit["Repair_Droid"] = tos(repair_droid);
-    unit["ECM_Rating"] = tos(ecm > 0 ? ecm : -ecm);
-    unit["Hud_Functionality"] = WriteHudDamage(this);
-    unit["Max_Hud_Functionality"] = WriteHudDamageFunc(this);
-    unit["Heat_Sink_Rating"] = tos(this->HeatSink);
-    unit["Lifesupport_Functionality"] = tos(LifeSupportFunctionality);
-    unit["Max_Lifesupport_Functionality"] = tos(LifeSupportFunctionalityMax);
-    unit["Comm_Functionality"] = tos(CommFunctionality);
-    unit["Max_Comm_Functionality"] = tos(CommFunctionalityMax);
-    unit["Comm_Functionality"] = tos(CommFunctionality);
-    unit["Max_Comm_Functionality"] = tos(CommFunctionalityMax);
-    unit["FireControl_Functionality"] = tos(fireControlFunctionality);
-    unit["Max_FireControl_Functionality"] = tos(fireControlFunctionalityMax);
-    unit["SPECDrive_Functionality"] = tos(SPECDriveFunctionality);
-    unit["Max_SPECDrive_Functionality"] = tos(SPECDriveFunctionalityMax);
+    ecm.SaveToCSV(unit);
+    repair_bot.SaveToCSV(unit);
+    ship_functions.SaveToCSV(unit);
+    
     unit["Slide_Start"] = tos(computer.slide_start);
     unit["Slide_End"] = tos(computer.slide_end);
     unit["Cargo_Import"] = unit["Upgrades"] = "";                 //make sure those are empty

@@ -58,6 +58,7 @@
 #include "mount_size.h"
 #include "weapon_info.h"
 #include "vs_logging.h"
+#include "unit_util.h"
 
 extern bool toggle_pause();
 
@@ -1194,7 +1195,7 @@ bool ChooseTargets(Unit *me, bool (*typeofunit)(Unit *, Unit *), bool reverse) {
     int cur = 0;
     while (1) {
         while (veciter != vec.end()) {
-            if (((*veciter) != me) && ((*veciter)->GetHull() >= 0) && typeofunit(me, (*veciter))) {
+            if (((*veciter) != me) && ((*veciter)->hull.Get() >= 0) && typeofunit(me, (*veciter))) {
                 me->Target(*veciter);
 
                 if ((*veciter) != NULL) {
@@ -1541,7 +1542,7 @@ void FireKeyboard::ProcessCommMessage(class CommunicationMessage &c) {
     }          //wait till later
 
     bool reallydospeech = false;
-    if (un && un->GetHull() > 0) {
+    if (un && !un->Destroyed()) {
         reallydospeech = true;
         for (list<CommunicationMessage>::iterator i = resp.begin(); i != resp.end(); i++) {
             if ((*i).sender.GetUnit() == un) {
@@ -1715,7 +1716,7 @@ void FireKeyboard::Execute() {
     if (targ) {
         double mm = 0.0;
         ShouldFire(targ);
-        if (targ->GetHull() < 0) {
+        if (targ->Destroyed()) {
             parent->Target(NULL);
             ForceChangeTarget(parent);
             refresh_target = true;
@@ -1732,7 +1733,7 @@ void FireKeyboard::Execute() {
 
     float f_result = f().shieldpowerstate;
     if (f_result != 1) {
-        parent->shield->AdjustPower(f_result);
+        parent->shield.AdjustPower(f_result);
     }
     if (f().firekey == PRESS || f().jfirekey == PRESS || j().firekey == DOWN || j().jfirekey == DOWN) {
         if (!_Universe->AccessCockpit()->CanDrawNavSystem()) {
@@ -1783,11 +1784,11 @@ void FireKeyboard::Execute() {
     }
     if (f().lockkey == PRESS) {
         f().lockkey = DOWN;
-        parent->LockTarget(!parent->TargetLocked());
+        parent->radar.ToggleLock();
     }
     if (f().ECMkey == PRESS) {
         f().ECMkey = DOWN;
-        parent->GetComputerData().ecmactive = !parent->GetComputerData().ecmactive;
+        parent->ecm.Toggle();;
     }
     if (f().targetkey == PRESS || j().jtargetkey == PRESS) {
         f().targetkey = DOWN;
@@ -1814,7 +1815,7 @@ void FireKeyboard::Execute() {
         f().targetskey = DOWN;
         ChooseTargets(parent, TargSig, false);
         refresh_target = true;
-        parent->LockTarget(true);
+        parent->radar.Lock(UnitUtil::isSignificant(parent));
     }
     if (f().targetukey == PRESS) {
         f().targetukey = DOWN;
@@ -1895,7 +1896,7 @@ void FireKeyboard::Execute() {
         f().rtargetskey = DOWN;
         ChooseTargets(parent, TargSig, true);
         refresh_target = true;
-        parent->LockTarget(true);
+        parent->radar.Lock(UnitUtil::isSignificant(parent));
     }
     if (f().rtargetukey == PRESS) {
         f().rtargetukey = DOWN;
@@ -2033,7 +2034,7 @@ void FireKeyboard::Execute() {
     }
     if (f().toggleautotracking == PRESS) {
         f().toggleautotracking = DOWN;
-        parent->GetComputerData().radar.trackingactive = !parent->GetComputerData().radar.trackingactive;
+        parent->radar.ToggleTracking();
     }
     if (f().misk == PRESS || f().rmisk == PRESS) {
         bool forward;
@@ -2059,7 +2060,7 @@ void FireKeyboard::Execute() {
             f().saveTargetKeys[i] = RELEASE;
             savedTargets[i] = parent->Target();
         }
-        if (f().restoreTargetKeys[i] == PRESS && parent->GetComputerData().radar.canlock) {
+        if (f().restoreTargetKeys[i] == PRESS && parent->radar.CanLock()) {
             f().restoreTargetKeys[i] = RELEASE;
             Unit *un;
             for (un_iter u = _Universe->activeStarSystem()->getUnitList().createIterator();
