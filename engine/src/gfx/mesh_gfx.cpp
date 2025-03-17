@@ -403,14 +403,16 @@ AnimatedTexture *createAnimatedTexture(char const *c, int i, enum FILTER f) {
 
 
 Mesh::~Mesh() {
-    if (!orig || orig == this) {
-        for (auto & undrawn_mesh : undrawn_meshes) {
-            const auto first_to_remove1 = std::stable_partition(undrawn_mesh.begin(), undrawn_mesh.end(),
-                [this](const OrigMeshContainer & pi) { return pi.orig != this; });
-            const intmax_t num_meshes_removed = undrawn_mesh.end() - first_to_remove1;
-            undrawn_mesh.erase(first_to_remove1, undrawn_mesh.end());
-            if (num_meshes_removed > 0) {
-                VS_LOG(debug, (boost::format("Found and removed %1% stale meshes in draw queue") % num_meshes_removed));
+    if (!orig || orig.get() == this) {
+        for (auto & undrawn_mesh_vec : undrawn_meshes) {
+            if (!undrawn_mesh_vec.empty()) {
+                const auto first_to_remove1 = std::stable_partition(undrawn_mesh_vec.begin(), undrawn_mesh_vec.end(),
+                    [this](const OrigMeshContainer & pi) { return pi.orig.get() != this; });
+                const intmax_t num_meshes_removed = undrawn_mesh_vec.end() - first_to_remove1;
+                undrawn_mesh_vec.erase(first_to_remove1, undrawn_mesh_vec.end());
+                if (num_meshes_removed > 0) {
+                    VS_LOG(debug, (boost::format("Found and removed %1% stale meshes in draw queue") % num_meshes_removed));
+                }
             }
         }
         if (vlist != nullptr) {
@@ -424,21 +426,15 @@ Mesh::~Mesh() {
             }
         }
         Decal.clear();
-        if (squadlogos != nullptr) {
-            delete squadlogos;
-            squadlogos = nullptr;
-        }
-        if (forcelogos != nullptr) {
-            delete forcelogos;
-            forcelogos = nullptr;
-        }
-        if (meshHashTable.Get(hash_name) == this) {
+        squadlogos.clear();
+        forcelogos.clear();
+        if (meshHashTable.Get(hash_name).get() == this) {
             meshHashTable.Delete(hash_name);
         }
-        std::deque<std::shared_ptr<Mesh>> *hashers = vega_gfx::bfxmHashtable::instance().Get(hash_name);
+        std::shared_ptr<std::deque<std::shared_ptr<Mesh>>> hashers = vega_gfx::bfxmHashtable::instance().Get(hash_name);
         if (hashers && !hashers->empty()) {
             const auto first_to_remove = std::stable_partition(hashers->begin(), hashers->end(),
-                [this](const std::shared_ptr<Mesh>  pi) { return pi != this; });
+                [this](const std::shared_ptr<Mesh> & pi) { return pi.get() != this; });
             const intmax_t num_meshes_removed = hashers->end() - first_to_remove;
             hashers->erase(first_to_remove, hashers->end());
             if (num_meshes_removed > 0) {
@@ -454,13 +450,6 @@ Mesh::~Mesh() {
         if (draw_queue != nullptr) {
             delete[] draw_queue;
             draw_queue = nullptr;
-        }
-    } else {
-        orig->refcount--;
-        VS_LOG(debug, (boost::format("orig refcount: %1%") % refcount));
-        if (orig->refcount == 0) {
-            delete[] orig;
-            orig = nullptr;
         }
     }
 }
