@@ -24,7 +24,7 @@
  */
 
 
-#include "mesh.h"
+#include "gfx_generic/mesh.h"
 
 #ifdef __cplusplus
 extern "C"

@@ -25,6 +25,7 @@
 
 #define PY_SSIZE_T_CLEAN
 #include <boost/python.hpp>
+
 #include <Python.h>
 #include <boost/program_options.hpp>
 #include "audio/test.h"
@@ -39,30 +40,30 @@
 #include <direct.h>
 #include <process.h>
 #endif
-#include "gfxlib.h"
-#include "in_kb.h"
-#include "lin_time.h"
-#include "main_loop.h"
-#include "config_xml.h"
+#include "src/gfxlib.h"
+#include "src/in_kb.h"
+#include "root_generic/lin_time.h"
+#include "src/main_loop.h"
+#include "src/config_xml.h"
 #include "cmd/script/mission.h"
-#include "audiolib.h"
-#include "config_xml.h"
-#include "vsfilesystem.h"
-#include "vs_globals.h"
+#include "src/audiolib.h"
+#include "src/config_xml.h"
+#include "root_generic/vsfilesystem.h"
+#include "root_generic/vs_globals.h"
 #include "gfx/animation.h"
 #include "gfx/cockpit.h"
-#include "python/init.h"
-#include "savegame.h"
-#include "force_feedback.h"
+#include "src/python/init.h"
+#include "root_generic/savegame.h"
+#include "src/force_feedback.h"
 #include "gfx/hud.h"
 #include "gldrv/winsys.h"
-#include "universe_util.h"
-#include "universe.h"
-#include "save_util.h"
+#include "src/universe_util.h"
+#include "src/universe.h"
+#include "src/save_util.h"
 #include "gfx/masks.h"
 #include "cmd/music.h"
-#include "ship_commands.h"
-#include "gamemenu.h"
+#include "src/ship_commands.h"
+#include "src/gamemenu.h"
 #include "audio/SceneManager.h"
 #include "audio/renderers/OpenAL/BorrowedOpenALRenderer.h"
 #include "configuration/configuration.h"
@@ -76,13 +77,13 @@
 #endif
 
 #if defined (CG_SUPPORT)
-#include "cg_global.h"
+#include "src/cg_global.h"
 #endif
 
-#include "vs_logging.h"
-#include "options.h"
+#include "src/vs_logging.h"
+#include "root_generic/options.h"
 #include "version.h"
-#include "vs_exit.h"
+#include "src/vs_exit.h"
 
 /*
  * Globals
@@ -268,8 +269,6 @@ int main(int argc, char *argv[]) {
         boost::filesystem::current_path(program_directory_path);
     }
 
-//    VegaStrikeLogging::VegaStrikeLogger::InitLoggingPart1();
-
     CONFIGFILE = nullptr;
     {
         char pwd[8192] = "";
@@ -304,26 +303,22 @@ int main(int argc, char *argv[]) {
     // Usually loaded from config.json
     std::string mission_name;
 
-    //this sets up the vegastrike config variable
-    setup_game_data();
-    //loads the configuration file .vegastrike/vegastrike.config from home dir if such exists
+    setup_game_data();  // TODO: Combine with vega_config::config settings object
     {
         std::pair<std::string, std::string> pair = ParseCommandLine(argc, argv);
         std::string subdir = pair.first;
         mission_name = pair.second;
 
         VS_LOG(info, (boost::format("GOT SUBDIR ARG = %1%") % subdir));
-        if (CONFIGFILE == 0) {
+        if (CONFIGFILE == nullptr) {
             CONFIGFILE = new char[42];
-            sprintf(CONFIGFILE, "vegastrike.config");
+            snprintf(CONFIGFILE, 41, "vegastrike.config");
+            CONFIGFILE[41] = '\0';
         }
         //Specify the config file and the possible mod subdir to play
         VSFileSystem::InitPaths(CONFIGFILE, subdir);
         // home_subdir_path = boost::filesystem::canonical(boost::filesystem::path(subdir));
     }
-
-    // now that the user config file has been loaded from disk, update the global configuration struct values
-    configuration()->OverrideDefaultsWithUserConfiguration();
 
     // If no debug argument is supplied, set to what the config file has.
     if (g_game.vsdebug == '0') {
@@ -364,11 +359,9 @@ int main(int argc, char *argv[]) {
     // Initialise the master parts list before first use.
     Manifest::MPL();
 
-#ifdef HAVE_PYTHON
     Python::init();
 
     Python::test();
-#endif
 
     std::vector<std::vector<char> > temp = ROLES::getAllRolePriorities();
 
@@ -554,9 +547,10 @@ void bootstrap_first_loop() {
 }
 
 void SetStartupView(Cockpit *cp) {
-    cp->SetView(game_options()->startup_cockpit_view
-            == "view_target" ? CP_TARGET : (game_options()->startup_cockpit_view
-            == "back" ? CP_BACK : (game_options()->startup_cockpit_view
+    VS_LOG(debug, (boost::format("%1%: Setting cockpit startup view to: %2%") % __FUNCTION__ % configuration()->graphics.startup_cockpit_view));
+    cp->SetView(configuration()->graphics.startup_cockpit_view
+            == "view_target" ? CP_TARGET : (configuration()->graphics.startup_cockpit_view
+            == "back" ? CP_BACK : (configuration()->graphics.startup_cockpit_view
             == "chase" ? CP_CHASE
             : CP_FRONT)));
 }

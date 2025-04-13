@@ -23,9 +23,9 @@
 #include "gl_globals.h"
 #undef GL_STATE_CPP
 
-#include "gfxlib.h"
-#include "vegastrike.h"
-#include "vs_globals.h"
+#include "src/gfxlib.h"
+#include "src/vegastrike.h"
+#include "root_generic/vs_globals.h"
 #include <stack>
 
 #ifndef GL_CONSTANT_ALPHA
@@ -616,14 +616,12 @@ void GFXStencilMask(unsigned int mask) {
 }
 
 void GFXActiveTexture(const int stage) {
-#if !defined (IRIX)
     if (gl_options.Multitexture && stage != activeTextureStage && glActiveTextureARB_p) {
         glActiveTextureARB_p(GL_TEXTURE0_ARB + stage);
         activeTextureStage = stage;
     } else {
         activeTextureStage = stage;         //This ensures consistent behavior - they shouldn't even call us
     }
-#endif
 }
 
 void GFXAlphaTest(const enum DEPTHFUNC df, const float ref) {

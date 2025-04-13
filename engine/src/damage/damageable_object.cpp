@@ -23,18 +23,18 @@
  */
 
 
-#include "damageable_object.h"
-#include "core_vector.h"
+#include "damage/damageable_object.h"
+#include "damage/core_vector.h"
 #include <boost/range/adaptor/reversed.hpp>
 #include <iostream>
 
 
 DamageableObject::DamageableObject():
-    number_of_layers(0) {}
+    number_of_layers(0), invulnerable(false) {}
 
 
 DamageableObject::DamageableObject(std::vector<DamageableLayer*> layers):
-    number_of_layers(3), layers(layers) {}
+    number_of_layers(3), layers(layers), invulnerable(false) {}
 
 
 void DamageableObject::AddLayer(DamageableLayer* layer) {
@@ -44,6 +44,10 @@ void DamageableObject::AddLayer(DamageableLayer* layer) {
 
 InflictedDamage DamageableObject::DealDamage(const CoreVector &attack_vector, Damage &damage) {
     InflictedDamage inflicted_damage(3); // Currently hard-coded default is 3!
+
+    if(invulnerable) {
+        return inflicted_damage;
+    }
 
     // Higher index layers are outer layers. We therefore need to reverse the order.
     for (DamageableLayer* layer : boost::adaptors::reverse(layers)) {
@@ -82,4 +86,8 @@ bool DamageableObject::Destroyed() {
     }
 
     return layers[0]->facets[0] == 0;
+}
+
+void DamageableObject::SetInvulnerable(bool invulnerable) {
+    this->invulnerable = invulnerable;
 }

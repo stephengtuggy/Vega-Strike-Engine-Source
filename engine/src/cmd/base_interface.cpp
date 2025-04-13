@@ -25,40 +25,41 @@
 
 #define PY_SSIZE_T_CLEAN
 #include <boost/python.hpp>
+
 #include <Python.h>
 #include <algorithm>
-#include <vega_py_run.h>
-#include "base.h"
+#include "cmd/vega_py_run.h"
+#include "cmd/base.h"
 #include "gldrv/winsys.h"
-#include "vsfilesystem.h"
-#include "vs_logging.h"
-#include "lin_time.h"
-#include "audiolib.h"
+#include "root_generic/vsfilesystem.h"
+#include "src/vs_logging.h"
+#include "root_generic/lin_time.h"
+#include "src/audiolib.h"
 #include "gfx/camera.h"
-#include "gfx/cockpit_generic.h"
-#include "python/init.h"
-#include "python/python_compile.h"
-#include "planet.h"
-#include "base_util.h"
-#include "config_xml.h"
-#include "save_util.h"
-#include "unit_util.h"
+#include "gfx_generic/cockpit_generic.h"
+#include "src/python/init.h"
+#include "src/python/python_compile.h"
+#include "cmd/planet.h"
+#include "cmd/base_util.h"
+#include "src/config_xml.h"
+#include "src/save_util.h"
+#include "cmd/unit_util.h"
 #include "gfx/cockpit.h"
 #include "gfx/ani_texture.h"
-#include "music.h"
-#include "lin_time.h"
-#include "load_mission.h"
-#include "universe_util.h"
+#include "cmd/music.h"
+#include "root_generic/lin_time.h"
+#include "root_generic/load_mission.h"
+#include "src/universe_util.h"
 #include "gui/guidefs.h"
 #ifdef RENDER_FROM_TEXTURE
 #include "gfx/stream_texture.h"
 #endif
-#include "main_loop.h"
-#include "in_mouse.h"
-#include "in_kb.h"
-#include "universe.h"
+#include "src/main_loop.h"
+#include "src/in_mouse.h"
+#include "src/in_kb.h"
+#include "src/universe.h"
 
-#include "ai/communication.h"
+#include "cmd/ai/communication.h"
 #include "audio/SceneManager.h"
 
 static unsigned int &getMouseButtonMask() {
@@ -121,7 +122,7 @@ bool BaseInterface::Room::BaseTalk::hastalked = false;
 #define NEW_GUI
 
 #ifdef NEW_GUI
-#include "basecomputer.h"
+#include "cmd/basecomputer.h"
 #include "../gui/eventmanager.h"
 #endif
 
@@ -1282,7 +1283,7 @@ void BaseInterface::Terminate() {
     }
 }
 
-extern void abletodock(int dock);
+extern void PlayDockingSound(int dock);
 
 void BaseInterface::Room::Launch::Click(BaseInterface *base, float x, float y, int button, int state) {
     if (state == WS_MOUSE_UP) {
@@ -1306,7 +1307,7 @@ void BaseInterface::Room::Launch::Click(BaseInterface *base, float x, float y, i
             if (playa->getAIState()) {
                 playa->getAIState()->Communicate(c);
             }
-            abletodock(5);
+            PlayDockingSound(5);
             if (playa->name == "return_to_cockpit") {
                 if (playa->faction == bas->faction) {
                     playa->owner = bas;
@@ -1358,7 +1359,7 @@ void BaseInterface::Room::Eject::Click(BaseInterface *base, float x, float y, in
             if (playa->getAIState()) {
                 playa->getAIState()->Communicate(c);
             }
-            abletodock(5);
+            PlayDockingSound(5);
             playa->EjectCargo((unsigned int) -1);
             if ((playa->name == "return_to_cockpit") || (playa->name == "ejecting") || (playa->name == "eject")
                     || (playa->name == "Eject") || (playa->name == "Pilot") || (playa->name == "pilot")) {

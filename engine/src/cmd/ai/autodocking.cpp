@@ -36,8 +36,8 @@
 #include "autodocking.h"
 
 #include "flykeyboard.h"
-#include "in.h"
-#include "in_kb_data.h"
+#include "src/in.h"
+#include "src/in_kb_data.h"
 
 namespace {
 
@@ -212,7 +212,7 @@ void AutoDocking::ApproachState(Unit *player, Unit *station) {
     if (station->DockingPortLocations()[dockingPath.back()].IsOccupied()) {
         // Another ship has docked at our port. Find a new port.
         state = &AutoDocking::SelectionState;
-    } else if (station->CanDockWithMe(player) == dockingPath.back()) {
+    } else if (CanDock(station, player) == dockingPath.back()) {
         state = &AutoDocking::DockingState;
     } else {
         // FIXME: Request clearance X times with fixed interval to keep capital ship immobile

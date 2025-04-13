@@ -25,16 +25,16 @@
 /*
  *  Joystick support written by Alexander Rawass <alexannika@users.sourceforge.net>
  */
-#include "in_kb_data.h"
+#include "src/in_kb_data.h"
 
 #if defined (HAVE_SDL)
 #include <SDL2/SDL.h>
 #endif //defined (HAVE_SDL)
 
-#include "vegastrike.h"
+#include "src/vegastrike.h"
 //#include "glob.h"
 //#include "dbg.h"
-#include "in_kb.h"
+#include "src/in_kb.h"
 #define NUMJBUTTONS 32
 
 class JoyStick;
@@ -91,11 +91,7 @@ public:
     int axis_axis[MAX_AXES];
     float joy_axis[MAX_AXES];
     JoyStick();
-#if defined (IRIX)        //could be POSIX type uchar_t?
-    uchar_t digital_hat[MAX_DIGITAL_HATSWITCHES];
-#else //defined (IRIX)
     unsigned char digital_hat[MAX_DIGITAL_HATSWITCHES];
-#endif //defined (IRIX)
 
     bool debug_digital_hatswitch;
 

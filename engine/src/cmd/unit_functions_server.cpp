@@ -26,7 +26,7 @@
 
 
 #include <string>
-#include "unit_generic.h"
+#include "cmd/unit_generic.h"
 
 VSSprite *createVSSprite(const char *file) {
     return NULL;
@@ -39,7 +39,7 @@ bool isVSSpriteLoaded(const VSSprite *file) {
 void deleteVSSprite(VSSprite *file) {
 }
 
-void abletodock(int) {
+void PlayDockingSound(int) {
 }
 
 void cache_ani(std::string s) {
