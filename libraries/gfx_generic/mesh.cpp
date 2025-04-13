@@ -99,7 +99,7 @@ void Mesh::InitUnit() {
     myMatNum = 0;     //default material!
     //scale = Vector(1.0,1.0,1.0);
     refcount = 1;     //FIXME VEGASTRIKE  THIS _WAS_ zero...NOW ONE
-    orig = NULL;
+    originals = NULL;
 
     envMapAndLit = 0x3;
     setEnvMap(GFXTRUE);
@@ -119,7 +119,7 @@ Mesh::Mesh() {
 bool Mesh::LoadExistant(std::shared_ptr<Mesh> oldmesh) {
     *this = *oldmesh;
     oldmesh->refcount++;
-    orig = oldmesh;
+    originals = oldmesh;
     return true;
 }
 
@@ -141,15 +141,15 @@ bool Mesh::LoadExistant(const string filehash, const Vector &scale, int faction)
 
 Mesh::Mesh(const Mesh &m) {
     VS_LOG(warning, "UNTESTED MESH COPY CONSTRUCTOR");
-    this->orig = nullptr;
+    this->originals = nullptr;
     this->hash_name = m.hash_name;
     InitUnit();
     std::shared_ptr<Mesh> oldmesh = meshHashTable.Get(hash_name);
     if (nullptr == oldmesh) {
         std::deque<std::shared_ptr<Mesh>> *meshes = vega_gfx::bfxmHashtable::instance().Get(hash_name);
         for (unsigned int i = 0; i < meshes->size(); ++i) {
-            std::shared_ptr<Mesh> mush = (*meshes)[i]->orig ? (*meshes)[i]->orig : (*meshes)[i];
-            if (mush == m.orig || mush == &m) {
+            std::shared_ptr<Mesh> mush = (*meshes)[i]->originals ? (*meshes)[i]->originals : (*meshes)[i];
+            if (mush == m.originals || mush == &m) {
                 oldmesh = (*meshes)[i];
             }
         }
@@ -163,15 +163,15 @@ Mesh::Mesh(const Mesh &m) {
             }
         }
     }
-    if (LoadExistant(oldmesh->orig != NULL ? oldmesh->orig : oldmesh)) {
+    if (LoadExistant(oldmesh->originals != NULL ? oldmesh->originals : oldmesh)) {
         return;
     }
 }
 
 void Mesh::setConvex(bool b) {
     this->convex = b;
-    if (orig && orig.get() != this) {
-        orig->setConvex(b);
+    if (!originals.empty() && originals.front().get() != this) {
+        originals.front()->setConvex(b);
     }
 }
 
@@ -182,15 +182,11 @@ float const ooPI = 1.00F / 3.1415926535F;
 //#include "d3d_internal.h"
 void Mesh::SetMaterial(const GFXMaterial &mat) {
     GFXSetMaterial(myMatNum, mat);
-    if (orig) {
-        for (int i = 0; i < num_lods; i++) {
-            orig[i].myMatNum = myMatNum;
+    if (!levels_of_detail.empty()) {
+        for (auto &level : levels_of_detail) {
+            level.second->SetMaterial(mat);
         }
     }
-}
-
-int Mesh::getNumLOD() const {
-    return num_lods;
 }
 
 void Mesh::setCurrentFrame(float which) {
@@ -210,17 +206,17 @@ void Mesh::setVertexList(GFXVertexList *_vlist) {
 }
 
 float Mesh::getFramesPerSecond() const {
-    return orig ? orig->framespersecond : framespersecond;
+    return originals.empty() ? framespersecond : originals.front()->framespersecond;
 }
 
 std::shared_ptr<Mesh> Mesh::getLOD(float lod, bool bBypassDamping) {
-    if (!orig) {
-        return this;
+    if (levels_of_detail.empty()) {
+        return shared_from_this();
     }
-    std::shared_ptr<Mesh> retval = &orig[0];
+    std::shared_ptr<Mesh> retval = levels_of_detail.at(lod);
     vector<int> *animFrames = 0;
     if (getFramesPerSecond() > .0000001 && (animFrames = animationSequences.Get(hash_name))) {
-        //return &orig[(int)floor(fmod (getNewTime()*getFramesPerSecond(),num_lods))];
+        //return &originals[(int)floor(fmod (getNewTime()*getFramesPerSecond(),num_lods))];
         unsigned int which = (int) float_to_int(floor(fmod(getCurrentFrame(),
                 animFrames->size())));
         float adv = GetElapsedTime() * getFramesPerSecond();
@@ -230,27 +226,27 @@ std::shared_ptr<Mesh> Mesh::getLOD(float lod, bool bBypassDamping) {
             adv = max_frames_skipped;
         }
         setCurrentFrame(getCurrentFrame() + adv);
-        return &orig[(*animFrames)[which % animFrames->size()] % getNumLOD()];
+        return &originals[(*animFrames)[which % animFrames->size()] % getNumLOD()];
     } else {
         float maxlodsize = retval ? retval->lodsize : 0.0f;
         for (int i = 1; i < num_lods; i++) {
             float lodoffs = 0;
             if (!bBypassDamping) {
-                if (lod < orig[i].lodsize) {
-                    lodoffs = ((i < num_lods - 1) ? (orig[i + 1].lodsize - orig[i].lodsize) / LOD_HYSTHERESIS_DIVIDER
+                if (lod < originals[i].lodsize) {
+                    lodoffs = ((i < num_lods - 1) ? (originals[i + 1].lodsize - originals[i].lodsize) / LOD_HYSTHERESIS_DIVIDER
                             : 0.0f);
                 } else {
-                    lodoffs = ((i > 0) ? (orig[i - 1].lodsize - orig[i].lodsize) / LOD_HYSTHERESIS_DIVIDER : 0.0f);
+                    lodoffs = ((i > 0) ? (originals[i - 1].lodsize - originals[i].lodsize) / LOD_HYSTHERESIS_DIVIDER : 0.0f);
                 }
-                float maxenlargement = ((orig[i].lodsize * LOD_HYSTHERESIS_MAXENLARGEMENT_FACTOR) - orig[i].lodsize);
+                float maxenlargement = ((originals[i].lodsize * LOD_HYSTHERESIS_MAXENLARGEMENT_FACTOR) - originals[i].lodsize);
                 if ((lodoffs > 0) && (lodoffs > maxenlargement)) {
                     lodoffs =
                             maxenlargement;
                 }                     //Avoid excessive enlargement of low-detail LOD levels, when LOD levels are far apart.
             }
-            if ((lod < (orig[i].lodsize + lodoffs)) && (lod < maxlodsize)) {
-                maxlodsize = orig[i].lodsize;
-                retval = &orig[i];
+            if ((lod < (originals[i].lodsize + lodoffs)) && (lod < maxlodsize)) {
+                maxlodsize = originals[i].lodsize;
+                retval = &originals[i];
             }
         }
     }
@@ -267,15 +263,15 @@ void Mesh::SetBlendMode(BLENDFUNC src, BLENDFUNC dst, bool lodcascade) {
             draw_sequence++;
         }
     }
-    if (orig) {
-        orig->draw_sequence = draw_sequence;
-        orig->blendSrc = src;
-        orig->blendDst = dst;
+    if (!originals.empty()) {
+        originals.front()->draw_sequence = draw_sequence;
+        originals.front()->blendSrc = src;
+        originals.front()->blendDst = dst;
         if (lodcascade) {
-            for (int i = 1; i < num_lods; i++) {
-                orig[i].draw_sequence = draw_sequence;
-                orig[i].blendSrc = src;
-                orig[i].blendDst = dst;
+            for (auto& lod : levels_of_detail) {
+                lod.second->draw_sequence = draw_sequence;
+                lod.second->blendSrc = src;
+                lod.second->blendDst = dst;
             }
         }
     }

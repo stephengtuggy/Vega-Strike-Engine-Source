@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2022 Daniel Horn, pyramid3d, Stephen G. Tuggy,
+ * Copyright (C) 2001-2025 Daniel Horn, pyramid3d, Stephen G. Tuggy,
  * and other Vega Strike contributors.
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
@@ -77,12 +77,11 @@ Texture * LoadAnimation( string Name )
 #endif
 
 struct OrigMeshLoader {
-    std::shared_ptr<Mesh> m;
+    std::deque<std::shared_ptr<Mesh>> m{};
     vector<float> sizes;
     unsigned int num;
 
     OrigMeshLoader() {
-        m = 0;
         num = 0;
     }
 };
@@ -359,13 +358,13 @@ std::deque<std::shared_ptr<Mesh>> Mesh::LoadMeshes(VSFileSystem::VSFile &Inputfi
         uint32bit nummeshes =
                 VSSwapHostIntToLittle(inmemfile[word32index].i32val);                 //Number of meshes in the current record
         word32index = recordbeginword + (recordheaderlength / 4);
-        meshes.push_back(OrigMeshLoader());
+        meshes.emplace_back();
         meshes.back().num = nummeshes;
-        meshes.back().m = new Mesh[nummeshes];
+        meshes.back().m.resize(nummeshes);
         meshes.back().sizes.insert(meshes.back().sizes.begin(), nummeshes, 0);
         //For each mesh
         for (uint32bit meshindex = 0; meshindex < nummeshes; meshindex++) {
-            std::shared_ptr<Mesh> mesh = &meshes.back().m[meshindex];
+            std::shared_ptr<Mesh> mesh = meshes.back().m.at(meshindex);
             mesh->draw_queue = new vector<MeshDrawContext>[NUM_ZBUF_SEQ + 1];
             MeshXML xml;
             xml.fg = fg;
@@ -714,7 +713,7 @@ std::deque<std::shared_ptr<Mesh>> Mesh::LoadMeshes(VSFileSystem::VSFile &Inputfi
                         animname.c_str(),
                         FPS);
 
-                vector<int> *framerefs = new vector<int>;
+                std::shared_ptr<std::vector<int>> framerefs = std::make_shared<std::vector<int>>();
                 mesh->framespersecond = FPS;
                 word32index += NUMFIELDSPERANIMATIONDEF;
                 uint32bit numframerefs =
@@ -1065,16 +1064,14 @@ std::deque<std::shared_ptr<Mesh>> Mesh::LoadMeshes(VSFileSystem::VSFile &Inputfi
         }
         //go to next record
         word32index = recordbeginword + (recordlength / 4);
-        output.push_back(new Mesh());
-        *output.back() = *meshes.back().m;                 //use builtin
-        output.back()->orig = meshes.back().m;
-        for (int i = 0; i < (int) meshes.back().sizes.size() - 1; ++i) {
-            output.back()->orig[i + 1].lodsize = meshes.back().sizes[i];
+        output.emplace_back(meshes.back().m.front());                 //use builtin
+        output.back()->originals.push_back(meshes.back().m.front());
+        for (size_t i = 0; i < meshes.back().sizes.size() - 1; ++i) {
+            output.back()->levels_of_detail.at(meshes.back().sizes.at(i + 1))->lodsize = meshes.back().sizes.at(i);
         }
-        output.back()->num_lods = output.back()->orig->num_lods = meshes.back().num;
     }
     free(inmemfile);
-    inmemfile = NULL;
+    inmemfile = nullptr;
 #ifndef STANDALONE
     return output;
 #endif

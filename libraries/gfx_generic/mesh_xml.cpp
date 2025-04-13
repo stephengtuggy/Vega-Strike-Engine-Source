@@ -848,7 +848,7 @@ void Mesh::beginElement(MeshXML *xml, const string &name, const AttributeList &a
                                         xml->faction,
                                         xml->fg,
                                         true,
-                                        {}).get());                   //make orig mesh    // FIXME: Shouldn't convert to raw pointer
+                                        {}).get());                   //make originals mesh    // FIXME: Shouldn't convert to raw pointer
                         break;
                     case MeshXML::SIZE:
                         flotsize = XMLSupport::parse_float((*iter).value);
@@ -1325,7 +1325,7 @@ std::deque<std::shared_ptr<Mesh>> Mesh::LoadMeshes(const char *filename,
         for (unsigned int i = 0; i < oldmesh->size(); ++i) {
             ret.push_back(new Mesh());
             std::shared_ptr<Mesh> m = (*oldmesh)[i];
-            ret.back()->LoadExistant(m->orig ? m->orig : m);
+            ret.back()->LoadExistant(m->originals ? m->originals : m);
         }
         return ret;
     }
@@ -1361,10 +1361,10 @@ std::deque<std::shared_ptr<Mesh>> Mesh::LoadMeshes(const char *filename,
         std::deque<std::shared_ptr<Mesh>> *newvec = new std::deque<std::shared_ptr<Mesh>>(retval);
         for (unsigned int i = 0; i < retval.size(); ++i) {
             retval[i]->hash_name = hash_name;
-            if (retval[i]->orig) {
-                retval[i]->orig->hash_name = hash_name;
+            if (retval[i]->originals) {
+                retval[i]->originals->hash_name = hash_name;
             }
-            (*newvec)[i] = retval[i]->orig ? retval[i]->orig : retval[i];
+            (*newvec)[i] = retval[i]->originals ? retval[i]->originals : retval[i];
         }
         vega_gfx::bfxmHashtable::instance().Put(hash_name, newvec);
         return retval;
@@ -1430,13 +1430,13 @@ void Mesh::LoadXML(VSFileSystem::VSFile &f,
     PostProcessLoading(xml, textureOverride);
     num_lods = xml->lod.size() + 1;
     if (origthis) {
-        orig = NULL;
+        originals = NULL;
     } else {
-        orig = new Mesh[num_lods];
+        originals = new Mesh[num_lods];
         unsigned int i;
         for (i = 0; i < xml->lod.size(); i++) {
-            orig[i + 1] = *xml->lod[i];
-            orig[i + 1].lodsize = xml->lodsize[i];
+            originals[i + 1] = *xml->lod[i];
+            originals[i + 1].lodsize = xml->lodsize[i];
         }
     }
     delete xml;

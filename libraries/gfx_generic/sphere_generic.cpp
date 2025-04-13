@@ -4,7 +4,7 @@
  * Copyright (c) 2001-2002 Daniel Horn
  * Copyright (c) 2002-2019 pyramid3d and other Vega Strike Contributors
  * Copyright (c) 2019-2021 Stephen G. Tuggy, and other Vega Strike Contributors
- * Copyright (C) 2022 Stephen G. Tuggy
+ * Copyright (C) 2022-2025 Stephen G. Tuggy
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -122,9 +122,9 @@ void SphereMesh::InitSphere(float radius,
         return;
     } else {
     }
-    this->orig = AllocNewMeshesEachInSizeofMeshSpace(numspheres); //FIXME::RISKY::MIGHT HAVE...
+    this->originals = AllocNewMeshesEachInSizeofMeshSpace(numspheres); //FIXME::RISKY::MIGHT HAVE...
     //... DIFFERENT SIZES!!  DON"T YOU DARE ADD XTRA VARS TO SphereMesh calsshave to!
-    oldmesh = this->orig;
+    oldmesh = this->originals;
     num_lods = numspheres;
     meshHashTable.Put(hash_name, oldmesh);
     radialSize = radius; //MAKE SURE FRUSTUM CLIPPING IS DONE CORRECTLY!!!!!
@@ -249,9 +249,9 @@ void SphereMesh::InitSphere(float radius,
         if (Insideout) {
             draw_sequence = 0;
         }
-        std::shared_ptr<Mesh> oldorig = orig;
+        std::shared_ptr<Mesh> oldorig = originals;
         refcount = 1;
-        orig = NULL;
+        originals = NULL;
         if (l >= 1) {
             lodsize = (numspheres + 1 - l) * pixelscalesize;
             if (l == 1) {
@@ -265,7 +265,7 @@ void SphereMesh::InitSphere(float radius,
         initTechnique(technique);
         oldmesh[l] = *this;
         refcount = 0;
-        orig = oldorig;
+        originals = oldorig;
         lodsize = FLT_MAX;
     }
     draw_queue = odq;

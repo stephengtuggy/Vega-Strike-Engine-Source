@@ -88,7 +88,7 @@ public:
     bool Update(float ttime); //if false::dead
 };
 /**
- * Stores relevant info needed to draw a mesh given only the orig
+ * Stores relevant info needed to draw a mesh given only its original
  */
 struct MeshDrawContext {
     ///The matrix in world space
@@ -102,7 +102,7 @@ struct MeshDrawContext {
     char cloaked;
     char mesh_seq;
     unsigned char damage;     //0 is perfect 255 is dead
-    MeshDrawContext(const Matrix &m) : mat(m), SpecialFX(nullptr), CloakFX(1, 1, 1, 1), cloaked(NONE), mesh_seq(0),
+    explicit MeshDrawContext(const Matrix &m) : mat(m), SpecialFX(nullptr), CloakFX(1, 1, 1, 1), cloaked(NONE), mesh_seq(0),
                                        damage(0) {
         useXtraFX = false;
     }
@@ -120,7 +120,7 @@ enum CLK_CONSTS { CLKSCALE = 2147483647 };
  * Mesh is the basic textured drawable
  * Mesh has 1 texture and 1 vertex list (with possibly multiple primitives inside
  * Meshes have a center-location but do not need to be translated to be drawn
- * Meshes store various LOD's and originals in the orig pointer. These may be accessed
+ * Meshes store various LOD's and originals in the originals pointer. These may be accessed
  * in order to draw quickly a whole series of meshes.
  * Unless DrawNow is invoked, Drawing only stores the mesh on teh appropriate draw queue so
  * they may be drawn at a later date
@@ -183,7 +183,7 @@ private:
         std::shared_ptr<Mesh> return_value = std::make_shared<Mesh>();
         return_value->hash_name = filename;
         return_value->convex = false;
-        return_value->orig = nullptr;
+        return_value->originals = nullptr;
         return_value->InitUnit();
         std::shared_ptr<Mesh> old_mesh;
         if (return_value->LoadExistant(filename, scalex, faction)) {
@@ -202,7 +202,7 @@ private:
         bool xml = true;
         if (xml) {
             return_value->LoadXML(filename, scalex, faction, fg, orig, textureOverride);
-            old_mesh = return_value->orig;
+            old_mesh = return_value->originals;
         } else {
             return_value->LoadBinary(shared ? (VSFileSystem::sharedmeshes + "/" + (filename)).c_str() : filename, faction);
             old_mesh = nullptr;  // ??
@@ -215,9 +215,9 @@ private:
             return_value->hash_name = shared ? VSFileSystem::GetSharedMeshHashName(filename, scalex, faction) : VSFileSystem::GetHashName(filename, scalex, faction);
             meshHashTable.Put(return_value->hash_name, old_mesh);  // FIXME -- shouldn't convert to raw pointer here
             *old_mesh = *return_value;
-            old_mesh->orig = nullptr;
+            old_mesh->originals = nullptr;
         } else {
-            return_value->orig = nullptr;
+            return_value->originals = nullptr;
         }
 
         return return_value;
@@ -229,37 +229,42 @@ public:
         return_value->hash_name = filename;
         return_value->convex = false;
         std::shared_ptr<Mesh> cpy = LoadMesh(filename.c_str(), scalex, faction, fg, {});
-        if (cpy->orig) {
-            return_value->LoadExistant(cpy->orig);
+        if (!cpy->originals.empty()) {
+            return_value->LoadExistant(cpy->originals.front());
             delete cpy;         //wasteful, but hey
             cpy = nullptr;
             if (orig) {
                 orig = false;
-                const std::shared_ptr<std::deque<std::shared_ptr<Mesh>>> tmp = vega_gfx::bfxmHashtable::instance().Get(return_value->orig->hash_name);
-                if (tmp && !tmp->empty() && tmp->at(0) == return_value->orig) {
-                    if (return_value->orig.use_count() == 1) {
-                        vega_gfx::bfxmHashtable::instance().Delete(return_value->orig->hash_name);
-                        return_value->orig.reset();
+                const std::shared_ptr<std::deque<std::shared_ptr<Mesh>>> tmp = vega_gfx::bfxmHashtable::instance().Get(return_value->originals.front()->hash_name);
+                if (tmp && !tmp->empty() && tmp->at(0) == return_value->originals.front()) {
+                    if (return_value->originals.front().use_count() == 1) {
+                        vega_gfx::bfxmHashtable::instance().Delete(return_value->originals.front()->hash_name);
+                        return_value->originals.front().reset();
                         // delete tmp;
                         orig = true;
                     }
                 }
-                if (meshHashTable.Get(return_value->hash_name) == return_value->orig.get()) {
-                    if (return_value->orig.use_count() == 1) {
-                        meshHashTable.Delete(return_value->orig->hash_name);
+                if (meshHashTable.Get(return_value->hash_name) == return_value->originals.front()) {
+                    if (return_value->originals.front().use_count() == 1) {
+                        meshHashTable.Delete(return_value->originals.front()->hash_name);
                         orig = true;
                     }
                 }
                 if (orig) {
-                    const std::shared_ptr<Mesh> tmp2 = return_value->orig;
-                    tmp2->orig = return_value;
-                    return_value->orig = nullptr;
+                    const std::shared_ptr<Mesh> tmp2 = return_value->originals.front();
+                    tmp2->originals.front() = return_value;
+                    return_value->originals.pop_front();
                 }
             }
         } else {
             delete cpy;
             VS_LOG(error, (boost::format("fallback, %1$s unable to be loaded as bfxm") % filename));
         }
+        return return_value;
+    }
+
+    static std::shared_ptr<Mesh> Create() {
+        std::shared_ptr<Mesh> return_value = std::make_shared<Mesh>();
         return return_value;
     }
 
@@ -278,7 +283,8 @@ protected:
     ///The radial size of this mesh
     float radialSize{};
     float framespersecond{}; //for animation
-    std::shared_ptr<Mesh> orig{};
+    std::deque<std::shared_ptr<Mesh>> originals{};
+    inline std::shared_ptr<Mesh> active_original() const { return originals.front(); }
     std::map<float, std::shared_ptr<Mesh>> levels_of_detail{};
     ///How many LODs (levels of detail) we have
     inline size_t NumberOfLODs() const { return levels_of_detail.size(); }
@@ -383,7 +389,7 @@ public:
 
     ///Forks the mesh across the plane a,b,c,d into two separate meshes...upon which this may be deleted
     void Fork(std::shared_ptr<Mesh> &one, std::shared_ptr<Mesh> &two, float a, float b, float c, float d);
-    ///Destructor... kills orig if refcount of orig becomes zero
+    ///Destructor... kills originals if refcount of originals becomes zero
     virtual ~Mesh();
 
     ///Gets number of specialFX
@@ -468,9 +474,9 @@ public:
 
     void setEnvMap(GFXBOOL newValue, bool lodcascade = false) {
         envMapAndLit = (newValue ? (envMapAndLit | 0x1) : (envMapAndLit & (~0x1)));
-        if (lodcascade && orig) {
+        if (lodcascade && originals) {
             for (int i = 0; i < num_lods; i++) {
-                orig[i].setEnvMap(newValue);
+                originals[i].setEnvMap(newValue);
             }
         }
     }
@@ -481,9 +487,9 @@ public:
 
     void setLighting(GFXBOOL newValue, bool lodcascade = false) {
         envMapAndLit = (newValue ? (envMapAndLit | 0x2) : (envMapAndLit & (~0x2)));
-        if (lodcascade && orig) {
+        if (lodcascade && originals) {
             for (int i = 0; i < num_lods; i++) {
-                orig[i].setLighting(newValue);
+                originals[i].setLighting(newValue);
             }
         }
     }

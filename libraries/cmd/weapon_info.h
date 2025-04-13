@@ -4,7 +4,7 @@
  * Copyright (c) 2001-2002 Daniel Horn
  * Copyright (c) 2002-2019 pyramid3d and other Vega Strike Contributors
  * Copyright (c) 2019-2021 Stephen G. Tuggy, and other Vega Strike Contributors
- * Copyright (C) 2022-2023 Stephen G. Tuggy, Benjamen R. Meyer
+ * Copyright (C) 2022-2025 Stephen G. Tuggy, Benjamen R. Meyer
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -63,8 +63,8 @@ struct WeaponInfo {
     /*const*/ float b = 127;
     /*const*/ float a = 127;
 
-    mutable class std::shared_ptr<Mesh> gun = nullptr;      //requires nonconst to add to orig drawing queue when drawing
-    mutable class std::shared_ptr<Mesh> gun1 = nullptr;     //requires nonconst to add to orig drawing queue when drawing
+    mutable class std::shared_ptr<Mesh> gun = nullptr;      //requires nonconst to add to originals drawing queue when drawing
+    mutable class std::shared_ptr<Mesh> gun1 = nullptr;     //requires nonconst to add to originals drawing queue when drawing
 
     // Constructors
     WeaponInfo();

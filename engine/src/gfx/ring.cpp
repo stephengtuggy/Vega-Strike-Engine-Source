@@ -3,8 +3,7 @@
  *
  * Copyright (c) 2001-2002 Daniel Horn
  * Copyright (c) 2002-2019 pyramid3d and other Vega Strike Contributors
- * Copyright (c) 2019-2021 Stephen G. Tuggy, and other Vega Strike Contributors
- * Copyright (C) 2022 Stephen G. Tuggy
+ * Copyright (c) 2019-2025 Stephen G. Tuggy, and other Vega Strike Contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -70,7 +69,7 @@ void RingMesh::InitRing(float iradius,
     meshHashTable.Put(hash_name = VSFileSystem::GetSharedMeshHashName(hash_name, Vector(iradius,
             iradius,
             iradius), 0), oldmesh);
-    this->orig = oldmesh;
+    this->originals = oldmesh;
     radialSize = oradius;     //MAKE SURE FRUSTUM CLIPPING IS DONE CORRECTLY!!!!!
     //mn = Vector (radialSize,radialSize,radialSize);
     //mx = Vector (-radialSize,-radialSize,-radialSize);
@@ -164,9 +163,9 @@ void RingMesh::InitRing(float iradius,
                     g_game.use_planet_textures ? GFXTRUE : GFXFALSE);
         }
         setEnvMap(envMapping);
-        std::shared_ptr<Mesh> oldorig = orig;
+        std::shared_ptr<Mesh> oldorig = originals;
         refcount = 1;
-        orig = NULL;
+        originals = NULL;
         if (l >= 1) {
             lodsize = (numspheres + 1 - l) * pixelscalesize;
             if (l == 1) {
@@ -179,7 +178,7 @@ void RingMesh::InitRing(float iradius,
         }
         oldmesh[l] = *this;
         refcount = 0;
-        orig = oldorig;
+        originals = oldorig;
         lodsize = FLT_MAX;
     }
     draw_queue = odq;

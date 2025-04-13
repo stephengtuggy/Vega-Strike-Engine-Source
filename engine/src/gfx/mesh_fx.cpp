@@ -3,8 +3,7 @@
  *
  * Copyright (c) 2001-2002 Daniel Horn
  * Copyright (c) 2002-2019 pyramid3d and other Vega Strike Contributors
- * Copyright (c) 2019-2021 Stephen G. Tuggy, and other Vega Strike Contributors
- * Copyright (C) 2022 Stephen G. Tuggy
+ * Copyright (c) 2019-2025 Stephen G. Tuggy, and other Vega Strike Contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -154,11 +153,12 @@ void Mesh::EnableSpecialFX() {
     draw_sequence = MESH_SPECIAL_FX_ONLY;
     setEnvMap(GFXFALSE);
     setLighting(GFXTRUE);
-    if (orig) {
-        orig->draw_sequence = MESH_SPECIAL_FX_ONLY;
-        orig->blendSrc = orig->blendDst = ONE;
-        orig->setEnvMap(GFXFALSE);
-        orig->setLighting(GFXTRUE);
+    if (!originals.empty()) {
+        std::shared_ptr<Mesh> active_original = originals.front();
+        active_original->draw_sequence = MESH_SPECIAL_FX_ONLY;
+        active_original->blendSrc = active_original->blendDst = ONE;
+        active_original->setEnvMap(GFXFALSE);
+        active_original->setLighting(GFXTRUE);
     }
     blendSrc = ONE;
     blendDst = ONE;

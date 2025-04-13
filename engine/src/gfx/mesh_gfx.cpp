@@ -403,7 +403,7 @@ AnimatedTexture *createAnimatedTexture(char const *c, int i, enum FILTER f) {
 
 
 Mesh::~Mesh() {
-    if (!orig || orig.get() == this) {
+    if (originals.empty() || originals.front().get() == this) {
         for (auto & undrawn_mesh_vec : undrawn_meshes) {
             if (!undrawn_mesh_vec.empty()) {
                 const auto first_to_remove1 = std::stable_partition(undrawn_mesh_vec.begin(), undrawn_mesh_vec.end(),
@@ -1558,11 +1558,11 @@ void Mesh::ProcessShaderDrawQueue(size_t whichpass, int whichdrawqueue, bool zso
                 GFXDeleteLight(lights[fxLightsBase]);
             }
             size_t lastPass = technique->getNumPasses();
-            if (0 != forcelogos && whichpass == lastPass && !(c.cloaked & MeshDrawContext::NEARINVIS)) {
-                forcelogos->Draw(c.mat);
+            if (!forcelogos.empty() && whichpass == lastPass && !(c.cloaked & MeshDrawContext::NEARINVIS)) {
+                forcelogos.front()->Draw(c.mat);
             }
-            if (0 != squadlogos && whichpass == lastPass && !(c.cloaked & MeshDrawContext::NEARINVIS)) {
-                squadlogos->Draw(c.mat);
+            if (!squadlogos.empty() && whichpass == lastPass && !(c.cloaked & MeshDrawContext::NEARINVIS)) {
+                squadlogos.front()->Draw(c.mat);
             }
         }
     }
@@ -1841,11 +1841,11 @@ void Mesh::ProcessFixedDrawQueue(size_t techpass, int whichdrawqueue, bool zsort
                     GFXDeleteLight(specialfxlight[j]);
                 }
                 RestoreCloakState(c.cloaked, getEnvMap(), damaged);
-                if (0 != forcelogos && whichpass == BASE_PASS && !(c.cloaked & MeshDrawContext::NEARINVIS)) {
-                    forcelogos->Draw(c.mat);
+                if (!forcelogos.empty() && whichpass == BASE_PASS && !(c.cloaked & MeshDrawContext::NEARINVIS)) {
+                    forcelogos.front()->Draw(c.mat);
                 }
-                if (0 != squadlogos && whichpass == BASE_PASS && !(c.cloaked & MeshDrawContext::NEARINVIS)) {
-                    squadlogos->Draw(c.mat);
+                if (!squadlogos.empty() && whichpass == BASE_PASS && !(c.cloaked & MeshDrawContext::NEARINVIS)) {
+                    squadlogos.front()->Draw(c.mat);
                 }
             }
             vlist->EndDrawState();
@@ -1868,6 +1868,8 @@ void Mesh::ProcessFixedDrawQueue(size_t techpass, int whichdrawqueue, bool zsort
                     break;
                 case GLOW_PASS:
                     RestoreGlowMapState(zwrite, polygon_offset);
+                    break;
+                default:
                     break;
             }
         }
@@ -1930,35 +1932,36 @@ void Mesh::ProcessFixedDrawQueue(size_t techpass, int whichdrawqueue, bool zsort
 #undef HASDECAL
 
 void Mesh::CreateLogos(MeshXML *xml, int faction, Flightgroup *fg) {
-    numforcelogo = numsquadlogo = 0;
+    forcelogos.clear();
+    squadlogos.clear();
     unsigned int index;
-    for (index = 0; index < xml->logos.size(); index++) {
-        if (xml->logos[index].type == 0) {
-            numforcelogo++;
+    for (auto & logo : xml->logos) {
+        if (logo.type == 0) {
+            forcelogos.push_back(std::make_shared<Logo>());
         }
-        if (xml->logos[index].type == 1) {
-            numsquadlogo++;
+        if (logo.type == 1) {
+            squadlogos.push_back(std::make_shared<Logo>());
         }
     }
-    unsigned int nfl = numforcelogo;
-    Logo **tmplogo = NULL;
-    Texture *Dec = NULL;
-    for (index = 0, nfl = numforcelogo, tmplogo = &forcelogos, Dec = FactionUtil::getForceLogo(faction);
+    size_t nfl = NumberOfForceLogos();
+    std::shared_ptr<Logo>* tmplogo = nullptr;
+    Texture *Dec = nullptr;
+    for (index = 0, nfl = NumberOfForceLogos(), tmplogo = &forcelogos.front(), Dec = FactionUtil::getForceLogo(faction);
             index < 2;
-            index++, nfl = numsquadlogo, tmplogo = &squadlogos, Dec =
-                    (fg == NULL ? FactionUtil::getSquadLogo(faction) : fg->squadLogo)) {
-        if (Dec == NULL) {
+            index++, nfl = NumberOfSquadLogos(), tmplogo = &squadlogos.front(), Dec =
+                    (fg == nullptr ? FactionUtil::getSquadLogo(faction) : fg->squadLogo)) {
+        if (Dec == nullptr) {
             Dec = FactionUtil::getSquadLogo(faction);
         }
         if (nfl == 0) {
             continue;
         }
-        Vector *PolyNormal = new Vector[nfl];
-        Vector *center = new Vector[nfl];
-        float *sizes = new float[nfl];
-        float *rotations = new float[nfl];
-        float *offset = new float[nfl];
-        Vector *Ref = new Vector[nfl];
+        std::vector<std::shared_ptr<Vector>> PolyNormal(nfl);
+        std::vector<std::shared_ptr<Vector>> center(nfl);
+        std::vector<std::shared_ptr<float>> sizes(nfl);
+        std::vector<std::shared_ptr<float>> rotations(nfl);
+        std::vector<std::shared_ptr<float>> offset(nfl);
+        std::vector<std::shared_ptr<Vector>> Ref(nfl);
         Vector norm1, norm2, norm;
         int ri = 0;
         float totoffset = 0;
@@ -2006,7 +2009,7 @@ void Mesh::CreateLogos(MeshXML *xml, int faction, Flightgroup *fg) {
                 //Cent.i-=x_center;
                 //Cent.j-=y_center;
                 //Cent.k-=z_center;
-                Ref[ri] = norm2;
+                Ref[ri] = &norm2;
                 PolyNormal[ri] = norm;
                 center[ri] = Cent;
                 sizes[ri] = xml->logos[ind].size * xml->scale.k;

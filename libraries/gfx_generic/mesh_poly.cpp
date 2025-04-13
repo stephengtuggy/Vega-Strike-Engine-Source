@@ -51,8 +51,8 @@ static int whichside(GFXVertex *t, int numvertex, float a, float b, float c, flo
 void updateMax(Vector &mn, Vector &mx, const GFXVertex &ver);
 
 void Mesh::Fork(std::shared_ptr<Mesh> &x, std::shared_ptr<Mesh> &y, float a, float b, float c, float d) {
-    if (orig && orig != this) {
-        orig->Fork(x, y, a, b, c, d);
+    if (!originals.empty() && originals.front().get() != this) {
+        originals.front()->Fork(x, y, a, b, c, d);
         return;
     }
     int numtris, numquads;
@@ -111,44 +111,38 @@ void Mesh::Fork(std::shared_ptr<Mesh> &x, std::shared_ptr<Mesh> &y, float a, flo
         delete[] Y;
         return;
     }
-    x = new Mesh;
+    x = Mesh::Create();
     x->setLighting(getLighting());
     x->setEnvMap(getEnvMap());
     x->forceCullFace(GFXFALSE);
 
-    y = new Mesh;
+    y = Mesh::Create();
     y->setLighting(getLighting());
     y->setEnvMap(getEnvMap());
 
     y->forceCullFace(GFXFALSE);
-    x->forcelogos = x->squadlogos = nullptr;
-    x->numforcelogo = x->numsquadlogo = 0;
+    x->forcelogos.clear();
+    x->squadlogos.clear();
     x->setLighting(getLighting());
     x->setEnvMap(getEnvMap());
     x->blendSrc = y->blendSrc = blendSrc;
     x->blendDst = y->blendDst = blendDst;
-    while (x->Decal.size() < Decal.size()) {
-        x->Decal.push_back(nullptr);
-    }
     {
-        for (unsigned int i2 = 0; i2 < Decal.size(); ++i2) {
-            if (Decal[i2]) {
-                x->Decal[i2] = Decal[i2]->Clone();
+        for (auto & i2 : Decal) {
+            if (i2) {
+                x->Decal.push_back(i2->Clone());
             }
         }
     }
 
-    y->squadlogos = y->forcelogos = nullptr;
-    y->numforcelogo = y->numsquadlogo = 0;
+    y->squadlogos.clear();
+    y->forcelogos.clear();
     y->setLighting(getLighting());
     y->setEnvMap(getEnvMap());
-    while (y->Decal.size() < Decal.size()) {
-        y->Decal.push_back(nullptr);
-    }
     {
-        for (unsigned int i = 0; i < Decal.size(); i++) {
-            if (Decal[i]) {
-                y->Decal[i] = Decal[i]->Clone();
+        for (auto & i2 : Decal) {
+            if (i2) {
+                y->Decal.push_back(i2->Clone());
             }
         }
     }
@@ -160,7 +154,7 @@ void Mesh::Fork(std::shared_ptr<Mesh> &x, std::shared_ptr<Mesh> &y, float a, flo
             exist = 1;
         }
         assert(numtqx[0] || numtqx[1]);
-        x->vlist = new GFXVertexList(&polytypes[exist], numtqx[exist], X, 1, &numtqx[exist], true, 0);
+        x->vlist = new GFXVertexList(&polytypes[exist], numtqx[exist], X, 1, &numtqx[exist], true, nullptr);
     }
     if (numtqy[0] || numtqy[1]) {
         y->vlist = new GFXVertexList(polytypes, numtqy[0] + numtqy[1], Y, 2, numtqy, true);
@@ -170,7 +164,7 @@ void Mesh::Fork(std::shared_ptr<Mesh> &x, std::shared_ptr<Mesh> &y, float a, flo
             exis = 1;
         }
         assert(numtqx[0] || numtqx[1]);
-        y->vlist = new GFXVertexList(&polytypes[exis], numtqy[exis], Y, 1, &numtqy[exis], true, 0);
+        y->vlist = new GFXVertexList(&polytypes[exis], numtqy[exis], Y, 1, &numtqy[exis], true, nullptr);
     }
     x->local_pos = Vector(.5 * (xmin + xmax));
     y->local_pos = Vector(.5 * (ymin + ymax));
@@ -180,25 +174,15 @@ void Mesh::Fork(std::shared_ptr<Mesh> &x, std::shared_ptr<Mesh> &y, float a, flo
     x->mx = xmax;
     y->mn = ymin;
     y->mx = ymax;
-    x->orig = new Mesh[1];
+    x->originals.push_back(x);
     x->forceCullFace(GFXFALSE);
 
-    y->orig = new Mesh[1];
+    y->originals.push_back(y);
     y->forceCullFace(GFXFALSE);
     x->draw_queue = new vector<MeshDrawContext>[NUM_ZBUF_SEQ + 1];
     y->draw_queue = new vector<MeshDrawContext>[NUM_ZBUF_SEQ + 1];
-    *y->orig = *y;
-    *x->orig = *x;
-    x->orig->refcount = 1;
-    y->orig->refcount = 1;
-    x->numforcelogo = 0;
-    x->forcelogos = nullptr;
-    x->numsquadlogo = 0;
-    x->squadlogos = nullptr;
-    x->numforcelogo = 0;
-    x->forcelogos = nullptr;
-    x->numsquadlogo = 0;
-    x->squadlogos = nullptr;
+    x->forcelogos.clear();
+    x->squadlogos.clear();
 
     delete[] X;
     delete[] Y;
@@ -207,8 +191,8 @@ void Mesh::Fork(std::shared_ptr<Mesh> &x, std::shared_ptr<Mesh> &y, float a, flo
 void Mesh::GetPolys(vector<mesh_polygon> &polys) {
     int numtris;
     int numquads;
-    if (orig && orig != this) {
-        orig->GetPolys(polys);
+    if (!originals.empty() && originals.front().get() != this) {
+        originals.front()->GetPolys(polys);
         return;
     }
     GFXVertex *tmpres;

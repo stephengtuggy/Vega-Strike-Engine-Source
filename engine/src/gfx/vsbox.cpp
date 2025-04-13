@@ -2,9 +2,8 @@
  * vsbox.cpp
  *
  * Copyright (C) Daniel Horn
- * Copyright (C) 2020 pyramid3d, Stephen G. Tuggy, and other Vega Strike
+ * Copyright (C) 2020-2025 pyramid3d, Stephen G. Tuggy, and other Vega Strike
  *  contributors
- * Copyright (C) 2022 Stephen G. Tuggy
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -49,7 +48,7 @@ Box::Box(const Vector &corner1, const Vector &corner2) : corner_min(corner1), co
     if (0 != (oldmesh = (Box *) meshHashTable.Get(hash_key))) {
         *this = *oldmesh;
         oldmesh->refcount++;
-        orig = oldmesh;
+        originals = oldmesh;
         return;
     }
     int a = 0;
@@ -105,7 +104,7 @@ Box::Box(const Vector &corner1, const Vector &corner2) : corner_min(corner1), co
     delete[] vertices;
 
     meshHashTable.Put(hash_key, this);
-    orig = this;
+    originals = this;
     refcount++;
     draw_queue = new vector<MeshDrawContext>[NUM_ZBUF_SEQ + 1];
 #undef VERTEX
