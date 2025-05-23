@@ -32,14 +32,11 @@
 
 MESSAGE(STATUS "PROCESSING DIRECTORY: ${CMAKE_CURRENT_SOURCE_DIR}")
 
-SET(X_VCPKG_APPLOCAL_DEPS_INSTALL ON)
-
 # One version header generator to rule them all
 CONFIGURE_FILE(src/version.h.in ${Vega_Strike_BINARY_DIR}/src/version.h)
 CONFIGURE_FILE(src/version.h.in ${Vega_Strike_BINARY_DIR}/setup/src/include/version.h)
 
 SET(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
-SET(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
 INCLUDE(InstallRequiredSystemLibraries)
 
 # The source files used to be listed here...
@@ -86,12 +83,12 @@ IF (NOT DISABLE_CLIENT) ##########
         LIST(APPEND VSE_TST_LIBS ${OPENAL_LIBRARY})
         SET(HAVE_AL 1)
     ELSE (OPENAL_FOUND)
-        MESSAGE(WARNING "We aint got no sound")
+        MESSAGE(FATAL_ERROR "Failed to find required library OpenAL for sound functionality")
     ENDIF (OPENAL_FOUND)
 
     IF (NOT BEOS)
         #Find SDL
-        FIND_PACKAGE(SDL2)
+        FIND_PACKAGE(SDL2 REQUIRED)
         IF (SDL2_FOUND)
             LIST(APPEND VSE_TST_INCLUDES ${SDL2_INCLUDE_DIRS})
             LIST(APPEND VSE_TST_LIBS ${SDL2_LIBRARIES})
@@ -99,7 +96,7 @@ IF (NOT DISABLE_CLIENT) ##########
             SET(HAVE_SDL 1)
             SET(SDL_WINDOWING 1)
         ELSE (SDL2_FOUND)
-            MESSAGE(WARNING "How will we render to OpenGL without SDL2?")
+            MESSAGE(FATAL_ERROR "Failed to find required library SDL2")
         ENDIF (SDL2_FOUND)
     ENDIF (NOT BEOS)
 
@@ -692,6 +689,11 @@ IF (NOT DISABLE_CLIENT)
         TARGET_COMPILE_DEFINITIONS(vegastrike-engine PUBLIC "$<$<CONFIG:Debug>:Py_DEBUG>")
     ENDIF()
 
+    OPTION (LOG_TIME_TAKEN_DETAILS "Whether to log timing details in the main loop" OFF)
+    IF (LOG_TIME_TAKEN_DETAILS)
+        TARGET_COMPILE_DEFINITIONS(vegastrike-engine PUBLIC LOG_TIME_TAKEN_DETAILS)
+    ENDIF ()
+
     TARGET_INCLUDE_DIRECTORIES(vegastrike-engine SYSTEM PRIVATE ${VSE_TST_INCLUDES})
     TARGET_INCLUDE_DIRECTORIES(vegastrike-engine PRIVATE
             # VS engine headers
@@ -1264,5 +1266,5 @@ IF (USE_GTEST)
     )
 
     INCLUDE(GoogleTest)
-    gtest_discover_tests(${TEST_NAME})
+    gtest_discover_tests(${TEST_NAME} PROPERTIES DISCOVERY_TIMEOUT 30)
 ENDIF (USE_GTEST)

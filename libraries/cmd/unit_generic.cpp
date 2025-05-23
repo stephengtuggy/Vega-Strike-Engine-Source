@@ -81,6 +81,7 @@
 #include "root_generic/savegame.h"
 #include "resource/manifest.h"
 #include "cmd/dock_utils.h"
+#include "resource/random_utils.h"
 
 #include <math.h>
 #include <list>
@@ -219,9 +220,7 @@ extern void PlayDockingSound(int dock);
     return false;
 }*/
 
-float rand01() {
-    return (float) rand() / (float) RAND_MAX;
-}
+
 
 /* UGLYNESS short fix */
 unsigned int apply_float_to_unsigned_int(float tmp) {
@@ -1069,7 +1068,7 @@ Cockpit *Unit::GetVelocityDifficultyMult(float &difficulty) const {
     difficulty = 1;
     Cockpit *player_cockpit = _Universe->isPlayerStarship(this);
     if ((player_cockpit) == nullptr) {
-        difficulty = pow(g_game.difficulty, configuration()->physics.difficulty_speed_exponent);
+        difficulty = std::pow(g_game.difficulty, configuration()->physics.difficulty_speed_exponent);
     }
     return player_cockpit;
 }
@@ -1135,7 +1134,7 @@ Unit *findUnitInStarsystem(const void *unitDoNotDereference) {
 void Unit::DamageRandSys(float dam, const Vector &vec) {
     // TODO: take actual damage into account when damaging components.
     float deg = fabs(180 * atan2(vec.i, vec.k) / M_PI);
-    float randnum = rand01();
+    float randnum = randomDouble();
     const float inv_min_dam = 1.0F - configuration()->physics.min_damage;
     const float inv_max_dam = 1.0F - configuration()->physics.max_damage;
     if (dam < inv_max_dam) {
@@ -1173,7 +1172,7 @@ void Unit::DamageRandSys(float dam, const Vector &vec) {
         damages |= Damages::COMPUTER_DAMAGED;
         return;
     }
-    if (rand01() < configuration()->physics.thruster_hit_chance) {
+    if (randomDouble() < configuration()->physics.thruster_hit_chance) {
         // This is fairly severe. One or two hits can disable the engine.
         // Note that retro can be damaged by both this and above.
         // Drive can also be damaged by code below - really computer.
@@ -1482,9 +1481,9 @@ bool DestroySystem(float hull_percent, float numhits) {
             XMLSupport::parse_float(vs_config->getVariable("physics", "definite_damage_chance", ".1"));
     float chance = 1 - (damage_chance * (guaranteed_chance + hull_percent));
     if (numhits > 1) {
-        chance = pow(chance, numhits);
+        chance = std::pow(chance, numhits);
     }
-    return rand01() > chance;
+    return randomDouble() > chance;
 }
 
 bool DestroyPlayerSystem(float hull_percent, float numhits) {
@@ -1494,9 +1493,9 @@ bool DestroyPlayerSystem(float hull_percent, float numhits) {
             XMLSupport::parse_float(vs_config->getVariable("physics", "definite_damage_chance", ".1"));
     float chance = 1 - (damage_chance * (guaranteed_chance + hull_percent));
     if (numhits > 1) {
-        chance = pow(chance, numhits);
+        chance = std::pow(chance, numhits);
     }
-    bool ret = (rand01() > chance);
+    bool ret = (randomDouble() > chance);
     if (ret) {
         //VS_LOG(warning, "DAAAAAAMAGED!!!!");
     }
@@ -2039,14 +2038,6 @@ int Unit::Dock(Unit *utdw) {
     }
     return 0;
 }
-
-inline bool insideDock(const DockingPorts &dock, const QVector &pos, float radius) {
-    if (dock.IsOccupied()) {
-        return false;
-    }
-    return IsShorterThan(pos - dock.GetPosition(), double(radius + dock.GetRadius()));
-}
-
 
 
 bool Unit::IsCleared(const Unit *DockingUnit) const {
@@ -3327,7 +3318,7 @@ void Unit::ImportPartList(const std::string &category, float price, float priced
                         XMLSupport::parse_float(vs_config->getVariable("cargo", "min_price_quant_adj", "1"));
                 static float
                         powah = XMLSupport::parse_float(vs_config->getVariable("cargo", "price_quant_adj_power", "1"));
-                renormprice = pow(renormprice, powah);
+                renormprice = std::pow(renormprice, powah);
                 renormprice *= (maxpricequantadj - minpricequantadj);
                 renormprice += 1;
                 if (renormprice > .001) {
@@ -3457,7 +3448,6 @@ using std::string;
  *** UNIT_REPAIR STUFF                                                               **
  **************************************************************************************
  */
-extern float rand01();
 
 bool isWeapon(std::string name) {
     if (name.find("Weapon") != std::string::npos) {

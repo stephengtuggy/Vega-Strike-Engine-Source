@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2001-2023 Daniel Horn, Roy Falk, pyramid3d,
+ * planet.h
+ *
+ * Copyright (C) 2001-2025 Daniel Horn, Roy Falk, pyramid3d,
  * Stephen G. Tuggy, Benjamen R. Meyer, and other Vega Strike contributors.
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
@@ -57,7 +59,8 @@ protected:
     bool inside = false;
     bool atmospheric = false; //then users can go inside!
     float radius = 0.0f;
-    float gravity;
+    float gravity{};
+    float days{};
     UnitCollection insiders;
     std::vector<int> lights;
 public:
@@ -85,31 +88,33 @@ public:
             const std::vector<GFXLightLocal> &,
             int faction,
             string fullname,
-            bool inside_out = false);
+            bool inside_out = false,
+            float days = 0.0F);
 
     void InitPlanet(QVector x,
-            QVector y,
-            float vely,
-            const Vector &rotvel,
-            float pos,
-            float gravity,
-            float radius,
-            const string &filename,
-            const string &technique,
-            const string &unitname,
-            const vector<string> &dest,
-            const QVector &orbitcent,
-            Unit *parent,
-            int faction,
-            string fullname,
-            bool inside_out,
-            unsigned int lights_num);
+                    QVector y,
+                    float vely,
+                    const Vector &rotvel,
+                    float pos,
+                    float gravity,
+                    float radius,
+                    const string &filename,
+                    const string &technique,
+                    const string &unitname,
+                    const vector<string> &dest,
+                    const QVector &orbitcent,
+                    Unit *parent,
+                    int faction,
+                    string fullname,
+                    bool inside_out,
+                    unsigned int lights_num,
+                    float days = 0.0F);
 
-    virtual ~Planet();
+    ~Planet() override;
 
     friend class PlanetaryOrbit;
 
-    enum Vega_UnitType isUnit() const {
+    enum Vega_UnitType isUnit() const override {
         return Vega_UnitType::planet;
     }
 
@@ -143,28 +148,28 @@ public:
     Vector AddSpaceElevator(const std::string &name, const std::string &faction, char direction);
 
     Unit *beginElement(QVector x,
-            QVector y,
-            float vely,
-            const Vector &rotvel,
-            float pos,
-            float gravity,
-            float radius,
-            const string &filename,
-            const string &technique,
-            const string &unitname,
-            BLENDFUNC blendsrc,
-            BLENDFUNC blenddst,
-            const vector<string> &dest,
-            int level,
-            const GFXMaterial &ourmat,
-            const std::vector<GFXLightLocal> &ligh,
-            bool isunit,
-            int faction,
-            string fullname,
-            bool inside_out);
+                       QVector y,
+                       float vely,
+                       const Vector &rotvel,
+                       float pos,
+                       float gravity,
+                       float radius,
+                       const string &filename,
+                       const string &technique,
+                       const string &unitname,
+                       BLENDFUNC blendsrc,
+                       BLENDFUNC blenddst,
+                       const vector<string> &dest,
+                       int level,
+                       const GFXMaterial &ourmat,
+                       const std::vector<GFXLightLocal> &ligh,
+                       bool isunit,
+                       int faction,
+                       string fullname,
+                       bool inside_out, float days);
 
     void DisableLights();
-    virtual void Draw(const Transformation &quat = identity_transformation, const Matrix &m = identity_matrix);
+    void Draw(const Transformation &quat = identity_transformation, const Matrix &m = identity_matrix) override;
     void DrawTerrain();
     void EnableLights();
     void endElement();
@@ -196,6 +201,10 @@ public:
 
     void setAtmosphere(Atmosphere *);
     PlanetaryTransform *setTerrain(ContinuousTerrain *, float ratiox, int numwraps, float scaleatmos);
+
+    bool is_nav_point() const {
+        return gravity == 0.0F && days == 240.0F;
+    }
 
     class PlanetIterator {
     public:

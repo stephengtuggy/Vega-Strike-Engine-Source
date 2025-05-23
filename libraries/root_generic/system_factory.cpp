@@ -1,6 +1,12 @@
 /*
- * Copyright (C) 2001-2022 Daniel Horn, pyramid3d, Stephen G. Tuggy,
- * and other Vega Strike contributors.
+ * system_factory.cpp
+ *
+ * Vega Strike - Space Simulation, Combat and Trading
+ * Copyright (C) 2001-2025 The Vega Strike Contributors:
+ * Project creator: Daniel Horn
+ * Original development team: As listed in the AUTHORS file
+ * Current development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy
+ *
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -17,7 +23,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Vega Strike. If not, see <https://www.gnu.org/licenses/>.
+ * along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "root_generic/system_factory.h"
@@ -266,6 +272,7 @@ Planet *SystemFactory::processPlanet(Star_XML *xml, Object &object, Planet *owne
     float radius = getFloatAttribute(object, "radius", 0.0f);
     float position = getFloatAttribute(object, "position", 0.0f);
     float rotational_velocity = getFloatAttribute(object, "day", 0.0f);
+    float days = rotational_velocity;
     int faction = 0;
     bool isDestination = false;
     bool insideout = getBoolAttribute(object, "InsideOut", false);
@@ -320,7 +327,7 @@ Planet *SystemFactory::processPlanet(Star_XML *xml, Object &object, Planet *owne
         stream >> index >> local;
 
         Light light = lights[index];
-        GFXLight gfx_light(true, Vector(0, 0, 0));
+        GFXLight gfx_light(true, GFXColor(0, 0, 0, 1));
         gfx_light.SetProperties(AMBIENT, light.ambient);
         gfx_light.SetProperties(DIFFUSE, light.diffuse);
         gfx_light.SetProperties(SPECULAR, light.specular);
@@ -399,7 +406,7 @@ Planet *SystemFactory::processPlanet(Star_XML *xml, Object &object, Planet *owne
             filename, technique, unitname,
             blend_source, blend_destination, destination,
             orbit_center, owner, ourmat, curlights, faction,
-            fullname, insideout);
+            fullname, insideout, days);
 
     if (owner == nullptr) {
         // The sun or another body orbiting the center of the system

@@ -1,7 +1,7 @@
 /*
  * vdu.cpp
  *
- * Copyright (C) 2001-2022 Daniel Horn, pyramid3d, Stephen G. Tuggy,
+ * Copyright (C) 2001-2025 Daniel Horn, pyramid3d, Stephen G. Tuggy,
  * and other Vega Strike contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
@@ -28,6 +28,8 @@
 /// target info, and objectives
 
 #include "gfx/vdu.h"
+
+#include "vega_cast_utils.h"
 #include "cmd/unit_util.h"
 #include "gfx/hud.h"
 #include "root_generic/vs_globals.h"
@@ -606,32 +608,44 @@ void VDU::DrawTarget(GameCockpit *cp, Unit *parent, Unit *target) {
         armor_up = armor_down = armor_left = armor_right = target->hull.Percent();
     }
 
+    VSSprite* vs_sprite;
+    VSSprite* hud_image = target->getHudImage();
+    Vega_UnitType unit_type = target->isUnit();
+    if (hud_image) {
+        vs_sprite = hud_image;
+    } else if (!target->GetDestinations().empty()) {
+        vs_sprite = getJumpImage();
+    } else if (unit_type == Vega_UnitType::planet) {
+        const Planet * target_as_planet = vega_dynamic_const_cast_ptr<const Planet>(target);
+        if (target_as_planet->hasLights()) {
+            vs_sprite = getSunImage();
+        } else if (target_as_planet->is_nav_point()) {
+            vs_sprite = getNavImage();
+        } else {
+            vs_sprite = getPlanetImage();
+        }
+    } else {
+        vs_sprite = getPlanetImage();
+    }
     DrawHUDSprite(this,
-            ((target->isUnit() != Vega_UnitType::planet || target->getHudImage() != NULL) ? target->getHudImage()
-                    : (
-                            target->GetDestinations().size() != 0 ? getJumpImage()
-                                    : (((Planet *) target)->hasLights() ? getSunImage()
-                                    : (
-                                            target->getFullname().find(
-                                                    "invisible") != string::npos
-                                                    ? getNavImage() : getPlanetImage())))),
-            .6,
-            x,
-            y,
-            w,
-            h,
-            armor_up,
-            armor_right,
-            armor_left,
-            armor_down,
-            target->hull.Percent(),
-            true,
-            invert_target_sprite);
+                  vs_sprite,
+                  .6,
+                  x,
+                  y,
+                  w,
+                  h,
+                  armor_up,
+                  armor_right,
+                  armor_left,
+                  armor_down,
+                  target->hull.Percent(),
+                  true,
+                  invert_target_sprite);
 
     GFXDisable(TEXTURE0);
     //sprintf (t,"\n%4.1f %4.1f",target->FShieldData()*100,target->RShieldData()*100);
     double mm = 0;
-    string unitandfg = getUnitNameAndFgNoBase(target).c_str();
+    string unitandfg = getUnitNameAndFgNoBase(target);
     const bool out_of_cone_information = configuration()->graphics.hud.out_of_cone_distance;
     bool inrange = parent->InRange(target, mm, out_of_cone_information == false && !UnitUtil::isSignificant(
             target), false, false);
@@ -658,8 +672,7 @@ void VDU::DrawTarget(GameCockpit *cp, Unit *parent, Unit *target) {
             false,
             automatte);
     tp->bgcol = tpbg;
-    static float auto_message_lim =
-            XMLSupport::parse_float(vs_config->getVariable("graphics", "auto_message_time_lim", "5"));
+    const float auto_message_lim = configuration()->graphics.auto_message_time_lim;
     float delautotime = UniverseUtil::GetGameTime() - cp->autoMessageTime;
     bool draw_auto_message = (delautotime < auto_message_lim && cp->autoMessage.length() != 0);
     if (inrange) {
@@ -1024,8 +1037,8 @@ void VDU::DrawManifest(Unit *parent, Unit *target) {
 static void DrawGun(Vector pos, float w, float h, MOUNT_SIZE sz) {
     w = fabs(w);
     h = fabs(h);
-    float oox = 1. / g_game.x_resolution;
-    float ooy = 1. / g_game.y_resolution;
+    float oox = 1. / configuration()->graphics.resolution_x;
+    float ooy = 1. / configuration()->graphics.resolution_y;
     pos.j -= h / 3.8;
     if (sz == MOUNT_SIZE::NOWEAP) {
         GFXPointSize(4);
@@ -1306,8 +1319,8 @@ void VDU::DrawStarSystemAgain(float x, float y, float w, float h, VIEWSTYLE view
     GFXEnable(DEPTHTEST);
     GFXEnable(DEPTHWRITE);
     VIEWSTYLE which = viewStyle;
-    float tmpaspect = g_game.aspect;
-    g_game.aspect = w / h;
+    float tmpaspect = configuration()->graphics.aspect;
+    configuration()->graphics.aspect = w / h;
     _Universe->AccessCamera(which)->SetSubwindow(x, y, w, h);
     _Universe->SelectCamera(which);
     VIEWSTYLE tmp = _Universe->AccessCockpit()->GetView();
@@ -1317,7 +1330,7 @@ void VDU::DrawStarSystemAgain(float x, float y, float w, float h, VIEWSTYLE view
     GFXClear(GFXFALSE);
     GFXColor4f(1, 1, 1, 1);
     _Universe->activeStarSystem()->Draw(false);
-    g_game.aspect = tmpaspect;
+    configuration()->graphics.aspect = tmpaspect;
     _Universe->AccessCamera(which)->SetSubwindow(0, 0, 1, 1);
     _Universe->AccessCockpit()->SetView(tmp);
     _Universe->AccessCockpit()->SelectProperCamera();

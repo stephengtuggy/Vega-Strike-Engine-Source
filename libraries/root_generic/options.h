@@ -1,6 +1,12 @@
 /*
- * Copyright (C) 2001-2025 Daniel Horn, pyramid3d, Stephen G. Tuggy, Benjamen R. Meyer,
- * and other Vega Strike contributors.
+ * options.h
+ *
+ * Vega Strike - Space Simulation, Combat and Trading
+ * Copyright (C) 2001-2025 The Vega Strike Contributors:
+ * Project creator: Daniel Horn
+ * Original development team: As listed in the AUTHORS file
+ * Current development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy
+ *
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -17,7 +23,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Vega Strike. If not, see <https://www.gnu.org/licenses/>.
+ * along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
  */
 #ifndef VEGA_STRIKE_ENGINE_OPTIONS_H
 #define VEGA_STRIKE_ENGINE_OPTIONS_H
@@ -44,10 +50,8 @@ public:
     bool command_interpretor{};
     bool load_last_savegame{};
     bool debug_fs{};
-    float simulation_atom{};
-    float audio_atom{};
 
-/* Audio Options */
+    /* Audio Options */
     int threadtime{};
     std::string missionvictorysong;
     bool Music{};
@@ -141,10 +145,6 @@ public:
     bool separatespecularcolor{};
     bool LockVertexArrays{};
     int fogdetail{};
-    float fov{};
-    float aspect{};
-    float znear{};
-    float zfar{};
     float ModelDetail{};
     bool UseTextures{};
     bool UseShipTextures{};
@@ -253,7 +253,6 @@ public:
     bool game_speed_affects_autogen_systems{};
     double star_system_scale{};
     double respawn_unit_size{};
-    float auto_pilot_planet_radius_percent{};
     std::string campaigns;              //WRONG SECTION ...change after 0.5
     uint NumRunningSystems{};
     float InactiveSystemTime{};

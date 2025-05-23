@@ -1,8 +1,13 @@
 /*
  * vsfilesystem.cpp
  *
- * Copyright (C) 2001-2025 Daniel Horn, Nachum Barcohen, Roy Falk,
- * pyramid3d, Stephen G. Tuggy, and other Vega Strike contributors.
+ * Vega Strike - Space Simulation, Combat and Trading
+ * Copyright (C) 2001-2025 The Vega Strike Contributors:
+ * Project creator: Daniel Horn
+ * Original development team: As listed in the AUTHORS file
+ * Also: Nachum Barcohen, pyramid3d
+ * Current development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy
+ *
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -935,9 +940,9 @@ void InitPaths(string conf, string subdir) {
     Directories[PythonFile] = "bases";
     Directories[AccountFile] = "accounts";
 
-    SIMULATION_ATOM = game_options()->simulation_atom;
+    SIMULATION_ATOM = configuration()->general.simulation_atom;
     simulation_atom_var = SIMULATION_ATOM;
-    AUDIO_ATOM = game_options()->audio_atom;
+    AUDIO_ATOM = configuration()->general.audio_atom;
     audio_atom_var = AUDIO_ATOM;
     VS_LOG(info, (boost::format("SIMULATION_ATOM: %1%") % SIMULATION_ATOM));
 

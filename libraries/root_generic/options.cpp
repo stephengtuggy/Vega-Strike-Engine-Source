@@ -1,6 +1,12 @@
 /*
- * Copyright (C) 2001-2025 Daniel Horn, pyramid3d, Stephen G. Tuggy,
- * and other Vega Strike contributors.
+ * options.cpp
+ *
+ * Vega Strike - Space Simulation, Combat and Trading
+ * Copyright (C) 2001-2025 The Vega Strike Contributors:
+ * Project creator: Daniel Horn
+ * Original development team: As listed in the AUTHORS file
+ * Current development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy
+ *
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -17,7 +23,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Vega Strike. If not, see <https://www.gnu.org/licenses/>.
+ * along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "root_generic/options.h"
@@ -32,8 +38,6 @@ void vs_options::init() {
     command_interpretor = XMLSupport::parse_bool(vs_config->getVariable("general", "command_interpretor", "false"));
     load_last_savegame = XMLSupport::parse_bool(vs_config->getVariable("general", "load_last_savegame", "false"));
     debug_fs = XMLSupport::parse_int(vs_config->getVariable("general", "debug_fs", "0"));
-    simulation_atom = XMLSupport::parse_floatf(vs_config->getVariable("general", "simulation_atom", "0.1"));
-    audio_atom = XMLSupport::parse_floatf(vs_config->getVariable("general", "audio_atom", "0.05555555556"));
 
 
     /* Audio Options */
@@ -143,10 +147,6 @@ void vs_options::init() {
             XMLSupport::parse_bool(vs_config->getVariable("graphics", "separatespecularcolor", "false"));
     LockVertexArrays = XMLSupport::parse_bool(vs_config->getVariable("graphics", "LockVertexArrays", "true"));
     fogdetail = XMLSupport::parse_int(vs_config->getVariable("graphics", "fogdetail", "0"));
-    fov = XMLSupport::parse_floatf(vs_config->getVariable("graphics", "fov", "78"));
-    aspect = XMLSupport::parse_floatf(vs_config->getVariable("graphics", "aspect", "1.33"));
-    znear = XMLSupport::parse_floatf(vs_config->getVariable("graphics", "znear", "1"));
-    zfar = XMLSupport::parse_floatf(vs_config->getVariable("graphics", "zfar", "100000"));
     ModelDetail = XMLSupport::parse_floatf(vs_config->getVariable("graphics", "ModelDetail", "1"));
     UseTextures = XMLSupport::parse_bool(vs_config->getVariable("graphics", "UseTextures", "true"));
     UseShipTextures = XMLSupport::parse_bool(vs_config->getVariable("graphics", "UseShipTextures", "false"));
@@ -264,11 +264,9 @@ void vs_options::init() {
             XMLSupport::parse_bool(vs_config->getVariable("physics", "game_speed_affects_autogen_systems", "false"));
     star_system_scale = XMLSupport::parse_float(vs_config->getVariable("physics", "star_system_scale", "1.0"));
     respawn_unit_size = XMLSupport::parse_float(vs_config->getVariable("physics", "respawn_unit_size", "400.0"));
-    auto_pilot_planet_radius_percent =
-            XMLSupport::parse_floatf(vs_config->getVariable("physics", "auto_pilot_planet_radius_percent", ".75"));
     campaigns = vs_config->getVariable("physics",
-            "campaigns",
-            "privateer_campaign vegastrike_campaign");     //WRONG SECTION   change after 0.5
+                                       "campaigns",
+                                       "privateer_campaign vegastrike_campaign");     //WRONG SECTION   change after 0.5
     NumRunningSystems = XMLSupport::parse_int(vs_config->getVariable("physics", "NumRunningSystems", "4"));
     InactiveSystemTime = XMLSupport::parse_floatf(vs_config->getVariable("physics", "InactiveSystemTime", "0.3"));
     jump_radius_scale = XMLSupport::parse_floatf(vs_config->getVariable("physics", "jump_radius_scale", "2"));

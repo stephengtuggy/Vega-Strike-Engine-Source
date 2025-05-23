@@ -89,6 +89,7 @@
 #include "cmd/weapon_info.h"
 #include "gfx/cockpit_gfx.h"
 #include "cmd/dock_utils.h"
+#include "resource/random_utils.h"
 
 #include <cstddef>
 #include <cfloat>
@@ -96,7 +97,6 @@
 using std::min;
 using std::max;
 
-extern float rand01();
 using VSFileSystem::SoundFile;
 #define SWITCH_CONST (.9)
 /* The smaller VERYNEAR_CONST is, the worse Z-Buffer precision will be. So keep this above 0.004) */
@@ -386,15 +386,14 @@ float GameCockpit::LookupUnitStat(int stat, Unit *target) {
                 if (go == 0) {
                     static soundContainer ejectstopsound;
                     if (ejectstopsound.sound < 0) {
-                        static string
-                                str = vs_config->getVariable("cockpitaudio", "overload_stopped", "overload_stopped");
+                        const std::string str = configuration()->cockpit_audio.overload_stopped;
                         ejectstopsound.loadsound(str);
                     }
                     ejectstopsound.playsound();
                 } else {
                     static soundContainer ejectsound;
                     if (ejectsound.sound < 0) {
-                        static string str = vs_config->getVariable("cockpitaudio", "overload", "overload");
+                        const std::string str = configuration()->cockpit_audio.overload;
                         ejectsound.loadsound(str);
                     }
                     ejectsound.playsound();
@@ -405,8 +404,7 @@ float GameCockpit::LookupUnitStat(int stat, Unit *target) {
         }
         case UnitImages<void>::LOCK: {
             float distance;
-            static float
-                    locklight_time = XMLSupport::parse_float(vs_config->getVariable("graphics", "locklight_time", "1"));
+            const float locklight_time = configuration()->graphics.locklight_time;
             bool res = false;
             if ((tmpunit = target->GetComputerData().threat.GetUnit())) {
                 res = tmpunit->cosAngleTo(target, distance, FLT_MAX, FLT_MAX) > .95;
@@ -417,17 +415,15 @@ float GameCockpit::LookupUnitStat(int stat, Unit *target) {
             return (res || ((UniverseUtil::GetGameTime() - last_locktime) < locklight_time)) ? 1.0f : 0.0f;
         }
         case UnitImages<void>::MISSILELOCK: {
-            static float
-                    locklight_time = XMLSupport::parse_float(vs_config->getVariable("graphics", "locklight_time", "1"));
-            bool res = target->graphicOptions.missilelock;
+            const float locklight_time = configuration()->graphics.locklight_time;
+            const bool res = target->graphicOptions.missilelock;
             if (res) {
                 last_mlocktime = UniverseUtil::GetGameTime();
             }
             return (res || ((UniverseUtil::GetGameTime() - last_mlocktime) < locklight_time)) ? 1.0f : 0.0f;
         }
         case UnitImages<void>::COLLISION: {
-            static double collidepanic =
-                    XMLSupport::parse_float(vs_config->getVariable("physics", "collision_inertial_time", "1.25"));
+            const double collidepanic = configuration()->physics.collision_inertial_time;
             return (getNewTime() - TimeOfLastCollision) < collidepanic;
         }
         case UnitImages<void>::ECM:
@@ -526,17 +522,13 @@ float GameCockpit::LookupUnitStat(int stat, Unit *target) {
         case UnitImages<void>::AUTOPILOT: {
             static int wasautopilot = 0;
             int abletoautopilot = 0;
-            static bool auto_valid =
-                    XMLSupport::parse_bool(vs_config->getVariable("physics",
-                            "insystem_jump_or_timeless_auto-pilot",
-                            "false"));
+            const bool auto_valid = configuration()->physics.in_system_jump_or_timeless_auto_pilot;
             if (target) {
                 if (!auto_valid) {
                     abletoautopilot = (target->ftl_drive.Enabled());
                 } else {
                     abletoautopilot = (target->AutoPilotTo(target, false) ? 1 : 0);
-                    static float no_auto_light_below =
-                            XMLSupport::parse_float(vs_config->getVariable("physics", "no_auto_light_below", "2000"));
+                    const float no_auto_light_below = configuration()->physics.no_auto_light_below;
                     Unit *targtarg = target->Target();
                     if (targtarg) {
                         if ((target->Position() - targtarg->Position()).Magnitude() - targtarg->rSize()
@@ -551,18 +543,14 @@ float GameCockpit::LookupUnitStat(int stat, Unit *target) {
                 if (abletoautopilot == 0) {
                     static soundContainer autostopsound;
                     if (autostopsound.sound < 0) {
-                        static string str = vs_config->getVariable("cockpitaudio",
-                                "autopilot_available",
-                                "autopilot_available");
+                        const std::string str = configuration()->cockpit_audio.autopilot_available;
                         autostopsound.loadsound(str);
                     }
                     autostopsound.playsound();
                 } else {
                     static soundContainer autosound;
                     if (autosound.sound < 0) {
-                        static string str = vs_config->getVariable("cockpitaudio",
-                                "autopilot_unavailable",
-                                "autopilot_unavailable");
+                        const std::string str = configuration()->cockpit_audio.autopilot_unavailable;
                         autosound.loadsound(str);
                     }
                     autosound.playsound();
@@ -573,131 +561,133 @@ float GameCockpit::LookupUnitStat(int stat, Unit *target) {
         }
         case UnitImages<void>::COCKPIT_FPS:
             if (fpsval >= 0 && fpsval < .5 * FLT_MAX) {
-                numtimes -= .1 + fpsval;
+                numtimes -= 0.1F + fpsval;
             }
             if (numtimes <= 0) {
                 numtimes = fpsmax;
                 fpsval = GetElapsedTime();
             }
             if (fpsval) {
-                return 1. / fpsval;
+                return 1.0F / fpsval;
             }
         case UnitImages<void>::AUTOPILOT_MODAL:
             if (target->autopilotactive) {
-                return (float) UnitImages<void>::ACTIVE;
+                return static_cast<float>(UnitImages<void>::ACTIVE);
             } else {
-                return (float) UnitImages<void>::OFF;
+                return static_cast<float>(UnitImages<void>::OFF);
             }
         case UnitImages<void>::SPEC_MODAL:
             if (target->graphicOptions.WarpRamping) {
-                return (float) UnitImages<void>::SWITCHING;
+                return static_cast<float>(UnitImages<void>::SWITCHING);
             } else if (target->ftl_drive.Enabled()) {
-                return (float) UnitImages<void>::ACTIVE;
+                return static_cast<float>(UnitImages<void>::ACTIVE);
             } else {
-                return (float) UnitImages<void>::OFF;
+                return static_cast<float>(UnitImages<void>::OFF);
             }
         case UnitImages<void>::FLIGHTCOMPUTER_MODAL:
             if (target->inertialmode) {
-                return (float) UnitImages<void>::OFF;
+                return static_cast<float>(UnitImages<void>::OFF);
             } else {
-                return (float) UnitImages<void>::ON;
+                return static_cast<float>(UnitImages<void>::ON);
             }
         case UnitImages<void>::TURRETCONTROL_MODAL:
             if (0 == target->turretstatus) {
-                return (float) UnitImages<void>::NOTAPPLICABLE;
+                return static_cast<float>(UnitImages<void>::NOTAPPLICABLE);
             } else if (2 == target->turretstatus) {          //FIXME -- need to check if turrets are active
-                return (float) UnitImages<void>::ACTIVE;
+                return static_cast<float>(UnitImages<void>::ACTIVE);
             } else if (3 == target->turretstatus) {          //FIXME -- need to check if turrets are in FireAtWill state
-                return (float) UnitImages<void>::FAW;
+                return static_cast<float>(UnitImages<void>::FAW);
             } else {
-                return (float) UnitImages<void>::OFF;
+                return static_cast<float>(UnitImages<void>::OFF);
             }
         case UnitImages<void>::ECM_MODAL:
             if (target->ecm.Get() > 0) {
-                return (target->ecm.Active() ? (float) UnitImages<void>::ACTIVE
-                        : (float) UnitImages<void>::READY);
+                return (target->ecm.Active() ? static_cast<float>(UnitImages<void>::ACTIVE)
+                        : static_cast<float>(UnitImages<void>::READY));
             } else {
-                return (float) UnitImages<void>::NOTAPPLICABLE;
+                return static_cast<float>(UnitImages<void>::NOTAPPLICABLE);
             }
         case UnitImages<void>::CLOAK_MODAL:
             if (!target->cloak.Capable() || target->cloak.Damaged()) {
-                return (float) UnitImages<void>::NOTAPPLICABLE;
+                return static_cast<float>(UnitImages<void>::NOTAPPLICABLE);
             } else if (target->cloak.Ready()) {
-                return (float) UnitImages<void>::READY;
+                return static_cast<float>(UnitImages<void>::READY);
             } else if (target->cloak.Cloaked()) {
-                return (float) UnitImages<void>::ACTIVE;
+                return static_cast<float>(UnitImages<void>::ACTIVE);
             } else {
-                return (float) UnitImages<void>::SWITCHING;
+                return static_cast<float>(UnitImages<void>::SWITCHING);
             }
         case UnitImages<void>::TRAVELMODE_MODAL:
             if (target->CombatMode()) {
-                return (float) UnitImages<void>::MANEUVER;
+                return static_cast<float>(UnitImages<void>::MANEUVER);
             } else {
-                return (float) UnitImages<void>::TRAVEL;
+                return static_cast<float>(UnitImages<void>::TRAVEL);
             }
         case UnitImages<void>::RECIEVINGFIRE_MODAL:
             if (!target) {          //FIXME
-                return (float) UnitImages<void>::WARNING;
+                return static_cast<float>(UnitImages<void>::WARNING);
             } else {
-                return (float) UnitImages<void>::NOMINAL;
+                return static_cast<float>(UnitImages<void>::NOMINAL);
             }
         case UnitImages<void>::RECEIVINGMISSILES_MODAL:
             if (!target) {          //FIXME
-                return (float) UnitImages<void>::WARNING;
+                return static_cast<float>(UnitImages<void>::WARNING);
             } else {
-                return (float) UnitImages<void>::NOMINAL;
+                return static_cast<float>(UnitImages<void>::NOMINAL);
             }
         case UnitImages<void>::RECEIVINGMISSILELOCK_MODAL:
             if (!target) {          //FIXME
-                return (float) UnitImages<void>::WARNING;
+                return static_cast<float>(UnitImages<void>::WARNING);
             } else {
-                return (float) UnitImages<void>::NOMINAL;
+                return static_cast<float>(UnitImages<void>::NOMINAL);
             }
         case UnitImages<void>::RECEIVINGTARGETLOCK_MODAL:
             if (!target) {          //FIXME
-                return (float) UnitImages<void>::WARNING;
+                return static_cast<float>(UnitImages<void>::WARNING);
             } else {
-                return (float) UnitImages<void>::NOMINAL;
+                return static_cast<float>(UnitImages<void>::NOMINAL);
             }
         case UnitImages<void>::COLLISIONWARNING_MODAL:
             if (!target) {          //FIXME
-                return (float) UnitImages<void>::WARNING;
+                return static_cast<float>(UnitImages<void>::WARNING);
             } else {
-                return (float) UnitImages<void>::NOMINAL;
+                return static_cast<float>(UnitImages<void>::NOMINAL);
             }
         case UnitImages<void>::CANJUMP_MODAL:
             if (!target->jump_drive.Installed() || !target->jump_drive.Operational()) {
-                return (float) UnitImages<void>::NODRIVE;
+                return static_cast<float>(UnitImages<void>::NODRIVE);
             } else if (!target->jump_drive.CanConsume()) {
-                return (float) UnitImages<void>::NOTENOUGHENERGY;
+                return static_cast<float>(UnitImages<void>::NOTENOUGHENERGY);
             } else if (target->ftl_drive.Enabled()) {          //FIXME
-                return (float) UnitImages<void>::OFF;
+                return static_cast<float>(UnitImages<void>::OFF);
             } else if (jumpok) {
-                return (float) UnitImages<void>::READY;
+                return static_cast<float>(UnitImages<void>::READY);
             } else {
-                return (float) UnitImages<void>::TOOFAR;
+                return static_cast<float>(UnitImages<void>::TOOFAR);
             }
         case UnitImages<void>::CANDOCK_MODAL: {
             Unit *station = target->Target();
             if (station) {
                 if(target->isUnit() != Vega_UnitType::planet ) {
-                    return (float) UnitImages<void>::NOMINAL;
+                    return static_cast<float>(UnitImages<void>::NOMINAL);
                 }
 
                 if (CanDock(station, target, true) != -1) {
                     if (CanDock(station, target, false) != -1) {
-                        return (float) UnitImages<void>::READY;
+                        return static_cast<float>(UnitImages<void>::READY);
                     }
                     if (Orders::AutoDocking::CanDock(target, station)) {
-                        return (float) UnitImages<void>::AUTOREADY;
+                        return static_cast<float>(UnitImages<void>::AUTOREADY);
                     }
-                    return (float) UnitImages<void>::TOOFAR;
+                    return static_cast<float>(UnitImages<void>::TOOFAR);
                 }
             }
-            return (float) UnitImages<void>::NOMINAL;
+            return static_cast<float>(UnitImages<void>::NOMINAL);
         }
+        default:
+            return 1.0F;
     }
-    return 1.0f;
+    return 1.0F;
 }
 
 
@@ -861,7 +851,7 @@ void GameCockpit::TriggerEvents(Unit *un) {
 
 
 void GameCockpit::Init(const char *file) {
-    smooth_fov = g_game.fov;
+    smooth_fov = configuration()->graphics.fov;
     editingTextMessage = false;
     Cockpit::Init(file);
     if (Panel.size() > 0) {
@@ -979,9 +969,9 @@ GameCockpit::GameCockpit(const char *file, Unit *parent, const std::string &pilo
     projection_limit_y = limit_y;
     //The angle between the center of the screen and the border is half the fov.
     projection_limit_y = tan(projection_limit_y * M_PI / (180 * 2));
-    projection_limit_x = projection_limit_y * g_game.aspect;
+    projection_limit_x = projection_limit_y * configuration()->graphics.aspect;
     //Precompute this division... performance.
-    inv_screen_aspect_ratio = 1 / g_game.aspect;
+    inv_screen_aspect_ratio = 1 / configuration()->graphics.aspect;
 
     oaccel = Vector(0, 0, 0);
 
@@ -1364,7 +1354,7 @@ static void DrawHeadingMarker(Cockpit &cp, const GFXColor &col) {
     cam->GetPQR(p, q, r);
 
     // znear offset
-    float offset = 2 * g_game.znear / cos(cam->GetFov() * M_PI / 180.0);
+    float offset = 2 * configuration()->graphics.znear / cos(cam->GetFov() * M_PI / 180.0);
     v *= offset;
     d *= offset;
 
@@ -1507,7 +1497,7 @@ void GameCockpit::Draw() {
             if (par) {
                 //cockpit is unaffected by FOV WARP-Link
                 float oldfov = AccessCamera()->GetFov();
-                AccessCamera()->SetFov(g_game.fov);
+                AccessCamera()->SetFov(configuration()->graphics.fov);
 
                 GFXLoadIdentity(MODEL);
 
@@ -1599,7 +1589,7 @@ void GameCockpit::Draw() {
                 } else {
                     caccel = Vector(0, 0, 0);
                 }
-                float driftphase = pow(0.25, GetElapsedTime());
+                float driftphase = std::pow(0.25, GetElapsedTime());
                 oaccel = (1 - driftphase) * caccel + driftphase * oaccel;
                 headtrans.back().p += -cockpitradial * oaccel;
                 float driftmag = cockpitradial * oaccel.Magnitude();
@@ -1797,7 +1787,7 @@ void GameCockpit::Draw() {
                         if (damage < .985) {
                             if (vdu_time[vd] >= 0) {
                                 if (damage > .001 && (cockpit_time > (vdu_time[vd] + (1 - damage)))) {
-                                    if (rand01() > SWITCH_CONST) {
+                                    if (randomDouble() > SWITCH_CONST) {
                                         vdu_time[vd] = -cockpit_time;
                                     }
                                 }
@@ -1818,7 +1808,7 @@ void GameCockpit::Draw() {
                                  *
                                  *  }*/
                             } else if (cockpit_time > ((1 - (-vdu_time[vd])) + (damage))) {
-                                if (rand01() > SWITCH_CONST) {
+                                if (randomDouble() > SWITCH_CONST) {
                                     vdu_time[vd] = cockpit_time;
                                 }
                             }
@@ -2015,13 +2005,12 @@ void GameCockpit::Draw() {
             GFXEnable(TEXTURE0);
             //GFXDisable (DEPTHTEST);
             //GFXDisable(TEXTURE1);
-            static float deadband = game_options()->mouse_deadband;
-            static int revspr =
-                    XMLSupport::parse_bool(vs_config->getVariable("joystick", "reverse_mouse_spr", "true")) ? 1 : -1;
-            static string blah = vs_config->getVariable("joystick", "mouse_crosshair", "crosshairs.spr");
-            static VSSprite MouseVSSprite(blah.c_str(), BILINEAR, GFXTRUE);
-            float xcoord = (-1 + float(mousex) / (.5 * g_game.x_resolution));
-            float ycoord = (-revspr + float(revspr * mousey) / (.5 * g_game.y_resolution));
+            const float deadband = configuration()->joystick.mouse_deadband;
+            const int reverse_spr = configuration()->joystick.reverse_mouse_spr;
+            const string blah = configuration()->joystick.mouse_crosshair;
+            VSSprite MouseVSSprite(blah.c_str(), BILINEAR, GFXTRUE);
+            float xcoord = (-1.0F + float(mousex) / (0.5 * configuration()->graphics.resolution_x));
+            float ycoord = (-reverse_spr + float(reverse_spr * mousey) / (.5 * configuration()->graphics.resolution_y));
             MouseVSSprite.SetPosition(xcoord * (1 - fabs(crosscenx)) + crosscenx,
                     ycoord * (1 - fabs(crossceny)) + crossceny);
             float xs, ys;
@@ -2049,7 +2038,7 @@ void GameCockpit::Draw() {
     {
         //again, NAV computer is unaffected by FOV WARP-Link
         float oldfov = AccessCamera()->GetFov();
-        AccessCamera()->SetFov(g_game.fov);
+        AccessCamera()->SetFov(configuration()->graphics.fov);
         AccessCamera()->UpdateGFXAgain();
         DrawNavSystem(&ThisNav, AccessCamera(), cockpit_offset);
         AccessCamera()->SetFov(oldfov);
@@ -2327,7 +2316,7 @@ static void ShoveCamBehindUnit(int cam, Unit *un, float zoomfactor) {
     //commented out by chuck_starchaser; --never used
     QVector unpos = (/*un->GetPlanetOrbit() && !un->isSubUnit()*/ NULL) ? un->LocalPosition() : un->Position();
     _Universe->AccessCamera(cam)->SetPosition(
-            unpos - _Universe->AccessCamera()->GetR().Cast() * (un->rSize() + g_game.znear * 2) * zoomfactor,
+            unpos - _Universe->AccessCamera()->GetR().Cast() * (un->rSize() + configuration()->graphics.znear * 2) * zoomfactor,
             un->GetWarpVelocity(), un->GetAngularVelocity(), un->GetAcceleration());
 }
 
@@ -2339,7 +2328,7 @@ static void ShoveCamBelowUnit(int cam, Unit *un, float zoomfactor) {
     static float
             ammttoshovecam = XMLSupport::parse_float(vs_config->getVariable("graphics", "shove_camera_down", ".3"));
     _Universe->AccessCamera(cam)->SetPosition(
-            unpos - (r - ammttoshovecam * q).Cast() * (un->rSize() + g_game.znear * 2) * zoomfactor,
+            unpos - (r - ammttoshovecam * q).Cast() * (un->rSize() + configuration()->graphics.znear * 2) * zoomfactor,
             un->GetWarpVelocity(),
             un->GetAngularVelocity(),
             un->GetAcceleration());
@@ -2372,9 +2361,9 @@ static void translate_as(Vector &p,
 void GameCockpit::SetupViewPort(bool clip) {
     _Universe->AccessCamera()->RestoreViewPort(0, (view == CP_FRONT ? viewport_offset : 0));
     GFXViewPort(0,
-            (int) ((view == CP_FRONT ? viewport_offset : 0) * g_game.y_resolution),
-            g_game.x_resolution,
-            g_game.y_resolution);
+            (int) ((view == CP_FRONT ? viewport_offset : 0) * configuration()->graphics.resolution_y),
+            configuration()->graphics.resolution_x,
+            configuration()->graphics.resolution_y);
     _Universe->AccessCamera()->setCockpitOffset(view < CP_CHASE ? cockpit_offset : 0);
     Unit *un, *tgt;
     if ((un = parent.GetUnit())) {
@@ -2435,7 +2424,7 @@ void GameCockpit::SetupViewPort(bool clip) {
                 un->UpdateHudMatrix(CP_VIEWTARGET);
                 bool fixzone = (rr.Dot(p_r) >= padlock_view_lag_fix_cos) && (qq.Dot(p_q) >= padlock_view_lag_fix_cos);
                 float vtphase =
-                        1.0f - (float) pow(0.1, GetElapsedTime() * padlock_view_lag_inv * (fixzone ? 0.1f : 1.0f));
+                        1.0f - (float) std::pow(0.1, GetElapsedTime() * padlock_view_lag_inv * (fixzone ? 0.1f : 1.0f));
 
                 //Apply correction
                 _Universe->AccessCamera(CP_VIEWTARGET)->SetOrientation(
@@ -2548,12 +2537,12 @@ void GameCockpit::SetupViewPort(bool clip) {
                     un);               //This one is stable, as opposed to SETKPS - for full stability, use the override (user override of governor settings will create weird behaviour if done under SPEC)
             float kps = LookupUnitStat(UnitImages<void>::KPS, un);
             float st_warpfieldstrength =
-                    pow((max(stable_lowarpref,
+                    std::pow((max(stable_lowarpref,
                                     min(stable_asymptotic ? FLT_MAX : stable_hiwarpref,
                                             warpfieldstrength)) - stable_lowarpref) / (stable_hiwarpref - stable_lowarpref),
                             stable_refexp);
             float sh_warpfieldstrength =
-                    pow((max(shake_lowarpref, min(shake_asymptotic ? FLT_MAX : shake_hiwarpref,
+                    std::pow((max(shake_lowarpref, min(shake_asymptotic ? FLT_MAX : shake_hiwarpref,
                                     warpfieldstrength)) - shake_lowarpref)
                                     / (shake_hiwarpref - shake_lowarpref),
                             shake_refexp);
@@ -2597,12 +2586,12 @@ void GameCockpit::SetupViewPort(bool clip) {
             sh_mult *= sh_warpfieldstrength * costheta;
             static float fov_smoothing =
                     XMLSupport::parse_float(vs_config->getVariable("graphics", "warp.fovlink.smoothing", ".4"));
-            float fov_smoot = pow(double(fov_smoothing), GetElapsedTime());
+            float fov_smoot = std::pow(double(fov_smoothing), GetElapsedTime());
             smooth_fov =
-                    min(170.0f,
-                            max(5.0f,
+                    min(170.0,
+                            max(5.0,
                                     (1 - fov_smoot) * smooth_fov
-                                            + fov_smoot * (g_game.fov * (st_mult + sh_mult) + st_offs + sh_offs)));
+                                            + fov_smoot * (configuration()->graphics.fov * (st_mult + sh_mult) + st_offs + sh_offs)));
             _Universe->AccessCamera()->SetFov(smooth_fov);
         }
     }

@@ -4,8 +4,7 @@
  * cockpit_gfx.cpp
  *
  * Copyright (C) Daniel Horn
- * Copyright (C) 2020 pyramid3d, Stephen G. Tuggy, and other Vega Strike contributors
- * Copyright (C) 2021-2022 Stephen G. Tuggy
+ * Copyright (C) 2020-2025 pyramid3d, Stephen G. Tuggy, and other Vega Strike contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
@@ -40,10 +39,10 @@
 #include "nav/navcomputer.h"
 #include "gfx/gauge.h"
 #include "gfx/cockpit_gfx_utils.h"
+#include "resource/random_utils.h"
 
 #include <algorithm>
 
-extern float rand01();
 #define SWITCH_CONST (.9)
 
 // got to move this to some more generic place
@@ -271,10 +270,10 @@ void DrawArrowToTarget(const Radar::Sensor& sensor, Vector localcoord,
     p2.i  = p_n.i*TARGET_ARROW_COS_THETA-p_n.j*(-TARGET_ARROW_SIN_THETA);       //p2 = p.rot(-THETA)
     p2.j  = p_n.j*TARGET_ARROW_COS_THETA+p_n.i*(-TARGET_ARROW_SIN_THETA);
     p1.i += s;
-    p1.j *= g_game.aspect;
+    p1.j *= configuration()->graphics.aspect;
     p1.j += t;
     p2.i += s;
-    p2.j *= g_game.aspect;
+    p2.j *= configuration()->graphics.aspect;
     p2.j += t;
     p2.k  = p1.k = 0;
 
@@ -331,7 +330,7 @@ void DrawGauges( GameCockpit *cockpit, Unit *un, Gauge *gauges[],
                 un->ship_functions.Value(Function::cockpit);
             if (gauge_time[i] >= 0) {
                 if ( damage > .0001 && ( cockpit_time > ( gauge_time[i]+(1-damage) ) ) )
-                    if (rand01() > SWITCH_CONST)
+                    if (randomDouble() > SWITCH_CONST)
                         gauge_time[i] = -cockpit_time;
                 /*else {
                  *  static string gauge_static = vs_config->getVariable("graphics","gauge_static","static.ani");
@@ -339,7 +338,7 @@ void DrawGauges( GameCockpit *cockpit, Unit *un, Gauge *gauges[],
                  *  vdu_ani.DrawAsVSSprite(gauges[i]);
                  *  }*/
             } else if ( cockpit_time > ( ( ( 1-(-gauge_time[i]) )+damage ) ) ) {
-                if (rand01() > SWITCH_CONST)
+                if (randomDouble() > SWITCH_CONST)
                     gauge_time[i] = cockpit_time;
             }
         }
@@ -554,7 +553,7 @@ void DrawRadar(const Radar::Sensor& sensor, float  cockpit_time, float radar_tim
         if (damage < .985) {
             if (radar_time >= 0) {
                 if ( damage > .001 && ( cockpit_time > radar_time+(1-damage) ) ) {
-                    if (rand01() > SWITCH_CONST)
+                    if (randomDouble() > SWITCH_CONST)
                         radar_time = -cockpit_time;
                 } else {
                     static Animation radar_ani( "static_round.ani", true, .1, BILINEAR );
@@ -562,7 +561,7 @@ void DrawRadar(const Radar::Sensor& sensor, float  cockpit_time, float radar_tim
                     radar_ani.DrawAsVSSprite( radarSprites[1] );
                 }
             } else if ( cockpit_time > ( ( 1-(-radar_time) )+damage ) ) {
-                if (rand01() > SWITCH_CONST)
+                if (randomDouble() > SWITCH_CONST)
                     radar_time = cockpit_time;
             }
         }
