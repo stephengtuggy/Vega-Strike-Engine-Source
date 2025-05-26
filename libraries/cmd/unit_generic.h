@@ -169,8 +169,8 @@ class Unit : public Armed, public Audible, public Drawable, public Damageable, p
     std::string unit_description;
 
 protected:
-//How many lists are referencing us
-    int ucref = 0;
+    //How many lists are referencing us
+    mutable std::atomic<int> ucref = 0;
     StringPool::Reference csvRow;
 
 public:
@@ -1000,12 +1000,12 @@ public:
         return Vega_UnitType::unit;
     }
 
+    //Low level list function to reference the unit as being the target of a UnitContainer or Collection
     void Ref();
-//Low level list function to reference the unit as being the target of a UnitContainer or Colleciton
-//Releases the unit from this reference of UnitContainer or Collection
+    //Releases the unit from this reference of UnitContainer or Collection
     void UnRef();
-//0 in additive is reaplce  1 is add 2 is mult
-//Put that in NetUnit & AcctUnit with string and with Unit
+    //0 in additive is replace  1 is add 2 is mult
+    //Put that in NetUnit & AcctUnit with string and with Unit
     UnitImages<void> &GetImageInformation();
 
 //sets the full name/fgid for planets

@@ -26,11 +26,15 @@
 #ifndef VEGA_STRIKE_ENGINE_CMD_WEAPON_INFO_H
 #define VEGA_STRIKE_ENGINE_CMD_WEAPON_INFO_H
 
+#include <memory>
+
 #include "cmd/weapon_type.h"
 #include "gfx_generic/vec.h"
 #include "cmd/mount_size.h"
 
 #include <string>
+
+class Mesh;
 
 struct WeaponInfo {
     // Fields

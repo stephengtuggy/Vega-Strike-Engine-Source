@@ -184,7 +184,7 @@ private:
         std::shared_ptr<Mesh> return_value = std::make_shared<Mesh>();
         return_value->hash_name = filename;
         return_value->convex = false;
-        return_value->originals = nullptr;
+        return_value->originals.clear();
         return_value->InitUnit();
         std::shared_ptr<Mesh> old_mesh;
         if (return_value->LoadExistant(filename, scalex, faction)) {

@@ -24,6 +24,8 @@
 #ifndef VEGA_STRIKE_ENGINE_CMD_DRAWABLE_H
 #define VEGA_STRIKE_ENGINE_CMD_DRAWABLE_H
 
+#include <deque>
+
 #include "gfx_generic/quaternion.h"
 #include "gfx/halo_system.h"
 #include <vector>

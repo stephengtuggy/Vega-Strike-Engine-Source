@@ -199,7 +199,7 @@ void Unit::Ref() {
 #ifdef CONTAINER_DEBUG
     CheckUnit( this );
 #endif
-    ++ucref;
+    std::atomic_fetch_add_explicit(&ucref, 1, std::memory_order_relaxed);
 }
 
 #define INVERSEFORCEDISTANCE 5400
@@ -337,13 +337,14 @@ Unit::~Unit() {
         // stephengtuggy 2020-08-03 - Maybe not.
         VS_LOG(error, (boost::format("Assumed exit on unit %1%(if not quitting, report error)") % name));
     }
-    if (ucref) {
+    const int ucref_temp = ucref.load();
+    if (ucref_temp) {
         VS_LOG_AND_FLUSH(fatal, "DISASTER AREA!!!!");
     }
     VS_LOG(trace, (boost::format("Deallocating unit %1$s addr=%2$x refs=%3$d")
-            % name.get().c_str() % this % ucref));
+            % name.get().c_str() % this % ucref_temp));
 #ifdef DESTRUCTDEBUG
-    VS_LOG_AND_FLUSH(trace, (boost::format("stage %1$d %2$x %3$d") % 0 % this % ucref));
+    VS_LOG_AND_FLUSH(trace, (boost::format("stage %1$d %2$x %3$d") % 0 % this % ucref_temp));
 #endif
 #ifdef DESTRUCTDEBUG
     VS_LOG_AND_FLUSH(trace, (boost::format("%1$d %2$x") % 2 % pImage->pHudImage));
@@ -1362,9 +1363,10 @@ void Unit::Kill(bool erasefromsave, bool quitting) {
     //    VS_LOG(info, (boost::format("UNIT HAS DIED: %1% %2% (file %3%)") % name.get() % fullname % filename.get()));
     //}
 
-    if (ucref == 0) {
+    if (ucref.load() == 0) {
         VS_LOG(trace, (boost::format("UNIT DELETION QUEUED: %1$s %2$s (file %3$s, addr 0x%4$08x)")
                 % name.get().c_str() % fullname.c_str() % filename.get().c_str() % this));
+        std::atomic_thread_fence(std::memory_order_acquire);
         Unitdeletequeue.push_back(this);
         if (flightgroup) {
             if (flightgroup->leader.GetUnit() == this) {
@@ -1382,8 +1384,8 @@ void Unit::UnRef() {
 #ifdef CONTAINER_DEBUG
     CheckUnit( this );
 #endif
-    ucref--;
-    if (killed && ucref == 0) {
+    if (std::atomic_fetch_sub_explicit (&ucref, 1, std::memory_order_release) <= 0 && killed) {
+        std::atomic_thread_fence(std::memory_order_acquire);
 #ifdef CONTAINER_DEBUG
         deletedUn.Put( (uintmax_t) this, this );
 #endif
