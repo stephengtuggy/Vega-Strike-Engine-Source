@@ -24,7 +24,7 @@ jobs:
           # x86-64
           - macos-13
           # M1 processor
-          #- macos-14
+          - macos-14-large
         python-version:
           #- 3.12.8
           - 3.13.5
