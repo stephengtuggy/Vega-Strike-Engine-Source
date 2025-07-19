@@ -122,11 +122,11 @@ BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE \
                 return *held->target(); \
             void* target = boost::python::detail::class_registry<SuperClass>::class_object()->try_class_conversions(*p); \
             if(target)  \
-                return *boost::python::detail::check_non_null(static_cast<SuperClass*>(target)); \
+                return *boost::python::detail::check_non_null(vega_dynamic_cast_ptr<SuperClass>(target)); \
         } \
         boost::python::detail::report_missing_instance_data(self, boost::python::detail::class_registry<SuperClass>::class_object(), typeid(SuperClass)); \
         boost::python::throw_argument_error(); \
-        return *((SuperClass*)0); \
+        return *((SuperClass*)nullptr); \
     }BOOST_PYTHON_END_CONVERSION_NAMESPACE
 
 //non_null_from_python

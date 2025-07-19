@@ -185,6 +185,7 @@ Unit* CheckNullAndCastToUnit(ComponentsManager* manager) {
     if (manager == nullptr) {
         return nullptr;
     }
+    VS_LOG_AND_FLUSH(trace, (boost::format("CheckNullAndCastToUnit: Runtime type is %1%") % typeid(*manager).name()));
     return vega_dynamic_cast_ptr<Unit>(manager);
 }
 
@@ -202,6 +203,9 @@ Vector Unit::GetNavPoint() {
 }
 
 Unit *Unit::Target() {
+    if (computer.target) {
+        VS_LOG_AND_FLUSH(debug, "computer.target is not null");
+    }
     return CheckNullAndCastToUnit(computer.target);
 }
 
