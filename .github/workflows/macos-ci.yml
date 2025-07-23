@@ -28,7 +28,7 @@ jobs:
           - os: macOS-13
             build-type: RelWithDebInfo
             preset-name: macos-pie-enabled-RelWithDebInfo
-            python-version: 3.13.4
+            python-version: 3.13.5
 
     steps:
       - name: Setup Python
