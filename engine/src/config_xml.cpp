@@ -35,8 +35,11 @@
 #include <expat.h>
 #include "root_generic/xml_support.h"
 #include "src/vegastrike.h"
-#include <assert.h>
+#include <cassert>
 #include "src/config_xml.h"
+
+#include "vega_cast_utils.h"
+#include "vega_conversion.h"
 #include "root_generic/easydom.h"
 #include "cmd/ai/flykeyboard.h"
 #include "cmd/ai/firekeyboard.h"
@@ -53,7 +56,7 @@
 
 /* *********************************************************** */
 
-GameVegaConfig::GameVegaConfig(const char *configfile) : VegaConfig(configfile) {
+GameVegaConfig::GameVegaConfig(const char* configfile) : VegaConfig(configfile) {
     initCommandMap();
     initKeyMap();
     //set hatswitches to off
@@ -73,63 +76,63 @@ GameVegaConfig::GameVegaConfig(const char *configfile) : VegaConfig(configfile) 
 
 #if 1
 
-const float volinc = 1;
-const float dopinc = .1;
-void RunPythonPress(const KBData &, KBSTATE);
-void RunPythonRelease(const KBData &, KBSTATE);
-void RunPythonToggle(const KBData &, KBSTATE);
-void RunPythonPhysicsFrame(const KBData &, KBSTATE);
-void incmusicvol(const KBData &, KBSTATE a);
-void decmusicvol(const KBData &, KBSTATE a);
+constexpr float volinc = 1;
+constexpr float dopinc = .1;
+void RunPythonPress(const KBData&, KBSTATE);
+void RunPythonRelease(const KBData&, KBSTATE);
+void RunPythonToggle(const KBData&, KBSTATE);
+void RunPythonPhysicsFrame(const KBData&, KBSTATE);
+void incmusicvol(const KBData&, KBSTATE a);
+void decmusicvol(const KBData&, KBSTATE a);
 bool screenshotkey = false;
 
-void doReloadShader(const KBData &, KBSTATE a) {
+void doReloadShader(const KBData&, KBSTATE a) {
     if (a == PRESS) {
         GFXReloadDefaultShader();
     }
 }
 
-void doScreenshot(const KBData &, KBSTATE a) {
+void doScreenshot(const KBData&, KBSTATE a) {
     if (a == PRESS) {
         screenshotkey = true;
     }
 }
 
-void incvol(const KBData &, KBSTATE a) {
-#ifdef HAVE_AL
+void incvol(const KBData&, KBSTATE a) {
+    #ifdef HAVE_AL
     if (a == DOWN) {
         AUDChangeVolume(AUDGetVolume() + volinc);
     }
-#endif
+    #endif
 }
 
-void decvol(const KBData &, KBSTATE a) {
-#ifdef HAVE_AL
+void decvol(const KBData&, KBSTATE a) {
+    #ifdef HAVE_AL
     if (a == DOWN) {
         AUDChangeVolume(AUDGetVolume() - volinc);
     }
-#endif
+    #endif
 }
 
-void mute(const KBData &, KBSTATE a) {
-#ifdef HAVE_AL
-#endif
+void mute(const KBData&, KBSTATE a) {
+    #ifdef HAVE_AL
+    #endif
 }
 
-void incdop(const KBData &, KBSTATE a) {
-#ifdef HAVE_AL
+void incdop(const KBData&, KBSTATE a) {
+    #ifdef HAVE_AL
     if (a == DOWN) {
         AUDChangeDoppler(AUDGetDoppler() + dopinc);
     }
-#endif
+    #endif
 }
 
-void decdop(const KBData &, KBSTATE a) {
-#ifdef HAVE_AL
+void decdop(const KBData&, KBSTATE a) {
+    #ifdef HAVE_AL
     if (a == DOWN) {
         AUDChangeDoppler(AUDGetDoppler() - dopinc);
     }
-#endif
+    #endif
 }
 
 #endif //1
@@ -204,34 +207,34 @@ void GameVegaConfig::initKeyMap() {
 }
 
 /* *********************************************************** */
-extern void inc_time_compression(const KBData &, KBSTATE a);
-extern void JoyStickToggleKey(const KBData &, KBSTATE a);
-extern void SuicideKey(const KBData &, KBSTATE a);
-extern void dec_time_compression(const KBData &, KBSTATE a);
-extern void reset_time_compression(const KBData &, KBSTATE a);
-extern void MapKey(const KBData &, KBSTATE a);
-extern void VolUp(const KBData &, KBSTATE a);
-extern void VolDown(const KBData &, KBSTATE a);
+extern void inc_time_compression(const KBData&, KBSTATE a);
+extern void JoyStickToggleKey(const KBData&, KBSTATE a);
+extern void SuicideKey(const KBData&, KBSTATE a);
+extern void dec_time_compression(const KBData&, KBSTATE a);
+extern void reset_time_compression(const KBData&, KBSTATE a);
+extern void MapKey(const KBData&, KBSTATE a);
+extern void VolUp(const KBData&, KBSTATE a);
+extern void VolDown(const KBData&, KBSTATE a);
 
 using namespace CockpitKeys;
 CommandMap initGlobalCommandMap();
 static CommandMap commandMap = initGlobalCommandMap();
 
-static void ComposeFunctions(const KBData &composition, KBSTATE k) {
+static void ComposeFunctions(const KBData& composition, KBSTATE k) {
     std::string s = composition.data;
-    while (s.length()) {
-        std::string::size_type where = s.find(" ");
+    while (!s.empty()) {
+        std::string::size_type where = s.find(' ');
         std::string t = s.substr(0, where);
         if (where != std::string::npos) {
             s = s.substr(where + 1);
         } else {
             s = "";
         }
-        where = t.find("(");
+        where = t.find('(');
         std::string args;
         if (where != string::npos) {
             args = t.substr(where + 1);
-            std::string::size_type paren = args.find(")");
+            std::string::size_type paren = args.find(')');
             if (paren != string::npos) {
                 args = args.substr(0, paren);
             }
@@ -239,27 +242,25 @@ static void ComposeFunctions(const KBData &composition, KBSTATE k) {
         }
         CommandMap::iterator i = commandMap.find(t);
         if (i != commandMap.end()) {
-            (*i).second(args, k);
+            i->second(args, k);
         }
     }
 }
 
-static void ComposeFunctionsToggle(const KBData &composition, KBSTATE k) {
+static void ComposeFunctionsToggle(const KBData& composition, KBSTATE k) {
     if (k == PRESS || k == RELEASE) {
         ComposeFunctions(composition, k);
     }
 }
 
 void GameVegaConfig::initCommandMap() // DELETE ME
-{
-}
+{}
 
 /* *********************************************************** */
 
-void GameVegaConfig::doBindings(configNode *node) {
-    vector<easyDomNode *>::const_iterator siter;
-    for (siter = node->subnodes.begin(); siter != node->subnodes.end(); siter++) {
-        configNode *cnode = (configNode *) (*siter);
+void GameVegaConfig::doBindings(configNode* node) {
+    for (const auto subnode : node->subnodes) {
+        configNode* cnode = vega_dynamic_cast_ptr<configNode>(subnode);
         if ((cnode)->Name() == "bind") {
             checkBind(cnode);
         } else if (((cnode)->Name() == "axis")) {
@@ -272,27 +273,44 @@ void GameVegaConfig::doBindings(configNode *node) {
 
 /* *********************************************************** */
 
-void GameVegaConfig::doAxis(configNode *node) {
+void GameVegaConfig::doAxis(configNode* node) {
     string name = node->attr_value("name");
-    string myjoystick = node->attr_value("joystick");
-    string axis = node->attr_value("axis");
-    string invertstr = node->attr_value("inverse");
-    string mouse_str = node->attr_value("mouse");
+    const string myjoystick = node->attr_value("joystick");
+    const string axis = node->attr_value("axis");
+    const string invertstr = node->attr_value("inverse");
+    const string mouse_str = node->attr_value("mouse");
     if (name.empty() || (mouse_str.empty() && myjoystick.empty()) || axis.empty()) {
-        VS_LOG(warning, "no correct axis description given ");
+        VS_LOG(error, "no correct axis description given ");
         return;
     }
-    int joy_nr = atoi(myjoystick.c_str());
+    int joy_nr;
+    vega_conversion::int_conversion_result tmp_int_conversion_result = vega_conversion::str_to_int(
+        myjoystick.c_str(), "joystick number");
+    if (tmp_int_conversion_result.result == vega_conversion::conversion_result::success) {
+        joy_nr = tmp_int_conversion_result.value;
+    } else {
+        return;
+    }
     if (!mouse_str.empty()) {
         joy_nr = MOUSE_JOYSTICK;
     }
-    int axis_nr = atoi(axis.c_str());
+    int axis_nr;
+    tmp_int_conversion_result = vega_conversion::str_to_int(axis.c_str(), "axis");
+    if (tmp_int_conversion_result.result == vega_conversion::conversion_result::success) {
+        axis_nr = tmp_int_conversion_result.value;
+    } else {
+        return;
+    }
 
     //no checks for correct number yet
 
     bool inverse = false;
-    if (!invertstr.empty()) {
-        inverse = XMLSupport::parse_bool(invertstr);
+    vega_conversion::bool_conversion_result tmp_bool_conversion_result = vega_conversion::str_to_bool(
+        invertstr.c_str(), "inverse");
+    if (tmp_bool_conversion_result.result == vega_conversion::conversion_result::success) {
+        inverse = tmp_bool_conversion_result.value;
+    } else {
+        return;
     }
     if (name == "x") {
         axis_joy[0] = joy_nr;
@@ -311,25 +329,37 @@ void GameVegaConfig::doAxis(configNode *node) {
         joystick[joy_nr]->axis_axis[3] = axis_nr;
         joystick[joy_nr]->axis_inverse[3] = inverse;
     } else if (name == "hatswitch") {
-        string nr_str = node->attr_value("nr");
-        string margin_str = node->attr_value("margin");
+        const string nr_str = node->attr_value("nr");
+        const string margin_str = node->attr_value("margin");
         if (nr_str.empty() || margin_str.empty()) {
-            VS_LOG(warning, "you have to assign a number and a margin to the hatswitch");
+            VS_LOG(error, "you have to assign a number and a margin to the hatswitch");
             return;
         }
-        int nr = atoi(nr_str.c_str());
+        int nr;
+        tmp_int_conversion_result = vega_conversion::str_to_int(nr_str.c_str(), "nr");
+        if (tmp_int_conversion_result.result == vega_conversion::conversion_result::success) {
+            nr = tmp_int_conversion_result.value;
+        } else {
+            return;
+        }
 
-        float margin = atof(margin_str.c_str());
+        float margin;
+        vega_conversion::float_conversion_result tmp_float_conversion_result = vega_conversion::str_to_float(
+            margin_str.c_str(), "margin");
+        if (tmp_float_conversion_result.result == vega_conversion::conversion_result::success) {
+            margin = tmp_float_conversion_result.value;
+        } else {
+            return;
+        }
+
         hatswitch_margin[nr] = margin;
 
         hatswitch_axis[nr] = axis_nr;
         hatswitch_joystick[nr] = joy_nr;
 
-        vector<easyDomNode *>::const_iterator siter;
-
         hs_value_index = 0;
-        for (siter = node->subnodes.begin(); siter != node->subnodes.end(); siter++) {
-            configNode *cnode = (configNode *) (*siter);
+        for (const auto subnode : node->subnodes) {
+            configNode* cnode = vega_dynamic_cast_ptr<configNode>(subnode);
             checkHatswitch(nr, cnode);
         }
     } else {
@@ -340,17 +370,21 @@ void GameVegaConfig::doAxis(configNode *node) {
 
 /* *********************************************************** */
 
-void GameVegaConfig::checkHatswitch(int nr, configNode *node) {
+void GameVegaConfig::checkHatswitch(int nr, configNode* node) {
     if (node->Name() != "hatswitch") {
         VS_LOG(warning, "not a hatswitch node ");
         return;
     }
-    string strval = node->attr_value("value");
-    float val = atof(strval.c_str());
-    if (val > 1.0 || val < -1.0) {
-        VS_LOG(error, "only hatswitch values from -1.0 to 1.0 allowed");
+    float val;
+    const string strval = node->attr_value("value");
+    const vega_conversion::float_conversion_result tmp_conversion_result = vega_conversion::str_to_float(
+        strval.c_str(), "hatswitch value", -1.0F, 1.0F);
+    if (tmp_conversion_result.result == vega_conversion::conversion_result::success) {
+        val = tmp_conversion_result.value;
+    } else {
         return;
     }
+
     hatswitch[nr][hs_value_index] = val;
     VS_LOG(info, (boost::format("setting hatswitch nr %1% %2% = %3%") % nr % hs_value_index % val));
     hs_value_index++;
@@ -358,13 +392,15 @@ void GameVegaConfig::checkHatswitch(int nr, configNode *node) {
 
 /* *********************************************************** */
 
-void GameVegaConfig::checkBind(configNode *node) {
+constexpr int kMaxPlayers = 2;
+
+void GameVegaConfig::checkBind(configNode* node) {
     if (node->Name() != "bind") {
         VS_LOG(warning, "not a bind node ");
         return;
     }
     std::string modifier_string = node->attr_value("modifier");
-    int modifier = getModifier(modifier_string);
+    unsigned int modifier = getModifier(modifier_string);
 
     string cmdstr = node->attr_value("command");
     string player_bound = node->attr_value("player");
@@ -372,7 +408,7 @@ void GameVegaConfig::checkBind(configNode *node) {
         player_bound = "0";
     }
     KBHandler handler = commandMap[cmdstr];
-    if (handler == NULL) {
+    if (handler == nullptr) {
         VS_LOG(error, (boost::format("No such command: %1%") % cmdstr));
         return;
     }
@@ -387,12 +423,32 @@ void GameVegaConfig::checkBind(configNode *node) {
     string direction = node->attr_value("direction");
     if (!player_str.empty()) {
         if (!joy_str.empty()) {
-            int jn = atoi(joy_str.c_str());
+            errno = 0;
+            int jn;
+            vega_conversion::int_conversion_result tmp_int_conversion_result = vega_conversion::str_to_int(
+                joy_str.c_str(), "joystick number", 0, MAX_JOYSTICKS - 1);
+            if (tmp_int_conversion_result.result == vega_conversion::conversion_result::success) {
+                jn = tmp_int_conversion_result.value;
+            } else {
+                return;
+            }
             if (jn < MAX_JOYSTICKS) {
-                joystick[jn]->player = atoi(player_str.c_str());
+                tmp_int_conversion_result = vega_conversion::str_to_int(player_str.c_str(), "player number", 0,
+                                                                        kMaxPlayers);
+                if (tmp_int_conversion_result.result == vega_conversion::conversion_result::success) {
+                    joystick[jn]->player = tmp_int_conversion_result.value;
+                } else {
+                    return;
+                }
             }
         } else if (!mouse_str.empty()) {
-            joystick[MOUSE_JOYSTICK]->player = atoi(player_str.c_str());
+            vega_conversion::int_conversion_result tmp_int_conversion_result = vega_conversion::str_to_int(
+                player_str.c_str(), "player number", 0, kMaxPlayers);
+            if (tmp_int_conversion_result.result == vega_conversion::conversion_result::success) {
+                joystick[MOUSE_JOYSTICK]->player = tmp_int_conversion_result.value;
+            } else {
+                return;
+            }
         }
     }
     if (!keystr.empty()) {
@@ -411,22 +467,42 @@ void GameVegaConfig::checkBind(configNode *node) {
         }
     } else if (!buttonstr.empty()) {
         //maps a joystick button or analogue hatswitch button
-        int button_nr = atoi(buttonstr.c_str());
+        int button_nr;
+        vega_conversion::int_conversion_result tmp_int_conversion_result = vega_conversion::str_to_int(
+            buttonstr.c_str(), "button number");
+        if (tmp_int_conversion_result.result == vega_conversion::conversion_result::success) {
+            button_nr = tmp_int_conversion_result.value;
+        } else {
+            return;
+        }
         if (joy_str.empty() && mouse_str.empty()) {
             //it has to be the analogue hatswitch
             if (hat_str.empty()) {
                 VS_LOG(error, "you got to give an analogue hatswitch number");
                 return;
             }
-            int hatswitch_nr = atoi(hat_str.c_str());
+            int hatswitch_nr;
+            tmp_int_conversion_result = vega_conversion::str_to_int(hat_str.c_str(), "hat number", 0,
+                                                                    MAX_HATSWITCHES - 1);
+            if (tmp_int_conversion_result.result == vega_conversion::conversion_result::success) {
+                hatswitch_nr = tmp_int_conversion_result.value;
+            } else {
+                return;
+            }
 
             BindHatswitchKey(hatswitch_nr, button_nr, handler, KBData(additional_data));
-
         } else {
             //joystick button
             int joystick_nr;
             if (mouse_str.empty()) {
-                joystick_nr = atoi(joy_str.c_str());
+                errno = 0;
+                tmp_int_conversion_result = vega_conversion::str_to_int(joy_str.c_str(), "joystick number", 0,
+                                                                        MAX_JOYSTICKS - 1);
+                if (tmp_int_conversion_result.result == vega_conversion::conversion_result::success) {
+                    joystick_nr = tmp_int_conversion_result.value;
+                } else {
+                    return;
+                }
             } else {
                 joystick_nr = (MOUSE_JOYSTICK);
             }
@@ -450,11 +526,23 @@ void GameVegaConfig::checkBind(configNode *node) {
             VS_LOG(error, "you have to specify joystick,digital-hatswitch,direction");
             return;
         }
-        int hsw_nr = atoi(dighswitch.c_str());
+        int hsw_nr;
+        vega_conversion::int_conversion_result tmp_int_result = vega_conversion::str_to_int(
+            dighswitch.c_str(), "digital hatswitch number", 0, MAX_HATSWITCHES - 1);
+        if (tmp_int_result.result == vega_conversion::conversion_result::success) {
+            hsw_nr = tmp_int_result.value;
+        } else {
+            return;
+        }
 
         int joy_nr;
         if (mouse_str.empty()) {
-            joy_nr = atoi(joy_str.c_str());
+            tmp_int_result = vega_conversion::str_to_int(joy_str.c_str(), "joystick number", 0, MAX_JOYSTICKS - 1);
+            if (tmp_int_result.result == vega_conversion::conversion_result::success) {
+                joy_nr = tmp_int_result.value;
+            } else {
+                return;
+            }
         } else {
             joy_nr = MOUSE_JOYSTICK;
         }
@@ -487,8 +575,8 @@ void GameVegaConfig::checkBind(configNode *node) {
         }
         BindDigitalHatswitchKey(joy_nr, hsw_nr, dir_index, handler, KBData(additional_data));
         VS_LOG(info,
-                (boost::format("Bound joy %1% hatswitch %2% dir_index %3% to command %4%") % joy_nr % hsw_nr % dir_index
-                        % cmdstr));
+               (boost::format("Bound joy %1% hatswitch %2% dir_index %3% to command %4%") % joy_nr % hsw_nr % dir_index
+                   % cmdstr));
     } else {
         return;
     }

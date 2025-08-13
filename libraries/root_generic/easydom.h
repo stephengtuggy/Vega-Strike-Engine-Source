@@ -34,10 +34,13 @@
 
 #include <expat.h>
 #include <string>
+#include <utility>
 #include <vector>
 #include <stack>
 #include <gnuhash.h>
-#include <stdlib.h>
+#include <cstdlib>
+
+#include "vega_cast_utils.h"
 #include "root_generic/vsfilesystem.h"
 #include "root_generic/vs_globals.h"
 #include "root_generic/xml_support.h"
@@ -60,15 +63,17 @@ public:
     }
 
     void set_attribute(std::string name, std::string value) {
-        attribute_map[name] = value;
+        attribute_map[name] = std::move(value);
     }
 
     std::string attr_value(std::string attr_name);
     std::vector<easyDomNode *> subnodes;
 
+    virtual ~easyDomNode() = default;
+
 private:
-    easyDomNode *parent;
-    XMLSupport::AttributeList *attributes;
+    easyDomNode *parent{};
+    XMLSupport::AttributeList *attributes{};
     vsUMap<std::string, std::string> attribute_map;
 //vector<string> att_name;
 //vector<string> att_value;
@@ -84,43 +89,67 @@ public:
 
     void Tag(tagMap *tagmap) {
         tag = (*tagmap)[Name()];
-        std::vector<easyDomNode *>::const_iterator siter;
-        for (siter = subnodes.begin(); siter != subnodes.end(); siter++) {
-            tagDomNode *tnode = (tagDomNode *) (*siter);
+        for (const auto subnode : subnodes) {
+            tagDomNode *tnode = vega_dynamic_cast_ptr<tagDomNode>(subnode);
             tnode->Tag(tagmap);
         }
     }
+
+    ~tagDomNode() override = default;
 };
 
 extern const char *textAttr;   //should be a static const inside easyDomFactory...
 
 template<class domNodeType>
 class easyDomFactory {
+static_assert(std::is_base_of<easyDomNode, domNodeType>::value, "domNodeType must inherit from easyDomNode");
+
 public:
-    easyDomFactory() {
+    easyDomFactory() : xml(nullptr), topnode(nullptr)
+    {
     }
 
-    void getColor(char *name, float color[4]);
-    char *getVariable(char *section, char *name);
+    virtual ~easyDomFactory()
+    {
+        if (xml) {
+            delete xml;
+            xml = nullptr;
+        }
+        if (topnode) {
+            delete topnode;
+            topnode = nullptr;
+        }
+    };
 
-    void c_alike_to_xml(const char *filename);
+    void getColor(char* name, float color[4])
+    {
+    }
+
+    char* getVariable(char* section, char* name)
+    {
+        return nullptr;
+    }
+
+    void c_alike_to_xml(const char* filename)
+    {
+    }
 
     struct easyDomFactoryXML {
         int currentindex;
         char *buffer;
 
         easyDomFactoryXML() {
-            buffer = 0;
+            buffer = nullptr;
             currentindex = 0;
         }
     }
             *xml;
 
-    domNodeType *LoadXML(const char *filename) {
+    virtual domNodeType *LoadXML(const char *filename) {
         topnode = nullptr;
         VS_LOG(debug, (boost::format("%1% called with filename '%2%'") % __func__ % filename));
         //Not really nice but should do its job
-        unsigned int length = strlen(filename);
+        const unsigned int length = strlen(filename);
         VSFileSystem::VSFile f;
         VSFileSystem::VSError err = VSFileSystem::VSError::FileNotFound;
         if (length > 8 && !memcmp((filename + length - 7), "mission", 7)) {
@@ -129,7 +158,7 @@ public:
         if (err > VSFileSystem::VSError::Ok) {
             err = f.OpenReadOnly(filename, VSFileSystem::UnknownFile);
             if (err > VSFileSystem::VSError::Ok) {
-                std::string rootthis = std::string("/") + filename;
+                const std::string rootthis = std::string("/") + filename;
                 err = f.OpenReadOnly(rootthis, VSFileSystem::UnknownFile);
             }
         }
@@ -153,12 +182,12 @@ public:
         }
         xml = new easyDomFactoryXML;
 
-        XML_Parser parser = XML_ParserCreate(nullptr);
+        const XML_Parser parser = XML_ParserCreate(nullptr);
         XML_SetUserData(parser, this);
         XML_SetElementHandler(parser, &easyDomFactory::beginElement, &easyDomFactory::endElement);
         XML_SetCharacterDataHandler(parser, &easyDomFactory::charHandler);
 
-        XML_Parse(parser, (f.ReadFull()).c_str(), f.Size(), 1);
+        XML_Parse(parser, (f.ReadFull()).c_str(), static_cast<int>(f.Size()), 1);
         /*
          *  do {
          * #ifdef BIDBG
@@ -180,43 +209,44 @@ public:
         f.Close();
         XML_ParserFree(parser);
         delete xml;
-        return (domNodeType *) topnode;
+        xml = nullptr;
+        return vega_dynamic_cast_ptr<domNodeType>(topnode);
     }
 
     static void charHandler(void *userData, const XML_Char *s, int len) {
-        easyDomFactoryXML *xml = ((easyDomFactory<domNodeType> *) userData)->xml;
+        easyDomFactoryXML *xml = vega_dynamic_cast_ptr<easyDomFactory<domNodeType>>(userData)->xml;
         if (!xml->buffer) {
-            xml->buffer = (char *) malloc(sizeof(char) * (len + 1));
+            xml->buffer = static_cast<char*>(malloc(sizeof(char) * (len + 1)));
         } else {
-            xml->buffer = (char *) realloc(xml->buffer, sizeof(char) * (len + 1 + xml->currentindex));
+            xml->buffer = static_cast<char*>(realloc(xml->buffer, sizeof(char) * (len + 1 + xml->currentindex)));
         }
         strncpy(xml->buffer + xml->currentindex, s, len);
         xml->currentindex += len;
     }
 
     domNodeType *LoadCalike(const char *filename) {
-        const int chunk_size = 262144;
+        constexpr size_t chunk_size = 262144;
 
-        std::string module_str = parseCalike(filename);
+        const std::string module_str = parseCalike(filename);
         if (module_str.empty()) {
             return nullptr;
         }
         xml = new easyDomFactoryXML;
 
-        XML_Parser parser = XML_ParserCreate(nullptr);
+        const XML_Parser parser = XML_ParserCreate(nullptr);
         XML_SetUserData(parser, this);
         XML_SetElementHandler(parser, &easyDomFactory::beginElement, &easyDomFactory::endElement);
         XML_SetCharacterDataHandler(parser, &easyDomFactory::charHandler);
 
-        int index = 0;
-        int string_size = module_str.size();
-        int incr = chunk_size - 2;
+        size_t index = 0;
+        const size_t string_size = module_str.size();
+        constexpr size_t incr = chunk_size - 2;
         int is_final = false;
         do {
             char buf[chunk_size];
 
-            int max_index = index + incr;
-            int newlen = incr;
+            const size_t max_index = index + incr;
+            size_t newlen = incr;
             if (max_index >= string_size) {
                 newlen = module_str.size() - index;
                 const char *strbuf = module_str.c_str();
@@ -230,19 +260,20 @@ public:
             if (index >= string_size) {
                 is_final = true;
             }
-            XML_Parse(parser, buf, newlen, is_final);
+            XML_Parse(parser, buf, static_cast<int>(newlen), is_final);
         } while (!is_final);
         XML_ParserFree(parser);
         delete xml;
-        return (domNodeType *) topnode;
+        xml = nullptr;
+        return vega_dynamic_cast_ptr<domNodeType>(topnode);
     }
 
     static void beginElement(void *userData, const XML_Char *name, const XML_Char **atts) {
-        ((easyDomFactory *) userData)->beginElement(name, atts);
+        vega_dynamic_cast_ptr<easyDomFactory>(userData)->beginElement(name, atts);
     }
 
     static void endElement(void *userData, const XML_Char *name) {
-        ((easyDomFactory *) userData)->endElement(name);
+        vega_dynamic_cast_ptr<easyDomFactory>(userData)->endElement(name);
     }
 
 //void beginElement(const std::string &name, const XMLSupport::AttributeList &attributes){

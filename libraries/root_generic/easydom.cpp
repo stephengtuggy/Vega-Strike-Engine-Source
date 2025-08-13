@@ -33,19 +33,14 @@
 #include <expat.h>
 #include "root_generic/easydom.h"
 
-#include <assert.h>     /// needed for assert() calls.
+#include <cassert>     /// needed for assert() calls.
 
-easyDomNode::easyDomNode() {
-}
+easyDomNode::easyDomNode() = default;
 
 void easyDomNode::set(easyDomNode *_parent, std::string _name, const XML_Char **atts) {
     parent = _parent;
     if (atts != nullptr) {
         for (; *atts != nullptr; atts += 2) {
-#if 0
-            att_name.push_back( (*iter).name );
-            att_value.push_back( (*iter).value );
-#endif
             attribute_map[atts[0]] = atts[1];
         }
     }
@@ -61,18 +56,15 @@ std::string easyDomNode::attr_value(std::string search_name) {
 }
 
 void easyDomNode::printNode(std::ostream &out, int recurse_level, int level) {
-    vsUMap<std::string, std::string>::const_iterator iter;
-
     out << "<" << name;
-    for (iter = attribute_map.begin(); iter != attribute_map.end(); iter++) {
-        out << " " << (*iter).first << "=\"" << (*iter).second << "\"";
+    for (const auto & iter : attribute_map) {
+        out << " " << iter.first << "=\"" << iter.second << "\"";
     }
     out << ">" << std::endl;
 
-    std::vector<easyDomNode *>::const_iterator siter;
     if (recurse_level > 0) {
-        for (siter = subnodes.begin(); siter != subnodes.end(); siter++) {
-            (*siter)->printNode(out, recurse_level - 1, level + 1);
+        for (const auto subnode : subnodes) {
+            subnode->printNode(out, recurse_level - 1, level + 1);
         }
     }
     if (!(recurse_level == 0 && level == 0)) {

@@ -58,13 +58,16 @@ private:
     void initKeyMap();
     CommandMap command_map;
     KeyMap key_map;
-    int hs_value_index;
+    int hs_value_index{};
 //vector<vColor *> colors;
-    void bindKeys();
-    void doBindings(configNode *node);
-    void checkBind(configNode *node);
-    void doAxis(configNode *node);
-    void checkHatswitch(int nr, configNode *node);
+    void bindKeys() override;
+    void doBindings(configNode *node) override;
+    void checkBind(configNode *node) override;
+    void doAxis(configNode *node) override;
+    void checkHatswitch(int nr, configNode *node) override;
+
+public:
+    ~GameVegaConfig() override = default;
 };
 
 #endif //VEGA_STRIKE_ENGINE_CONFIG_XML_H

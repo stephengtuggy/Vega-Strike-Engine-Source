@@ -36,6 +36,7 @@
 #include "root_generic/xml_support.h"
 #include "root_generic/easydom.h"
 #include <map>
+#include <utility>
 #include "src/gfxlib_struct.h"
 
 using std::string;
@@ -52,31 +53,47 @@ public:
 class configNode : public easyDomNode {
 public:
     vColor *color{};
+
+    configNode() : color(new vColor) {}
+
+    ~configNode() override {
+        if (color) {
+            delete color;
+            color = nullptr;
+        }
+    }
 };
 
 enum section_t { SECTION_COLOR, SECTION_VAR };
 
-class configNodeFactory : public easyDomFactory<configNode> {};
+class configNodeFactory final : public easyDomFactory<configNode> {
+public:
+    ~configNodeFactory() override = default;
+
+    configNode *LoadXML(const char *filename) override {
+        return easyDomFactory<configNode>::LoadXML(filename);
+    }
+};
 
 class VegaConfig {
 public:
     explicit VegaConfig(const char *configfile);
     virtual ~VegaConfig();
 #define MAX_AXIS 32
-    int axis_axis[MAX_AXIS];
-    int axis_joy[MAX_AXIS];
-    bool axis_inverse[MAX_AXIS];
+    int axis_axis[MAX_AXIS]{};
+    int axis_joy[MAX_AXIS]{};
+    bool axis_inverse[MAX_AXIS]{};
 #define MAX_HATSWITCHES 16
 #define MAX_VALUES 12
-    float hatswitch[MAX_HATSWITCHES][MAX_VALUES];
-    float hatswitch_margin[MAX_HATSWITCHES];
-    int hatswitch_axis[MAX_HATSWITCHES];
-    int hatswitch_joystick[MAX_HATSWITCHES];
+    float hatswitch[MAX_HATSWITCHES][MAX_VALUES]{};
+    float hatswitch_margin[MAX_HATSWITCHES]{};
+    int hatswitch_axis[MAX_HATSWITCHES]{};
+    int hatswitch_joystick[MAX_HATSWITCHES]{};
     GFXColor getColor(configNode *node, string name, GFXColor default_color = GFXColor(1, 1, 1, 1));
     GFXColor getColor(string section, string name, GFXColor default_color = GFXColor(1, 1, 1, 1));
 
     inline GFXColor getColor(string name, GFXColor default_color = GFXColor(1, 1, 1, 1)) {
-        return getColor("default", name, default_color);
+        return getColor("default", std::move(name), default_color);
     }
 
     string getVariable(string section, string name, string defaultvalue);
@@ -97,11 +114,11 @@ public:
 protected:
     string getVariable(configNode *section, string name, string defaultval);
     configNode *variables;
-    configNode *bindings;
+    configNode *bindings{};
     configNode *colors;
     map<string, string> map_variables;
     map<string, vColor> map_colors;
-    int hs_value_index;
+    int hs_value_index{};
 //vector<vColor *> colors;
     bool checkConfig(configNode *node);
     void doVariables(configNode *node);
@@ -113,16 +130,16 @@ protected:
     bool checkColor(string prefix, configNode *node);
 
     virtual void doBindings(configNode *node) {
-    }
+    } // TODO: = 0?
 
     virtual void checkBind(configNode *node) {
-    }
+    } // TODO: = 0?
 
     virtual void doAxis(configNode *node) {
-    }
+    } // TODO: = 0?
 
     virtual void checkHatswitch(int nr, configNode *node) {
-    }
+    } // TODO: = 0?
 };
 
 #endif //VEGA_STRIKE_ENGINE_SIMPLE_CONFIG_H

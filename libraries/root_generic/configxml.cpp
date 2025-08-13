@@ -32,9 +32,10 @@
  */
 
 #include "root_generic/xml_support.h"
-#include <assert.h>
+#include <cassert>
 #include "root_generic/configxml.h"
 
+#include "vega_cast_utils.h"
 #include "configuration/configuration.h"
 #include "root_generic/easydom.h"
 #include "src/vs_logging.h"
@@ -44,7 +45,7 @@
 
 VegaConfig::VegaConfig(const char *configfile) {
     configNodeFactory domf;
-    configNode *top = (configNode *) domf.LoadXML(configfile);
+    configNode *top = vega_dynamic_cast_ptr<configNodeFactory>(&domf)->LoadXML(configfile);
     if (top == nullptr) {
         VS_LOG_AND_FLUSH(fatal, "Panic exit - no configuration");
         VSExit(0);
@@ -177,28 +178,52 @@ bool VegaConfig::checkColor(string prefix, configNode *node) {
         VS_LOG(warning, "no color name given");
         return false;
     }
-    string name = node->attr_value("name");
-    string hashname = prefix + name;
+    const string name = node->attr_value("name");
+    const string hashname = prefix + name;
 
-    vColor *color;
-    color = new vColor;
+    vColor* color = new vColor;
     vColor &vc = map_colors[hashname];
 
     if (node->attr_value("ref").empty()) {
-        string r = node->attr_value("r");
-        string g = node->attr_value("g");
-        string b = node->attr_value("b");
-        string a = node->attr_value("a");
+        const string r = node->attr_value("r");
+        const string g = node->attr_value("g");
+        const string b = node->attr_value("b");
+        const string a = node->attr_value("a");
         if (r.empty() || g.empty() || b.empty() || a.empty()) {
             VS_LOG(warning, (boost::format("neither name nor r,g,b given for color %1%") % node->Name()));
             delete color;
             color = nullptr;
             return false;
         }
-        float rf = atof(r.c_str());
-        float gf = atof(g.c_str());
-        float bf = atof(b.c_str());
-        float af = atof(a.c_str());
+        errno = 0;
+        const float rf = strtof(r.c_str(), nullptr);
+        if (errno == ERANGE)
+        {
+            delete color;
+            color = nullptr;
+            return false;
+        }
+        const float gf = strtof(g.c_str(), nullptr);
+        if (errno == ERANGE)
+        {
+            delete color;
+            color = nullptr;
+            return false;
+        }
+        const float bf = strtof(b.c_str(), nullptr);
+        if (errno == ERANGE)
+        {
+            delete color;
+            color = nullptr;
+            return false;
+        }
+        const float af = strtof(a.c_str(), nullptr);
+        if (errno == ERANGE)
+        {
+            delete color;
+            color = nullptr;
+            return false;
+        }
 
         vc.name.erase();
         vc.r = rf;
@@ -213,7 +238,7 @@ bool VegaConfig::checkColor(string prefix, configNode *node) {
     } else {
 
         string ref_section = node->attr_value("section");
-        string ref_name = node->attr_value("ref");
+        const string ref_name = node->attr_value("ref");
         if (ref_section.empty()) {
             VS_LOG(warning, "you have to give a referenced section when referencing colors");
             ref_section = "default";
@@ -241,15 +266,14 @@ bool VegaConfig::checkColor(string prefix, configNode *node) {
 /* *********************************************************** */
 
 void VegaConfig::doColors(configNode *node) {
-    if (colors != NULL) {
+    if (colors != nullptr) {
         VS_LOG(warning, "only one variable section allowed");
         return;
     }
     colors = node;
 
-    std::vector<easyDomNode *>::const_iterator siter;
-    for (siter = node->subnodes.begin(); siter != node->subnodes.end(); siter++) {
-        configNode *cnode = (configNode *) (*siter);
+    for (auto subnode : node->subnodes) {
+        configNode *cnode = vega_dynamic_cast_ptr<configNode>(subnode);
         checkSection(cnode, SECTION_COLOR);
     }
 }
