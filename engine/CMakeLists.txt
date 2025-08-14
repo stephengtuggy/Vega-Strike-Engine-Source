@@ -648,12 +648,25 @@ SET(VEGASTRIKE_SOURCES
 IF (NOT DISABLE_CLIENT)
     ADD_EXECUTABLE(vegastrike-engine WIN32 MACOSX_BUNDLE ${VEGASTRIKE_SOURCES})
 
-    #    TARGET_COMPILE_FEATURES(vegastrike-engine PUBLIC cxx_std_14)
-    SET_PROPERTY(TARGET vegastrike-engine PROPERTY CXX_STANDARD 14)
-    SET_PROPERTY(TARGET vegastrike-engine PROPERTY CXX_STANDARD_REQUIRED TRUE)
-    SET_PROPERTY(TARGET vegastrike-engine PROPERTY CXX_EXTENSIONS OFF)
+    TARGET_INCLUDE_DIRECTORIES(vegastrike-engine SYSTEM PRIVATE ${VSE_TST_INCLUDES})
+    TARGET_INCLUDE_DIRECTORIES(vegastrike-engine PRIVATE
+            # VS engine headers
+            ${Vega_Strike_SOURCE_DIR}
+            ${Vega_Strike_SOURCE_DIR}/engine
+            ${Vega_Strike_SOURCE_DIR}/engine/src
+            # Library Headers
+            ${Vega_Strike_SOURCE_DIR}/libraries
+            # CMake Artifacts
+            ${Vega_Strike_BINARY_DIR}
+            ${Vega_Strike_BINARY_DIR}/src
+            ${Vega_Strike_BINARY_DIR}/engine
+            ${Vega_Strike_BINARY_DIR}/engine/src
+    )
 
     TARGET_COMPILE_DEFINITIONS(vegastrike-engine PUBLIC "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>")
+    SET_PROPERTY(TARGET vegastrike-engine PROPERTY CXX_STANDARD 14)
+    SET_PROPERTY(TARGET vegastrike-engine PROPERTY CXX_STANDARD_REQUIRED TRUE)
+    SET_PROPERTY(TARGET vegastrike-engine PROPERTY POSITION_INDEPENDENT_CODE TRUE)
     IF (WIN32)
         TARGET_COMPILE_DEFINITIONS(vegastrike-engine PUBLIC BOOST_USE_WINAPI_VERSION=0x0A00)
         TARGET_COMPILE_DEFINITIONS(vegastrike-engine PUBLIC _WIN32_WINNT=0x0A00)
@@ -672,21 +685,6 @@ IF (NOT DISABLE_CLIENT)
         TARGET_COMPILE_DEFINITIONS(vegastrike-engine PUBLIC JUMP_DEBUG)
     ENDIF ()
 
-    TARGET_INCLUDE_DIRECTORIES(vegastrike-engine SYSTEM PRIVATE ${VSE_TST_INCLUDES})
-    TARGET_INCLUDE_DIRECTORIES(vegastrike-engine PRIVATE
-            # VS engine headers
-            ${Vega_Strike_SOURCE_DIR}
-            ${Vega_Strike_SOURCE_DIR}/engine
-            ${Vega_Strike_SOURCE_DIR}/engine/src
-            # Library Headers
-            ${Vega_Strike_SOURCE_DIR}/libraries
-            # CMake Artifacts
-            ${Vega_Strike_BINARY_DIR}
-            ${Vega_Strike_BINARY_DIR}/src
-            ${Vega_Strike_BINARY_DIR}/engine
-            ${Vega_Strike_BINARY_DIR}/engine/src
-    )
-
     IF (NEED_LINKING_AGAINST_LIBM)
         TARGET_LINK_LIBRARIES(vegastrike-engine PRIVATE m)
     ENDIF()
@@ -702,7 +700,6 @@ IF (NOT DISABLE_CLIENT)
             vegastrike_root_generic
             vegastrike_cmd
             vegastrike-OPcollide
-            OpenAL::OpenAL
     )
 
     IF (USE_OPEN_TELEMETRY)
@@ -729,7 +726,6 @@ IF (NOT DISABLE_CLIENT)
         endif()
     ENDIF ()
 
-    SET_TARGET_PROPERTIES(vegastrike-engine PROPERTIES LINK_FLAGS "${TST_LFLAGS}")
     SET_TARGET_PROPERTIES(vegastrike-engine PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 ENDIF (NOT DISABLE_CLIENT)
 
@@ -1282,6 +1278,7 @@ IF (USE_GTEST)
             ${Vega_Strike_BINARY_DIR}/engine
             ${Vega_Strike_BINARY_DIR}/engine/src
     )
+
     TARGET_COMPILE_DEFINITIONS(${TEST_NAME} PUBLIC "$<$<CONFIG:Debug>:BOOST_DEBUG_PYTHON>")
     SET_PROPERTY(TARGET ${TEST_NAME} PROPERTY CXX_STANDARD 14)
     SET_PROPERTY(TARGET ${TEST_NAME} PROPERTY CXX_STANDARD_REQUIRED TRUE)
