@@ -55,6 +55,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "vega_cast_utils.h"
+
 namespace pt = boost::property_tree;
 namespace alg = boost::algorithm;
 
@@ -216,7 +218,7 @@ void SystemFactory::processRing(Star_XML *xml, Object &object, Planet *owner) {
     initializeAlpha(object, blend_source, blend_destination);
 
     // Get the planet the ring will encircle
-    Unit *unit = static_cast<Unit *>(owner);
+    Unit *unit = vega_dynamic_cast_ptr<Unit>(owner);
     if (owner == nullptr) {
         return;
     }
@@ -432,7 +434,7 @@ void SystemFactory::processSpaceElevator(Object &object, Planet *owner) {
     string varname = getStringAttribute(object, "varname");
     float varvalue = getFloatAttribute(object, "varvalue", 0.0f);
 
-    Unit *unit = static_cast<Unit *>(owner);
+    Unit *unit = vega_dynamic_cast_ptr<Unit>(owner);
 
     if (owner == nullptr || unit->getUnitType() != Vega_UnitType::planet) {
         return;
@@ -589,21 +591,21 @@ void SystemFactory::processEnhancement(string element, Star_XML *xml, Object &ob
         unit->SetInvulnerable(true);
 
         if (unit->faction != neutralfaction) {
-            unit->SetTurretAI(); //FIXME un de-referenced before allocation
-            unit->EnqueueAI(new Orders::FireAt(configuration().ai.firing.aggressivity_flt)); //FIXME un de-referenced before allocation
+            unit->SetTurretAI();
+            unit->EnqueueAI(new Orders::FireAt(configuration().ai.firing.aggressivity_flt));
         }
     } else if (boost::iequals(element, "asteroid")) {
         Flightgroup *fg = getStaticAsteroidFlightgroup(faction);
-        unit = static_cast<Unit *>(
+        unit = vega_dynamic_cast_ptr<Unit>(
                 new Asteroid(filename.c_str(),
                         faction, fg, fg->nr_ships - 1,
                         absolute_scalex));
         if (scalex < 0) { // This was almost certainly fixed by the above line. TODO: refactor
             SetSubunitRotation(unit, absolute_scalex);
-        } //FIXME un de-referenced before allocation
+        }
 
     } else if (boost::iequals(element, "enhancement")) {
-        unit = static_cast<Unit *>(
+        unit = vega_dynamic_cast_ptr<Unit>(
                 new Enhancement(filename.c_str(), faction, string("")));
 
     } else if (boost::iequals(element, "building") ||
@@ -619,6 +621,11 @@ void SystemFactory::processEnhancement(string element, Star_XML *xml, Object &ob
 
         unit->EnqueueAI(new Orders::AggressiveAI("default.agg.xml"));
         unit->SetTurretAI(); // This was only applied to ct in original code
+    }
+
+    if (unit == nullptr) {
+        VS_LOG(error, "unit is nullptr!");
+        return;
     }
 
     for (auto &destination : destinations) {
@@ -643,7 +650,6 @@ void SystemFactory::processEnhancement(string element, Star_XML *xml, Object &ob
         owner->AddSatellite(unit);
         unit->SetOwner(owner);
         //cheating so nothing collides at top level - is this comment still relevant?
-        // FIXME un de-referenced before allocation - is this comment still relevant?
         unit->SetAngularVelocity(ComputeRotVel(rotational_velocity, R, S));
         unit->SetAI(new PlanetaryOrbit(unit, velocity, position, R, S, QVector(0, 0, 0), owner));
     }
