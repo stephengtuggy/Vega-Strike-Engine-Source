@@ -355,7 +355,7 @@ public:
 public:
     VSFile();
     VSFile(const char *buffer, long size, VSFileType type = ZoneBuffer, VSFileMode = ReadOnly);
-    VSFile(const char *filename, VSFileType type = UnknownFile, VSFileMode = ReadOnly);
+    explicit VSFile(const char *filename, VSFileType type = UnknownFile, VSFileMode = ReadOnly);
     ~VSFile();
 
     FILE *GetFP() {
@@ -415,11 +415,11 @@ public:
             if (q_volume_format == vfmtPK3) {
                 checkExtracted();
                 int readbytes = 0;
-                int length = strlen(format);
-                int newlength = length + 3;
-                char *newformat = new char[newlength];
+                size_t length = strlen(format);
+                size_t newlength = length + 3;
+                char *newformat = new char[newlength + 1];
                 memset(newformat, 0, newlength);
-                memcpy(newformat, format, length);
+                strcpy(newformat, format);
                 strcat(newformat, "%n");
                 ret = sscanf(this->pk3_extracted_file + offset, newformat, a, &readbytes);
                 delete[] newformat;
@@ -445,11 +445,11 @@ public:
             if (q_volume_format == vfmtPK3) {
                 checkExtracted();
                 int readbytes = 0;
-                int length = strlen(format);
-                int newlength = length + 3;
-                char *newformat = new char[newlength];
+                size_t length = strlen(format);
+                size_t newlength = length + 3;
+                char *newformat = new char[newlength + 1];
                 memset(newformat, 0, newlength);
-                memcpy(newformat, format, length);
+                strcpy(newformat, format);
                 strcat(newformat, "%n");
                 ret = sscanf(this->pk3_extracted_file + offset, newformat, a, b, &readbytes);
                 delete[] newformat;
@@ -474,11 +474,11 @@ public:
             if (q_volume_format == vfmtPK3) {
                 checkExtracted();
                 int ret = -1, readbytes = 0;
-                int length = strlen(format);
-                int newlength = length + 3;
-                char *newformat = new char[newlength];
+                size_t length = strlen(format);
+                size_t newlength = length + 3;
+                char *newformat = new char[newlength + 1];
                 memset(newformat, 0, newlength);
-                memcpy(newformat, format, length);
+                strcpy(newformat, format);
                 strcat(newformat, "%n");
                 ret = sscanf(this->pk3_extracted_file + offset, newformat, a, b, c, &readbytes);
                 delete[] newformat;
@@ -503,11 +503,11 @@ public:
             if (q_volume_format == vfmtPK3) {
                 checkExtracted();
                 int ret = -1, readbytes = 0;
-                int length = strlen(format);
-                int newlength = length + 3;
-                char *newformat = new char[newlength];
+                size_t length = strlen(format);
+                size_t newlength = length + 3;
+                char *newformat = new char[newlength + 1];
                 memset(newformat, 0, newlength);
-                memcpy(newformat, format, length);
+                strcpy(newformat, format);
                 strcat(newformat, "%n");
                 ret = sscanf(this->pk3_extracted_file + offset, newformat, a, b, c, d, &readbytes);
                 delete[] newformat;
@@ -529,11 +529,11 @@ public:
             if (q_volume_format == vfmtPK3) {
                 checkExtracted();
                 int ret = -1, readbytes = 0;
-                int length = strlen(format);
-                int newlength = length + 3;
-                char *newformat = new char[newlength];
+                size_t length = strlen(format);
+                size_t newlength = length + 3;
+                char *newformat = new char[newlength + 1];
                 memset(newformat, 0, newlength);
-                memcpy(newformat, format, length);
+                strcpy(newformat, format);
                 strcat(newformat, "%n");
                 ret = sscanf(this->pk3_extracted_file + offset, newformat, a, b, c, d, e, &readbytes);
                 delete[] newformat;
@@ -555,8 +555,8 @@ public:
             if (q_volume_format == vfmtPK3) {
                 checkExtracted();
                 int ret = -1, readbytes = 0;
-                int length = strlen(format);
-                int newlength = length + 3;
+                size_t length = strlen(format);
+                size_t newlength = length + 3;
                 char *newformat = new char[newlength];
                 memset(newformat, 0, newlength);
                 memcpy(newformat, format, length);

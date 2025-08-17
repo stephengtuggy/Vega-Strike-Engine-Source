@@ -46,7 +46,8 @@
       "displayName": "Release",
       "inherits": "default",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "LOG_TIME_TAKEN_DETAILS": false
       }
     },
     {

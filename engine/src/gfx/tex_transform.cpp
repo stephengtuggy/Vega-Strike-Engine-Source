@@ -45,7 +45,7 @@ unsigned char *texTransform(int &bpp,
     } else {
         row_size = width * (bpp / 8) * sizeof(unsigned char) * ((color_type & PNG_HAS_ALPHA) ? 4 : 3);
     }
-    data = (unsigned char *) malloc(row_size * height);
+    data = new unsigned char[row_size * height];
     for (unsigned int i = 0; i < height; i++) {
         memcpy(data + i * row_size, rp[i], row_size);
     }
@@ -57,7 +57,7 @@ unsigned char *heightmapTransform(int &bpp,
         unsigned long &width,
         unsigned long &height,
         unsigned char **row_pointers) {
-    unsigned short *dat = (unsigned short *) malloc(sizeof(unsigned short) * width * height);
+    unsigned short *dat = new unsigned short[width * height];
     if ((bpp == 8 && color_type
             == PNG_COLOR_TYPE_RGB_ALPHA) || color_type == PNG_COLOR_TYPE_GRAY
             || color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
@@ -79,7 +79,7 @@ unsigned char *heightmapTransform(int &bpp,
                 for (unsigned int i = 0; i < height; i++) {
                     unsigned long iwid = i * width;
                     for (unsigned int j = 0; j < width; j++) {
-                        dat[iwid + j] = (((unsigned short *) row_pointers[i])[j * 2]);
+                        dat[iwid + j] = (reinterpret_cast<unsigned short*>(row_pointers[i])[j * 2]);
                     }
                 }
             }
@@ -90,7 +90,7 @@ unsigned char *heightmapTransform(int &bpp,
             for (unsigned int i = 0; i < height; i++) {
                 unsigned long iwid = i * width;
                 for (unsigned int j = 0; j < width; j++) {
-                    dat[iwid + j] = *((unsigned short *) (&(row_pointers[i][j * coloffset])));
+                    dat[iwid + j] = *reinterpret_cast<unsigned short*>(&(row_pointers[i][j * coloffset]));
                 }
             }
         } else if (color_type == PNG_COLOR_TYPE_RGB_ALPHA) {
@@ -98,14 +98,14 @@ unsigned char *heightmapTransform(int &bpp,
             for (unsigned int i = 0; i < height; i++) {
                 unsigned long iwid = i * width;
                 for (unsigned int j = 0; j < width; j++) {
-                    dat[iwid + j] = (((unsigned short *) row_pointers[i])[j * 4]);
+                    dat[iwid + j] = (reinterpret_cast<unsigned short*>(row_pointers[i])[j * 4]);
                 }
             }
         }
     }
     bpp = 16;
     color_type = PNG_COLOR_TYPE_GRAY;
-    return (unsigned char *) dat;
+    return reinterpret_cast<unsigned char*>(dat);
 }
 
 unsigned char *terrainTransform(int &bpp,
@@ -113,7 +113,7 @@ unsigned char *terrainTransform(int &bpp,
         unsigned long &width,
         unsigned long &height,
         unsigned char **row_pointers) {
-    unsigned char *dat = (unsigned char *) malloc(sizeof(unsigned char) * width * height);
+    unsigned char *dat = new unsigned char[width * height];
     if ((bpp == 8 && color_type
             == PNG_COLOR_TYPE_RGB_ALPHA) || color_type == PNG_COLOR_TYPE_GRAY
             || color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
@@ -146,7 +146,7 @@ unsigned char *terrainTransform(int &bpp,
             for (unsigned int i = 0; i < height; i++) {
                 unsigned long iwid = i * width;
                 for (unsigned int j = 0; j < width; j++) {
-                    dat[iwid + j] = *((unsigned char *) (&(row_pointers[i][j * coloffset])));
+                    dat[iwid + j] = *&row_pointers[i][j * coloffset];
                 }
             }
         } else if (color_type == PNG_COLOR_TYPE_RGB_ALPHA) {
@@ -154,7 +154,7 @@ unsigned char *terrainTransform(int &bpp,
             for (unsigned int i = 0; i < height; i++) {
                 unsigned long iwid = i * width;
                 for (unsigned int j = 0; j < width; j++) {
-                    dat[iwid + j] = (((unsigned short *) row_pointers[i])[j * 4]) / 256;
+                    dat[iwid + j] = (reinterpret_cast<unsigned short*>(row_pointers[i])[j * 4]) / 256;
                 }
             }
         }
@@ -162,6 +162,6 @@ unsigned char *terrainTransform(int &bpp,
     bpp = 8;
     color_type = PNG_COLOR_TYPE_GRAY;
 
-    return (unsigned char *) dat;
+    return dat;
 }
 

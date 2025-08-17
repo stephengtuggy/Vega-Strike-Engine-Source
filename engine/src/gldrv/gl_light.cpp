@@ -432,7 +432,7 @@ void GFXDestroyAllLights() {
     VS_LOG_AND_FLUSH(debug, (boost::format("%1%: current light context: %2%, containing %3% lights") % __FUNCTION__ % _currentContext % _llights->size()));
     lighttable.Clear();
     if (GLLights != nullptr) {
-        free(GLLights);
+        delete[] GLLights;
         GLLights = nullptr;
     }
 }
@@ -442,7 +442,7 @@ static void SetupGLLightGlobals() {
             1);     //don't want lighting coming from infinity....we have to take the hit due to sphere mapping matrix tweaking
     glGetIntegerv(GL_MAX_LIGHTS, &GFX_MAX_LIGHTS);
     if (!GLLights) {
-        GLLights = static_cast<OpenGLLights *>(malloc(sizeof(OpenGLLights) * GFX_MAX_LIGHTS));
+        GLLights = new OpenGLLights[GFX_MAX_LIGHTS];
         for (int i = 0; i < GFX_MAX_LIGHTS; i++) {
             GLLights[i].index = -1;
         }

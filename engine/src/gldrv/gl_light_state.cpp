@@ -214,10 +214,8 @@ GFXLight gfx_light::operator=(const GFXLight &tmp) {   // Let's see if I can wri
 }
 
 int gfx_light::lightNum() {
-    int tmp = (this - &_llights->front());
-    if (tmp < 0) {
-        VS_LOG_AND_FLUSH(error, (boost::format("%1%: tmp < 0") % __FUNCTION__));
-    } else if (tmp >= static_cast<int>(_llights->size())) {
+    size_t tmp = (this - &_llights->front());
+    if (tmp >= _llights->size()) {
         VS_LOG_AND_FLUSH(error, (boost::format("%1%: tmp > _llights->size()") % __FUNCTION__));
     }
     // assert(tmp >= 0 && tmp < (int) _llights->size());

@@ -130,7 +130,7 @@ Mesh *MakeFogMesh(const AtmosphericFogMesh &f, float radius) {
     if (f.min_alpha != 0 || f.max_alpha != 255 || f.concavity != 0 || f.focus != .5 || f.tail_mode_start != -1
             || f.tail_mode_end != -1) {
         const int rez = configuration()->graphics.atmosphere_texture_resolution;
-        unsigned char *tex = (unsigned char *) malloc(sizeof(char) * rez * 4);
+        unsigned char *tex = new unsigned char[rez * 4];
         for (int i = 0; i < rez; ++i) {
             tex[i * 4] = 255;
             tex[i * 4 + 1] = 255;
@@ -147,7 +147,9 @@ Mesh *MakeFogMesh(const AtmosphericFogMesh &f, float radius) {
         //Writing in the homedir texture directory
         ::VSImage image;
         using VSFileSystem::TextureFile;
-        image.WriteImage((char *) nam.c_str(), &tex[0], PngImage, rez, 1, true, 8, TextureFile);
+        image.WriteImage(const_cast<char*>(nam.c_str()), &tex[0], PngImage, rez, 1, true, 8, TextureFile);
+        delete[] tex;
+        tex = nullptr;
     }
     vector<string> override;
     override.push_back(nam);

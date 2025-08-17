@@ -622,12 +622,12 @@ void GFXVertexList::EndMutate(int newvertexsize) {
 //private, only for inheriters
 GFXVertexList::GFXVertexList() :
         numVertices(0),
-        mode(0),
-        unique_mode(0),
+        mode(nullptr),
+        unique_mode(false),
         display_list(0),
         vbo_data(0),
         numlists(0),
-        offsets(0),
+        offsets(nullptr),
         changed(0) {
     // ctor
 }

@@ -1073,7 +1073,7 @@ void SaveGame::ParseSaveGame(const string &filename_p,
     if (read) {
         //TRY TO GET THE SPECIFIED SAVENAME TO LOAD
         string plsave = GetReadPlayerSaveGame(player_num);
-        if (plsave.length()) {
+        if (!plsave.empty()) {
             err = f.OpenReadOnly(plsave, SaveFile);
             if (err > Ok) {                             //failed in SaveFile
                 //Try as an UnknownFile to get a datadir saved game, like New_Game.
@@ -1099,15 +1099,15 @@ void SaveGame::ParseSaveGame(const string &filename_p,
         if (!read) {
             savestring = str;
         }
-        if (savestring.length() > 0) {
+        if (!savestring.empty()) {
             char *buf = new char[savestring.length() + 1];
             buf[savestring.length()] = '\0';
             memcpy(buf, savestring.c_str(), savestring.length());
             int headlen = hopto(buf, '\n', '\n', 0);
-            char *deletebuf = buf;
-            char *tmp2 = (char *) malloc(headlen + 2);
-            char *freetmp2 = tmp2;
-            char *factionname = (char *) malloc(headlen + 2);
+            char *delete_buf = buf;
+            char *tmp2 = new char[headlen + 2];
+            char *delete_tmp2 = tmp2;
+            char *factionname = new char[headlen + 2];
             if (headlen > 0 && (buf[headlen - 1] == '\n' || buf[headlen - 1] == ' ' || buf[headlen - 1] == '\r')) {
                 buf[headlen - 1] = '\0';
             }
@@ -1140,8 +1140,9 @@ void SaveGame::ParseSaveGame(const string &filename_p,
                     playerfaction = string("privateer");
                     VS_LOG(info, "Faction not found assigning default one: privateer");
                 }
-                free(factionname);
-                if (ForceStarSystem.length() == 0) {
+                delete[] factionname;
+                factionname = nullptr;
+                if (ForceStarSystem.empty()) {
                     ForceStarSystem = string(tmp2);
                 }
                 if (PlayerLocation.i == FLT_MAX || PlayerLocation.j == FLT_MAX || PlayerLocation.k == FLT_MAX) {
@@ -1151,10 +1152,10 @@ void SaveGame::ParseSaveGame(const string &filename_p,
                 buf += headlen;
                 ReadSavedPackets(buf, commitfaction, skip_news, select_data, select_data_filter);
             }
-            free(freetmp2);
-            freetmp2 = NULL;
-            tmp2 = NULL;
-            delete[] deletebuf;
+            delete[] delete_tmp2;
+            delete_tmp2 = nullptr;
+            tmp2 = nullptr;
+            delete[] delete_buf;
         }
         if (read) {
             f.Close();
@@ -1167,7 +1168,7 @@ void SaveGame::ParseSaveGame(const string &filename_p,
         PP = PlayerLocation;
         shouldupdatepos = true;
     }
-    if (ForceStarSystem.length() == 0) {
+    if (ForceStarSystem.empty()) {
         ForceStarSystem = FSS;
         originalsystem = FSS;
     } else {

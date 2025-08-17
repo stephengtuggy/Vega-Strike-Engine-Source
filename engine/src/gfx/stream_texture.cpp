@@ -55,7 +55,7 @@ StreamTexture::StreamTexture(int width, int height, enum FILTER filtertype, unsi
     image_target = TEXTURE_2D;
     ismipmapped = filtertype;
     GFXCreateTexture(width, height, RGBA32, &name, 0, 0, filtertype);
-    this->mutabledata = (unsigned char *) malloc(sizeof(unsigned char) * width * height * 4);
+    this->mutabledata = new unsigned char[width * height * 4]{};
     if (origdata) {
         memcpy(this->mutabledata, origdata, sizeof(unsigned char) * width * height * 4);
         GFXTransferTexture(mutabledata, name, sizeX, sizeY, RGBA32);
@@ -77,7 +77,7 @@ StreamTexture::~StreamTexture() {
     GFXDeleteTexture(name);
     name = -1;
     if (this->mutabledata != nullptr) {
-        free(this->mutabledata);
+        delete[] this->mutabledata;
         this->mutabledata = nullptr;
     }
 }

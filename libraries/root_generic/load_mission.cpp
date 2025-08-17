@@ -238,11 +238,11 @@ std::string UnpickleAllMissions(FILE *fp) {
 std::string UnpickleAllMissions(char *&buf) {
     std::string retval;
     unsigned int nummissions = ReadIntSpace(buf);
-    retval += XMLSupport::tostring((int) nummissions) + " ";
+    retval += XMLSupport::tostring(static_cast<int>(nummissions)) + " ";
     for (unsigned int i = 0; i < nummissions; i++) {
         unsigned int picklelength = ReadIntSpace(buf);
-        retval += XMLSupport::tostring((int) picklelength) + " ";
-        char *temp = (char *) malloc(sizeof(char) * (1 + picklelength));
+        retval += XMLSupport::tostring(static_cast<int>(picklelength)) + " ";
+        char *temp = new char[1 + picklelength];
         temp[0] = 0;
         temp[picklelength] = 0;
         memcpy(temp, buf, picklelength);
@@ -254,7 +254,7 @@ std::string UnpickleAllMissions(char *&buf) {
         } else {
             UnpickleMission(temp);
         }
-        free(temp);
+        delete[] temp;
     }
     return retval;
 }

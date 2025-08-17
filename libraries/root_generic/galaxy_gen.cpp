@@ -156,7 +156,7 @@ public:
     }
 
     template<class vec>
-    Vector(const vec &in) {
+    explicit Vector(const vec &in) {
         memcpy(this, &in, sizeof(*this));
     }
 

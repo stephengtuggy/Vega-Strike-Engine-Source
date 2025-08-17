@@ -32,21 +32,22 @@
 #include "src/gfxlib.h"
 #include "src/vegastrike.h"
 #include "root_generic/vs_globals.h"
-#include <stdio.h>
-// #include "root_generic/vsfilesystem.h"   // Is this still needed? -- stephengtuggy 2021-09-06
+#include <cstdio>
 #include "src/vs_logging.h"
 
 GFXQuadList::GFXQuadList(GFXBOOL color) : numVertices(0), numQuads(0) {
-    data.vertices = NULL;
+    data.vertices = nullptr;
     Dirty = GFXFALSE;
     isColor = color;
 }
 
 GFXQuadList::~GFXQuadList() {
     if (isColor && data.colors) {
-        free(data.colors);
+        delete[] data.colors;
+        data.colors = nullptr;
     } else if (!isColor && data.vertices) {
-        free(data.vertices);
+        delete[] data.vertices;
+        data.vertices = nullptr;
     }
 }
 
@@ -71,9 +72,9 @@ int GFXQuadList::AddQuad(const GFXVertex *vertices, const GFXColorVertex *color)
         if (!numVertices) {
             numVertices = 16;
             if (!isColor) {
-                data.vertices = (GFXVertex *) malloc(numVertices * sizeof(GFXVertex));
+                data.vertices = new GFXVertex[numVertices];
             } else {
-                data.colors = (GFXColorVertex *) malloc(numVertices * sizeof(GFXColorVertex));
+                data.colors = new GFXColorVertex[numVertices];
             }
             quadassignments = (int *) malloc(numVertices * sizeof(int) / 4);
             for (int i = 0; i < numVertices / 8; i++) {
@@ -82,17 +83,14 @@ int GFXQuadList::AddQuad(const GFXVertex *vertices, const GFXColorVertex *color)
         } else {
             numVertices *= 2;
             if (!isColor) {
-                data.vertices = (GFXVertex *) realloc(data.vertices, numVertices * sizeof(GFXVertex));
+                delete[] data.vertices;
+                data.vertices = new GFXVertex[numVertices];
             } else {
-                data.colors = (GFXColorVertex *) realloc(data.colors, numVertices * sizeof(GFXColorVertex));
+                delete[] data.colors;
+                data.colors = new GFXColorVertex[numVertices];
             }
-            int *tmp = (int *) realloc(quadassignments, numVertices * sizeof(int) / 4);
-            if (tmp == nullptr) {
-                VS_LOG_AND_FLUSH(fatal, "Error reallocating quadassignments!");
-                return -1;
-            } else {
-                quadassignments = tmp;
-            }
+            delete[] quadassignments;
+            quadassignments = new int[numVertices];
         }
         for (int i = numVertices / 8; i < numVertices / 4; i++) {
             quadassignments[i] = -1;
@@ -101,21 +99,30 @@ int GFXQuadList::AddQuad(const GFXVertex *vertices, const GFXColorVertex *color)
         quadassignments[numQuads] = numQuads;
         numQuads++;
         if (!isColor && vertices) {
-            memcpy(data.vertices + cur, vertices, 4 * sizeof(GFXVertex));
+            for (size_t i = 0; i < 4; ++i) {
+                data.vertices[i] = vertices[i];
+            }
         }
         if (isColor && color) {
-            memcpy(data.colors + cur, color, 4 * sizeof(GFXColorVertex));
+            for (size_t i = 0; i < 4; ++i) {
+                data.colors[i] = color[i];
+            }
         }
         return numQuads - 1;
     }
     for (int i = 0; i < numVertices / 4; i++) {
         if (quadassignments[i] == -1) {
             quadassignments[i] = numQuads;
+            const size_t k = quadassignments[i] * 4;
             if (!isColor && vertices) {
-                memcpy(data.vertices + (quadassignments[i] * 4), vertices, 4 * sizeof(GFXVertex));
+                for (size_t j = k; j < k + 4; ++j) {
+                    data.vertices[j] = vertices[j];
+                }
             }
             if (isColor && color) {
-                memcpy(data.colors + (quadassignments[i] * 4), color, 4 * sizeof(GFXColorVertex));
+                for (size_t j = k; j < k + 4; ++j) {
+                    data.colors[j] = color[j];
+                }
             }
             numQuads++;
             Dirty--;
@@ -139,13 +146,13 @@ void GFXQuadList::DelQuad(int which) {
     for (int i = 0; i < numVertices / 4; i++) {
         if (quadassignments[i] == numQuads - 1) {
             if (isColor) {
-                memcpy(data.colors + (quadassignments[which] * 4),
-                        data.colors + ((numQuads - 1) * 4),
-                        4 * sizeof(GFXColorVertex));
+                for (int j = 0; j < 4; ++j) {
+                    data.colors[quadassignments[which] + j] = data.colors[numQuads + j - 1];
+                }
             } else {
-                memcpy(data.vertices + (quadassignments[which] * 4),
-                        data.vertices + ((numQuads - 1) * 4),
-                        4 * sizeof(GFXVertex));
+                for (int j = 0; j < 4; ++j) {
+                    data.vertices[quadassignments[which] + j] = data.vertices[numQuads + j - 1];
+                }
             }
             quadassignments[i] = quadassignments[which];
             quadassignments[which] = -1;
@@ -160,9 +167,8 @@ void GFXQuadList::ModQuad(int which, const GFXVertex *vertices, float alpha) {
     if (which < 0 || which >= numVertices / 4 || quadassignments[which] == -1) {
         return;
     }
+    int w = quadassignments[which] * 4;
     if (isColor) {
-        int w = quadassignments[which] * 4;
-
         data.colors[w + 0].SetVtx(vertices[0]);
         data.colors[w + 1].SetVtx(vertices[1]);
         data.colors[w + 2].SetVtx(vertices[2]);
@@ -178,14 +184,16 @@ void GFXQuadList::ModQuad(int which, const GFXVertex *vertices, float alpha) {
                 float tmp[4] =
                         {alpha * data.colors[w + 0].r / alp, alpha * data.colors[w + 0].g / alp,
                                 alpha * data.colors[w + 0].b / alp, alpha};
-                memcpy(&data.colors[w + 0].r, tmp, sizeof(float) * 4);
-                memcpy(&data.colors[w + 1].r, tmp, sizeof(float) * 4);
-                memcpy(&data.colors[w + 2].r, tmp, sizeof(float) * 4);
-                memcpy(&data.colors[w + 3].r, tmp, sizeof(float) * 4);
+                data.colors[w].r = data.colors[w + 0].r;
+                data.colors[w].g = data.colors[w + 0].g;
+                data.colors[w].b = data.colors[w + 0].b;
+                data.colors[w].a = alpha;
             }
         }
     } else {
-        memcpy(data.vertices + (quadassignments[which] * 4), vertices, 4 * sizeof(GFXVertex));
+        for (int i = 0; i < 4; ++i) {
+            data.vertices[w + i] = vertices[i];
+        }
     }
 }
 
@@ -194,7 +202,9 @@ void GFXQuadList::ModQuad(int which, const GFXColorVertex *vertices) {
         return;
     }
     if (isColor) {
-        memcpy(data.vertices + (quadassignments[which] * 4), vertices, 4 * sizeof(GFXColorVertex));
+        for (int i = 0; i < 4; ++i) {
+            data.colors[quadassignments[which] * 4 + i] = vertices[i];
+        }
     } else {
         data.vertices[(quadassignments[which] * 4) + 0].SetTexCoord(vertices[0].s,
                 vertices[0].t).SetNormal(Vector(vertices[0].i,

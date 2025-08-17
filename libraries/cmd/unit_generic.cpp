@@ -1293,6 +1293,16 @@ void Unit::DamageRandSys(float dam, const Vector &vec) {
 }
 
 void Unit::Kill(bool erasefromsave, bool quitting) {
+    VS_LOG_AND_FLUSH(important_info, (boost::format("%1%: killing unit %2%") % __FUNCTION__ % unit_name));
+    std::size_t find_result = unit_key.find("Serenity");
+    if (find_result != std::string::npos) {
+        VS_LOG_AND_FLUSH(serious_warning, "Deleting Serenity!");
+    } else {
+        find_result = unit_name.find("Serenity");
+        if (find_result != std::string::npos) {
+            VS_LOG_AND_FLUSH(serious_warning, "Deleting Serenity!");
+        }
+    }
     if (this->colTrees) {
         this->colTrees->Dec();
     }           //might delete

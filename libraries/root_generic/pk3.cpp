@@ -393,7 +393,7 @@ void CPK3::PrintFileContent() {
 }
 
 void CPK3::GetFilename(int i, char *pszDest) const {
-    if (pszDest != NULL) {
+    if (pszDest != nullptr) {
         if (i < 0 || i >= m_nEntries) {
             *pszDest = '\0';
         } else {

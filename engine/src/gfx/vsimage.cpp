@@ -120,7 +120,7 @@ unsigned char *VSImage::ReadImage(VSFile *f, textureTransform *t, bool strip, VS
     try {
         this->Init(f, t, strip, f2);
 
-        unsigned char *ret = NULL;
+        unsigned char *ret = nullptr;
         CheckFormat(img_file);
         switch (this->img_type) {
             case DdsImage:
@@ -137,7 +137,7 @@ unsigned char *VSImage::ReadImage(VSFile *f, textureTransform *t, bool strip, VS
                 break;
             default:
                 VS_LOG(info, img_file->GetFilename());
-                ret = NULL;
+                ret = nullptr;
         }
         return ret;
     }
@@ -230,7 +230,7 @@ void VSImage::CheckFormat(VSFile *file) {
 
 void PngReadFunc(png_struct *Png, png_bytep buf, png_size_t size) {
     VS_LOG(trace, (boost::format("Preparing to copy %1% bytes from PngFileBuffer") % size));
-    TPngFileBuffer *PngFileBuffer = (TPngFileBuffer *) png_get_io_ptr(Png);
+    TPngFileBuffer *PngFileBuffer = static_cast<TPngFileBuffer*>(png_get_io_ptr(Png));
     memcpy(buf, PngFileBuffer->Buffer + PngFileBuffer->Pos, size);
     PngFileBuffer->Pos += size;
 }
@@ -687,7 +687,7 @@ unsigned char *VSImage::ReadDDS() {
     ddsHeader header;
     unsigned int type = GL_RGB;
     int blockSize = 16;
-    unsigned char *s = NULL;
+    unsigned char *s = nullptr;
     unsigned int inputSize = 0;
     int width = 0;
     int height = 0;

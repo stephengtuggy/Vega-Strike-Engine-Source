@@ -1727,7 +1727,7 @@ VSError VSFile::OpenCreateWrite(const char *filenam, VSFileType type) {
 size_t VSFile::Read(void *ptr, size_t length) {
     size_t nbread = 0;
     if (!UseVolumes[this->alt_type] || this->volume_type == VSFSNone) {
-        assert(fp != NULL);
+        assert(fp != nullptr);
         nbread = fread(ptr, 1, length, this->fp);
     } else {
         if (q_volume_format == vfmtVSR) {

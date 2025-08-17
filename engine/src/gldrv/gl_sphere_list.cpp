@@ -237,13 +237,13 @@ GFXSphereVertexList::GFXSphereVertexList(float radius, int detail, bool Insideou
 
 GFXSphereVertexList::~GFXSphereVertexList() {
     numVertices = 0;
-    data.vertices = 0;
-    data.colors = 0;
-    index.i = 0;
-    mode = 0;
+    data.vertices = nullptr;
+    data.colors = nullptr;
+    index.i = nullptr;
+    mode = nullptr;
     numlists = 0;
     display_list = 0;
-    offsets = 0;
+    offsets = nullptr;
     vbo_data = 0;
 }
 

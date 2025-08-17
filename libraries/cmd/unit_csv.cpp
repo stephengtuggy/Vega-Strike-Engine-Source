@@ -606,6 +606,10 @@ void Unit::LoadRow(std::string unit_identifier, string modification, bool saved_
 
     if (!tmpstr.empty()) {
         graphicOptions.FaceCamera = XMLSupport::parse_bool(tmpstr) ? 1 : 0;
+        std::size_t find_result = unit_key.find("Serenity");
+        if (find_result != std::string::npos) {
+            VS_LOG_AND_FLUSH(important_info, "Loading Serenity");
+        }
     }
 
     std::string llegacy_combat_role(UnitCSVFactory::GetVariable(unit_key, "Combat_Role", std::string()));

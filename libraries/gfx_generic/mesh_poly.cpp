@@ -106,7 +106,7 @@ void Mesh::Fork(Mesh *&x, Mesh *&y, float a, float b, float c, float d) {
         offset = numtris * 3;
         last = numquads;
     }
-    free(Orig);
+    delete[] Orig;
     enum POLYTYPE polytypes[2] = {GFXTRI, GFXQUAD};
     if ((!(numtqx[0] || numtqx[1])) || (!(numtqy[0] || numtqy[1]))) {
         x = y = NULL;

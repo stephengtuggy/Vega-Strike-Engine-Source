@@ -261,12 +261,12 @@ static bool LoadTex(char *FileName, unsigned char scdata[lmwid][lmwid][3]) {
         buffer = texTransform(tmp, tmp2, tex.sizeX, tex.sizeY, row_pointers);
         //We're done with row_pointers, free it
         free(row_pointers);
-        row_pointers = NULL;
+        row_pointers = nullptr;
         //We're done with the decompressed dds data, free it
         free(data);
         //We set data to the transformed image data
         data = buffer;
-        buffer = NULL;
+        buffer = nullptr;
         //it's 3 because 24/8
         bpp = 4;
     } else if (format & PNG_HAS_ALPHA) {

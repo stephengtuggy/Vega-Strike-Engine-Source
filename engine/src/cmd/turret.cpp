@@ -84,7 +84,7 @@ std::map<std::string, std::string> parseTurretSizes() {
     VSError err = f.OpenReadOnly("units/subunits/size.txt", UnknownFile);
     if (err <= Ok) {
         int siz = f.Size();
-        char *filedata = (char *) malloc(siz + 1);
+        char *filedata = new char[siz + 1];
         filedata[siz] = 0;
         while (f.ReadLine(filedata, siz) == Ok) {
             std::string x(filedata);
@@ -101,7 +101,8 @@ std::map<std::string, std::string> parseTurretSizes() {
                 t[key] = value;
             }
         }
-        free(filedata);
+        delete[] filedata;
+        filedata = nullptr;
         f.Close();
     }
     return t;

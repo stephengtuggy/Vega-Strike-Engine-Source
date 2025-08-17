@@ -150,18 +150,18 @@ void blutLoadWAVMemory(ALbyte *memory, ALenum
                         && (ChunkHdr.Id[3] == 'a')) {
                     if (FmtHdr.Format == 0x0001) {
                         *size = ChunkHdr.Size;
-                        if (*data == NULL) {
+                        if (*data == nullptr) {
                             *data = malloc(ChunkHdr.Size + 31);
                         } else {
                             *data = realloc(*data, ChunkHdr.Size + 31);
                         }
                         if (*data) {
                             memcpy(*data, Stream, ChunkHdr.Size);
-                            memset(((char *) *data) + ChunkHdr.Size, 0, 31);
+                            memset(static_cast<char*>(*data) + ChunkHdr.Size, 0, 31);
                             Stream += ChunkHdr.Size;
                             if (FmtHdr.BitsPerSample == 16) {
                                 for (size_t i = 0; i < (ChunkHdr.Size / 2); ++i) {
-                                    SwapBytes(&(*(unsigned short **) data)[i]);
+                                    SwapBytes(&(*reinterpret_cast<unsigned short**>(data))[i]);
                                 }
                             }
                         }

@@ -74,8 +74,9 @@ struct VertexCompare {
 void GFXOptimizeList(GFXVertex *old, int numV, GFXVertex **nw, int *nnewV, unsigned int **ind) {
     std::map<GFXVertex *, int, VertexCompare> vtxcache;
 
-    *ind = (unsigned int *) malloc(sizeof(unsigned int) * numV);
-    *nw = (GFXVertex *) malloc(numV * sizeof(GFXVertex));
+    *ind = new unsigned int[numV];
+    // TODO: delete *ind?
+    *nw = new GFXVertex[numV]{};
     int _nnewV = *nnewV = 0;
     int i;
     bool quickpath = true;
@@ -84,19 +85,25 @@ void GFXOptimizeList(GFXVertex *old, int numV, GFXVertex **nw, int *nnewV, unsig
         if (it != vtxcache.end()) {
             if (quickpath && i > 0) {
                 quickpath = false;
-                memcpy(*nw, old, sizeof(GFXVertex) * size_t(i));
+                for (int j = 0; j < i; ++j) {
+                    *nw[j] = old[j];
+                }
             }
             (*ind)[i] = it->second;
         } else {
             if (!quickpath) {
-                memcpy((*nw) + _nnewV, old + i, sizeof(GFXVertex));
+                for (int j = 0; j < i; ++j) {
+                    *nw[j + _nnewV] = old[j + i];
+                }
             }
             vtxcache[old + i] = ((*ind)[i]) = _nnewV;
             ++_nnewV;
         }
     }
     if (quickpath && i > 0) {
-        memcpy(*nw, old, sizeof(GFXVertex) * size_t(i));
+        for (int j = 0; j < i; ++j) {
+            *nw[j] = old[j];
+        }
     }
     *nnewV = _nnewV;
 
@@ -136,22 +143,26 @@ void GFXVertexList::Init(enum POLYTYPE *poly,
     if (numVertices) {
         if (vertices) {
             if (!GFX_BUFFER_MAP_UNMAP) {
-                data.vertices = (GFXVertex *) malloc(sizeof(GFXVertex) * numVertices);
-                memcpy(data.vertices, vertices, sizeof(GFXVertex) * numVertices);
+                data.vertices = new GFXVertex[numVertices];
+                for (int i = 0; i < numVertices; ++i) {
+                    data.vertices[i] = vertices[i];
+                }
             } else {
                 data.vertices = const_cast< GFXVertex * > (vertices);                  //will *not* modify
             }
         } else if (colors) {
             if (!GFX_BUFFER_MAP_UNMAP) {
-                data.colors = (GFXColorVertex *) malloc(sizeof(GFXColorVertex) * numVertices);
-                memcpy(data.colors, colors, sizeof(GFXColorVertex) * numVertices);
+                data.colors = new GFXColorVertex[numVertices];
+                for (int i = 0; i < numVertices; ++i) {
+                    data.colors[i] = colors[i];
+                }
             } else {
                 data.colors = const_cast< GFXColorVertex * > (colors);
             }
         }
     } else {
-        data.vertices = NULL;
-        data.colors = NULL;
+        data.vertices = nullptr;
+        data.colors = nullptr;
     }
     this->offsets = new int[numlists];
     memcpy(this->offsets, offsets, sizeof(int) * numlists);
@@ -175,29 +186,32 @@ void GFXVertexList::Init(enum POLYTYPE *poly,
             stride = INDEX_INT;
         }
 
-        index.b = (unsigned char *) malloc(static_cast<size_t>(stride) * static_cast<size_t>(numindices));
+        index.b = new unsigned char[static_cast<size_t>(stride) * static_cast<size_t>(numindices)];
         switch (stride) {
             case INDEX_BYTE:
                 VS_LOG(trace, "Optimized vertex list - using 8-bit indices");
-                for (unsigned int i = 0; i < numindices; i++) {
-                    index.b[i] = indices[i];
+                for (unsigned int j = 0; j < numindices; j++) {
+                    index.b[j] = indices[j];
                 }
                 break;
             case INDEX_SHORT:
                 VS_LOG(trace, "Optimized vertex list - using 16-bit indices");
-                for (unsigned int i = 0; i < numindices; i++) {
-                    index.s[i] = indices[i];
+                for (unsigned int j = 0; j < numindices; j++) {
+                    index.s[j] = indices[j];
                 }
                 break;
             case INDEX_INT:
                 VS_LOG(debug, "Optimized vertex list - using 32-bit indices");
-                for (unsigned int i = 0; i < numindices; i++) {
-                    index.i[i] = indices[i];
+                for (unsigned int j = 0; j < numindices; j++) {
+                    index.i[j] = indices[j];
                 }
                 break;
+            default:
+                VS_LOG(error, "Attempted to optimize vertex list - unsupported stride");
+                return;
         }
     } else {
-        index.b = NULL;
+        index.b = nullptr;
     }
     changed |= stride;
     RenormalizeNormals();
@@ -207,16 +221,20 @@ void GFXVertexList::Init(enum POLYTYPE *poly,
             //backstore required
             if (numVertices) {
                 if (vertices) {
-                    data.vertices = (GFXVertex *) malloc(sizeof(GFXVertex) * numVertices);
-                    memcpy(data.vertices, vertices, sizeof(GFXVertex) * numVertices);
+                    data.vertices = new GFXVertex[numVertices];
+                    for (int j = 0; j < numVertices; ++j) {
+                        data.vertices[j] = vertices[j];
+                    }
                 } else if (colors) {
-                    data.colors = (GFXColorVertex *) malloc(sizeof(GFXColorVertex) * numVertices);
-                    memcpy(data.colors, colors, sizeof(GFXColorVertex) * numVertices);
+                    data.colors = new GFXColorVertex[numVertices];
+                    for (int j = 0; j < numVertices; ++j) {
+                        data.colors[j] = colors[j];
+                    }
                 }
             }
         } else {
             if (index.b != nullptr) {
-                free(index.b);
+                delete[] index.b;
                 index.b = nullptr;
             }
             data.vertices = nullptr;
@@ -398,7 +416,7 @@ void GFXVertexList::GetPolys(GFXVertex **vert, int *numpolys, int *numtris) {
     *numpolys = *numtris + numQuads();
     int curtri = 0;
     int curquad = 3 * (*numtris);
-    res = (GFXVertex *) malloc(((*numtris) * 3 + 4 * (*numpolys - (*numtris))) * sizeof(GFXVertex));
+    res = new GFXVertex[(*numtris) * 3 + 4 * (*numpolys - *numtris)];
     *vert = res;
     for (i = 0; i < numlists; i++) {
         int j;
