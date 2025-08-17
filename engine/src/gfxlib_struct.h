@@ -62,18 +62,18 @@ extern void /*GFXDRVAPI*/ GFXDeleteList(int list);
 /// Vertex, Normal, Texture, and (deprecated) Environment Mapping T2F_N3F_V3F format
 struct GFXVertex {
     //Texcoord
-    float s;
-    float t;
+    float s{};
+    float t{};
 
     //Normal
-    float i;
-    float j;
-    float k;
+    float i{};
+    float j{};
+    float k{};
 
     //Position
-    float x;
-    float y;
-    float z;
+    float x{};
+    float y{};
+    float z{};
 
     //Tangent
     float tx;
@@ -167,8 +167,7 @@ struct GFXColor {
     float b = 0;
     float a = 0;
 
-    GFXColor() {
-    }
+    GFXColor() = default;
 
     GFXColor(float r, float g, float b) {
         this->r = r;
@@ -232,24 +231,24 @@ inline GFXColor colLerp(GFXColor a, GFXColor b, float bweight) {
 ///This vertex is used for the interleaved array argument for color based arrays T2F_C4F_N3F_V3F
 struct GFXColorVertex {
     //Texcoord
-    float s;
-    float t;
+    float s{};
+    float t{};
 
     //Color
-    float r;
-    float g;
-    float b;
-    float a;
+    float r{};
+    float g{};
+    float b{};
+    float a{};
 
     //Normal
-    float i;
-    float j;
-    float k;
+    float i{};
+    float j{};
+    float k{};
 
     //Position
-    float x;
-    float y;
-    float z;
+    float x{};
+    float y{};
+    float z{};
 
     //Tangent
     float tx;
@@ -594,8 +593,7 @@ private:
     BufferType buffer;
 
 public:
-    VertexBuilder() {
-    };
+    VertexBuilder() = default;
 
     explicit VertexBuilder(size_type size) {
         reserve(size);

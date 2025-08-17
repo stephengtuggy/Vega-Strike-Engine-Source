@@ -217,7 +217,7 @@ ClickList *StarSystem::getClickList() {
 void ConditionalCursorDraw(bool tf) {
     static boost::optional<bool> hardware_cursor;
     if (hardware_cursor == boost::none) {
-        hardware_cursor = configuration()->physics.hardware_cursor;
+        hardware_cursor = configuration().physics.hardware_cursor;
     }
     if (hardware_cursor) {
         winsys_show_cursor(tf);
@@ -445,7 +445,7 @@ void StarSystem::Draw(bool DrawCockpit) {
     Collidable key_iterator(0, 1, drawstartpos);
     static boost::optional<double> precull_dist;
     if (precull_dist == boost::none) {
-        precull_dist = configuration()->graphics.precull_dist_dbl;
+        precull_dist = configuration().graphics.precull_dist_dbl;
     }
     UnitWithinRangeOfPosition<UnitDrawer> drawer(precull_dist.get(), 0, key_iterator);
     //Need to draw really big stuff (i.e. planets, deathstars, and other mind-bogglingly big things that shouldn't be culled despite extreme distance
@@ -498,7 +498,7 @@ void StarSystem::Draw(bool DrawCockpit) {
 #endif
     static boost::optional<bool> draw_near_stars_in_front_of_planets;
     if (draw_near_stars_in_front_of_planets == boost::none) {
-        draw_near_stars_in_front_of_planets = configuration()->graphics.draw_near_stars_in_front_of_planets;
+        draw_near_stars_in_front_of_planets = configuration().graphics.draw_near_stars_in_front_of_planets;
     }
     if (!draw_near_stars_in_front_of_planets) {
         stars->Draw();
@@ -588,9 +588,9 @@ void StarSystem::createBackground(Star_XML *xml) {
     VS_LOG(info, "using NV_CUBE_MAP");
     static boost::optional<int> max_cubemap_size;
     if (max_cubemap_size == boost::none) {
-        max_cubemap_size = configuration()->graphics.max_cubemap_size;
+        max_cubemap_size = configuration().graphics.max_cubemap_size;
     }
-    max_cubemap_size = configuration()->graphics.max_cubemap_size;
+    max_cubemap_size = configuration().graphics.max_cubemap_size;
     light_map[0] = new Texture((xml->backgroundname + "_light.cube").c_str(), 1, TRILINEAR, CUBEMAP, CUBEMAP_POSITIVE_X,
                                GFXFALSE, max_cubemap_size.get());
     if (light_map[0]->LoadSuccess() && light_map[0]->isCube()) {
@@ -635,7 +635,7 @@ void StarSystem::createBackground(Star_XML *xml) {
 
     static boost::optional<float> zfar;
     if (zfar == boost::none) {
-        zfar = configuration()->graphics.zfar_flt;
+        zfar = configuration().graphics.zfar_flt;
     }
     background = new Background(
                                                             xml->backgroundname.c_str(),
@@ -647,7 +647,7 @@ void StarSystem::createBackground(Star_XML *xml) {
     stars = new Stars(xml->numnearstars, xml->starsp);
     static boost::optional<bool> star_blend;
     if (star_blend == boost::none) {
-        star_blend = configuration()->graphics.star_blend;
+        star_blend = configuration().graphics.star_blend;
     }
     stars->SetBlend(star_blend.get(), star_blend.get());
 }
@@ -670,7 +670,7 @@ void TentativeJumpTo(StarSystem *ss, Unit *un, Unit *jumppoint, const std::strin
 
 float ScaleJumpRadius(float radius) {
     //need this because sys scale doesn't affect j-point size
-    radius *= configuration()->physics.jump_radius_scale_flt * configuration()->physics.game_speed_flt;
+    radius *= configuration().physics.jump_radius_scale_flt * configuration().physics.game_speed_flt;
     return radius;
 }
 
@@ -1467,7 +1467,7 @@ void StarSystem::ProcessPendingJumps() {
                     } else if (!player) {
                         un->SetVelocity(Vector(0, 0, 0));
                     }
-                    if (configuration()->physics.jump_disables_shields) {
+                    if (configuration().physics.jump_disables_shields) {
                         // Zero shield. They'll start recharging from zero.
                         un->shield.Zero();
                     }
@@ -1572,7 +1572,7 @@ QVector ComputeJumpPointArrival(QVector pos, std::string origin, std::string des
         if (pos.MagnitudeSquared()) {
             pos.Normalize();
         }
-        return (dir * .5 + pos * .125) * configuration()->physics.distance_to_warp_dbl;
+        return (dir * .5 + pos * .125) * configuration().physics.distance_to_warp_dbl;
     }
     return QVector(0, 0, 0);
 }
@@ -1652,7 +1652,7 @@ unsigned int StarSystem::numContTerrain() {
 void StarSystem::UpdateMissiles() {
     //if false, missiles collide with rocks as units, but not harm them with explosions
     //FIXME that's how it's used now, but not really correct, as there could be separate AsteroidWeaponDamage for this
-    const bool collideroids = configuration()->physics.asteroid_weapon_collision;
+    const bool collideroids = configuration().physics.asteroid_weapon_collision;
 
     //WARNING: This is a big performance problem...
     //...responsible for many hiccups.

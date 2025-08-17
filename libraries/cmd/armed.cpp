@@ -141,7 +141,7 @@ public:
                 }
             }
         }
-        const bool allow_special_with_weapons = configuration()->physics.allow_special_and_normal_gun_combo;
+        const bool allow_special_with_weapons = configuration().physics.allow_special_and_normal_gun_combo;
         if (allow_special_with_weapons) {
             myset.insert(allWeapons);
         }
@@ -207,15 +207,15 @@ void Armed::Fire(unsigned int weapon_type_bitmask, bool listen_to_owner) {
 
     static boost::optional<bool> can_fire_in_cloak;
     if (can_fire_in_cloak == boost::none) {
-        can_fire_in_cloak = configuration()->weapons.can_fire_in_cloak;
+        can_fire_in_cloak = configuration().weapons.can_fire_in_cloak;
     }
     static boost::optional<bool> can_fire_in_spec;
     if (can_fire_in_spec == boost::none) {
-        can_fire_in_spec = configuration()->weapons.can_fire_in_spec;
+        can_fire_in_spec = configuration().weapons.can_fire_in_spec;
     }
     static boost::optional<bool> verbose_debug;
     if (verbose_debug == boost::none) {
-        verbose_debug = configuration()->logging.verbose_debug;
+        verbose_debug = configuration().logging.verbose_debug;
     }
 
     if (unit->cloak.Active() && !can_fire_in_cloak) {
@@ -448,7 +448,7 @@ bool Armed::TargetLocked(const Unit *checktarget) const {
 
 bool Armed::TargetTracked(const Unit *checktarget) {
     Unit *unit = static_cast<Unit *>(this);
-    const bool must_lock_to_autotrack = configuration()->physics.must_lock_to_autotrack;
+    const bool must_lock_to_autotrack = configuration().physics.must_lock_to_autotrack;
 
     bool we_do_track = unit->radar.tracking_active
             && (!_Universe->isPlayerStarship(unit) || TargetLocked() || !must_lock_to_autotrack);

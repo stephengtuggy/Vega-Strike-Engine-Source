@@ -41,26 +41,28 @@
 #include "root_generic/lin_time.h"
 #include "src/resizable.h"
 
+constexpr int kIterations = 10000000;
+
 TEST(configuration, const_Performance) {
-    VS_LOG_AND_FLUSH(important_info, "Starting configuration()->..._dbl test");
+    VS_LOG_AND_FLUSH(important_info, "Starting configuration()...._dbl test");
     const auto start_time = std::chrono::system_clock::now();
-    for (int i = 0; i < 1000000; ++i) {
+    for (int i = 0; i < kIterations; ++i) {
         // ReSharper disable CppDFAUnreadVariable
-        const double asteroid_difficulty = configuration()->physics.asteroid_difficulty_dbl;
+        const double asteroid_difficulty = configuration().physics.asteroid_difficulty_dbl;
         // ReSharper restore CppDFAUnreadVariable
     }
     const auto end_time = std::chrono::system_clock::now();
     const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-    VS_LOG_AND_FLUSH(important_info, (boost::format("Finished configuration()->..._dbl test. Took %1% milliseconds") % duration.count()));
+    VS_LOG_AND_FLUSH(important_info, (boost::format("Finished configuration()...._dbl test. Took %1% milliseconds") % duration.count()));
 }
 
 TEST(configuration, static_optional_Performance) {
     VS_LOG_AND_FLUSH(important_info, "Starting test of static optional setting variable");
     const auto start_time = std::chrono::system_clock::now();
     static boost::optional<double> setting;
-    for (int i = 0; i < 1000000; ++i) {
+    for (int i = 0; i < kIterations; ++i) {
         if (setting == boost::none) {
-            setting = configuration()->physics.asteroid_difficulty_dbl;
+            setting = configuration().physics.asteroid_difficulty_dbl;
         }
     }
     const auto end_time = std::chrono::system_clock::now();
@@ -72,15 +74,27 @@ TEST(configuration, Performance_of_static_optional_with_get) {
     VS_LOG_AND_FLUSH(important_info, "Starting test of static optional setting variable with .get()");
     const auto start_time = std::chrono::system_clock::now();
     static boost::optional<double> setting;
-    for (int i = 0; i < 1000000; ++i) {
+    for (int i = 0; i < kIterations; ++i) {
         if (setting == boost::none) {
-            setting = configuration()->physics.asteroid_difficulty_dbl;
+            setting = configuration().physics.asteroid_difficulty_dbl;
         }
         setting.get();
     }
     const auto end_time = std::chrono::system_clock::now();
     const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
     VS_LOG_AND_FLUSH(important_info, (boost::format("Finished test of static optional setting variable with .get(). Took %1% milliseconds") % duration.count()));
+}
+
+TEST(GetGameConfig, Performance) {
+    VS_LOG_AND_FLUSH(important_info, "Starting test of GetGameConfig");
+    const auto start_time = std::chrono::system_clock::now();
+    for (int i = 0; i < kIterations; ++i) {
+        // ReSharper disable once CppDeclaratorNeverUsed
+        const auto tmp = vega_config::GetGameConfig();
+    }
+    const auto end_time = std::chrono::system_clock::now();
+    const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    VS_LOG_AND_FLUSH(important_info, (boost::format("Finished test of GetGameConfig. Took %1% milliseconds") % duration.count()));
 }
 
 TEST(LoadConfig, Sanity) {

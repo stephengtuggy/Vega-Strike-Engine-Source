@@ -53,12 +53,12 @@ bool DistanceWarrantsWarpTo(Unit *parent, float dist, bool following) {
         float mytime = SIMULATION_ATOM * 1.5;
         static boost::optional<bool> rampdown;
         if (rampdown == boost::none) {
-            rampdown = configuration()->physics.auto_pilot_ramp_warp_down;
+            rampdown = configuration().physics.auto_pilot_ramp_warp_down;
         }
         if (rampdown == false) {
             static boost::optional<float> warprampdowntime;
             if (warprampdowntime == boost::none) {
-                warprampdowntime = configuration()->physics.warp_ramp_down_time_flt;
+                warprampdowntime = configuration().physics.warp_ramp_down_time_flt;
             }
             mytime = warprampdowntime.get();
         }

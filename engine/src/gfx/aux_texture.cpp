@@ -333,7 +333,7 @@ void Texture::Load(const char *FileName,
         if (t[0] != '\0') {
             static boost::optional<bool> use_alphamap;
             if (use_alphamap == boost::none) {
-                use_alphamap = configuration()->graphics.bitmap_alphamap;
+                use_alphamap = configuration().graphics.bitmap_alphamap;
             }
             if (use_alphamap) {
                 err2 = f2.OpenReadOnly(t, TextureFile);
@@ -498,7 +498,7 @@ void Texture::Load(const char *FileNameRGB,
     if (FileNameA) {
         static boost::optional<bool> use_alphamap;
         if (use_alphamap == boost::none) {
-            use_alphamap = configuration()->graphics.bitmap_alphamap;
+            use_alphamap = configuration().graphics.bitmap_alphamap;
         }
         if (use_alphamap) {
             std::string tmp;

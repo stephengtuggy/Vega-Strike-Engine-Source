@@ -108,7 +108,7 @@ void Bolt::DrawAllBolts() {
     GFXTextureCoordGenMode(0, NO_GEN, nullptr, nullptr);
 
     BLENDFUNC bsrc, bdst;
-    if (configuration()->graphics.blend_guns) {
+    if (configuration().graphics.blend_guns) {
         GFXBlendMode(bsrc = ONE, bdst = ONE);
     } else {
         GFXBlendMode(bsrc = ONE, bdst = ZERO);
@@ -182,11 +182,11 @@ void Bolt::DrawBolt(GFXVertexList *qmesh) {
 
     BlendTrans(drawmat, cur_position, prev_position);
     Matrix drawmat(this->drawmat);
-    if (configuration()->graphics.stretch_bolts_flt > 0.0F) {
+    if (configuration().graphics.stretch_bolts_flt > 0.0F) {
         ScaleMatrix(drawmat,
                     Vector(1,
                            1,
-                           static_cast<double>(type->speed) * BoltDrawManager::elapsed_time * configuration()->graphics.
+                           static_cast<double>(type->speed) * BoltDrawManager::elapsed_time * configuration().graphics.
                            stretch_bolts_dbl / type->length));
     }
     GFXLoadMatrixModel(drawmat);
@@ -391,12 +391,12 @@ bool Bolt::Collide(Unit *target) {
         }
         enum Vega_UnitType type = target->getUnitType();
         if (type == Vega_UnitType::nebula || type == Vega_UnitType::asteroid) {
-            const bool collideroids = configuration()->physics.asteroid_weapon_collision;
+            const bool collideroids = configuration().physics.asteroid_weapon_collision;
             if (type != Vega_UnitType::asteroid || (!collideroids)) {
                 return false;
             }
         }
-        const bool collidejump = configuration()->physics.jump_weapon_collision;
+        const bool collidejump = configuration().physics.jump_weapon_collision;
         if (type == Vega_UnitType::planet && (!collidejump) && !target->GetDestinations().empty()) {
             return false;
         }

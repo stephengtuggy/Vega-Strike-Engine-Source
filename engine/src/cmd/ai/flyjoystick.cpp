@@ -49,47 +49,47 @@ FlyByJoystick::FlyByJoystick(unsigned int configfile) : FlyByKeyboard(configfile
 void FlyByJoystick::Execute() {
     static boost::optional<bool> clamp_joystick_axes;
     if (clamp_joystick_axes == boost::none) {
-        clamp_joystick_axes = configuration()->joystick.clamp_axes;
+        clamp_joystick_axes = configuration().joystick.clamp_axes;
     }
     static boost::optional<bool> nonlinear_throttle_nav;
     if (nonlinear_throttle_nav == boost::none) {
-        nonlinear_throttle_nav = configuration()->joystick.nonlinear_throttle_nav;
+        nonlinear_throttle_nav = configuration().joystick.nonlinear_throttle_nav;
     }
     static boost::optional<bool> nonlinear_throttle_combat;
     if (nonlinear_throttle_combat == boost::none) {
-        nonlinear_throttle_combat = configuration()->joystick.nonlinear_throttle_combat;
+        nonlinear_throttle_combat = configuration().joystick.nonlinear_throttle_combat;
     }
     static boost::optional<float> expfactorn;
     if (expfactorn == boost::none) {
-        expfactorn = configuration()->joystick.nonlinear_expfactor_nav_flt;
+        expfactorn = configuration().joystick.nonlinear_expfactor_nav_flt;
     }
     static boost::optional<float> pfactorn;
     if (pfactorn == boost::none) {
-        pfactorn = configuration()->joystick.nonlinear_pfactor_nav_flt;
+        pfactorn = configuration().joystick.nonlinear_pfactor_nav_flt;
     }
     static boost::optional<float> expamountn;
     if (expamountn == boost::none) {
-        expamountn = configuration()->joystick.nonlinear_expamount_nav_flt;
+        expamountn = configuration().joystick.nonlinear_expamount_nav_flt;
     }
     static boost::optional<float> pamountn;
     if (pamountn == boost::none) {
-        pamountn = configuration()->joystick.nonlinear_pamount_nav_flt;
+        pamountn = configuration().joystick.nonlinear_pamount_nav_flt;
     }
     static boost::optional<float> expfactorc;
     if (expfactorc == boost::none) {
-        expfactorc = configuration()->joystick.nonlinear_expfactor_combat_flt;
+        expfactorc = configuration().joystick.nonlinear_expfactor_combat_flt;
     }
     static boost::optional<float> pfactorc;
     if (pfactorc == boost::none) {
-        pfactorc = configuration()->joystick.nonlinear_pfactor_combat_flt;
+        pfactorc = configuration().joystick.nonlinear_pfactor_combat_flt;
     }
     static boost::optional<float> expamountc;
     if (expamountc == boost::none) {
-        expamountc = configuration()->joystick.nonlinear_expamount_combat_flt;
+        expamountc = configuration().joystick.nonlinear_expamount_combat_flt;
     }
     static boost::optional<float> pamountc;
     if (pamountc == boost::none) {
-        pamountc = configuration()->joystick.nonlinear_pamount_combat_flt;
+        pamountc = configuration().joystick.nonlinear_pamount_combat_flt;
     }
     desired_ang_velocity = Vector(0, 0, 0);
     for (unsigned int i = 0; i < this->whichjoystick.size(); i++) {

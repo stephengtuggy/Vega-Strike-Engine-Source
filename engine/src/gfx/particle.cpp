@@ -305,7 +305,7 @@ void ParticleTrail::DrawAndUpdate() {
 
         GFXDisable(TEXTURE0);
         GFXPointSize(psize);
-        if (psmooth && configuration()->graphics.smooth_points) {
+        if (psmooth && configuration().graphics.smooth_points) {
             glEnable(GL_POINT_SMOOTH);
         }
         if (pblend) {
@@ -434,7 +434,7 @@ void ParticleTrail::DrawAndUpdate() {
         for (auto & particle : particles) {
             particle.location += particle.velocity * elapsed_time_as_double;
             particle.color = particle.color - fadetime;
-            particle.color.clamp();
+            particle.color = particle.color.clamp();
         }
     } else {
         for (auto & particle : particles) {

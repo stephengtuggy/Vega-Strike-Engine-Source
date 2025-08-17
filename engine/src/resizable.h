@@ -46,12 +46,12 @@ public:
         q = new ITEM[16]{};
     }
 
-    Resizable(const Resizable<ITEM> &c) {
-        num = c.num;
-        alloc = c.alloc;
+    Resizable(Resizable<ITEM> &other) {
+        num = other.num;
+        alloc = other.alloc;
         q = new ITEM[alloc]{};
-        for (unsigned int i = 0; i < c.size(); ++i) {
-            q[i] = c[i];
+        for (unsigned int i = 0; i < other.size(); ++i) {
+            q[i] = other[i];
         }
     }
 
@@ -63,10 +63,10 @@ public:
     }
 
 private:
-    void grow_storage(unsigned int n) {
+    void grow_storage(const unsigned int n) {
         while (n + num > alloc) {
             alloc *= 2;
-            const std::vector<ITEM> tmp;
+            std::vector<ITEM> tmp;
             for (unsigned int i = 0; i < num; ++i) {
                 tmp.push_back(q[i]);
             }
@@ -144,7 +144,7 @@ public:
         return q[num];
     }
 
-    unsigned int size() {
+    unsigned int size() const {
         return num;
     }
 

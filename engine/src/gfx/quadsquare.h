@@ -96,6 +96,27 @@ struct TextureIndex {
     Resizable<unsigned int> q;
     Resizable<GFXColorVertex> c;
 
+    TextureIndex(TextureIndex&& other)  noexcept {
+        for (unsigned int i = 0; i < other.q.size(); ++i) {
+            this->q.push_back(other.q.at(i));
+        }
+        for (unsigned int i = 0; i < other.c.size(); ++i) {
+            this->c.push_back(other.c.at(i));
+        }
+        other.Clear();
+    }
+
+    TextureIndex& operator=(TextureIndex&& other) noexcept {
+        for (unsigned int i = 0; i < q.size(); ++i) {
+            this->q.push_back(other.q.at(i));
+        }
+        for (unsigned int i = 0; i < other.c.size(); ++i) {
+            this->c.push_back(other.c.at(i));
+        }
+        other.Clear();
+        return *this;
+    }
+
     void Clear() {
         q.clear();
         c.clear();

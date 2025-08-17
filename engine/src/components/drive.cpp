@@ -57,18 +57,18 @@ Drive::~Drive()
 
 // Component Methods
 void Drive::Load(std::string unit_key) {
-    const double game_speed = configuration()->physics.game_speed_dbl;
-    const double game_accel = configuration()->physics.game_accel_dbl;
+    const double game_speed = configuration().physics.game_speed_dbl;
+    const double game_accel = configuration().physics.game_accel_dbl;
     const double game_accel_speed = game_speed * game_accel;
 
     // Minimum drive capability for limp home (in %)
-    const double minimal_drive_functionality = configuration()->components.drive.minimum_drive_dbl;
+    const double minimal_drive_functionality = configuration().components.drive.minimum_drive_dbl;
 
     Component::Load(unit_key);
 
     // Consumer
     // We do not support all options here.
-    if(configuration()->components.drive.energy_source == "fuel") {
+    if(configuration().components.drive.energy_source == "fuel") {
         SetConsumption(1.0);
     } else {
         SetConsumption(1.0);
@@ -124,8 +124,8 @@ void Drive::Load(std::string unit_key) {
 
 
 void Drive::SaveToCSV(std::map<std::string, std::string>& unit) const {
-    const double game_speed = configuration()->physics.game_speed_dbl;
-    const double game_accel = configuration()->physics.game_accel_dbl;
+    const double game_speed = configuration().physics.game_speed_dbl;
+    const double game_accel = configuration().physics.game_accel_dbl;
     const double game_accel_speed = (game_speed * game_accel);
     const double to_degrees = M_PI / 180;
     unit["Maneuver_Yaw"] = yaw.Serialize(to_degrees);

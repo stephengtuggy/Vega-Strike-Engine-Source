@@ -630,7 +630,7 @@ namespace UniverseUtil {
     }
 
     void IOmessage(int delay, string from, string to, string message) {
-        if (to == "news" && (!configuration()->cargo.news_from_cargo_list)) {
+        if (to == "news" && (!configuration().cargo.news_from_cargo_list)) {
             for (unsigned int i = 0; i < _Universe->numPlayers(); i++) {
                 pushSaveString(i, "news", string("#") + message);
             }
@@ -674,7 +674,7 @@ namespace UniverseUtil {
 
     QVector SafeStarSystemEntrancePoint(StarSystem *sts, QVector pos, float radial_size) {
         if (radial_size < 0) {
-            radial_size = configuration()->physics.respawn_unit_size_flt;
+            radial_size = configuration().physics.respawn_unit_size_flt;
         }
         for (unsigned int k = 0; k < 10; ++k) {
             Unit *un;
@@ -781,7 +781,7 @@ namespace UniverseUtil {
         securepythonstr(cmd);
         securepythonstr(args);
         securepythonstr(id);
-        string pythonCode = configuration()->general.custom_python + "(" + (trusted ? "True" : "False")
+        string pythonCode = configuration().general.custom_python + "(" + (trusted ? "True" : "False")
                             + ", r\'" + cmd + "\', r\'" + args + "\', r\'" + id + "\')\n";
         VS_LOG(info, "Executing python command: ");
         VS_LOG(info, (boost::format("    %1%") % pythonCode));
@@ -804,7 +804,7 @@ namespace UniverseUtil {
     }
 
     float getPlanetRadiusPercent() {
-        return configuration()->physics.auto_pilot_planet_radius_percent_flt;
+        return configuration().physics.auto_pilot_planet_radius_percent_flt;
     }
 
     std::string getVariable(std::string section, std::string name, std::string def) {
@@ -891,12 +891,12 @@ namespace UniverseUtil {
         static bool campaign_score_vars_init = false;
         if (!campaign_score_vars_init) {
 
-            string::size_type where = 0, when = configuration()->game_start.campaigns.find(' ');
+            string::size_type where = 0, when = configuration().game_start.campaigns.find(' ');
             while (where != string::npos) {
-                campaign_score_vars.insert(configuration()->game_start.campaigns
+                campaign_score_vars.insert(configuration().game_start.campaigns
                                                    .substr(where, ((when == string::npos) ? when : when - where)));
                 where = (when == string::npos) ? when : when + 1;
-                when = configuration()->game_start.campaigns.find(' ', where);
+                when = configuration().game_start.campaigns.find(' ', where);
             }
             campaign_score_vars_init = true;
         }
@@ -919,7 +919,7 @@ namespace UniverseUtil {
                                "",
                                true,
                                false,
-                               configuration()->general.quick_savegame_summaries,
+                               configuration().general.quick_savegame_summaries,
                                true,
                                true,
                                campaign_score_vars);
@@ -970,7 +970,7 @@ namespace UniverseUtil {
                 }
             }
         }
-        if (!configuration()->general.quick_savegame_summaries) {
+        if (!configuration().general.quick_savegame_summaries) {
             bool hit = false;
             for (set<string>::const_iterator it = campaign_score_vars.begin(); it != campaign_score_vars.end(); ++it) {
                 string var = *it;

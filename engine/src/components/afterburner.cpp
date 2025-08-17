@@ -46,8 +46,8 @@ Afterburner::Afterburner(EnergyContainer *source) :
 
 // Component Methods
 void Afterburner::Load(std::string unit_key) {
-    const double game_speed = configuration()->physics.game_speed_dbl;
-    const double game_accel = configuration()->physics.game_accel_dbl;
+    const double game_speed = configuration().physics.game_speed_dbl;
+    const double game_accel = configuration().physics.game_accel_dbl;
     const double game_accel_speed = game_speed * game_accel;
     Component::Load(unit_key);
 
@@ -61,8 +61,8 @@ void Afterburner::Load(std::string unit_key) {
 }
 
 void Afterburner::SaveToCSV(std::map<std::string, std::string>& unit) const {
-    const double game_speed = configuration()->physics.game_speed_dbl;
-    const double game_accel = configuration()->physics.game_accel_dbl;
+    const double game_speed = configuration().physics.game_speed_dbl;
+    const double game_accel = configuration().physics.game_accel_dbl;
     const double game_accel_speed = game_speed * game_accel;
     unit["Afterburner_Accel"] = thrust.Serialize(game_accel_speed);
     unit["Afterburner_Speed_Governor"] = speed.Serialize(game_speed);

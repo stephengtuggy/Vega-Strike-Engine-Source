@@ -138,7 +138,7 @@ void Unit::SetNebula(Nebula *neb) {
 bool Unit::InRange(const Unit *target, double &mm, bool cone, bool cap, bool lock) const {
     static boost::optional<float> capship_size;
     if (capship_size == boost::none) {
-        capship_size = configuration()->physics.capship_size_flt;
+        capship_size = configuration().physics.capship_size_flt;
     }
 
     if (this == target || target->cloak.Cloaked()) {
@@ -467,7 +467,7 @@ void Unit::Init(const char *filename,
     if (unit_key.empty()) {
         // This is actually used for upgrade checks.
         bool is_template = (string::npos != (string(filename).find(".template")));
-        if (!is_template || (is_template && configuration()->data.using_templates)) {
+        if (!is_template || (is_template && configuration().data.using_templates)) {
             VS_LOG(trace, (boost::format("Unit file %1% not found") % filename));
         }
         meshdata.clear();
@@ -604,14 +604,14 @@ void Unit::SetFg(Flightgroup *fg, int fg_subnumber) {
 bool CloseEnoughToAutotrack(Unit *me, Unit *targ, float &cone) {
     if (targ) {
         const float close_enough_to_autotrack =
-                std::pow(configuration()->physics.close_enough_to_autotrack_flt,2);
+                std::pow(configuration().physics.close_enough_to_autotrack_flt,2);
         const float dissqr = (me->curr_physical_state.position.Cast()
                 - targ->curr_physical_state.position.Cast()).MagnitudeSquared();
         const float movesqr = close_enough_to_autotrack
                 * (me->prev_physical_state.position.Cast()
                         - me->curr_physical_state.position.Cast()).MagnitudeSquared();
         if (dissqr < movesqr && movesqr > 0) {
-            cone = configuration()->physics.near_autotrack_cone_flt * (movesqr - dissqr) / movesqr + 1 * dissqr / movesqr;
+            cone = configuration().physics.near_autotrack_cone_flt * (movesqr - dissqr) / movesqr + 1 * dissqr / movesqr;
             return true;
         }
     }
@@ -834,7 +834,7 @@ static std::string NearestSystem(std::string currentsystem, QVector pos) {
                                         i->first.length()) == i->first
                                         && whereto.substr(i->first.length() + 1)
                                                 == j->first) {
-                                    tmp /= configuration()->physics.target_distance_to_warp_bonus_dbl;
+                                    tmp /= configuration().physics.target_distance_to_warp_bonus_dbl;
                                 }
                             }
                         }
@@ -977,11 +977,11 @@ void TurnJumpOKLightOn(Unit *un, Cockpit *cp) {
 bool Unit::jumpReactToCollision(Unit *smalle) {
     static boost::optional<bool> ai_jump_cheat;
     if (ai_jump_cheat == boost::none) {
-        ai_jump_cheat = configuration()->ai.jump_without_energy;
+        ai_jump_cheat = configuration().ai.jump_without_energy;
     }
     static boost::optional<bool> nojumpinSPEC;
     if (nojumpinSPEC == boost::none) {
-        nojumpinSPEC = configuration()->physics.no_spec_jump;
+        nojumpinSPEC = configuration().physics.no_spec_jump;
     }
     bool SPEC_interference = (nullptr != _Universe->isPlayerStarship(smalle)) ? smalle->ftl_drive.Enabled()
             && nojumpinSPEC : (nullptr != _Universe->isPlayerStarship(this)) && ftl_drive.Enabled()
@@ -1046,7 +1046,7 @@ Cockpit *Unit::GetVelocityDifficultyMult(float &difficulty) const {
     difficulty = 1;
     Cockpit *player_cockpit = _Universe->isPlayerStarship(this);
     if ((player_cockpit) == nullptr) {
-        difficulty = std::pow(g_game.difficulty, configuration()->physics.difficulty_speed_exponent_flt);
+        difficulty = std::pow(g_game.difficulty, configuration().physics.difficulty_speed_exponent_flt);
     }
     return player_cockpit;
 }
@@ -1115,8 +1115,8 @@ void Unit::DamageRandSys(float dam, const Vector &vec) {
     // TODO: take actual damage into account when damaging components.
     const float deg = fabs(180 * atan2(vec.i, vec.k) / M_PI);
     const float random_number = randomDouble();
-    const float inv_min_dam = 1.0F - configuration()->physics.min_damage_flt;
-    const float inv_max_dam = 1.0F - configuration()->physics.max_damage_flt;
+    const float inv_min_dam = 1.0F - configuration().physics.min_damage_flt;
+    const float inv_max_dam = 1.0F - configuration().physics.max_damage_flt;
     if (dam < inv_max_dam) {
         dam = inv_max_dam;
     }
@@ -1153,7 +1153,7 @@ void Unit::DamageRandSys(float dam, const Vector &vec) {
         GenerateHudText(getDamageColor);
         return;
     }
-    if (randomDouble() < configuration()->physics.thruster_hit_chance_dbl) {
+    if (randomDouble() < configuration().physics.thruster_hit_chance_dbl) {
         // This is fairly severe. One or two hits can disable the engine.
         // Note that retro can be damaged by both this and above.
         // Drive can also be damaged by code below - really computer.
@@ -1250,10 +1250,10 @@ void Unit::DamageRandSys(float dam, const Vector &vec) {
         if (random_number >= .9) {
             /*const char max_shield_leak =
                 (char) std::max( 0.0,
-                             std::min( 100.0, configuration()->physics.max_shield_leak ) );
+                             std::min( 100.0, configuration().physics.max_shield_leak ) );
             const char min_shield_leak =
                 (char) std::max( 0.0,
-                             std::min( 100.0, configuration()->physics.max_shield_leak ) );*/
+                             std::min( 100.0, configuration().physics.max_shield_leak ) );*/
             //char newleak = float_to_int( std::max( min_shield_leak, std::max( max_shield_leak, (char) ( (randnum-.9)*10.0*100.0 ) ) ) );
             // TODO: lib_damage if (shield.leak < newleak)
             //shield.leak = newleak;
@@ -1261,7 +1261,7 @@ void Unit::DamageRandSys(float dam, const Vector &vec) {
             // TODO: lib_damage shield.recharge *= dam;
         } else if (random_number >= .5) {
             /*const float mindam =
-                    configuration()->physics.min_recharge_shot_damage;
+                    configuration().physics.min_recharge_shot_damage;
             if (dam < mindam) {
                 dam = mindam;
             }
@@ -1271,7 +1271,7 @@ void Unit::DamageRandSys(float dam, const Vector &vec) {
         } else if (random_number >= .2) {
             static boost::optional<float> mindam;
             if (mindam == boost::none) {
-                mindam = configuration()->physics.min_maxenergy_shot_damage_flt;
+                mindam = configuration().physics.min_maxenergy_shot_damage_flt;
             }
             if (dam < mindam.get()) {
                 dam = mindam.get();
@@ -1313,11 +1313,11 @@ void Unit::Kill(bool erasefromsave, bool quitting) {
     if (docked & (DOCKING_UNITS)) {
         static boost::optional<float> survival;
         if (survival == boost::none) {
-            survival = configuration()->physics.survival_chance_on_base_death_flt;
+            survival = configuration().physics.survival_chance_on_base_death_flt;
         }
         static boost::optional<float> player_survival;
         if (player_survival == boost::none) {
-            player_survival = configuration()->physics.player_survival_chance_on_base_death_flt;
+            player_survival = configuration().physics.player_survival_chance_on_base_death_flt;
         }
         const int i_survival = float_to_int((RAND_MAX * survival.get()));
         const int i_player_survival = float_to_int((RAND_MAX * player_survival.get()));
@@ -1407,7 +1407,7 @@ void Unit::UnRef() {
 float Unit::ExplosionRadius() {
     static boost::optional<float> expsize;
     if (expsize == boost::none) {
-        expsize = configuration()->graphics.explosion_size_flt;
+        expsize = configuration().graphics.explosion_size_flt;
     }
     return expsize.get() * rSize();
 }
@@ -1490,11 +1490,11 @@ const Unit *loadUnitByCache(std::string name, int faction) {
 bool DestroySystem(float hull_percent, float numhits) {
     static boost::optional<float> damage_chance;
     if (damage_chance == boost::none) {
-        damage_chance = configuration()->physics.damage_chance_flt;
+        damage_chance = configuration().physics.damage_chance_flt;
     }
     static boost::optional<float> guaranteed_chance;
     if (guaranteed_chance == boost::none) {
-        guaranteed_chance = configuration()->physics.definite_damage_chance_flt;
+        guaranteed_chance = configuration().physics.definite_damage_chance_flt;
     }
     float chance = 1 - (damage_chance.get() * (guaranteed_chance.get() + hull_percent));
     if (numhits > 1) {
@@ -1506,11 +1506,11 @@ bool DestroySystem(float hull_percent, float numhits) {
 bool DestroyPlayerSystem(float hull_percent, float numhits) {
     static boost::optional<float> damage_chance;
     if (damage_chance == boost::none) {
-        damage_chance = configuration()->physics.damage_player_chance_flt;
+        damage_chance = configuration().physics.damage_player_chance_flt;
     }
     static boost::optional<float> guaranteed_chance;
     if (guaranteed_chance == boost::none) {
-        guaranteed_chance = configuration()->physics.definite_damage_chance_flt;
+        guaranteed_chance = configuration().physics.definite_damage_chance_flt;
     }
     float chance = 1 - (damage_chance.get() * (guaranteed_chance.get() + hull_percent));
     if (numhits > 1) {
@@ -1547,12 +1547,12 @@ void Unit::TargetTurret(Unit *targ) {
 void WarpPursuit(Unit *un, StarSystem *sourcess, std::string destination) {
     static boost::optional<bool> AINotUseJump;
     if (AINotUseJump == boost::none) {
-        AINotUseJump = configuration()->physics.no_ai_jump_points;
+        AINotUseJump = configuration().physics.no_ai_jump_points;
     }
     if (AINotUseJump) {
         static boost::optional<float> seconds_per_parsec;
         if (seconds_per_parsec == boost::none) {
-            seconds_per_parsec = configuration()->physics.seconds_per_parsec_flt;
+            seconds_per_parsec = configuration().physics.seconds_per_parsec_flt;
         }
         float ttime =
                 (SystemLocation(sourcess->getFileName()) - SystemLocation(destination)).Magnitude()
@@ -1665,14 +1665,14 @@ bool Unit::Explode(bool drawit, float timeit) {
             static bool initialized = false;
             if (!initialized) {
                 initialized = true;
-                cache = new Animation(configuration()->graphics.explosion_animation.c_str(), false, 0.1, BILINEAR, false);
+                cache = new Animation(configuration().graphics.explosion_animation.c_str(), false, 0.1, BILINEAR, false);
             }
             bleh = getRandomCachedAniString();
             if (bleh.empty()) {
-                bleh = configuration()->graphics.explosion_animation;
+                bleh = configuration().graphics.explosion_animation;
             }
         }
-        this->pImage->pExplosion = new Animation(bleh.c_str(), configuration()->graphics.explosion_face_player, .1, BILINEAR, true);
+        this->pImage->pExplosion = new Animation(bleh.c_str(), configuration().graphics.explosion_face_player, .1, BILINEAR, true);
         this->pImage->pExplosion->SetDimensions(this->ExplosionRadius(), this->ExplosionRadius());
         Vector p, q, r;
         this->GetOrientation(p, q, r);
@@ -1682,10 +1682,10 @@ bool Unit::Explode(bool drawit, float timeit) {
                     this->shield.AverageMaxLayerValue(),
                     0,
                     this->ExplosionRadius()
-                            * configuration()->physics.explosion_damage_center_flt,
+                            * configuration().physics.explosion_damage_center_flt,
                     this->ExplosionRadius()
-                            * configuration()->physics.explosion_damage_center_flt
-                            * configuration()->physics.explosion_damage_edge_flt,
+                            * configuration().physics.explosion_damage_center_flt
+                            * configuration().physics.explosion_damage_edge_flt,
             nullptr));
         }
         QVector exploc = this->cumulative_transformation.position;
@@ -1703,8 +1703,8 @@ bool Unit::Explode(bool drawit, float timeit) {
         if (!sub) {
             un = _Universe->AccessCockpit()->GetParent();
             if (this->getUnitType() == Vega_UnitType::unit) {
-                if (randomInt(RAND_MAX) < RAND_MAX * configuration()->graphics.percent_shockwave_dbl && (!this->isSubUnit())) {
-                    const std::string shockani(configuration()->graphics.shockwave_animation);
+                if (randomInt(RAND_MAX) < RAND_MAX * configuration().graphics.percent_shockwave_dbl && (!this->isSubUnit())) {
+                    const std::string shockani(configuration().graphics.shockwave_animation);
                     static Animation * shock_ani = nullptr;
                     static bool initialized = false;
                     if (!initialized) {
@@ -1717,7 +1717,7 @@ bool Unit::Explode(bool drawit, float timeit) {
                             this->ExplosionRadius(),
                             true,
                             shockani,
-                            configuration()->graphics.shockwave_growth_flt);
+                            configuration().graphics.shockwave_growth_flt);
                     Animation *ani = GetVolatileAni(which);
                     if (ani) {
                         ani->SetFaceCam(false);
@@ -1760,7 +1760,7 @@ bool Unit::Explode(bool drawit, float timeit) {
         }
     }
     bool timealldone =
-            (this->pImage->timeexplode > configuration()->physics.debris_time_flt || this->getUnitType() == Vega_UnitType::missile
+            (this->pImage->timeexplode > configuration().physics.debris_time_flt || this->getUnitType() == Vega_UnitType::missile
                     || _Universe->AccessCockpit()->GetParent() == this || this->SubUnits.empty());
     if (this->pImage->pExplosion) {
         this->pImage->timeexplode += timeit;
@@ -1786,9 +1786,9 @@ bool Unit::Explode(bool drawit, float timeit) {
             }
         }
     }
-    if ((configuration()->physics.eject_cargo_on_blowup > 0) && (this->numCargo() > 0)) {
+    if ((configuration().physics.eject_cargo_on_blowup > 0) && (this->numCargo() > 0)) {
         unsigned int dropcount = floorf(
-                static_cast<float>(this->numCargo()) / static_cast<float>(configuration()->physics.
+                static_cast<float>(this->numCargo()) / static_cast<float>(configuration().physics.
                     eject_cargo_on_blowup)) +
             1;
         if (dropcount > this->numCargo()) {
@@ -1804,7 +1804,7 @@ bool Unit::Explode(bool drawit, float timeit) {
 float Unit::ExplodingProgress() const {
     static boost::optional<float> debrisTime;
     if (debrisTime == boost::none) {
-        debrisTime = configuration()->physics.debris_time_flt;
+        debrisTime = configuration().physics.debris_time_flt;
     }
     return std::min(pImage->timeexplode / debrisTime.get(), 1.0f);
 }
@@ -1946,7 +1946,7 @@ static Transformation HoldPositionWithRespectTo(Transformation holder,
     holder.position = TransformNormal(m, holder.position);
 
     holder.position = holder.position + changenew.position;
-    const bool changeddockedorient = (configuration()->physics.change_docking_orientation);
+    const bool changeddockedorient = (configuration().physics.change_docking_orientation);
     if (!changeddockedorient) {
         holder.orientation = bak;
     }
@@ -2005,13 +2005,13 @@ void rechargeShip(Unit *unit, unsigned int cockpit) {
     // TODO: Use a more precise type for credits
     static boost::optional<float> refueling_fee;
     if (refueling_fee == boost::none) {
-        refueling_fee = configuration()->general.fuel_docking_fee_flt;
+        refueling_fee = configuration().general.fuel_docking_fee_flt;
     }
     _Universe->AccessCockpit(cockpit)->credits -= refueling_fee.get();
 
     static boost::optional<float> docking_fee;
     if (docking_fee == boost::none) {
-        docking_fee = configuration()->general.docking_fee_flt;
+        docking_fee = configuration().general.docking_fee_flt;
     }
     _Universe->AccessCockpit(cockpit)->credits -= docking_fee.get();
 }
@@ -2126,11 +2126,11 @@ bool Unit::UnDock(Unit *utdw) {
             Velocity = utdw->Velocity;
             static boost::optional<float> launch_speed;
             if (launch_speed == boost::none) {
-                launch_speed = configuration()->physics.launch_speed_flt;
+                launch_speed = configuration().physics.launch_speed_flt;
             }
             static boost::optional<bool> auto_turn_towards;
             if (auto_turn_towards == boost::none) {
-                auto_turn_towards = configuration()->physics.undock_turn_away;
+                auto_turn_towards = configuration().physics.undock_turn_away;
             }
 
             if (launch_speed.get() > 0) {
@@ -2792,7 +2792,7 @@ bool Unit::UpAndDownGrade(const Unit *up,
     // TODO: intertial dampener component - reduces mass
 
     if (gen_downgrade_list) {
-        if (downgrade && percentage > configuration()->general.remove_downgrades_less_than_percent_dbl) {
+        if (downgrade && percentage > configuration().general.remove_downgrades_less_than_percent_dbl) {
             for (auto each_downgrade = tempdownmap.begin(); each_downgrade != tempdownmap.end(); ++each_downgrade) {
                 downgrademap[each_downgrade->first] = each_downgrade->second;
             }
@@ -2894,7 +2894,7 @@ int Unit::RepairUpgrade() {
     bool ret = success && pct > 0;
     static boost::optional<bool> ComponentBasedUpgrades;
     if (ComponentBasedUpgrades == boost::none) {
-        ComponentBasedUpgrades = configuration()->physics.component_based_upgrades;
+        ComponentBasedUpgrades = configuration().physics.component_based_upgrades;
     }
     if (ComponentBasedUpgrades) {
         for (unsigned int i = 0; i < numCargo(); ++i) {
@@ -3011,7 +3011,7 @@ vector<CargoColor> &Unit::FilterDowngradeList(vector<CargoColor> &mylist, bool d
     const Unit *downgradelimit = nullptr;
     static boost::optional<bool> staticrem;
     if (staticrem == boost::none) {
-        staticrem = configuration()->general.remove_impossible_downgrades;
+        staticrem = configuration().general.remove_impossible_downgrades;
     }
     int upgrfac = FactionUtil::GetUpgradeFaction();
     for (unsigned int i = 0; i < mylist.size(); ++i) {
@@ -3071,7 +3071,7 @@ vector<CargoColor> &Unit::FilterDowngradeList(vector<CargoColor> &mylist, bool d
                         double percent = 1;
                         if (downgrade) {
                             if (canDowngrade(NewPart, m, s, percent, downgradelimit)) {
-                                if (percent > configuration()->general.remove_downgrades_less_than_percent_dbl) {
+                                if (percent > configuration().general.remove_downgrades_less_than_percent_dbl) {
                                     removethis = false;
                                     break;
                                 }
@@ -3104,7 +3104,7 @@ vector<CargoColor> &Unit::FilterDowngradeList(vector<CargoColor> &mylist, bool d
 vector<CargoColor> &Unit::FilterUpgradeList(vector<CargoColor> &mylist) {
     static boost::optional<bool> filtercargoprice;
     if (filtercargoprice == boost::none) {
-        filtercargoprice = configuration()->cargo.filter_expensive_cargo;
+        filtercargoprice = configuration().cargo.filter_expensive_cargo;
     }
     if (filtercargoprice) {
         Cockpit *cp = _Universe->isPlayerStarship(this);
@@ -3128,7 +3128,7 @@ void Unit::TurretFAW() {
     Unit *un;
     for (un_iter iter = getSubUnits(); (un = *iter); ++iter) {
         if (!CheckAccessory(un)) {
-            un->EnqueueAIFirst(new Orders::FireAt(configuration()->ai.firing.aggressivity_flt));
+            un->EnqueueAIFirst(new Orders::FireAt(configuration().ai.firing.aggressivity_flt));
             un->EnqueueAIFirst(new Orders::FaceTarget(false, 3));
         }
         un->TurretFAW();
@@ -3170,7 +3170,7 @@ void Unit::ImportPartList(const std::string &category, float price, float priced
     for (unsigned int i = 0; i < numcarg; ++i) {
         Cargo c = unit_master_part_list.GetCargo(i);
         if (c.GetCategory() == category) {
-            const float aveweight = fabs(configuration()->cargo.price_recenter_factor_flt);
+            const float aveweight = fabs(configuration().cargo.price_recenter_factor_flt);
             c.SetQuantity(float_to_int(quantity - quantdev));
             float baseprice = c.GetPrice();
             c.SetPrice(c.GetPrice() * (price - pricedev));
@@ -3188,15 +3188,15 @@ void Unit::ImportPartList(const std::string &category, float price, float priced
                 float renormprice = (baseprice - minprice) / (maxprice - minprice);
                 static boost::optional<float> maxpricequantadj;
                 if (maxpricequantadj == boost::none) {
-                    maxpricequantadj = configuration()->cargo.max_price_quant_adj_flt;
+                    maxpricequantadj = configuration().cargo.max_price_quant_adj_flt;
                 }
                 static boost::optional<float> minpricequantadj;
                 if (minpricequantadj == boost::none) {
-                    minpricequantadj = configuration()->cargo.min_price_quant_adj_flt;
+                    minpricequantadj = configuration().cargo.min_price_quant_adj_flt;
                 }
                 static boost::optional<float> powah;
                 if (powah == boost::none) {
-                    powah = configuration()->cargo.price_quant_adj_power_flt;
+                    powah = configuration().cargo.price_quant_adj_power_flt;
                 }
                 renormprice = std::pow(renormprice, powah.get());
                 renormprice *= (maxpricequantadj.get() - minpricequantadj.get());
@@ -3210,7 +3210,7 @@ void Unit::ImportPartList(const std::string &category, float price, float priced
             }
             static boost::optional<float> minprice;
             if (minprice == boost::none) {
-                minprice = configuration()->cargo.min_cargo_price_flt;
+                minprice = configuration().cargo.min_cargo_price_flt;
             }
             if (c.GetPrice() < minprice) {
                 c.SetPrice(minprice.get());
@@ -3295,11 +3295,11 @@ void Unit::Repair() {
     // TODO: everything below here needs to go when we're done with lib_components
     static boost::optional<float> repairtime;
     if (repairtime == boost::none) {
-        repairtime = configuration()->physics.repair_droid_time_flt;
+        repairtime = configuration().physics.repair_droid_time_flt;
     }
     static boost::optional<float> checktime;
     if (checktime == boost::none) {
-        checktime = configuration()->physics.repair_droid_check_time_flt;
+        checktime = configuration().physics.repair_droid_check_time_flt;
     }
     if ((repairtime.get() <= 0) || (checktime.get() <= 0)) {
         return;
@@ -3368,13 +3368,13 @@ void Unit::Repair() {
     unsigned int which = vsrandom.genrand_int31() % numg;
     static boost::optional<float> hud_repair_quantity;
     if (hud_repair_quantity == boost::none) {
-        hud_repair_quantity = configuration()->physics.hud_repair_unit_flt;
+        hud_repair_quantity = configuration().physics.hud_repair_unit_flt;
     }
 
     if (!mounts.empty()) {
         static boost::optional<float> mount_repair_quantity;
         if (mount_repair_quantity == boost::none) {
-            mount_repair_quantity = configuration()->physics.mount_repair_unit_flt;
+            mount_repair_quantity = configuration().physics.mount_repair_unit_flt;
         }
         const unsigned int i = vsrandom.genrand_int31() % mounts.size();
         if (mounts[i].functionality < mounts[i].maxfunctionality) {
@@ -3633,7 +3633,7 @@ void Unit::UpdatePhysics3(const Transformation &trans,
     Cockpit *player_cockpit = GetVelocityDifficultyMult(difficulty);
     static boost::optional<float> EXTRA_CARGO_SPACE_DRAG;
     if (EXTRA_CARGO_SPACE_DRAG == boost::none) {
-        EXTRA_CARGO_SPACE_DRAG = configuration()->physics.extra_space_drag_for_cargo_flt;
+        EXTRA_CARGO_SPACE_DRAG = configuration().physics.extra_space_drag_for_cargo_flt;
     }
     if (EXTRA_CARGO_SPACE_DRAG.get() > 0) {
         int upgfac = FactionUtil::GetUpgradeFaction();
@@ -3672,7 +3672,7 @@ void Unit::UpdatePhysics3(const Transformation &trans,
     }
     static boost::optional<float> SPACE_DRAG;
     if (SPACE_DRAG == boost::none) {
-        SPACE_DRAG = configuration()->physics.unit_space_drag_flt;
+        SPACE_DRAG = configuration().physics.unit_space_drag_flt;
     }
 
     if (SPACE_DRAG.get() > 0) {
@@ -3698,7 +3698,7 @@ void Unit::UpdatePhysics3(const Transformation &trans,
                 mounts[i].time_to_lock -= simulation_atom_var;
                 static boost::optional<bool> ai_lock_cheat;
                 if (ai_lock_cheat == boost::none) {
-                    ai_lock_cheat = configuration()->physics.ai_lock_cheat;
+                    ai_lock_cheat = configuration().physics.ai_lock_cheat;
                 }
                 if (!player_cockpit) {
                     if (ai_lock_cheat) {
@@ -3841,13 +3841,13 @@ void Unit::UpdatePhysics3(const Transformation &trans,
     //can a unit get to another system without jumping?.
     static boost::optional<bool> warp_is_interstellar;
     if (warp_is_interstellar == boost::none) {
-        warp_is_interstellar = configuration()->physics.warp_is_interstellar;
+        warp_is_interstellar = configuration().physics.warp_is_interstellar;
     }
     if (warp_is_interstellar
-            && (curr_physical_state.position.MagnitudeSquared() > std::pow(configuration()->physics.distance_to_warp_dbl, 2) && !isSubUnit())) {
+            && (curr_physical_state.position.MagnitudeSquared() > std::pow(configuration().physics.distance_to_warp_dbl, 2) && !isSubUnit())) {
         static boost::optional<bool> direct;
         if (direct == boost::none) {
-            direct = configuration()->physics.direct_interstellar_journey;
+            direct = configuration().physics.direct_interstellar_journey;
         }
         bool jumpDirect = false;
         if (direct) {

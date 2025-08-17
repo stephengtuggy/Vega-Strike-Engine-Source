@@ -139,7 +139,7 @@ FlyByKeyboard::FlyByKeyboard(unsigned int whichplayer) : FlyByWire(), axis_key(0
     //Initial Joystick Mode
     //NOTE: Perhaps it should be handled by FlyByJoystick, but it was cumbersome to do that
     //since it handled mainly keystrokes - Any ideas?
-    const string initialJoyMode = configuration()->joystick.initial_mode;
+    const string initialJoyMode = configuration().joystick.initial_mode;
     joy_mode = 0;
     if (initialJoyMode == "inertialxy") {
         joy_mode = joyModeInertialXY;
@@ -192,7 +192,7 @@ void FlyByKeyboard::Execute(bool resetangvelocity) {
             }
         } else {
             // Use AutoDocker if docking clearance on target, otherwise use AutoPilot
-            const bool autodock = configuration()->test.autodocker;
+            const bool autodock = configuration().test.autodocker;
             Order *autoNavigator = nullptr;
             if (autodock) {
                 Unit *station = parent->Target();
@@ -449,7 +449,7 @@ void FlyByKeyboard::Execute(bool resetangvelocity) {
     static unsigned int counter = 0;
     counter++;
     if (SSCK.jumpkey) {
-        const float jump_key_delay = configuration()->general.jump_key_delay_flt;
+        const float jump_key_delay = configuration().general.jump_key_delay_flt;
         if ((counter - last_jumped) > static_cast<unsigned>(jump_key_delay / SIMULATION_ATOM) || last_jumped == 0) {
             last_jumped = counter;
             parent->ActivateJumpDrive();

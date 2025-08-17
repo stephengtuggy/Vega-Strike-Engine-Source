@@ -448,9 +448,9 @@ static void SetupGLLightGlobals() {
         }
     }
 
-    GFXSetCutoff(configuration()->graphics.light_cutoff_flt);
-    GFXSetOptimalIntensity(configuration()->graphics.light_optimal_intensity_flt, configuration()->graphics.light_saturation_flt);
-    VS_LOG_AND_FLUSH(debug, (boost::format("%1%: configuration()->graphics.num_lights == %2%") % __FUNCTION__ % configuration()->graphics.num_lights));
-    GFXSetOptimalNumLights(configuration()->graphics.num_lights);
-    GFXSetSeparateSpecularColor(configuration()->graphics.separate_specular_color ? GFXTRUE : GFXFALSE);
+    GFXSetCutoff(configuration().graphics.light_cutoff_flt);
+    GFXSetOptimalIntensity(configuration().graphics.light_optimal_intensity_flt, configuration().graphics.light_saturation_flt);
+    VS_LOG_AND_FLUSH(debug, (boost::format("%1%: configuration().graphics.num_lights == %2%") % __FUNCTION__ % configuration().graphics.num_lights));
+    GFXSetOptimalNumLights(configuration().graphics.num_lights);
+    GFXSetSeparateSpecularColor(configuration().graphics.separate_specular_color ? GFXTRUE : GFXFALSE);
 }

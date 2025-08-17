@@ -361,7 +361,7 @@ Technique::Technique(const string &name) :
                     + name + ".technique";
     string sub_technique_filename =
             game_options()->techniquesBasePath + "/"
-                    + configuration()->graphics.technique_set + "/"
+                    + configuration().graphics.technique_set + "/"
                     + name + ".technique";
 
     string filename;
