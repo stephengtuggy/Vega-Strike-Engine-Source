@@ -84,11 +84,11 @@ static void biModifyMouseSensitivity(int &x, int &y, bool invert) {
         x -= configuration().graphics.resolution_x / 2;
         y -= configuration().graphics.resolution_y / 2;
         if (invert) {
-            x = int(x / factor);
-            y = int(y / factor);
+            x = static_cast<int>(x / factor);
+            y = static_cast<int>(y / factor);
         } else {
-            x = int(x * factor);
-            y = int(y * factor);
+            x = static_cast<int>(x * factor);
+            y = static_cast<int>(y * factor);
         }
         x += configuration().graphics.resolution_x / 2;
         y += configuration().graphics.resolution_y / 2;
@@ -138,8 +138,8 @@ using namespace VSFileSystem;
 std::vector<unsigned int> base_keyboard_queue;
 
 static void CalculateRealXAndY(int xbeforecalc, int ybeforecalc, float *x, float *y) {
-    (*x) = (((float) (xbeforecalc * 2)) / configuration().graphics.resolution_x) - 1;
-    (*y) = -(((float) (ybeforecalc * 2)) / configuration().graphics.resolution_y) + 1;
+    (*x) = (static_cast<float>(xbeforecalc * 2) / configuration().graphics.resolution_x) - 1;
+    (*y) = -(static_cast<float>(ybeforecalc * 2) / configuration().graphics.resolution_y) + 1;
 }
 
 #define mymin(a, b) ( ( (a) < (b) ) ? (a) : (b) )
@@ -191,7 +191,7 @@ BaseInterface::Room::BaseVSSprite::BaseVSSprite(const std::string &spritefile, c
 }
 
 BaseInterface::Room::BaseVSSprite::~BaseVSSprite() {
-    if (soundsource.get() != NULL) {
+    if (soundsource.get() != nullptr) {
         BaseUtil::DestroyVideoSoundStream(soundsource, soundscene);
     }
     spr.ClearTimeSource();
@@ -238,7 +238,7 @@ void BaseInterface::Room::BaseVSMovie::SetMovie(const std::string &moviefile) {
     new(&spr)VSSprite(AnimatedTexture::CreateVideoTexture(moviefile), x, y, w, h, 0, 0, true);
     spr.SetRotation(rot);
 
-    if (soundsource.get() != NULL) {
+    if (soundsource.get() != nullptr) {
         BaseUtil::DestroyVideoSoundStream(soundsource, soundscene);
     }
     soundscene = "video";
@@ -268,7 +268,7 @@ void BaseInterface::Room::BaseVSSprite::Draw(BaseInterface *base) {
     GFXAlphaTest(ALWAYS, 0);
 
     // Play the associated source if it isn't playing
-    if (soundsource.get() != NULL) {
+    if (soundsource.get() != nullptr) {
         if (!soundsource->isPlaying()) {
             soundsource->startPlaying();
         }
@@ -276,7 +276,7 @@ void BaseInterface::Room::BaseVSSprite::Draw(BaseInterface *base) {
 }
 
 void BaseInterface::Room::BaseVSMovie::Draw(BaseInterface *base) {
-    if (soundsource.get() == NULL) {
+    if (soundsource.get() == nullptr) {
         // If it's not playing, mark as playing, and reset the sprite's animation
         // (it's not automatic without a time source)
         if (!playing) {
@@ -298,7 +298,7 @@ void BaseInterface::Room::BaseVSMovie::Draw(BaseInterface *base) {
 
     BaseInterface::Room::BaseVSSprite::Draw(base);
 
-    if (soundsource.get() == NULL) {
+    if (soundsource.get() == nullptr) {
         // If there is no sound source, and the sprite is an animated sprite, and
         // it's finished, then we must invoke the callback
         if (!getCallback().empty() && spr.Done()) {
@@ -309,7 +309,7 @@ void BaseInterface::Room::BaseVSMovie::Draw(BaseInterface *base) {
 }
 
 bool BaseInterface::Room::BaseVSSprite::isPlaying() const {
-    return soundsource.get() != NULL
+    return soundsource.get() != nullptr
             && soundsource->isPlaying();
 }
 
@@ -1069,8 +1069,8 @@ void BaseInterface::InitCallbacks() {
 }
 
 BaseInterface::Room::Talk::Talk(const std::string &ind, const std::string &pythonfile) :
-        BaseInterface::Room::Link(ind, pythonfile), index(-1) {
-#ifndef BASE_MAKER
+    BaseInterface::Room::Link(ind, pythonfile), index(-1), curroom(0) {
+    #ifndef BASE_MAKER
     gameMessage last;
     int i = 0;
     vector<std::string> who;
@@ -1091,7 +1091,7 @@ BaseInterface::Room::Talk::Talk(const std::string &ind, const std::string &pytho
         this->say.push_back(newmsg);
         this->soundfiles.push_back(newsound);
     }
-#endif
+    #endif
 }
 
 double compute_light_dot(Unit *base, Unit *un) {
