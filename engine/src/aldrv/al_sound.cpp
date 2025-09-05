@@ -33,8 +33,7 @@
 #include "src/vs_logging.h"
 #include <string>
 #include "al_globals.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
 #include "cmd/unit_generic.h"
 #include "gfx_generic/cockpit_generic.h"
 #include "root_generic/options.h"
@@ -110,19 +109,18 @@ void blutLoadWAVMemory(ALbyte *memory, ALenum
     WAVFileHdr_Struct FileHdr;
     WAVSmplHdr_Struct SmplHdr;
     WAVFmtHdr_Struct FmtHdr;
-    ALbyte *Stream;
 
     *format = AL_FORMAT_MONO16;
-    *data = NULL;
+    *data = nullptr;
     *size = 0;
     *freq = 22050;
     *loop = AL_FALSE;
     if (memory) {
-        Stream = memory;
+        ALbyte* Stream = memory;
         if (Stream) {
             memcpy(&FileHdr, Stream, sizeof(WAVFileHdr_Struct));
             Stream += sizeof(WAVFileHdr_Struct);
-            SwapWords((unsigned int *) &FileHdr.Size);
+            SwapWords(reinterpret_cast<unsigned int*>(&FileHdr.Size));
             FileHdr.Size = ((FileHdr.Size + 1) & ~1) - 4;
             while ((FileHdr.Size != 0) && (memcpy(&ChunkHdr, Stream, sizeof(WAVChunkHdr_Struct)))) {
                 Stream += sizeof(WAVChunkHdr_Struct);
@@ -150,18 +148,18 @@ void blutLoadWAVMemory(ALbyte *memory, ALenum
                         && (ChunkHdr.Id[3] == 'a')) {
                     if (FmtHdr.Format == 0x0001) {
                         *size = ChunkHdr.Size;
-                        if (*data == NULL) {
+                        if (*data == nullptr) {
                             *data = malloc(ChunkHdr.Size + 31);
                         } else {
                             *data = realloc(*data, ChunkHdr.Size + 31);
                         }
                         if (*data) {
                             memcpy(*data, Stream, ChunkHdr.Size);
-                            memset(((char *) *data) + ChunkHdr.Size, 0, 31);
+                            memset(static_cast<char*>(*data) + ChunkHdr.Size, 0, 31);
                             Stream += ChunkHdr.Size;
                             if (FmtHdr.BitsPerSample == 16) {
                                 for (size_t i = 0; i < (ChunkHdr.Size / 2); ++i) {
-                                    SwapBytes(&(*(unsigned short **) data)[i]);
+                                    SwapBytes(&(*reinterpret_cast<unsigned short**>(data))[i]);
                                 }
                             }
                         }
@@ -195,7 +193,6 @@ void blutLoadWAVMemory(ALbyte *memory, ALenum
 
 #else
 #include <AL/al.h>
-#include <AL/alc.h>
 
 #endif
 //#include <AL/alext.h>
@@ -203,7 +200,6 @@ void blutLoadWAVMemory(ALbyte *memory, ALenum
 #include <vector>
 #include "root_generic/vs_globals.h"
 #include <algorithm>
-#include <stdio.h>
 #ifdef HAVE_AL
 #ifdef HAVE_OGG
 
@@ -214,10 +210,10 @@ std::vector<OurSound> sounds;
 std::vector<ALuint> buffers;
 
 static void convertToLittle(unsigned int tmp, char *data) {
-    data[0] = (char) (tmp % 256);
-    data[1] = (char) ((tmp / 256) % 256);
-    data[2] = (char) ((tmp / 65536) % 256);
-    data[3] = (char) ((tmp / 65536) / 256);
+    data[0] = static_cast<char>(tmp % 256);
+    data[1] = static_cast<char>((tmp / 256) % 256);
+    data[2] = static_cast<char>((tmp / 65536) % 256);
+    data[3] = static_cast<char>((tmp / 65536) / 256);
 }
 
 #ifdef HAVE_OGG
@@ -228,7 +224,7 @@ struct fake_file {
 };
 
 size_t mem_read(void *ptr, size_t size, size_t nmemb, void *datasource) {
-    fake_file *fp = (fake_file *) datasource;
+    fake_file *fp = static_cast<fake_file*>(datasource);
     if (fp->loc + size > fp->size) {
         size_t tmp = fp->size - fp->loc;
         if (tmp) {
@@ -248,8 +244,8 @@ int mem_close(void *) {
 }
 
 long mem_tell(void *datasource) {
-    fake_file *fp = (fake_file *) datasource;
-    return (long) fp->loc;
+    fake_file *fp = static_cast<fake_file*>(datasource);
+    return static_cast<long>(fp->loc);
 }
 
 int cant_seek(void *datasource, ogg_int64_t offset, int whence) {
@@ -257,10 +253,10 @@ int cant_seek(void *datasource, ogg_int64_t offset, int whence) {
 }
 
 int mem_seek(void *datasource, ogg_int64_t offset, int whence) {
-    fake_file *fp = (fake_file *) datasource;
+    fake_file *fp = static_cast<fake_file*>(datasource);
     if (whence == SEEK_END) {
         if (offset < 0) {
-            if (fp->size < (size_t) -offset) {
+            if (fp->size < static_cast<size_t>(-offset)) {
                 return -1;
             } else {
                 fp->loc = fp->size + offset;
@@ -273,7 +269,7 @@ int mem_seek(void *datasource, ogg_int64_t offset, int whence) {
         }
     } else if (whence == SEEK_CUR) {
         if (offset < 0) {
-            if (fp->loc < (size_t) -offset) {
+            if (fp->loc < static_cast<size_t>(-offset)) {
                 return -1;
             } else {
                 fp->loc += offset;
@@ -306,7 +302,7 @@ static void ConvertFormat(vector<char> &ogg) {
 #ifdef HAVE_OGG
             OggVorbis_File vf;
             ov_callbacks callbacks;
-            fake_file ff;
+            fake_file ff{};
 
             ff.data = &ogg[0];
             ff.loc = 0;
@@ -315,13 +311,13 @@ static void ConvertFormat(vector<char> &ogg) {
             callbacks.seek_func = &mem_seek;
             callbacks.close_func = &mem_close;
             callbacks.tell_func = &mem_tell;
-            if (ov_open_callbacks(&ff, &vf, NULL, 0, callbacks)) {
+            if (ov_open_callbacks(&ff, &vf, nullptr, 0, callbacks)) {
                 ogg.clear();
             } else {
                 long bytesread = 0;
                 vorbis_info *info = ov_info(&vf, -1);
-                const int segmentsize = 65536 * 32;
-                const int samples = 16;
+                constexpr int segmentsize = 65536 * 32;
+                constexpr int samples = 16;
                 converted.push_back('R');
                 converted.push_back('I');
                 converted.push_back('F');
@@ -347,8 +343,8 @@ static void ConvertFormat(vector<char> &ogg) {
                 converted.push_back(1);                 //compression code
                 converted.push_back(0);
 
-                converted.push_back((char) (info->channels % 256));                   //num channels;
-                converted.push_back((char) (info->channels / 256));
+                converted.push_back(static_cast<char>(info->channels % 256));                   //num channels;
+                converted.push_back(static_cast<char>(info->channels / 256));
 
                 converted.push_back(0);                 //sample rate
                 converted.push_back(0);                 //sample rate
@@ -363,9 +359,9 @@ static void ConvertFormat(vector<char> &ogg) {
                 converted.push_back(0);
                 convertToLittle(byterate, &converted[converted.size() - 4]);
 
-                converted.push_back((char) ((info->channels * samples / 8)
-                        % 256));                   //num_channels*16 bits/8
-                converted.push_back((char) ((info->channels * samples / 8) / 256));
+                converted.push_back(static_cast<char>((info->channels * samples / 8)
+                    % 256));                   //num_channels*16 bits/8
+                converted.push_back(static_cast<char>((info->channels * samples / 8) / 256));
 
                 converted.push_back(samples);                 //16 bit samples
                 converted.push_back(0);
@@ -427,9 +423,9 @@ static int LoadSound(ALuint buffer, bool looping, bool music) {
         sounds[i].buffer = buffer;
     } else {
         i = sounds.size();
-        sounds.push_back(OurSound(0, buffer));
+        sounds.emplace_back(0, buffer);
     }
-    sounds[i].source = (ALuint) 0;
+    sounds[i].source = static_cast<ALuint>(0);
     sounds[i].looping = looping ? AL_TRUE : AL_FALSE;
     sounds[i].music = music;
 #ifdef SOUND_DEBUG
@@ -500,12 +496,12 @@ bool AUDLoadSoundFile(const char *s, struct AUDSoundProperties *info, bool use_f
         f.Close();
     }
     ConvertFormat(dat);
-    if (dat.size() == 0) {          //conversion messed up
+    if (dat.empty()) {          //conversion messed up
         return false;
     }
     //blutLoadWAVMemory((ALbyte *)&dat[0], &format, &wave, &size, &freq, &looping);
 
-    blutLoadWAVMemory((ALbyte *) &dat[0], &info->format, &info->wave, &info->size, &info->freq, &info->looping);
+    blutLoadWAVMemory(reinterpret_cast<ALbyte*>(&dat[0]), &info->format, &info->wave, &info->size, &info->freq, &info->looping);
     if (!info->wave) {
         return false;          //failure.
     }
@@ -544,10 +540,9 @@ int AUDCreateSoundWAV(const std::string &s, const bool music, const bool LOOP) {
     VS_LOG(trace, "AUDCreateSoundWAV:: ");
 #endif
     if ((configuration().audio.music && !music) || (configuration().audio.music && music)) {
-        ALuint *wavbuf = NULL;
-        std::string hashname;
+        ALuint *wavbuf = nullptr;
         if (!music) {
-            hashname = VSFileSystem::GetHashName(s);
+            std::string hashname = VSFileSystem::GetHashName(s);
             wavbuf = soundHash.Get(hashname);
             if (!wavbuf) {
                 hashname = VSFileSystem::GetSharedSoundHashName(s);
@@ -562,13 +557,13 @@ int AUDCreateSoundWAV(const std::string &s, const bool music, const bool LOOP) {
             VS_LOG(trace, (boost::format("Sound %1$s restored with alBuffer %2$d") % s % *wavbuf));
 #endif
         }
-        if (wavbuf == NULL) {
+        if (wavbuf == nullptr) {
             AUDSoundProperties info;
             if (!AUDLoadSoundFile(s.c_str(), &info)) {
                 soundHash.Put(info.hashname, &nil_wavebuf);
                 return -1;
             }
-            wavbuf = (ALuint *) malloc(sizeof(ALuint));
+            wavbuf = static_cast<ALuint*>(malloc(sizeof(ALuint)));
             alGenBuffers(1, wavbuf);
             alBufferData(*wavbuf, info.format, info.wave, info.size, info.freq);
             free(info.wave);             //alutUnloadWAV(format,wave,size,freq);
@@ -594,43 +589,6 @@ int AUDCreateMusicWAV(const std::string &s, const bool LOOP) {
 int AUDCreateSoundMP3(const std::string &s, const bool music, const bool LOOP) {
 #ifdef HAVE_AL
     assert(0);
-    if ((configuration().audio.music && !music) || (configuration().audio.music && music)) {
-        VSFile f;
-        VSError error = f.OpenReadOnly(s.c_str(), SoundFile);
-        bool shared = (error == Shared);
-        std::string nam(s);
-        ALuint *mp3buf = NULL;
-        std::string hashname;
-        if (!music) {
-            hashname = shared ? VSFileSystem::GetSharedSoundHashName(s) : VSFileSystem::GetHashName(s);
-            mp3buf = soundHash.Get(hashname);
-        }
-        if (error > Ok) {
-            return -1;
-        }
-#ifdef _WIN32
-        return -1;
-#endif
-        if (mp3buf == NULL) {
-            char *data = new char[f.Size()];
-            f.Read(data, f.Size());
-            mp3buf = (ALuint *) malloc(sizeof(ALuint));
-            alGenBuffers(1, mp3buf);
-            /*
-             *  if ((*alutLoadMP3p)(*mp3buf,data,f.Size())!=AL_TRUE) {
-             *     delete []data;
-             *         return -1;
-             *         }*/
-            delete[] data;
-            if (!music) {
-                soundHash.Put(hashname, mp3buf);
-                buffers.push_back(*mp3buf);
-            }
-        } else {
-            f.Close();
-        }
-        return LoadSound(*mp3buf, LOOP, music);
-    }
 #endif
     return -1;
 }
@@ -671,7 +629,7 @@ int AUDCreateSound(int sound, const bool LOOP /*=false*/ ) {
     if (AUDIsPlaying(sound)) {
         AUDStopPlaying(sound);
     }
-    if (sound >= 0 && sound < (int) sounds.size()) {
+    if (sound >= 0 && sound < static_cast<int>(sounds.size())) {
         return LoadSound(sounds[sound].buffer, LOOP, false);
     }
 #endif
@@ -682,7 +640,7 @@ extern std::vector<int> soundstodelete;
 
 void AUDDeleteSound(int sound, bool music) {
 #ifdef HAVE_AL
-    if (sound >= 0 && sound < (int) sounds.size()) {
+    if (sound >= 0 && sound < static_cast<int>(sounds.size())) {
         if (AUDIsPlaying(sound)) {
             if (!music) {
 #ifdef SOUND_DEBUG
@@ -702,7 +660,7 @@ void AUDDeleteSound(int sound, bool music) {
         if (sounds[sound].source) {
             unusedsrcs.push_back(sounds[sound].source);
             alSourcei(sounds[sound].source, AL_BUFFER, 0);             //decrement the source refcount
-            sounds[sound].source = (ALuint) 0;
+            sounds[sound].source = static_cast<ALuint>(0);
         }
 #ifdef SOUND_DEBUG
         if ( std::find( dirtysounds.begin(), dirtysounds.end(), sound ) == dirtysounds.end() ) {
@@ -719,7 +677,7 @@ void AUDDeleteSound(int sound, bool music) {
         if (music) {
             alDeleteBuffers(1, &sounds[sound].buffer);
         }
-        sounds[sound].buffer = (ALuint) 0;
+        sounds[sound].buffer = static_cast<ALuint>(0);
     }
 #endif
 }
@@ -727,7 +685,7 @@ void AUDDeleteSound(int sound, bool music) {
 void AUDAdjustSound(const int sound, const QVector &pos, const Vector &vel) {
 
 #ifdef HAVE_AL
-    if (sound >= 0 && sound < (int) sounds.size()) {
+    if (sound >= 0 && sound < static_cast<int>(sounds.size())) {
         float p[] = {
                 static_cast<float>(scalepos * pos.i),
                 static_cast<float>(scalepos * pos.j),
@@ -756,7 +714,7 @@ void AUDAdjustSound(const int sound, const QVector &pos, const Vector &vel) {
 
 void AUDStreamingSound(const int sound) {
 #ifdef HAVE_AL
-    if (sound >= 0 && sound < (int) sounds.size() && sounds[sound].source) {
+    if (sound >= 0 && sound < static_cast<int>(sounds.size()) && sounds[sound].source) {
         alSource3f(sounds[sound].source, AL_POSITION, 0.0, 0.0, 0.0);
         alSource3f(sounds[sound].source, AL_VELOCITY, 0.0, 0.0, 0.0);
         alSource3f(sounds[sound].source, AL_DIRECTION, 0.0, 0.0, 0.0);
@@ -795,7 +753,7 @@ void AUDStopAllSounds(int except_this_one) {
 #ifdef HAVE_AL
     unsigned int s = ::sounds.size();
     for (unsigned int i = 0; i < s; ++i) {
-        if ((int) i != except_this_one && false == ::sounds[i].music && AUDIsPlaying(i)) {
+        if (static_cast<int>(i) != except_this_one && false == ::sounds[i].music && AUDIsPlaying(i)) {
             AUDStopPlaying(i);
         }
     }
@@ -804,7 +762,7 @@ void AUDStopAllSounds(int except_this_one) {
 
 bool AUDIsPlaying(const int sound) {
 #ifdef HAVE_AL
-    if (sound >= 0 && sound < (int) sounds.size()) {
+    if (sound >= 0 && sound < static_cast<int>(sounds.size())) {
         if (!sounds[sound].source) {
             return false;
         }
@@ -823,7 +781,7 @@ bool AUDIsPlaying(const int sound) {
 
 void AUDStopPlaying(const int sound) {
 #ifdef HAVE_AL
-    if (sound >= 0 && sound < (int) sounds.size()) {
+    if (sound >= 0 && sound < static_cast<int>(sounds.size())) {
 #ifdef SOUND_DEBUG
         VS_LOG(trace, (boost::format("AUDStopPlaying sound %1$d source(releasing): %2$d buffer: %3$d")
                                     % sound % sounds[sound].source % sounds[sound].buffer));
@@ -833,23 +791,22 @@ void AUDStopPlaying(const int sound) {
             unusedsrcs.push_back(sounds[sound].source);
             alSourcei(sounds[sound].source, AL_BUFFER, 0);             //decrement refcount
         }
-        sounds[sound].source = (ALuint) 0;
+        sounds[sound].source = static_cast<ALuint>(0);
     }
 #endif
 }
 
 static bool AUDReclaimSource(const int sound, bool high_priority = false) {
 #ifdef HAVE_AL
-    if (sounds[sound].source == (ALuint) 0) {
+    if (sounds[sound].source == static_cast<ALuint>(0)) {
         if (!sounds[sound].buffer) {
             return false;
         }
         if (unusedsrcs.empty()) {
             if (high_priority) {
-                unsigned int i;
                 unsigned int candidate = 0;
                 bool found = false;
-                for (i = 0; i < sounds.size(); ++i) {
+                for (unsigned int i = 0; i < sounds.size(); ++i) {
                     if (sounds[i].source != 0) {
                         if (sounds[i].pos.i != 0 || sounds[i].pos.j != 0 || sounds[i].pos.k != 0) {
                             if (found) {
@@ -892,7 +849,7 @@ void AUDStartPlaying(const int sound) {
 #endif
 
 #ifdef HAVE_AL
-    if (sound >= 0 && sound < (int) sounds.size()) {
+    if (sound >= 0 && sound < static_cast<int>(sounds.size())) {
         if (sounds[sound].music || starSystemOK()) {
             if (AUDReclaimSource(sound, sounds[sound].pos == QVector(0, 0, 0))) {
 #ifdef SOUND_DEBUG
@@ -950,7 +907,7 @@ float AUDGetCurrentPosition(const int sound) {
 #ifdef HAVE_AL
     ALfloat rv;
     alGetSourcef(sound, AL_SEC_OFFSET, &rv);
-    return float(rv);
+    return rv;
 #else
     return 0;
 #endif
@@ -958,7 +915,7 @@ float AUDGetCurrentPosition(const int sound) {
 
 void AUDPausePlaying(const int sound) {
 #ifdef HAVE_AL
-    if (sound >= 0 && sound < (int) sounds.size()) {
+    if (sound >= 0 && sound < static_cast<int>(sounds.size())) {
         //alSourcePlay( sounds[sound].source() );
     }
 #endif
