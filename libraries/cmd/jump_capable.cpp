@@ -300,7 +300,7 @@ bool JumpCapable::AutoPilotToErrorMessage(const Unit *target,
                 unit->Velocity = methem * unit->Velocity.Magnitude();
             }
         }
-        const std::string insys_jump_ani = configuration().graphics.in_system_jump_animation;
+        const std::string& insys_jump_ani = configuration().graphics.in_system_jump_animation;
         if (!insys_jump_ani.empty()) {
             static bool docache = true;
             if (docache) {

@@ -414,7 +414,7 @@ void BaseInterface::Room::Draw(BaseInterface *base) {
                     y = (links[i]->y + (links[i]->hei / 2));                         //get the center of the location
 
                     /* draw marker */
-                    const std::string spritefile_marker = configuration().graphics.bases.location_marker_sprite;
+                    const std::string& spritefile_marker = configuration().graphics.bases.location_marker_sprite;
                     if (!spritefile_marker.empty() && links[i]->text.find("XXX") != 0) {
                         static VSSprite *spr_marker = new VSSprite(spritefile_marker.c_str());
                         float wid, hei;

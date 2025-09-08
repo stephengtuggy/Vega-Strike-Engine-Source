@@ -416,7 +416,7 @@ void Damageable::DamageCargo(InflictedDamage inflicted_damage) {
         return;
     }
 
-    const std::string restricted_items = configuration().physics.indestructible_cargo_items;
+    const std::string& restricted_items = configuration().physics.indestructible_cargo_items;
     double change_to_damage = hull_damage ? 0.5 : 0.05;
 
     for(Cargo &cargo : unit->cargo_hold.GetItems()) {

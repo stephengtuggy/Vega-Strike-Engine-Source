@@ -783,7 +783,7 @@ void Unit::LoadRow(std::string unit_identifier, string modification, bool saved_
     if (pImage->explosion_type.get().length()) {
         cache_ani(pImage->explosion_type);
     } else {
-        const std::string expani = configuration().graphics.explosion_animation;
+        const std::string& expani = configuration().graphics.explosion_animation;
         cache_ani(expani);
     }
     AddLights(this, xml, UnitCSVFactory::GetVariable(unit_key, "Light", std::string()));

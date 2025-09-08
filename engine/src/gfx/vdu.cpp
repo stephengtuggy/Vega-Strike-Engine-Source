@@ -832,7 +832,7 @@ void VDU::DrawMessages(GameCockpit *parentcp, Unit *target) {
         fullstr += textMessage;
         fullstr += newline;
     }
-    const std::string message_prefix = configuration().graphics.hud.message_prefix;
+    const std::string& message_prefix = configuration().graphics.hud.message_prefix;
     fullstr = targetstr + fullstr;
     const float background_alpha = configuration().graphics.hud.text_background_alpha_flt;
     GFXColor tpbg = tp->bgcol;
@@ -964,7 +964,7 @@ void VDU::DrawComm() {
 
 void VDU::DrawManifest(Unit *parent, Unit *target) {
     //zadeVDUmanifest
-    const std::string manifest_heading = configuration().graphics.hud.manifest_heading;
+    const std::string& manifest_heading = configuration().graphics.hud.manifest_heading;
     const bool simple_manifest = configuration().graphics.hud.simple_manifest;
     std::string retval(manifest_heading);
     if (target != parent && simple_manifest == false) {
@@ -1363,7 +1363,7 @@ GFXColor MountColor(Mount *mnt) {
 
 void VDU::DrawWeapon(Unit *parent) {
     const bool draw_weapon_sprite = configuration().graphics.hud.draw_weapon_sprite;
-    const std::string list_empty_mounts_as = configuration().graphics.hud.mounts_list_empty;
+    const std::string& list_empty_mounts_as = configuration().graphics.hud.mounts_list_empty;
     const bool do_list_empty_mounts = (list_empty_mounts_as.length() != 0);
 
 //  without fixed font we would need some sneaky tweaking to make it a table, probably with multiple TPs
