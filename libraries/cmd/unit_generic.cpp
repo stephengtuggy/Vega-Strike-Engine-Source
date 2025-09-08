@@ -1400,6 +1400,8 @@ void Unit::ProcessDeleteQueue() {
 #ifdef DESTRUCTDEBUG
         if ( unit_delete_queue.back()->isSubUnit() ) {
             VS_LOG(debug, "Subunit Deleting (related to double dipping)");
+            unit_delete_queue.pop_back();
+            continue;
         }
 #endif
         Unit *mydeleter = unit_delete_queue.back();
