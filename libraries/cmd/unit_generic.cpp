@@ -1358,9 +1358,16 @@ void Unit::Kill(bool erasefromsave, bool quitting) {
             }
         }
 
-        if (_Universe && _Universe->AccessCockpit() && _Universe->AccessCockpit()->GetParent() && _Universe->AccessCockpit()->GetParent()->Target() == this) {
-            VS_LOG_AND_FLUSH(info, "Killing player's target");
-            _Universe->AccessCockpit()->GetParent()->SetTarget(nullptr);
+        if (_Universe && _Universe->AccessCockpit() && _Universe->AccessCockpit()->GetParent()) {
+            Unit * me = _Universe->AccessCockpit()->GetParent();
+            if (me->Target() == this) {
+                VS_LOG_AND_FLUSH(important_info, "Killing player's target");
+                me->SetTarget(nullptr);
+            }
+            if (me->VelocityReference() == this) {
+                VS_LOG_AND_FLUSH(important_info, "Killing player's velocity reference");
+                me->VelocityReference(nullptr);
+            }
         }
 
 //#ifdef DESTRUCTDEBUG
