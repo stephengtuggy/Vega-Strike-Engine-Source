@@ -67,14 +67,34 @@ std::string PlayerShip::GetName() {
     return name;
 }
 
-PlayerShip& PlayerShip::GetShipFromIndex(int index) {
+// TODO: move to python 
+std::string PlayerShip::GetPurchaseHeader() {
+    std::string return_value;
+    if(active) {
+        return_value = (boost::format("#b#%1% - The ship you are currently flying#-b#n1.5#") % GetName()).str();
+    } else {
+        return_value = (boost::format("#b#Currently docked at %1% at the %2% system#-b#n1.5#") % base % system).str();
+        return_value += (boost::format("#b#Transport cost: %1$.2f#-b#n1.5#") % transfer_price).str();
+    }
+    
+    return_value += (boost::format("#b#Purchased for: %1$.2f#-b#n1.5#") % cargo.GetPrice()).str();
+    // TODO: this is clearly wrong
+    // Sale price should reflect ship condition, age, etc.
+    // Sale price should not reflect purchase price - did I buy at a discount or salvage it using a tractor beam
+    const float ship_sellback_factor = configuration().economics.ship_sellback_price_flt;
+    const float sellback_price = ship_sellback_factor * cargo.GetPrice();
+    return_value += (boost::format("#b#Current resale value: %1$.2f#-b#n1.5#") % sellback_price).str();
+    return return_value;
+}
+
+PlayerShip& PlayerShip::GetShipByIndex(int index) {
     for(PlayerShip& ship : player_fleet) {
         if(ship.cargo.index == index) {
             return ship;
         }
     }
 
-    throw std::runtime_error((boost::format("GetShipFromIndex. Index %1% not found.") % index).str());
+    throw std::runtime_error((boost::format("GetShipByIndex. Index %1% not found.") % index).str());
 }
 
 PlayerShip& PlayerShip::GetShipByName(const std::string ship_name) {

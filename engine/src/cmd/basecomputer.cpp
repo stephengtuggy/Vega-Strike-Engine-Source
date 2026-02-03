@@ -287,6 +287,28 @@ bool BaseComputer::actionDone(const EventCommandId &command, Control *control) {
     return true;
 }
 
+void UpdateTransportPricesForOwnedShips(const Unit* base) {
+    assert(base);
+
+    for(PlayerShip& ship : player_fleet) {
+        const std::string destination_system = _Universe->activeStarSystem()->getFileName();
+        const std::string destination_base = Cockpit::MakeBaseName(base);
+        int jumps = 0;
+
+        if(ship.active) {
+            ship.UpdateLocation(destination_system, destination_base);
+        }
+
+        if (destination_system != ship.system) {
+            vector<string> jumps_vector;
+            _Universe->getJumpPath(ship.system, destination_system,jumps_vector);
+            jumps = jumps_vector.size()-1;
+        }
+        ship.UpdateTransportPrice(destination_system, destination_base, jumps);
+
+    }
+}
+
 //Dispatch table for commands.
 //Make an entry here for each command you want to handle.
 //WARNING:  The order of this table is important.  There are multiple entries for
@@ -1777,7 +1799,7 @@ void BaseComputer::updateTransactionControlsForSelection(TransactionList *tlist)
                 commitButton->setCommand("BuyShip");
                 
                 if (is_player_ship) {
-                    PlayerShip player_ship = PlayerShip::GetShipFromIndex(item.index);
+                    PlayerShip player_ship = PlayerShip::GetShipByIndex(item.index);
 
                     //note can only sell it if you can afford to ship it over here.
                     NewButton *commit10Button = vega_dynamic_cast_ptr<NewButton>(window()->findControlById("Commit10"));
@@ -1904,9 +1926,10 @@ void BaseComputer::updateTransactionControlsForSelection(TransactionList *tlist)
                     item.SetDescription(buildShipDescription(item, descriptiontexture));
                 }
                 if (is_player_ship) {
-                    //This ship is in my fleet -- the price is just the transport cost to get it to
-                    //the current base.  "Buying" this ship makes it my current ship.
-                    tempString = (boost::format("#b#Transport cost: %1$.2f#-b#n1.5#") % item.GetPrice()).str();
+                    UpdateTransportPricesForOwnedShips(baseUnit);
+                    PlayerShip& ship = PlayerShip::GetShipByIndex(item.index);
+                    tempString = ship.GetPurchaseHeader();
+                    
                 } else {
                     PRETTY_ADDN("", baseUnit->PriceCargo(item.GetName()), 2);
                     tempString = (boost::format("Price: #b#%1%#-b#n#") % text).str();
@@ -3729,23 +3752,7 @@ bool BaseComputer::changeToShipDealerMode(const EventCommandId &command, Control
     return true;
 }
 
-void UpdateTransportPricesForOwnedShips(const Unit* base) {
-    assert(base);
 
-    for(PlayerShip& ship : player_fleet) {
-        const std::string destination_system = _Universe->activeStarSystem()->getFileName();
-        const std::string destination_base = Cockpit::MakeBaseName(base);
-        int jumps = 0;
-
-        if (destination_system != ship.system) {
-            vector<string> jumps_vector;
-            _Universe->getJumpPath(ship.system, destination_system,jumps_vector);
-            jumps = jumps_vector.size()-1;
-        }
-        ship.UpdateTransportPrice(destination_system, destination_base, jumps);
-
-    }
-}
 
 
 /*void SwapInNewShipName(Cockpit *cockpit, Unit *base, const std::string &newFileName, int swappingShipsIndex) {
@@ -3775,7 +3782,7 @@ string buildShipDescription(Cargo &item, std::string &texturedescription) {
 
     Unit* unit = nullptr;
     if(item.index > 0) {
-        ComponentsManager* components_manager = PlayerShip::GetShipFromIndex(item.index).unit;
+        ComponentsManager* components_manager = PlayerShip::GetShipByIndex(item.index).unit;
 
         if(!components_manager) {
             const std::string error_string = "components_manager is null. exiting buildShipDescription.\n";
@@ -4139,7 +4146,7 @@ void BaseComputer::loadShipDealerControls(void) {
 
 // TODO: move this to ComponentsManager
 bool sellShip(Unit *baseUnit, Unit *playerUnit, Cargo* item, BaseComputer *bcomputer) {
-    PlayerShip& ship = PlayerShip::GetShipFromIndex(item->index);
+    PlayerShip& ship = PlayerShip::GetShipByIndex(item->index);
     const float purchase_price = ship.cargo.GetPrice();
     const float shipping_price = ship.transfer_price;
 
@@ -4154,6 +4161,7 @@ bool sellShip(Unit *baseUnit, Unit *playerUnit, Cargo* item, BaseComputer *bcomp
     // This will strip the ship of any modifications including damage and upgrades.
     // It will revert to blank or template, depending on the cargo name.
     Cargo ship_as_cargo = PlayerShip::RemoveShip(item->index);
+    ship_as_cargo.index = 0; // So it won't be considered a player ship anymore.
     baseUnit->cargo_hold.AddCargo(baseUnit, ship_as_cargo);
 
     if (bcomputer) {
@@ -4180,9 +4188,6 @@ bool buyShip(Unit *baseUnit,
         Unit *playerUnit,
         Cargo* item,
         BaseComputer *base_computer) {
-    // Unit Name
-    const std::string ship_name = item->GetName();
-
     if (!baseUnit) {
         // Log error
         return false;
@@ -4198,11 +4203,14 @@ bool buyShip(Unit *baseUnit,
         return false;
     }
 
+    // Unit Name
+    const std::string ship_name = item->GetName();
+
     Unit* new_ship = nullptr;
 
     // Already own ship
     if(item->index > 0) {
-        PlayerShip& ship = PlayerShip::GetShipFromIndex(item->index);
+        PlayerShip& ship = PlayerShip::GetShipByIndex(item->index);
         // Already active ship. We shouldn't be here.
         if(ship.active) {
             // Log error. We shouldn't get here.
@@ -4210,13 +4218,13 @@ bool buyShip(Unit *baseUnit,
         }
 
         // Sanity check - can we afford to transfer ship
-        if (ship.cargo.GetPrice() > ComponentsManager::credits) {
+        if (ship.transfer_price > ComponentsManager::credits) {
             // Log error. We shouldn't get here.
             return false;
         }
 
         // Charge credits for transfer
-        ComponentsManager::credits -= ship.cargo.GetPrice();
+        ComponentsManager::credits -= ship.transfer_price;
 
         PlayerShip::SwitchShips(item->index);
         new_ship = vega_dynamic_cast_ptr<Unit>(ship.unit);
@@ -4246,7 +4254,7 @@ bool buyShip(Unit *baseUnit,
 
         // Create Unit
         // Why create a ship with baseUnit faction and then immediately switch to player faction?
-        Unit *new_ship = new Unit(ship_name.c_str(), false, baseUnit->faction, "",
+        new_ship = new Unit(ship_name.c_str(), false, baseUnit->faction, "",
                                   flight_group,fgs_number);
 
         new_ship->SetFaction(playerUnit->faction);
@@ -4272,7 +4280,6 @@ bool buyShip(Unit *baseUnit,
         player_fleet.push_back(player_ship);
         PlayerShip::SwitchShips(player_ship.cargo.index);
 
-
         // Charge credits - do this last
         ComponentsManager::credits -= item->GetPrice();
     }
@@ -4283,7 +4290,6 @@ bool buyShip(Unit *baseUnit,
     new_ship->prev_physical_state = playerUnit->prev_physical_state;
     _Universe->activeStarSystem()->AddUnit(new_ship);
     _Universe->activeStarSystem()->RemoveUnit(playerUnit);
-    
 
     _Universe->AccessCockpit()->SetParent(new_ship, playerUnit->curr_physical_state.position);
 
@@ -4322,6 +4328,8 @@ bool buyShip(Unit *baseUnit,
     if(base_computer) {
         base_computer->window()->close();
     }
+
+    UpdateTransportPricesForOwnedShips(baseUnit);
     
     return true;
 }

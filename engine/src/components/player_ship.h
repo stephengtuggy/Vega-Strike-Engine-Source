@@ -53,7 +53,8 @@ struct PlayerShip {
 
     static PlayerShip& GetActiveShip();
     std::string GetName();
-    static PlayerShip& GetShipFromIndex(int index);
+    std::string GetPurchaseHeader();
+    static PlayerShip& GetShipByIndex(int index);
     // Caution! Will return first ship to match ship_name
     static PlayerShip& GetShipByName(const std::string ship_name);
 

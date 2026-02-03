@@ -736,7 +736,7 @@ static void pushShipToFleet(bool active,
         VS_LOG(warning, (boost::format("Failed to load player ship %1%: %2%.\nGenerating dummy cargo entry.") % filename % e.what()));
         cargo = Cargo(filename, "Spaceship", 1, 1, 1, 1);
     }
-    PlayerShip player_ship(active, unit, cargo);
+    PlayerShip player_ship(active, unit, cargo, system, base);
     player_fleet.push_back(player_ship);
 }
 
@@ -757,6 +757,8 @@ void Cockpit::UnpackUnitInfo(vector<std::string> &info) {
 
     // Parse first
     std::string filename = info[0];
+    // There's no way to extract the base from the save game. It's not saved.
+    // Instead, we update the active ship location in UpdateTransportPrice
     pushShipToFleet(true, filename, "", "", this->unitfaction, fg, fgsnumber);
     
 
