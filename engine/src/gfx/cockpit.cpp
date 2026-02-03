@@ -1129,7 +1129,7 @@ void GameCockpit::NextTurret() {
 
     current_view++;
     VS_LOG(debug, (boost::format("GameCockpit::NextTurret - current_view = %1%") % current_view));
-    if(current_view == number_of_turrets) {
+    if(current_view >= number_of_turrets) {
         current_view = -1;
     }
 

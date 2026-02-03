@@ -143,7 +143,11 @@ void Cockpit::Init(const char *file, bool isDisabled) {
 // This function potentially returns the current subunit, so its target can be extracted.
 // See star_system.cpp
 Unit *Cockpit::GetSaveParent() {
-    return current_unit;
+    if (!current_unit) {
+        return parent.GetUnit();
+    } else {
+        return current_unit;
+    }
 }
 
 void Cockpit::SetParent(Unit *unit, const QVector &position) {
