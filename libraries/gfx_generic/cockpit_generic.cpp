@@ -60,6 +60,8 @@
 vector<int> respawnunit;
 vector<int> switchunit;
 
+const std::string NEW_SAVE_GAME_FORMAT = "NSGF";
+
 void Cockpit::beginElement(void *userData, const XML_Char *name, const XML_Char **atts) {
     ((Cockpit *) userData)->beginElement(name, AttributeList(atts));
 }
@@ -580,7 +582,6 @@ bool Cockpit::Update() {
                     pos = tmpoldpos;
                 }
                 savegame->SetPlayerLocation(pos);
-                CopySavedShips(savegame->GetCallsign(), whichcp, packedInfo, true);
                 bool actually_have_save = false;
                 const bool persistent_on_load = configuration().physics.persistent_on_load;
                 if (savegame->GetStarSystem() != "") {
@@ -702,19 +703,14 @@ void Cockpit::PackUnitInfo(vector<std::string> &info) const {
         return;
     }
 
-    // First entry, current ship
-    const std::string active_ship_name = PlayerShip::GetActiveShip().cargo.GetName();
-    info.push_back(active_ship_name);
+    // First entry, indicate new save game format
+    info.push_back(NEW_SAVE_GAME_FORMAT);
+    
+    // Push active ship index
+    info.push_back(std::to_string(PlayerShip::GetActiveShipIndex()));
 
     // Following entries, ship/location pairs
-    int i=0;
     for (PlayerShip& ship : player_fleet) {
-        // We already wrote the active ship
-        if(ship.active) {
-            continue;
-        }
-        i++;
-
         info.push_back(ship.cargo.GetName());
         info.push_back(ship.system + "@" + ship.base);
     }
@@ -727,7 +723,9 @@ static void pushShipToFleet(bool active,
                             const std::string& base,
                             const int faction,
                             Flightgroup *flight_group,
-                            int fgsnumber) {
+                            int fgsnumber,
+                            int current_index,
+                            int active_index) {
     Unit *unit = new Unit(filename.c_str(), false, faction, "player", flight_group, fgsnumber);
     Cargo cargo;
     try {
@@ -736,7 +734,13 @@ static void pushShipToFleet(bool active,
         VS_LOG(warning, (boost::format("Failed to load player ship %1%: %2%.\nGenerating dummy cargo entry.") % filename % e.what()));
         cargo = Cargo(filename, "Spaceship", 1, 1, 1, 1);
     }
+    
     PlayerShip player_ship(active, unit, cargo, system, base);
+
+    if(current_index == active_index) {
+        player_ship.active = true;
+    }
+
     player_fleet.push_back(player_ship);
 }
 
@@ -755,30 +759,58 @@ void Cockpit::UnpackUnitInfo(vector<std::string> &info) {
         fg->nr_ships_left++;
     }
 
+    auto it = info.begin();
+    int active_index = -1;    // Only relevant for new save game format
+    int i = 1;               // Only relevant for new save game format
+
     // Parse first
-    std::string filename = info[0];
-    // There's no way to extract the base from the save game. It's not saved.
-    // Instead, we update the active ship location in UpdateTransportPrice
-    pushShipToFleet(true, filename, "", "", this->unitfaction, fg, fgsnumber);
+    std::string filename = *it;
+    it++;
+
+    // Is it the new save game format or the old one?
+    if(filename == NEW_SAVE_GAME_FORMAT) {
+        active_index = std::stoi(*it);
+        it++;
+    } else {
+        // Push the active ship to the fleet
+        // There's no way to extract the base from the save game. It's not saved.
+        // Instead, we update the active ship location in UpdateTransportPrice
+        pushShipToFleet(true, filename, "", "", this->unitfaction, fg, fgsnumber, i, active_index);
+    }
     
 
     // Following entries, ship/location pairs
-    for (size_t i = 1, n = info.size(); i < n; i += 2) {
+    while (it != info.end()) {
         if (fg) {
             fgsnumber = fg->flightgroup_nr++;
             fg->nr_ships++;
             fg->nr_ships_left++;
         }
 
-        std::string filename = info[i];
+        std::string filename = *it;
+        it++;
 
-        string location = ((i + 1) < n) ? info[i + 1] : "";
-        string::size_type atpos = location.find_first_of('@');
+        // Shouldn't happen, but let's check for this edge case
+        if(it == info.end()) {
+            // Print Error
+            break;
+        }
 
-        std::string system = location.substr(0, atpos);
-        std::string base = ((atpos != string::npos) ? location.substr(atpos + 1) : "");
+        string location = *it;
+        it++;
+        
+        string::size_type at_position = location.find_first_of('@');
+        
+        if(at_position == string::npos) {
+            // Print Error
+            break;
+        }
+
+        std::string system = location.substr(0, at_position);
+        std::string base = location.substr(at_position + 1);
         std::cout << std::endl << std::endl << filename << " " << system << " " << base << std::endl << std::endl;
-        pushShipToFleet(false, filename, system, base, this->unitfaction, fg, fgsnumber);
+        pushShipToFleet(false, filename, system, base, this->unitfaction, fg, fgsnumber, i, active_index);
+        i++;
     }
 }
 

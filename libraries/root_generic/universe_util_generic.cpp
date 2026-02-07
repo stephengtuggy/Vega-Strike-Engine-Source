@@ -992,11 +992,15 @@ namespace UniverseUtil {
     }
 
     string getCurrentSaveGame() {
-        return GetCurrentSaveGame();
+        return GetSaveGame();
     }
 
     string setCurrentSaveGame(const string &newsave) {
-        return SetCurrentSaveGame(newsave);
+        // The old API behaved weirdly, returning the old save game after setting the new one.
+        // We replicate this here for python.
+        const std::string old_save_game = GetSaveGame();
+        SetSaveGame(newsave);
+        return old_save_game;
     }
 
     string getNewGameSaveName() {

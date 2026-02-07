@@ -483,8 +483,6 @@ public:
     void endElement(const std::string &name);
 
 public:
-//tries to warp as close to un as possible abiding by the distances of various enemy ships...it might not make it all the way
-    void WriteUnit(const char *modificationname = "");
 
     const std::map<std::string, std::string> UnitToMap();
     std::string WriteUnitString();

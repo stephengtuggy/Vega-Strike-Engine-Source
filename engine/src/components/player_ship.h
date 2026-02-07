@@ -52,6 +52,7 @@ struct PlayerShip {
                const std::string& base = "");
 
     static PlayerShip& GetActiveShip();
+    static int GetActiveShipIndex();
     std::string GetName();
     std::string GetPurchaseHeader();
     static PlayerShip& GetShipByIndex(int index);

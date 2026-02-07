@@ -425,7 +425,7 @@ void Unit::Init() {
 }
 
 using namespace VSFileSystem;
-extern std::string GetReadPlayerSaveGame(int);
+extern std::string GetSaveGame();
 
 void Unit::Init(const char *filename,
         bool SubU,
@@ -443,7 +443,7 @@ void Unit::Init(const char *filename,
     bool saved_game = false;
     bool modified = !unitModifications.empty();
     if (modified) {
-        string non_auto_save = GetReadPlayerSaveGame(_Universe->CurrentCockpit());
+        string non_auto_save = GetSaveGame();
         string filepath("");
 
         if (non_auto_save.empty()) {

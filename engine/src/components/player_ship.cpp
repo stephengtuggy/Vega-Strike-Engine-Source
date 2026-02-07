@@ -62,6 +62,16 @@ PlayerShip& PlayerShip::GetActiveShip() {
     throw std::runtime_error("No active ship found in player fleet.");
 }
 
+int PlayerShip::GetActiveShipIndex() {
+    for(PlayerShip& ship : player_fleet) {
+        if(ship.active) {
+            return ship.cargo.index;
+        }
+    }
+
+    throw std::runtime_error("No active ship found in player fleet.");
+}
+
 std::string PlayerShip::GetName() {
     std::string name = cargo.GetName();
     return name;
