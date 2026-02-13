@@ -62,11 +62,15 @@ PlayerShip& PlayerShip::GetActiveShip() {
     throw std::runtime_error("No active ship found in player fleet.");
 }
 
+// Note: this is saved in the savegame file. 
+// So it can't be the ship.cargo.index.
 int PlayerShip::GetActiveShipIndex() {
+    int i = 0;
     for(PlayerShip& ship : player_fleet) {
         if(ship.active) {
-            return ship.cargo.index;
+            return i;
         }
+        i++;
     }
 
     throw std::runtime_error("No active ship found in player fleet.");

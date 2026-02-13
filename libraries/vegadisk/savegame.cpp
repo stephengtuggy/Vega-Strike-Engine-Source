@@ -50,6 +50,7 @@
 #include "cmd/vega_py_run.h"
 #include "src/vs_exit.h"
 #include "components/player_ship.h"
+#include "cmd/unit_json_factory.h"
 
 #include <iostream>
 #include <fstream>
@@ -69,6 +70,7 @@ using std::allocator;
 // This section deals with saving the latest save game name
 // so it can be automatically loaded on startup
 std::string current_savegame_name = "";
+bool SaveGame::new_save_game_format = false;
 
 namespace {
     // Helper to trim trailing whitespace and newlines from string
@@ -107,7 +109,7 @@ void SetSaveGame(std::string save_game) {
     current_savegame_name = save_game;
     configuration().general.new_game_save_name = save_game;
 
-    // TODO: save to JSON
+    // TODO: save to JSON - otherwise loading mission on startup won't work
 }
 
 // End of automatic save game load on startup
@@ -1113,6 +1115,29 @@ float SaveGame::ParseSaveGame(const string &filename_p,
         originalsystem = ForceStarSystem;
         FSS = ForceStarSystem;
     }
+
+    if(!quick_read) {
+    // Here we load the player fleet from serialized_xml
+        const std::string save_game_name = GetSaveGame();
+        const std::string savegame_root_dir = homedir + "/";
+        const std::string save_dir = savegame_root_dir + VSFileSystem::savedunitpath + "/" + save_game_name;
+        const std::string file_path = save_dir + "/player_fleet.json";
+        
+        std::ifstream file(file_path);
+        
+        if (!file.is_open()) {
+            VS_LOG(error, (boost::format("Failed to open player fleet file %1%. Legacy save game format.") % file_path));
+        } else {
+            std::stringstream buffer;
+            buffer << file.rdbuf();
+
+            UnitJSONFactory::ParseJSONArray(buffer.str());
+            Cockpit *cockpit = _Universe->AccessCockpit();
+
+            cockpit->UnpackUnitInfo(savedstarship);
+        }
+    }
+    
 
     return credits;
 }

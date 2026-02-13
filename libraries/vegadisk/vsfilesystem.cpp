@@ -1104,7 +1104,7 @@ int FileExists(const string &root, const char *filename, VSFileType type, bool l
         struct stat s{};
         if (stat(fullpath.c_str(), &s) >= 0) {
             if (s.st_mode & S_IFDIR) {
-                VS_LOG(error, " File is a directory ! ");
+                VS_LOG(trace, " File is a directory ! ");
                 found = -1;
             } else {
                 isin_bigvolumes = VSFSNone;

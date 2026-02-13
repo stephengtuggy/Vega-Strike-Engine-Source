@@ -2789,6 +2789,6 @@ namespace vega_config {
     };
 }
 
-extern const vega_config::Configuration& configuration();
+extern vega_config::Configuration& configuration();
 
 #endif //VEGA_STRIKE_ENGINE_CONFIG_CONFIGURATION_H

@@ -8951,7 +8951,7 @@ void vega_config::Configuration::load_config(const std::string& json_text) {
     }
 }
 
-const vega_config::Configuration& configuration() {
-    static const vega_config::Configuration kConfiguration{};
+vega_config::Configuration& configuration() {
+    static vega_config::Configuration kConfiguration{};
     return kConfiguration;
 }

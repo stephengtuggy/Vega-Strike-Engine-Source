@@ -52,6 +52,7 @@
 #include "cmd/weapon_info.h"
 #include "components/player_ship.h"
 #include "resource/manifest.h"
+#include "cmd/unit_csv_factory.h"
 
 #include <algorithm>
 
@@ -539,6 +540,8 @@ bool Cockpit::Update() {
     if (!par) {
         if (respawnunit.size() > _Universe->CurrentCockpit()) {
             if (respawnunit.at(_Universe->CurrentCockpit())) {
+                // Respawn
+
                 VS_LOG(debug, "respawnunit.at(_Universe->CurrentCockpit()) is truthy");
                 const float initialzoom = configuration().graphics.initial_zoom_factor_flt;
                 zoomfactor = initialzoom;
@@ -577,7 +580,6 @@ bool Cockpit::Update() {
                         setplayerXloc,
                         packedInfo,
                         k);
-                UnpackUnitInfo(packedInfo);
                 if (pos.i == FLT_MAX && pos.j == FLT_MAX && pos.k == FLT_MAX) {
                     pos = tmpoldpos;
                 }
@@ -624,16 +626,12 @@ bool Cockpit::Update() {
                     saved.pop_back();
                 }
                 ss->SwapIn();
-                int fgsnumber = 0;
-                if (fg) {
-                    fgsnumber = fg->flightgroup_nr++;
-                    fg->nr_ships++;
-                    fg->nr_ships_left++;
-                }
 
-                // This code is suspicious. We are creating a new unit while we already have one in fleet.
-                std::string unit_filename = PlayerShip::GetActiveShip().GetName();
-                Unit *un = new Unit(unit_filename.c_str(), false, this->unitfaction, "player", fg, fgsnumber);
+                // Get the active unit from the player fleet.
+                // Even though this is the respawn procedure, it is run at the start of the game.
+                PlayerShip& player_ship = PlayerShip::GetActiveShip();
+                Unit *un = vega_dynamic_cast_ptr<Unit>(player_ship.unit);
+                
                 un->SetCurPosition(UniverseUtil::SafeEntrancePoint(savegame->GetPlayerLocation()));
                 ss->AddUnit(un);
 
@@ -726,7 +724,20 @@ static void pushShipToFleet(bool active,
                             int fgsnumber,
                             int current_index,
                             int active_index) {
-    Unit *unit = new Unit(filename.c_str(), false, faction, "player", flight_group, fgsnumber);
+    Unit *unit = nullptr;
+    if(SaveGame::new_save_game_format) {
+        VS_LOG(trace, (boost::format("Create new format player ship %1% with index %2%, faction %3% and flight group %4%") %
+            filename % current_index % faction % flight_group->name));
+        
+        const std::string ship_name = std::string("player_ship_") + std::to_string(current_index);
+
+        unit = new Unit(ship_name.c_str(), false, faction, "player", flight_group, fgsnumber);
+    } else {
+        VS_LOG(trace, (boost::format("Create old format player ship %1% with index %2%, faction %3% and flight group %4%") %
+            filename % current_index % faction % flight_group->name));
+        unit = new Unit(filename.c_str(), false, faction, "player", flight_group, fgsnumber);
+    }
+    
     Cargo cargo;
     try {
         cargo = Manifest::MPL().GetCargoByName(filename);
@@ -738,6 +749,7 @@ static void pushShipToFleet(bool active,
     PlayerShip player_ship(active, unit, cargo, system, base);
 
     if(current_index == active_index) {
+        VS_LOG(trace, (boost::format("Set %1%/%2% as active.") % filename % active_index));
         player_ship.active = true;
     }
 
@@ -761,14 +773,17 @@ void Cockpit::UnpackUnitInfo(vector<std::string> &info) {
 
     auto it = info.begin();
     int active_index = -1;    // Only relevant for new save game format
-    int i = 1;               // Only relevant for new save game format
+    int i = 0;               // Only relevant for new save game format
 
     // Parse first
     std::string filename = *it;
     it++;
 
+    VS_LOG(trace, (boost::format("Unpack %1% units to player fleet.") % UnitCSVFactory::units.size()));
+
     // Is it the new save game format or the old one?
     if(filename == NEW_SAVE_GAME_FORMAT) {
+        SaveGame::new_save_game_format = true;
         active_index = std::stoi(*it);
         it++;
     } else {

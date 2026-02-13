@@ -443,6 +443,8 @@ void Unit::Init(const char *filename,
     bool saved_game = false;
     bool modified = !unitModifications.empty();
     if (modified) {
+        saved_game = true;
+
         string non_auto_save = GetSaveGame();
         string filepath("");
 
@@ -455,13 +457,12 @@ void Unit::Init(const char *filename,
         }
 
         //Try to open save
-        if (filename[0]) {
+        if (filename[0] && !SaveGame::new_save_game_format) {
             VSFile unitTab;
             VSError taberr = unitTab.OpenReadOnly(filepath + ".json", UnitSaveFile);
             if (taberr <= Ok) {
                 UnitJSONFactory::ParseJSON(unitTab, true);
                 unitTab.Close();
-                saved_game = true;
             }
         }
     }
@@ -470,7 +471,12 @@ void Unit::Init(const char *filename,
     this->name = filename;
 
     const std::string faction_name = FactionUtil::GetFactionName(faction);
-    const std::string unit_key = GetUnitKeyFromNameAndFaction(filename, faction_name);
+    std::string unit_key = GetUnitKeyFromNameAndFaction(filename, faction_name);
+    if(boost::algorithm::starts_with(filename, "player_ship_")) {
+        unit_key = filename;
+        std::cout << "Reverted unit_key to " << filename;
+    }
+    
 
     if (unit_key.empty()) {
         // This is actually used for upgrade checks.

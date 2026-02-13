@@ -604,10 +604,16 @@ void Unit::LoadRow(std::string unit_identifier, string modification, bool saved_
         this->unit_description = "";
     }
     
+    
+    // This shadows the unit variable, making it possible to have:
+    // this->unit_key = "Llama.begin"   - Stores appropriate key
+    // unit_key = "player_ship_0"       - Add support for multiships and legacy save game
+    std::string unit_key = unit_identifier;
 
-    // This shadows the unit variable. It also doesn't support more than one ship.
-    // TODO: figure this out.
-    std::string unit_key = (saved_game ? "player_ship" : unit_identifier);
+    // Add support for legacy save game player ships
+    if(saved_game && !SaveGame::new_save_game_format) {
+        unit_key = "player_ship";
+    }
 
     if(saved_game) {
         SetPlayerShip();

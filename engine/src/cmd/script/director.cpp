@@ -104,6 +104,16 @@ void Mission::DirectorEnd() {
 }
 
 void Mission::DirectorShipDestroyed(Unit *unit) {
+    // This suppresses the first message 
+    // Ship destroyed: dumbfire.blank
+    // Flightgroup shlimazel destroyed
+    static bool first_time = true;
+
+    if(first_time) {
+        first_time = true;
+        return;
+    }
+    
     Flightgroup *fg = unit->getFlightgroup();
     if (fg == nullptr) {
         VS_LOG(info, "ship destroyed-no flightgroup");

@@ -673,7 +673,6 @@ void bootstrap_main_loop() {
                     packedInfo,
                     k);
             _Universe->AccessCockpit(k)->UnpackUnitInfo(packedInfo);
-            //CopySavedShips(playername[k], k, packedInfo, true);
         } else {
             _Universe->AccessCockpit(k)->savegame->SetOutputFileName(savegamefile);
         }
