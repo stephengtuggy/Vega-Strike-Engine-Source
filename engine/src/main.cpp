@@ -34,7 +34,8 @@
 #include <boost/program_options.hpp>
 #include "audio/test.h"
 #if defined (HAVE_SDL)
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
 #endif
 #include "cmd/role_bitmask.h"
 #if defined (WITH_MACOSX_BUNDLE)
@@ -63,7 +64,6 @@
 #include "src/universe.h"
 #include "src/save_util.h"
 #include "cmd/music.h"
-#include "src/ship_commands.h"
 #include "audio/SceneManager.h"
 #include "audio/renderers/OpenAL/BorrowedOpenALRenderer.h"
 #include "configuration/configuration.h"
@@ -87,9 +87,9 @@
 #include "src/vs_exit.h"
 
 #include "imgui/imgui.h"
-#include "backends/imgui_impl_sdl2.h"
+#include "backends/imgui_impl_sdl3.h"
 #include "backends/imgui_impl_opengl3.h"
-#include "backends/imgui_impl_sdlrenderer2.h"
+#include "backends/imgui_impl_sdlrenderer3.h"
 
 /*
  * Globals
@@ -379,18 +379,9 @@ int main(int argc, char *argv[]) {
     initALRenderer();
     initScenes();
 
-    //Register commands
-    //COmmand Interpretor Seems to break VC8, so I'm leaving disabled for now - Patrick, Dec 24
-    if (configuration().general.command_interpreter) {
-        CommandInterpretor = new commandI;
-        InitShipCommands();
-    }
     _Universe = new Universe(argc, argv, configuration().game_start.galaxy.c_str());
     TheTopLevelUnit = new Unit(0);
     _Universe->Loop(bootstrap_first_loop);
-
-    //Unregister commands - and cleanup memory
-    UninitShipCommands();
 
     closeRenderer();
 
@@ -473,18 +464,18 @@ void bootstrap_draw(const std::string &message, Animation *newSplashScreen) {
         }
     }
 
-    static const ImGuiWindowFlags window_flags = 
-        ImGuiWindowFlags_NoTitleBar |
-        ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoScrollbar |
-        ImGuiWindowFlags_NoCollapse |
-        ImGuiWindowFlags_NoBackground |
-        ImGuiWindowFlags_NoDecoration;   // makes it transparent
+    static constexpr ImGuiWindowFlags window_flags =
+            ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove |
+            ImGuiWindowFlags_NoScrollbar |
+            ImGuiWindowFlags_NoCollapse |
+            ImGuiWindowFlags_NoBackground |
+            ImGuiWindowFlags_NoDecoration;   // makes it transparent
 
     // ImGui Init
     ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplSDL2_NewFrame();
+    ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
     // End ImGui Init
 
@@ -496,8 +487,8 @@ void bootstrap_draw(const std::string &message, Animation *newSplashScreen) {
     ImGui::Begin("main_window", nullptr, window_flags);
 
 
-    bs_tp->Draw(configuration().graphics.default_boot_message.length() > 0 ?
-            configuration().graphics.default_boot_message : message.length() > 0 ?
+    bs_tp->Draw(!configuration().graphics.default_boot_message.empty() ?
+            configuration().graphics.default_boot_message : !message.empty() ?
                     message : configuration().graphics.initial_boot_message);
 
     // ImGui End Frame

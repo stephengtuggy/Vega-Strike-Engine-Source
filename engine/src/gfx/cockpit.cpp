@@ -86,7 +86,7 @@
 #include "cmd/weapon_info.h"
 #include "gfx/cockpit_gfx.h"
 #include "cmd/dock_utils.h"
-#include "vega_cast_utils.h"
+#include "src/vega_cast_utils.h"
 #include "resource/random_utils.h"
 
 #include <cstddef>
@@ -1947,10 +1947,7 @@ void GameCockpit::Draw() {
         QuitAllow = false;
         dietime = 0;
     }
-    //if(CommandInterpretor.console){
-    //GFXColorf(textcol);
-    //CommandInterpretor.renderconsole();
-    //}
+ 
     GFXAlphaTest(ALWAYS, 0);
     const bool mouseCursor = configuration().joystick.mouse_cursor;
     const bool mousecursor_pancam = configuration().joystick.mouse_cursor_pancam;

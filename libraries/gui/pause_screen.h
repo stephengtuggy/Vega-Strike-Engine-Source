@@ -1,5 +1,5 @@
 /*
- * ship_commands.h
+ * pause_screen.h
  *
  * Vega Strike - Space Simulation, Combat and Trading
  * Copyright (C) 2001-2025 The Vega Strike Contributors:
@@ -25,10 +25,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef VEGA_STRIKE_ENGINE_SHIP_COMMANDS_H
-#define VEGA_STRIKE_ENGINE_SHIP_COMMANDS_H
 
-extern void InitShipCommands();
-extern void UninitShipCommands();
+#ifndef VEGA_STRIKE_LIBRARIES_GUI_PAUSE_SCREEN_H
+#define VEGA_STRIKE_LIBRARIES_GUI_PAUSE_SCREEN_H
 
-#endif //VEGA_STRIKE_ENGINE_SHIP_COMMANDS_H
+void pauseGame();
+
+#endif //VEGA_STRIKE_LIBRARIES_GUI_PAUSE_SCREEN_H
