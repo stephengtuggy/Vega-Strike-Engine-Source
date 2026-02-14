@@ -629,8 +629,14 @@ bool Cockpit::Update() {
 
                 // Get the active unit from the player fleet.
                 // Even though this is the respawn procedure, it is run at the start of the game.
-                PlayerShip& player_ship = PlayerShip::GetActiveShip();
-                Unit *un = vega_dynamic_cast_ptr<Unit>(player_ship.unit);
+                Unit *un = nullptr;
+                try {
+                    PlayerShip& player_ship = PlayerShip::GetActiveShip();
+                    un = vega_dynamic_cast_ptr<Unit>(player_ship.unit);
+                } catch(const std::runtime_error& e) {
+                    VS_LOG_FLUSH_EXIT(fatal, (boost::format("Failed to spawn unit. %1%") % e.what()), 66);
+                }
+                
                 
                 un->SetCurPosition(UniverseUtil::SafeEntrancePoint(savegame->GetPlayerLocation()));
                 ss->AddUnit(un);
@@ -735,6 +741,9 @@ static void pushShipToFleet(bool active,
     } else {
         VS_LOG(trace, (boost::format("Create old format player ship %1% with index %2%, faction %3% and flight group %4%") %
             filename % current_index % faction % flight_group->name));
+
+        std::cerr << (boost::format("Create old format player ship %1% with index %2%, faction %3% and flight group %4%") %
+            filename % current_index % faction % flight_group->name).str() << std::endl;
         unit = new Unit(filename.c_str(), false, faction, "player", flight_group, fgsnumber);
     }
     

@@ -1114,28 +1114,28 @@ float SaveGame::ParseSaveGame(const string &filename_p,
         FSS = ForceStarSystem;
     }
 
-    if(!quick_read) {
-    // Here we load the player fleet from serialized_xml
-        const std::string save_game_name = GetSaveGame();
-        const std::string savegame_root_dir = homedir + "/";
-        const std::string save_dir = savegame_root_dir + VSFileSystem::savedunitpath + "/" + save_game_name;
-        const std::string file_path = save_dir + "/player_fleet.json";
-        
-        std::ifstream file(file_path);
-        
-        if (!file.is_open()) {
-            VS_LOG(error, (boost::format("Failed to open player fleet file %1%. Legacy save game format.") % file_path));
-        } else {
-            std::stringstream buffer;
-            buffer << file.rdbuf();
-
-            UnitJSONFactory::ParseJSONArray(buffer.str());
-            Cockpit *cockpit = _Universe->AccessCockpit();
-
-            cockpit->UnpackUnitInfo(savedstarship);
-        }
+    if(quick_read) {
+        return credits;
     }
+
+    // Here we load the player fleet from serialized_xml
+    const std::string save_game_name = GetSaveGame();
+    const std::string savegame_root_dir = homedir + "/";
+    const std::string save_dir = savegame_root_dir + VSFileSystem::savedunitpath + "/" + save_game_name;
+    const std::string file_path = save_dir + "/player_fleet.json";
     
+    std::ifstream file(file_path);
+    
+    if (!file.is_open()) {
+        VS_LOG(debug, (boost::format("Failed to open player fleet file %1%. Legacy save game format.") % file_path));
+    } else {
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        UnitJSONFactory::ParseJSONArray(buffer.str());
+    }
+
+    Cockpit *cockpit = _Universe->AccessCockpit();
+    cockpit->UnpackUnitInfo(savedstarship);
 
     return credits;
 }

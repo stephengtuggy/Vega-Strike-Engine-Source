@@ -463,6 +463,9 @@ void Unit::Init(const char *filename,
             if (taberr <= Ok) {
                 UnitJSONFactory::ParseJSON(unitTab, true);
                 unitTab.Close();
+            } else {
+                // Tried opening the legacy save file and failed. It's a new game.
+                saved_game = false;
             }
         }
     }
