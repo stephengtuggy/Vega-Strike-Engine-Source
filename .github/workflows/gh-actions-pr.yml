@@ -47,6 +47,14 @@ jobs:
             COMPILER: 'clang'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
             allow_failure: false
+          - FROM:     'dhi.io/python:3.14.3-debian13-dev'
+            COMPILER: 'gcc'
+            preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            INSTALL_SDL3: 0
+            INSTALL_SDL3_IMAGE: 0
+            allow_failure: false
           - FROM:     'fedora:43'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
