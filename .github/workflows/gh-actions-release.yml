@@ -52,7 +52,7 @@ jobs:
             COMPILER: 'clang'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
             ARTIFACT_EXT: 'deb'
-          - FROM:     'dhi.io/python:3.14.3-debian13-dev'
+          - FROM:     'dhi.io/python:3.13.12-debian13-dev'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
             INSTALL_SDL3: 0
