@@ -36,12 +36,6 @@ jobs:
             INSTALL_SDL3: 0
             INSTALL_SDL3_IMAGE: 0
             ARTIFACT_EXT: 'tar.[xb]z*'
-          - FROM:     'debian:trixie'
-            COMPILER: 'gcc'
-            preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
-            INSTALL_SDL3: 0
-            INSTALL_SDL3_IMAGE: 0
-            ARTIFACT_EXT: 'deb'
           - FROM:     'dhi.io/python:3.13.12-debian13-dev'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
