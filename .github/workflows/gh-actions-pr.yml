@@ -27,7 +27,7 @@ jobs:
             INSTALL_SDL3: 0
             INSTALL_SDL3_IMAGE: 0
             allow_failure: false
-          - FROM:     'debian:trixie'
+          - FROM:     'dhi.io/python:3.13-debian13-dev'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
             INSTALL_GTEST: 1
