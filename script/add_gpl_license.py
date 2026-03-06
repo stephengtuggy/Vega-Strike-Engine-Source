@@ -277,6 +277,8 @@ def upsert_license_header(filepath: Path) -> None:
     license_header_commented: str = ''
     license_header_uncommented_lines: list[str] = []
     in_license_header_comment: bool = False
+    start_year: str = "2001"
+    current_year: str = datetime.now(timezone.utc).strftime("%Y")
 
     with filepath.open('r') as input_file:
         with NamedTemporaryFile('w', delete=False, newline='\n') as output_file:
@@ -334,11 +336,18 @@ def upsert_license_header(filepath: Path) -> None:
             copyright_notice: str = ''
             at_file_regex = re.compile(r"^\s*@file\s*:\s*" + filepath.name + r"$")
             if len(license_header_uncommented_lines) == 0:
-                print(f"Copyright header at top of file '{filepath}' missing at least the last half")
-                copyright_notice += filepath.name + '\n'
-                # output_file.close()
-                # Path.unlink(Path(output_file.name))
-                # return
+                print(f"Copyright header at top of file '{filepath}' missing at least the last half. Adding")
+                copyright_notice += filepath.name
+                copyright_notice += "\n\nVega Strike - Space Simulation, Combat and Trading\nCopyright (C) 2001-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
+                copyright_notice += LICENSE_TEXT
+                output_file.write(comment_block(copyright_notice, script_like_file))
+                output_file.write(input_file.read())
+                output_file.close()
+                # Copy original file attributes and permissions to temp file
+                copystat(filepath, output_file.name)
+                # Move temp file into place
+                move(output_file.name, filepath)
+                return
             elif at_file_regex.match(license_header_uncommented_lines[0]):
                 copyright_notice += license_header_uncommented_lines[0] + '\n'
                 if len(license_header_uncommented_lines) == 0:
@@ -351,7 +360,6 @@ def upsert_license_header(filepath: Path) -> None:
             elif incorporated_from_opcode_public_domain_regex_1.match('\n'.join(license_header_uncommented_lines)):
                 print(f"File '{filepath}' has 'incorporated from OPCODE' Public Domain license with a single copyright year range. Handling accordingly")
                 match_result: re.Match[str] = incorporated_from_opcode_public_domain_regex_1.match('\n'.join(license_header_uncommented_lines))
-                current_year: str = datetime.now(timezone.utc).strftime("%Y")
                 copyright_notice += filepath.name
                 copyright_notice += "\n\nCopyright (C) " + match_result.group(1) + "-" + current_year + match_result.group(2)
                 copyright_notice += "\n\nThis file is part of OPCODE - Optimized Collision Detection\n(http://www.codercorner.com/Opcode.htm) and has been\nincorporated into Vega Strike\n(https://github.com/vegastrike/Vega-Strike-Engine-Source).\n\nPublic Domain\n"
@@ -393,8 +401,6 @@ def upsert_license_header(filepath: Path) -> None:
                 # return
 
             license_header_uncommented_concat = '\n'.join(license_header_uncommented_lines)
-            start_year: str = "2001"
-            current_year: str = datetime.now(timezone.utc).strftime("%Y")
             copyright_notice += "\nVega Strike - Space Simulation, Combat and Trading\nCopyright (C) "
 
             if COPYRIGHT_NOTICE_YEAR_RANGE.match(license_header_uncommented_concat):
