@@ -247,14 +247,14 @@ def upsert_license_header(filepath: Path) -> None:
                 if is_start_of_a_comment(second_line, script_like_file):
                     license_header_commented += second_line
                     in_license_header_comment = True
-                    license_header_uncommented_lines += uncomment_start(second_line, script_like_file)
+                    license_header_uncommented_lines.append(uncomment_start(second_line, script_like_file))
                 elif not second_line:
                     third_line: str = input_file.readline()
                     if is_start_of_a_comment(third_line, script_like_file):
                         output_file.write(second_line)
                         license_header_commented += third_line
                         in_license_header_comment = True
-                        license_header_uncommented_lines += uncomment_start(third_line, script_like_file)
+                        license_header_uncommented_lines.append(uncomment_start(third_line, script_like_file))
                     else:
                         already_read_lines = third_line
                 else:
@@ -266,14 +266,14 @@ def upsert_license_header(filepath: Path) -> None:
                 if is_start_of_a_comment(second_line, script_like_file):
                     license_header_commented += second_line
                     in_license_header_comment = True
-                    license_header_uncommented_lines += uncomment_start(second_line, script_like_file)
+                    license_header_uncommented_lines.append(uncomment_start(second_line, script_like_file))
                 elif not second_line:
                     third_line: str = input_file.readline()
                     if is_start_of_a_comment(third_line, script_like_file):
                         output_file.write(second_line)
                         license_header_commented += third_line
                         in_license_header_comment = True
-                        license_header_uncommented_lines += uncomment_start(third_line, script_like_file)
+                        license_header_uncommented_lines.append(uncomment_start(third_line, script_like_file))
                     else:
                         already_read_lines = third_line
                 else:
@@ -282,7 +282,7 @@ def upsert_license_header(filepath: Path) -> None:
             elif is_start_of_a_comment(first_line, script_like_file):
                 license_header_commented += first_line
                 in_license_header_comment = True
-                license_header_uncommented_lines += uncomment_start(first_line, script_like_file)
+                license_header_uncommented_lines.append(uncomment_start(first_line, script_like_file))
 
             else:
                 already_read_lines = first_line
@@ -301,12 +301,12 @@ def upsert_license_header(filepath: Path) -> None:
 
                 elif is_middle_of_a_comment(current_line, script_like_file):
                     license_header_commented += current_line
-                    license_header_uncommented_lines += uncomment_middle(current_line, script_like_file)
+                    license_header_uncommented_lines.append(uncomment_middle(current_line, script_like_file))
 
                 elif is_end_of_a_comment(current_line, script_like_file):
                     # We've reached the end of the initial comment block
                     license_header_commented += current_line
-                    license_header_uncommented_lines += uncomment_end(current_line, script_like_file)
+                    license_header_uncommented_lines.append(uncomment_end(current_line, script_like_file))
                     in_license_header_comment = False
                     break
 
