@@ -325,10 +325,10 @@ def upsert_license_header(filepath: Path) -> None:
                     in_license_header_comment = False
                     break
 
-            while license_header_uncommented_lines[0] == '':
+            while len(license_header_uncommented_lines) > 0 and license_header_uncommented_lines[0] == '':
                 license_header_uncommented_lines.pop(0)
 
-            if license_header_uncommented_lines[0] != filepath.name:
+            if len(license_header_uncommented_lines) == 0 or license_header_uncommented_lines[0] != filepath.name:
                 print(f"Header at top of file {filepath} does not start with filename")
                 output_file.close()
                 Path.unlink(Path(output_file.name))
@@ -336,8 +336,9 @@ def upsert_license_header(filepath: Path) -> None:
             else:
                 output_file.write(filepath.name)
                 license_header_uncommented_lines.pop(0)
-                if not license_header_uncommented_lines[0]:
-                    output_file.write(filepath.name)
+                if len(license_header_uncommented_lines) == 0:
+                    pass
+                elif not license_header_uncommented_lines[0]:
                     license_header_uncommented_lines.pop(0)
 
             license_header_uncommented_concat = '\n'.join(license_header_uncommented_lines)
@@ -393,7 +394,7 @@ def upsert_license_header(filepath: Path) -> None:
                 Path.unlink(Path(output_file.name))
                 return
 
-            while license_header_uncommented_lines[0] == '':
+            while len(license_header_uncommented_lines) > 0 and license_header_uncommented_lines[0] == '':
                 license_header_uncommented_lines.pop(0)
             copyright_notice += '\n\n'
             if LICENSE_TEXT_REGEX.match('\n'.join(license_header_uncommented_lines)):
