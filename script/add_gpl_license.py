@@ -123,35 +123,18 @@ Original development team: As listed in the AUTHORS file. Specifically: ([\w\s.,
 Current development team: Roy Falk, Benjamen R\. Meyer, Stephen G\. Tuggy
 """)
 
-SPECIFICALLY = 'Original development team: As listed in the AUTHORS file. Specifically:'
-
 # Characters to use for the start, middle and end of a comment block
 C_LIKE_COMMENT = ['/*', ' *', ' */', '/**', '*', '*/']
 C_LIKE_COMMENT_BLOCK_START_REGEX = re.compile(r'^/\*+(.*)\r?\n')
 C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX = re.compile(r'^\s*\**\s*(.*)\r?\n')
 C_LIKE_COMMENT_BLOCK_END_REGEX = re.compile(r'^\s*(.*)\s*\*/\r?\n')
-C_LIKE_COMMENT_BLOCK_REGEX = re.compile(r'^/\*+(.*)\r?\n(\s*\**\s*.*\r?\n)*\s*(.*)\s*\*/\r?\n')
 C_LIKE_INDIVIDUAL_COMMENT_REGEX = re.compile(r'^\s*//\s*(.*)$')
-C_LIKE_INDIVIDUALLY_COMMENTED_BLOCK_REGEX = re.compile(r'^(\s*//\s*.*\r?\n)+')
 C_LIKE_BASIC_OFFSET_HEADER_COMMENT_REGEX = re.compile(r'^\s*//\s*-\*-\s*mode:\s*(.*)$')
 
 SCRIPT_LIKE_COMMENT = ['##', '#', '#']
 SCRIPT_LIKE_COMMENT_REGEX = re.compile(r'^\s*#+\s*(.*)$')
 
 SHEBANG_REGEX = re.compile(r'^#!(.*)$')
-
-COMMENTS_BY_FILE_SUFFIX = {
-    '.c': C_LIKE_COMMENT,
-    '.cpp': C_LIKE_COMMENT,
-    '.h': C_LIKE_COMMENT,
-    '.hpp': C_LIKE_COMMENT,
-    '.h.in': C_LIKE_COMMENT,
-    '.py': SCRIPT_LIKE_COMMENT,
-    '.cmake': SCRIPT_LIKE_COMMENT,
-    '.txt': SCRIPT_LIKE_COMMENT,
-    '.sh': SCRIPT_LIKE_COMMENT,
-    '.ps1': SCRIPT_LIKE_COMMENT,
-}
 
 C_LIKE_COMMENTS = ['.c', '.cpp', '.h', '.hpp', '.h.in']
 SCRIPT_LIKE_COMMENTS = ['.py', '.cmake', '.txt', '.sh', '.ps1']
