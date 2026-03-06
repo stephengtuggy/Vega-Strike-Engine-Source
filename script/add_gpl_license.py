@@ -437,7 +437,6 @@ def upsert_license_header(filepath: Path) -> None:
                 for i in range(0, copyright_notice.count('\n')):
                     license_header_uncommented_lines.pop(0)
 
-                copyright_notice += '\n\n'
                 copyright_notice += LICENSE_TEXT
 
                 output_file.write(comment_block(copyright_notice, script_like_file) + '\n')
@@ -471,7 +470,6 @@ def upsert_license_header(filepath: Path) -> None:
                 for i in range(0, copyright_notice.count('\n')):
                     license_header_uncommented_lines.pop(0)
 
-                copyright_notice += '\n\n'
                 copyright_notice += LICENSE_TEXT
 
                 output_file.write(comment_block(copyright_notice, script_like_file) + '\n')
@@ -507,7 +505,6 @@ def upsert_license_header(filepath: Path) -> None:
                 for i in range(0, copyright_notice.count('\n')):
                     license_header_uncommented_lines.pop(0)
 
-                copyright_notice += '\n\n'
                 copyright_notice += LICENSE_TEXT
 
                 output_file.write(comment_block(copyright_notice, script_like_file) + '\n')
@@ -543,7 +540,6 @@ def upsert_license_header(filepath: Path) -> None:
                 for i in range(0, copyright_notice.count('\n')):
                     license_header_uncommented_lines.pop(0)
 
-                copyright_notice += '\n\n'
                 copyright_notice += LICENSE_TEXT
 
                 output_file.write(comment_block(copyright_notice, script_like_file) + '\n')
