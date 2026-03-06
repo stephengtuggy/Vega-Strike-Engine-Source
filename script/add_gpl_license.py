@@ -560,14 +560,8 @@ def upsert_license_header(filepath: Path) -> None:
 
             while len(license_header_uncommented_lines) > 0 and license_header_uncommented_lines[0] == '':
                 license_header_uncommented_lines.pop(0)
-            copyright_notice += '\n\n'
-            if LICENSE_TEXT_REGEX.match('\n'.join(license_header_uncommented_lines)):
-                copyright_notice += LICENSE_TEXT
-            else:
-                print(f"Last few lines of copyright header in file '{filepath}' did not match expected value")
-                output_file.close()
-                Path.unlink(Path(output_file.name))
-                return
+
+            copyright_notice += LICENSE_TEXT
 
             output_file.write(comment_block(copyright_notice, script_like_file) + '\n')
             if already_read_lines:
