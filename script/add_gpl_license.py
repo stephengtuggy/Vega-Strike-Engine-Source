@@ -248,7 +248,7 @@ def upsert_license_header(filepath: Path) -> None:
                     license_header_commented += second_line
                     in_license_header_comment = True
                     license_header_uncommented_lines.append(uncomment_start(second_line, script_like_file))
-                elif not second_line:
+                elif second_line == '\n':
                     third_line: str = input_file.readline()
                     if is_start_of_a_comment(third_line, script_like_file):
                         output_file.write(second_line)
@@ -267,7 +267,7 @@ def upsert_license_header(filepath: Path) -> None:
                     license_header_commented += second_line
                     in_license_header_comment = True
                     license_header_uncommented_lines.append(uncomment_start(second_line, script_like_file))
-                elif not second_line:
+                elif second_line == '\n':
                     third_line: str = input_file.readline()
                     if is_start_of_a_comment(third_line, script_like_file):
                         output_file.write(second_line)
@@ -334,7 +334,7 @@ def upsert_license_header(filepath: Path) -> None:
                 copyright_notice += license_header_uncommented_lines[0] + '\n'
                 if len(license_header_uncommented_lines) == 0:
                     pass
-                elif not license_header_uncommented_lines[0]:
+                elif license_header_uncommented_lines[0] == '':
                     license_header_uncommented_lines.pop(0)
             elif len(license_header_uncommented_lines) > 1 and at_file_regex.match(license_header_uncommented_lines[1]):
                 copyright_notice += license_header_uncommented_lines[0] + '\n'
@@ -393,14 +393,14 @@ def upsert_license_header(filepath: Path) -> None:
                 license_header_uncommented_lines.pop(0)
                 if len(license_header_uncommented_lines) == 0:
                     pass
-                elif not license_header_uncommented_lines[0]:
+                elif license_header_uncommented_lines[0] == '':
                     license_header_uncommented_lines.pop(0)
             else:
                 print(f"Copyright header at top of file '{filepath}' did not include filename")
                 copyright_notice += filepath.name + '\n'
                 if len(license_header_uncommented_lines) == 0:
                     pass
-                elif not license_header_uncommented_lines[0]:
+                elif license_header_uncommented_lines[0] == '':
                     license_header_uncommented_lines.pop(0)
                 # output_file.close()
                 # Path.unlink(Path(output_file.name))
