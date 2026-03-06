@@ -294,7 +294,7 @@ def upsert_license_header(filepath: Path) -> None:
             while in_license_header_comment:
                 current_line: str = input_file.readline()
 
-                if not current_line:
+                if current_line == '\n':
                     # We've reached the end of the initial comment block
                     in_license_header_comment = False
                     break
