@@ -262,7 +262,7 @@ def comment_block(block: str, script_like_file: bool) -> str:
 
 def upsert_license_header(filepath: Path) -> None:
     """Add GPL license notice at the start of the given file, if not present, or update it if present."""
-    print(f"Adding/updating license header at start of file {filepath}")
+    print(f"Adding/updating license header at start of file '{filepath}'")
 
     if not filepath.exists():
         print(f"{filepath} does not exist")
@@ -306,6 +306,9 @@ def upsert_license_header(filepath: Path) -> None:
             else:
                 pass
 
+            incorporated_from_opcode_public_domain_regex_1 = re.compile(r"^" + filepath.name + r"\n\nCopyright \([Cc]\) (\d{4})-\d{4}\s+([\w\s,.])+\n+This file is part of OPCODE - Optimized Collision Detection\n\(http://www\.codercorner\.com/Opcode\.htm\) and has been\nincorporated into Vega Strike\n\(https://github\.com/vegastrike/Vega-Strike-Engine-Source\)\.\n\nPublic Domain\n+$")
+            incorporated_from_opcode_public_domain_regex_2 = re.compile(r"^" + filepath.name + r"\n\n(Copyright \([Cc]\) \d{4}(-\d{4})?(, \d{4})*\s+([\w\s,.])+\n)+\n+This file is part of OPCODE - Optimized Collision Detection\n\(http://www\.codercorner\.com/Opcode\.htm\) and has been\nincorporated into Vega Strike\n\(https://github\.com/vegastrike/Vega-Strike-Engine-Source\)\.\n\nPublic Domain\n+$")
+
             while in_license_header_comment:
                 current_line: str = input_file.readline()
 
@@ -314,11 +317,11 @@ def upsert_license_header(filepath: Path) -> None:
                     in_license_header_comment = False
                     break
 
-                if is_middle_of_a_comment(current_line, script_like_file):
+                elif is_middle_of_a_comment(current_line, script_like_file):
                     license_header_commented += current_line
                     license_header_uncommented_lines += uncomment_middle(current_line, script_like_file)
 
-                if is_end_of_a_comment(current_line, script_like_file):
+                elif is_end_of_a_comment(current_line, script_like_file):
                     # We've reached the end of the initial comment block
                     license_header_commented += current_line
                     license_header_uncommented_lines += uncomment_end(current_line, script_like_file)
@@ -328,23 +331,71 @@ def upsert_license_header(filepath: Path) -> None:
             while len(license_header_uncommented_lines) > 0 and license_header_uncommented_lines[0] == '':
                 license_header_uncommented_lines.pop(0)
 
-            if len(license_header_uncommented_lines) == 0 or license_header_uncommented_lines[0] != filepath.name:
-                print(f"Header at top of file {filepath} does not start with filename")
+            copyright_notice: str = ''
+            at_file_regex = re.compile(r"^\s*@file\s*:\s*" + filepath.name + r"$")
+            if len(license_header_uncommented_lines) == 0:
+                print(f"Copyright header at top of file '{filepath}' missing at least the last half")
+                copyright_notice += filepath.name + '\n'
+                # output_file.close()
+                # Path.unlink(Path(output_file.name))
+                # return
+            elif at_file_regex.match(license_header_uncommented_lines[0]):
+                copyright_notice += license_header_uncommented_lines[0] + '\n'
+                if len(license_header_uncommented_lines) == 0:
+                    pass
+                elif not license_header_uncommented_lines[0]:
+                    license_header_uncommented_lines.pop(0)
+            elif len(license_header_uncommented_lines) > 1 and at_file_regex.match(license_header_uncommented_lines[1]):
+                copyright_notice += license_header_uncommented_lines[0] + '\n'
+                copyright_notice += license_header_uncommented_lines[1] + '\n'
+            elif incorporated_from_opcode_public_domain_regex_1.match('\n'.join(license_header_uncommented_lines)):
+                print(f"File '{filepath}' has 'incorporated from OPCODE' Public Domain license with a single copyright year range. Handling accordingly")
+                match_result: re.Match[str] = incorporated_from_opcode_public_domain_regex_1.match('\n'.join(license_header_uncommented_lines))
+                current_year: str = datetime.now(timezone.utc).strftime("%Y")
+                copyright_notice += filepath.name
+                copyright_notice += "\n\nCopyright (C) " + match_result.group(1) + "-" + current_year + match_result.group(2)
+                copyright_notice += "\n\nThis file is part of OPCODE - Optimized Collision Detection\n(http://www.codercorner.com/Opcode.htm) and has been\nincorporated into Vega Strike\n(https://github.com/vegastrike/Vega-Strike-Engine-Source).\n\nPublic Domain\n"
+                output_file.write(comment_block(copyright_notice, script_like_file))
+                output_file.write(input_file.read())
                 output_file.close()
-                Path.unlink(Path(output_file.name))
+                # Copy original file attributes and permissions to temp file
+                copystat(filepath, output_file.name)
+                # Move temp file into place
+                move(output_file.name, filepath)
                 return
-            else:
-                output_file.write(filepath.name)
+            elif incorporated_from_opcode_public_domain_regex_2.match('\n'.join(license_header_uncommented_lines)):
+                print(f"File '{filepath}' has 'incorporated from OPCODE' Public Domain license with a different variation of copyright year range(s). Handling accordingly")
+                copyright_notice += '\n'.join(license_header_uncommented_lines)
+                output_file.write(comment_block(copyright_notice, script_like_file))
+                output_file.write(input_file.read())
+                output_file.close()
+                # Copy original file attributes and permissions to temp file
+                copystat(filepath, output_file.name)
+                # Move temp file into place
+                move(output_file.name, filepath)
+                return
+            elif license_header_uncommented_lines[0] == filepath.name:
+                copyright_notice += filepath.name + '\n'
                 license_header_uncommented_lines.pop(0)
                 if len(license_header_uncommented_lines) == 0:
                     pass
                 elif not license_header_uncommented_lines[0]:
                     license_header_uncommented_lines.pop(0)
+            else:
+                print(f"Copyright header at top of file '{filepath}' did not include filename")
+                copyright_notice += filepath.name + '\n'
+                if len(license_header_uncommented_lines) == 0:
+                    pass
+                elif not license_header_uncommented_lines[0]:
+                    license_header_uncommented_lines.pop(0)
+                # output_file.close()
+                # Path.unlink(Path(output_file.name))
+                # return
 
             license_header_uncommented_concat = '\n'.join(license_header_uncommented_lines)
             start_year: str = "2001"
             current_year: str = datetime.now(timezone.utc).strftime("%Y")
-            copyright_notice: str = "Vega Strike - Space Simulation, Combat and Trading\nCopyright (C) "
+            copyright_notice += "\nVega Strike - Space Simulation, Combat and Trading\nCopyright (C) "
 
             if COPYRIGHT_NOTICE_YEAR_RANGE.match(license_header_uncommented_concat):
                 copyright_notice_match: re.Match[str] = COPYRIGHT_NOTICE_YEAR_RANGE.match(license_header_uncommented_concat)
@@ -389,7 +440,7 @@ def upsert_license_header(filepath: Path) -> None:
                 for i in range(0, copyright_notice.count('\n')):
                     license_header_uncommented_lines.pop(0)
             else:
-                print(f"File {filepath} did not match any of the expected copyright header patterns")
+                print(f"File '{filepath}' did not match any of the expected copyright header patterns")
                 output_file.close()
                 Path.unlink(Path(output_file.name))
                 return
