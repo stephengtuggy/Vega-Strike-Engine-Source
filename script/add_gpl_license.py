@@ -256,9 +256,9 @@ def upsert_license_header(filepath: Path) -> None:
                         in_license_header_comment = True
                         license_header_uncommented_lines += uncomment_start(third_line, script_like_file)
                     else:
-                        already_read_lines = third_line + '\n'
+                        already_read_lines = third_line
                 else:
-                    already_read_lines = second_line + '\n'
+                    already_read_lines = second_line
 
             elif not script_like_file and C_LIKE_BASIC_OFFSET_HEADER_COMMENT_REGEX.match(first_line):
                 output_file.write(first_line)
@@ -275,9 +275,9 @@ def upsert_license_header(filepath: Path) -> None:
                         in_license_header_comment = True
                         license_header_uncommented_lines += uncomment_start(third_line, script_like_file)
                     else:
-                        already_read_lines = third_line + '\n'
+                        already_read_lines = third_line
                 else:
-                    already_read_lines = second_line + '\n'
+                    already_read_lines = second_line
 
             elif is_start_of_a_comment(first_line, script_like_file):
                 license_header_commented += first_line
@@ -285,10 +285,11 @@ def upsert_license_header(filepath: Path) -> None:
                 license_header_uncommented_lines += uncomment_start(first_line, script_like_file)
 
             else:
-                already_read_lines = first_line + '\n'
+                already_read_lines = first_line
 
             incorporated_from_opcode_public_domain_regex_1 = re.compile(r"^" + filepath.name + r"\n\nCopyright \([Cc]\) (\d{4})-\d{4}\s+([\w\s,.])+\n+This file is part of OPCODE - Optimized Collision Detection\n\(http://www\.codercorner\.com/Opcode\.htm\) and has been\nincorporated into Vega Strike\n\(https://github\.com/vegastrike/Vega-Strike-Engine-Source\)\.\n\nPublic Domain\n+$", re.MULTILINE)
             incorporated_from_opcode_public_domain_regex_2 = re.compile(r"^" + filepath.name + r"\n\n(Copyright \([Cc]\) \d{4}(-\d{4})?(, \d{4})*\s+([\w\s,.])+\n)+\n+This file is part of OPCODE - Optimized Collision Detection\n\(http://www\.codercorner\.com/Opcode\.htm\) and has been\nincorporated into Vega Strike\n\(https://github\.com/vegastrike/Vega-Strike-Engine-Source\)\.\n\nPublic Domain\n+$", re.MULTILINE)
+            david_wales_style_copyright_regex = re.compile(r"^" + filepath.name + r"\n\n(Copyright \([Cc]\) \d{4}(-\d{4})?(, \d{4})*\s+([\w\s,.])+\n)+\n+https://github\.com/vegastrike/Vega-Strike-Engine-Source\n\nThis file is part of Vega Strike\.\n\nVega Strike is free software: you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation, either version [23] of the License, or\n\(at your option\) any later version\.\n\nVega Strike is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE\.\s+See the\nGNU General Public License for more details\.\n\nYou should have received a copy of the GNU General Public License\nalong with Vega Strike\.\s+If not, see <https://www\.gnu\.org/licenses/>\.$", re.MULTILINE)
 
             while in_license_header_comment:
                 current_line: str = input_file.readline()
@@ -357,6 +358,27 @@ def upsert_license_header(filepath: Path) -> None:
             elif incorporated_from_opcode_public_domain_regex_2.match('\n'.join(license_header_uncommented_lines)):
                 print(f"File '{filepath}' has 'incorporated from OPCODE' Public Domain license with a different variation of copyright year range(s). Handling accordingly")
                 copyright_notice += '\n'.join(license_header_uncommented_lines)
+                output_file.write(comment_block(copyright_notice, script_like_file) + '\n')
+                if already_read_lines:
+                    output_file.write(already_read_lines)
+                output_file.write(input_file.read())
+                output_file.close()
+                # Copy original file attributes and permissions to temp file
+                copystat(filepath, output_file.name)
+                # Move temp file into place
+                move(output_file.name, filepath)
+                return
+            elif david_wales_style_copyright_regex.match('\n'.join(license_header_uncommented_lines)):
+                print(f"File '{filepath}' has David-Wales-style copyright header. Handling accordingly")
+                match_result: re.Match[str] = david_wales_style_copyright_regex.match('\n'.join(license_header_uncommented_lines))
+                copyright_notice += filepath.name + '\n\n'
+                copyright_notice += "Vega Strike - Space Simulation, Combat and Trading\n"
+                copyright_notice += "Copyright (C) 2001-" + current_year + " The Vega Strike Contributors:\n"
+                copyright_notice += "Project creator: Daniel Horn\n"
+                copyright_notice += "Original development team: As listed in the AUTHORS file\n"
+                copyright_notice += "Current development team: Roy Falk, Benjamen R. Meyer,\n"
+                copyright_notice += "Stephen G. Tuggy, David Wales\n"
+                copyright_notice += LICENSE_TEXT
                 output_file.write(comment_block(copyright_notice, script_like_file) + '\n')
                 if already_read_lines:
                     output_file.write(already_read_lines)
