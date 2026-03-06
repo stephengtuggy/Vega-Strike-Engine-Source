@@ -336,9 +336,12 @@ def upsert_license_header(filepath: Path) -> None:
                     pass
                 elif license_header_uncommented_lines[0] == '':
                     license_header_uncommented_lines.pop(0)
-            elif len(license_header_uncommented_lines) > 1 and at_file_regex.match(license_header_uncommented_lines[1]):
-                copyright_notice += license_header_uncommented_lines[0] + '\n'
-                copyright_notice += license_header_uncommented_lines[1] + '\n'
+            elif len(license_header_uncommented_lines) > 1 and license_header_uncommented_lines[0] == '====================================' and at_file_regex.match(license_header_uncommented_lines[1]):
+                copyright_notice += license_header_uncommented_lines.pop(0) + '\n'
+                copyright_notice += license_header_uncommented_lines.pop(0) + '\n'
+                while license_header_uncommented_lines[0] != '====================================':
+                    copyright_notice += license_header_uncommented_lines.pop(0) + '\n'
+                copyright_notice += license_header_uncommented_lines.pop(0) + '\n'
             elif incorporated_from_opcode_public_domain_regex_1.match('\n'.join(license_header_uncommented_lines)):
                 print(f"File '{filepath}' has 'incorporated from OPCODE' Public Domain license with a single copyright year range. Handling accordingly")
                 match_result: re.Match[str] = incorporated_from_opcode_public_domain_regex_1.match('\n'.join(license_header_uncommented_lines))
