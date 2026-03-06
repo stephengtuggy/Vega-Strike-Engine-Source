@@ -276,7 +276,6 @@ def upsert_license_header(filepath: Path) -> None:
     script_like_file: bool = suffix in SCRIPT_LIKE_COMMENTS
     license_header_commented: str = ''
     license_header_uncommented_lines: list[str] = []
-    found_gpl: bool = False
     in_license_header_comment: bool = False
 
     with filepath.open('r') as input_file:
@@ -315,10 +314,6 @@ def upsert_license_header(filepath: Path) -> None:
                     in_license_header_comment = False
                     break
 
-                # Check for GPL text snippet in each line in the initial comment block.
-                if 'GENERAL PUBLIC LICENSE' in current_line or 'General Public License' in current_line:
-                    found_gpl = True
-
                 if is_middle_of_a_comment(current_line, script_like_file):
                     license_header_commented += current_line
                     license_header_uncommented_lines += uncomment_middle(current_line, script_like_file)
@@ -329,12 +324,6 @@ def upsert_license_header(filepath: Path) -> None:
                     license_header_uncommented_lines += uncomment_end(current_line, script_like_file)
                     in_license_header_comment = False
                     break
-
-            if not found_gpl:
-                print(f"Did not find GPL text in header at top of file: {filepath}")
-                output_file.close()
-                Path.unlink(Path(output_file.name))
-                return
 
             while license_header_uncommented_lines[0] == '':
                 license_header_uncommented_lines.pop(0)
@@ -407,7 +396,7 @@ def upsert_license_header(filepath: Path) -> None:
             while license_header_uncommented_lines[0] == '':
                 license_header_uncommented_lines.pop(0)
             copyright_notice += '\n\n'
-            if '\n'.join(license_header_uncommented_lines) == LICENSE_TEXT:
+            if LICENSE_TEXT_REGEX.match('\n'.join(license_header_uncommented_lines)):
                 copyright_notice += LICENSE_TEXT
             else:
                 print(f"Last few lines of copyright header in file '{filepath}' did not match expected value")
