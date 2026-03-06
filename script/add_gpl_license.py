@@ -376,8 +376,7 @@ def upsert_license_header(filepath: Path) -> None:
                 copyright_notice += "Copyright (C) 2001-" + current_year + " The Vega Strike Contributors:\n"
                 copyright_notice += "Project creator: Daniel Horn\n"
                 copyright_notice += "Original development team: As listed in the AUTHORS file\n"
-                copyright_notice += "Current development team: Roy Falk, Benjamen R. Meyer,\n"
-                copyright_notice += "Stephen G. Tuggy, David Wales\n"
+                copyright_notice += "Current development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
                 copyright_notice += LICENSE_TEXT
                 output_file.write(comment_block(copyright_notice, script_like_file) + '\n')
                 if already_read_lines:
