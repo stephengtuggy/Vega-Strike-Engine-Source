@@ -436,6 +436,17 @@ def upsert_license_header(filepath: Path) -> None:
 
                 for i in range(0, copyright_notice.count('\n')):
                     license_header_uncommented_lines.pop(0)
+
+                output_file.write(comment_block(copyright_notice, script_like_file) + '\n')
+                if already_read_lines:
+                    output_file.write(already_read_lines)
+                output_file.write(input_file.read())
+                output_file.close()
+                # Copy original file attributes and permissions to temp file
+                copystat(filepath, output_file.name)
+                # Move temp file into place
+                move(output_file.name, filepath)
+                return
             elif COPYRIGHT_NOTICE_SINGLE_YEAR.match(license_header_uncommented_concat):
                 copyright_notice_match: re.Match[str] = COPYRIGHT_NOTICE_SINGLE_YEAR.match(license_header_uncommented_concat)
                 start_year = copyright_notice_match.group(2)
@@ -456,6 +467,17 @@ def upsert_license_header(filepath: Path) -> None:
 
                 for i in range(0, copyright_notice.count('\n')):
                     license_header_uncommented_lines.pop(0)
+
+                output_file.write(comment_block(copyright_notice, script_like_file) + '\n')
+                if already_read_lines:
+                    output_file.write(already_read_lines)
+                output_file.write(input_file.read())
+                output_file.close()
+                # Copy original file attributes and permissions to temp file
+                copystat(filepath, output_file.name)
+                # Move temp file into place
+                move(output_file.name, filepath)
+                return
             elif COPYRIGHT_NOTICE_WITH_SPECIFICALLY_YEAR_RANGE.match(license_header_uncommented_concat):
                 copyright_notice_match: re.Match[str] = COPYRIGHT_NOTICE_WITH_SPECIFICALLY_YEAR_RANGE.match(license_header_uncommented_concat)
                 start_year = copyright_notice_match.group(2)
@@ -478,6 +500,17 @@ def upsert_license_header(filepath: Path) -> None:
 
                 for i in range(0, copyright_notice.count('\n')):
                     license_header_uncommented_lines.pop(0)
+
+                output_file.write(comment_block(copyright_notice, script_like_file) + '\n')
+                if already_read_lines:
+                    output_file.write(already_read_lines)
+                output_file.write(input_file.read())
+                output_file.close()
+                # Copy original file attributes and permissions to temp file
+                copystat(filepath, output_file.name)
+                # Move temp file into place
+                move(output_file.name, filepath)
+                return
             elif COPYRIGHT_NOTICE_WITH_SPECIFICALLY_SINGLE_YEAR.match(license_header_uncommented_concat):
                 copyright_notice_match: re.Match[str] = COPYRIGHT_NOTICE_WITH_SPECIFICALLY_SINGLE_YEAR.match(license_header_uncommented_concat)
                 start_year = copyright_notice_match.group(2)
@@ -500,6 +533,17 @@ def upsert_license_header(filepath: Path) -> None:
 
                 for i in range(0, copyright_notice.count('\n')):
                     license_header_uncommented_lines.pop(0)
+
+                output_file.write(comment_block(copyright_notice, script_like_file) + '\n')
+                if already_read_lines:
+                    output_file.write(already_read_lines)
+                output_file.write(input_file.read())
+                output_file.close()
+                # Copy original file attributes and permissions to temp file
+                copystat(filepath, output_file.name)
+                # Move temp file into place
+                move(output_file.name, filepath)
+                return
             else:
                 print(f"File '{filepath}' did not match any of the expected copyright header patterns")
                 output_file.close()
