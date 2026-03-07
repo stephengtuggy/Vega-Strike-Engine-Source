@@ -153,6 +153,12 @@ def is_start_of_a_comment(line: str, script_like_file: bool) -> bool:
         return C_LIKE_COMMENT_BLOCK_START_REGEX.match(line) or C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line)
 
 
+def is_start_of_a_block_comment(line: str, script_like_file: bool) -> bool:
+    if script_like_file:
+        return False
+    else:
+        return C_LIKE_COMMENT_BLOCK_START_REGEX.match(line)
+
 def is_middle_of_a_comment(line: str, script_like_file: bool) -> bool:
     if script_like_file:
         return SCRIPT_LIKE_COMMENT_REGEX.match(line)
@@ -252,6 +258,7 @@ def upsert_license_header(filepath: Path) -> None:
     license_header_commented: str = ''
     license_header_uncommented_lines: list[str] = []
     in_license_header_comment: bool = False
+    individually_commented: bool = False
     start_year: str = "2001"
     current_year: str = datetime.now(timezone.utc).strftime("%Y")
     already_read_lines: str = ""
@@ -267,6 +274,10 @@ def upsert_license_header(filepath: Path) -> None:
                     license_header_commented += second_line
                     in_license_header_comment = True
                     license_header_uncommented_lines.append(uncomment_start(second_line, script_like_file))
+                    if is_start_of_a_block_comment(second_line, script_like_file):
+                        individually_commented = False
+                    else:
+                        individually_commented = True
                 elif second_line == '\n':
                     third_line: str = input_file.readline()
                     if is_start_of_a_comment(third_line, script_like_file):
@@ -274,6 +285,10 @@ def upsert_license_header(filepath: Path) -> None:
                         license_header_commented += third_line
                         in_license_header_comment = True
                         license_header_uncommented_lines.append(uncomment_start(third_line, script_like_file))
+                        if is_start_of_a_block_comment(third_line, script_like_file):
+                            individually_commented = False
+                        else:
+                            individually_commented = True
                     else:
                         already_read_lines = third_line
                 else:
@@ -286,6 +301,10 @@ def upsert_license_header(filepath: Path) -> None:
                     license_header_commented += second_line
                     in_license_header_comment = True
                     license_header_uncommented_lines.append(uncomment_start(second_line, script_like_file))
+                    if is_start_of_a_block_comment(second_line, script_like_file):
+                        individually_commented = False
+                    else:
+                        individually_commented = True
                 elif second_line == '\n':
                     third_line: str = input_file.readline()
                     if is_start_of_a_comment(third_line, script_like_file):
@@ -293,6 +312,10 @@ def upsert_license_header(filepath: Path) -> None:
                         license_header_commented += third_line
                         in_license_header_comment = True
                         license_header_uncommented_lines.append(uncomment_start(third_line, script_like_file))
+                        if is_start_of_a_block_comment(third_line, script_like_file):
+                            individually_commented = False
+                        else:
+                            individually_commented = True
                     else:
                         already_read_lines = third_line
                 else:
@@ -302,6 +325,10 @@ def upsert_license_header(filepath: Path) -> None:
                 license_header_commented += first_line
                 in_license_header_comment = True
                 license_header_uncommented_lines.append(uncomment_start(first_line, script_like_file))
+                if is_start_of_a_block_comment(first_line, script_like_file):
+                    individually_commented = False
+                else:
+                    individually_commented = True
 
             else:
                 already_read_lines = first_line
@@ -313,21 +340,35 @@ def upsert_license_header(filepath: Path) -> None:
             while in_license_header_comment:
                 current_line: str = input_file.readline()
 
-                if current_line == '\n':
-                    # We've reached the end of the initial comment block
-                    in_license_header_comment = False
-                    break
+                if script_like_file:
+                    if current_line == '\n':
+                        # We've reached the end of the initial comment block
+                        in_license_header_comment = False
+                        break
 
-                elif is_end_of_a_comment(current_line, script_like_file):
-                    # We've reached the end of the initial comment block
-                    license_header_commented += current_line
-                    license_header_uncommented_lines.append(uncomment_end(current_line, script_like_file))
-                    in_license_header_comment = False
-                    break
+                    elif is_middle_of_a_comment(current_line, script_like_file):
+                        license_header_commented += current_line
+                        license_header_uncommented_lines.append(uncomment_middle(current_line, script_like_file))
+                elif individually_commented:
+                    if current_line == '\n':
+                        # We've reached the end of the initial comment block
+                        in_license_header_comment = False
+                        break
 
-                elif is_middle_of_a_comment(current_line, script_like_file):
-                    license_header_commented += current_line
-                    license_header_uncommented_lines.append(uncomment_middle(current_line, script_like_file))
+                    elif is_middle_of_a_comment(current_line, script_like_file):
+                        license_header_commented += current_line
+                        license_header_uncommented_lines.append(uncomment_middle(current_line, script_like_file))
+                else:
+                    if is_end_of_a_comment(current_line, script_like_file):
+                        # We've reached the end of the initial comment block
+                        license_header_commented += current_line
+                        license_header_uncommented_lines.append(uncomment_end(current_line, script_like_file))
+                        in_license_header_comment = False
+                        break
+
+                    else:
+                        license_header_commented += current_line
+                        license_header_uncommented_lines.append(uncomment_middle(current_line, script_like_file))
 
             while len(license_header_uncommented_lines) > 0 and license_header_uncommented_lines[0] == '':
                 license_header_uncommented_lines.pop(0)
@@ -351,10 +392,7 @@ def upsert_license_header(filepath: Path) -> None:
                 return
             elif at_file_regex.match(license_header_uncommented_lines[0]):
                 copyright_notice += license_header_uncommented_lines[0] + '\n'
-                if len(license_header_uncommented_lines) == 0:
-                    pass
-                elif license_header_uncommented_lines[0] == '':
-                    license_header_uncommented_lines.pop(0)
+                license_header_uncommented_lines.pop(0)
             elif len(license_header_uncommented_lines) > 1 and license_header_uncommented_lines[0] == '====================================' and at_file_regex.match(license_header_uncommented_lines[1]):
                 copyright_notice += license_header_uncommented_lines.pop(0) + '\n'
                 copyright_notice += license_header_uncommented_lines.pop(0) + '\n'
@@ -439,7 +477,7 @@ def upsert_license_header(filepath: Path) -> None:
                 else:
                     copyright_notice += start_year + "-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
 
-                for i in range(0, copyright_notice.count('\n')):
+                for i in range(0, copyright_notice_match.group(0).count('\n')):
                     license_header_uncommented_lines.pop(0)
             elif COPYRIGHT_NOTICE_YEAR_RANGE_2.match(license_header_uncommented_concat):
                 copyright_notice_match: re.Match[str] = COPYRIGHT_NOTICE_YEAR_RANGE_2.match(license_header_uncommented_concat)
@@ -449,7 +487,7 @@ def upsert_license_header(filepath: Path) -> None:
                 else:
                     copyright_notice += start_year + "-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
 
-                for i in range(0, copyright_notice.count('\n')):
+                for i in range(0, copyright_notice_match.group(0).count('\n')):
                     license_header_uncommented_lines.pop(0)
 
                 # copyright_notice += LICENSE_TEXT
@@ -472,7 +510,7 @@ def upsert_license_header(filepath: Path) -> None:
                 else:
                     copyright_notice += start_year + "-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
 
-                for i in range(0, copyright_notice.count('\n')):
+                for i in range(0, copyright_notice_match.group(0).count('\n')):
                     license_header_uncommented_lines.pop(0)
             elif COPYRIGHT_NOTICE_SINGLE_YEAR_2.match(license_header_uncommented_concat):
                 copyright_notice_match: re.Match[str] = COPYRIGHT_NOTICE_SINGLE_YEAR_2.match(license_header_uncommented_concat)
@@ -482,7 +520,7 @@ def upsert_license_header(filepath: Path) -> None:
                 else:
                     copyright_notice += start_year + "-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
 
-                for i in range(0, copyright_notice.count('\n')):
+                for i in range(0, copyright_notice_match.group(0).count('\n')):
                     license_header_uncommented_lines.pop(0)
 
                 # copyright_notice += LICENSE_TEXT
@@ -506,7 +544,7 @@ def upsert_license_header(filepath: Path) -> None:
                 else:
                     copyright_notice += start_year + "-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: " + specifically_clause + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
 
-                for i in range(0, copyright_notice.count('\n')):
+                for i in range(0, copyright_notice_match.group(0).count('\n')):
                     license_header_uncommented_lines.pop(0)
             elif COPYRIGHT_NOTICE_WITH_SPECIFICALLY_YEAR_RANGE_2.match(license_header_uncommented_concat):
                 copyright_notice_match: re.Match[str] = COPYRIGHT_NOTICE_WITH_SPECIFICALLY_YEAR_RANGE_2.match(license_header_uncommented_concat)
@@ -517,7 +555,7 @@ def upsert_license_header(filepath: Path) -> None:
                 else:
                     copyright_notice += start_year + "-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: " + specifically_clause + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
 
-                for i in range(0, copyright_notice.count('\n')):
+                for i in range(0, copyright_notice_match.group(0).count('\n')):
                     license_header_uncommented_lines.pop(0)
 
                 # copyright_notice += LICENSE_TEXT
@@ -541,7 +579,7 @@ def upsert_license_header(filepath: Path) -> None:
                 else:
                     copyright_notice += start_year + "-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: " + specifically_clause + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
 
-                for i in range(0, copyright_notice.count('\n')):
+                for i in range(0, copyright_notice_match.group(0).count('\n')):
                     license_header_uncommented_lines.pop(0)
             elif COPYRIGHT_NOTICE_WITH_SPECIFICALLY_SINGLE_YEAR_2.match(license_header_uncommented_concat):
                 copyright_notice_match: re.Match[str] = COPYRIGHT_NOTICE_WITH_SPECIFICALLY_SINGLE_YEAR_2.match(license_header_uncommented_concat)
@@ -552,7 +590,7 @@ def upsert_license_header(filepath: Path) -> None:
                 else:
                     copyright_notice += start_year + "-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: " + specifically_clause + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
 
-                for i in range(0, copyright_notice.count('\n')):
+                for i in range(0, copyright_notice_match.group(0).count('\n')):
                     license_header_uncommented_lines.pop(0)
 
                 # copyright_notice += LICENSE_TEXT
