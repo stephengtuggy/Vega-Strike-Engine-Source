@@ -168,39 +168,54 @@ def is_end_of_a_comment(line: str, script_like_file: bool) -> bool:
 
 
 def uncomment_start(line: str, script_like_file: bool) -> str:
-    if script_like_file and SCRIPT_LIKE_COMMENT_REGEX.match(line):
-        return SCRIPT_LIKE_COMMENT_REGEX.match(line).group(1)
-    elif C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line):
-        return C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line).group(1)
-    elif C_LIKE_COMMENT_BLOCK_START_REGEX.match(line):
-        return C_LIKE_COMMENT_BLOCK_START_REGEX.match(line).group(1)
+    if script_like_file:
+        if SCRIPT_LIKE_COMMENT_REGEX.match(line):
+            return SCRIPT_LIKE_COMMENT_REGEX.match(line).group(1)
+        else:
+            print(f"'{line}' is not the start of a comment")
+            return line
     else:
-        print(f"'{line}' is not the start of a comment")
-        return line
+        if C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line):
+            return C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line).group(1)
+        elif C_LIKE_COMMENT_BLOCK_START_REGEX.match(line):
+            return C_LIKE_COMMENT_BLOCK_START_REGEX.match(line).group(1)
+        else:
+            print(f"'{line}' is not the start of a comment")
+            return line
 
 
 def uncomment_middle(line: str, script_like_file: bool) -> str:
-    if script_like_file and SCRIPT_LIKE_COMMENT_REGEX.match(line):
-        return SCRIPT_LIKE_COMMENT_REGEX.match(line).group(1)
-    elif C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line):
-        return C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line).group(1)
-    elif C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX.match(line):
-        return C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX.match(line).group(1)
+    if script_like_file:
+        if SCRIPT_LIKE_COMMENT_REGEX.match(line):
+            return SCRIPT_LIKE_COMMENT_REGEX.match(line).group(1)
+        else:
+            print(f"'{line}' is not the middle of a comment")
+            return line
     else:
-        print(f"'{line}' is not the middle of a comment")
-        return line
+        if C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line):
+            return C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line).group(1)
+        elif C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX.match(line):
+            return C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX.match(line).group(1)
+        else:
+            print(f"'{line}' is not the middle of a comment")
+            return line
 
 
 def uncomment_end(line: str, script_like_file: bool) -> str:
-    if script_like_file and SCRIPT_LIKE_COMMENT_REGEX.match(line):
-        return SCRIPT_LIKE_COMMENT_REGEX.match(line).group(1)
-    elif C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line):
-        return C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line).group(1)
-    elif C_LIKE_COMMENT_BLOCK_END_REGEX.match(line):
-        return C_LIKE_COMMENT_BLOCK_END_REGEX.match(line).group(1)
+    if script_like_file:
+        if SCRIPT_LIKE_COMMENT_REGEX.match(line):
+            return SCRIPT_LIKE_COMMENT_REGEX.match(line).group(1)
+        else:
+            print(f"'{line}' is not the end of a comment")
+            return line
     else:
-        print(f"'{line}' is not the end of a comment")
-        return line
+        if C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line):
+            return C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line).group(1)
+        elif C_LIKE_COMMENT_BLOCK_END_REGEX.match(line):
+            return C_LIKE_COMMENT_BLOCK_END_REGEX.match(line).group(1)
+        else:
+            print(f"'{line}' is not the end of a comment")
+            return line
 
 
 def comment_block(block: str, script_like_file: bool) -> str:
@@ -303,16 +318,16 @@ def upsert_license_header(filepath: Path) -> None:
                     in_license_header_comment = False
                     break
 
-                elif is_middle_of_a_comment(current_line, script_like_file):
-                    license_header_commented += current_line
-                    license_header_uncommented_lines.append(uncomment_middle(current_line, script_like_file))
-
                 elif is_end_of_a_comment(current_line, script_like_file):
                     # We've reached the end of the initial comment block
                     license_header_commented += current_line
                     license_header_uncommented_lines.append(uncomment_end(current_line, script_like_file))
                     in_license_header_comment = False
                     break
+
+                elif is_middle_of_a_comment(current_line, script_like_file):
+                    license_header_commented += current_line
+                    license_header_uncommented_lines.append(uncomment_middle(current_line, script_like_file))
 
             while len(license_header_uncommented_lines) > 0 and license_header_uncommented_lines[0] == '':
                 license_header_uncommented_lines.pop(0)
@@ -561,7 +576,13 @@ def upsert_license_header(filepath: Path) -> None:
             while len(license_header_uncommented_lines) > 0 and license_header_uncommented_lines[0] == '':
                 license_header_uncommented_lines.pop(0)
 
-            copyright_notice += LICENSE_TEXT
+            if LICENSE_TEXT_REGEX.match('\n'.join(license_header_uncommented_lines)):
+                copyright_notice += LICENSE_TEXT
+            else:
+                print(f"Last few lines of copyright header in file '{filepath}' did not match expected value")
+                output_file.close()
+                Path.unlink(Path(output_file.name))
+                return
 
             output_file.write(comment_block(copyright_notice, script_like_file) + '\n')
             if already_read_lines:
