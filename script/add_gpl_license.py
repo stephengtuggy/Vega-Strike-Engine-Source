@@ -449,7 +449,7 @@ def upsert_license_header(filepath: Path) -> None:
 
                     else:
                         license_header_commented += current_line
-                        license_header_uncommented_lines.append(uncomment_middle(current_line, script_like_file))
+                        license_header_uncommented_lines.append(uncomment_middle(current_line, script_like_file, num_prefix_whitespace_chars))
 
             # Trim leading blank lines
             while len(license_header_uncommented_lines) > 0 and license_header_uncommented_lines[0] == '':
