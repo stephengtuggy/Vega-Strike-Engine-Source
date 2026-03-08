@@ -497,7 +497,7 @@ def upsert_license_header(filepath: Path) -> None:
             # Trim leading blank lines again after copyright clause(s)
             while len(license_header_uncommented_lines) > 0 and license_header_uncommented_lines[0] == '':
                 license_header_uncommented_lines.pop(0)
-            output_copyright_notice += '\n\n'
+            # output_copyright_notice += '\n\n'
 
             license_header_uncommented_concat_2 = '\n'.join(license_header_uncommented_lines)
 
