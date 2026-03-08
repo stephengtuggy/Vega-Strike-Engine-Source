@@ -107,6 +107,10 @@ SHEBANG_REGEX = re.compile(r'^#!(.*)$')
 C_LIKE_COMMENTS = ['.c', '.cpp', '.h', '.hpp', '.h.in']
 SCRIPT_LIKE_COMMENTS = ['.py', '.cmake', '.txt', '.sh', '.ps1']
 
+ROW_OF_EQUALS_SIGNS_REGEX = re.compile(r'^={5,160}$')
+ROW_OF_ASTERISKS_REGEX = re.compile(r'^\*{5,160}$')
+ROW_OF_SLASHES_REGEX = re.compile(r'^/{5,160}$')
+
 
 def find_git_root() -> Path:
     """If we're in a git repository, return the path to the git root directory.
@@ -351,7 +355,7 @@ def upsert_license_header(filepath: Path) -> None:
                 else:
                     individually_commented = True
 
-            elif first_line == '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////\n':
+            elif ROW_OF_SLASHES_REGEX.match(first_line):
                 output_file.write(first_line)
                 second_line: str = input_file.readline()
                 if is_start_of_a_block_comment(second_line, script_like_file):
@@ -427,10 +431,10 @@ def upsert_license_header(filepath: Path) -> None:
             elif at_file_regex.match(license_header_uncommented_lines[0]):
                 output_copyright_notice += license_header_uncommented_lines[0] + '\n'
                 license_header_uncommented_lines.pop(0)
-            elif len(license_header_uncommented_lines) > 1 and license_header_uncommented_lines[0] == '====================================' and at_file_regex.match(license_header_uncommented_lines[1]):
+            elif len(license_header_uncommented_lines) > 1 and ROW_OF_EQUALS_SIGNS_REGEX.match(license_header_uncommented_lines[0]) and at_file_regex.match(license_header_uncommented_lines[1]):
                 output_copyright_notice += license_header_uncommented_lines.pop(0) + '\n'
                 output_copyright_notice += license_header_uncommented_lines.pop(0) + '\n'
-                while license_header_uncommented_lines[0] != '====================================':
+                while not ROW_OF_EQUALS_SIGNS_REGEX.match(license_header_uncommented_lines[0]):
                     output_copyright_notice += license_header_uncommented_lines.pop(0) + '\n'
                 output_copyright_notice += license_header_uncommented_lines.pop(0) + '\n'
 
