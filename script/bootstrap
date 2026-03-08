@@ -1,31 +1,38 @@
 #!/usr/bin/env bash
-#====================================
+##
+# ====================================
 # @file   : bootstrap
 # @brief  : installs dependencies for building Vega Strike
 # @usage  : sudo script/bootstrap 1 (to update all installed packages on the
-#           system in the process)
-#     or  : sudo script/bootstrap 0 (to skip updating, and just install the
-#           new packages that are needed)
+# system in the process)
+# or  : sudo script/bootstrap 0 (to skip updating, and just install the
+# new packages that are needed)
 # @param  : just one parameter, either a 1 or a 0, to indicate whether or not to
-#           UPDATE_ALL_SYSTEM_PACKAGES
-#====================================
+# UPDATE_ALL_SYSTEM_PACKAGES
+# ====================================
+# 
+# Vega Strike - Space Simulation, Combat and Trading
 # Copyright (C) 2020-2025 Roy Falk, Stephen G. Tuggy, Benjamen R. Meyer,
 # and other Vega Strike contributors
-#
+# Copyright (C) 2026 The Vega Strike Contributors
+# 
+# https://github.com/vegastrike/Vega-Strike-Engine-Source
+# 
 # This file is part of Vega Strike.
-#
+# 
 # Vega Strike is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-#
+# 
 # Vega Strike is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#
+# 
 # You should have received a copy of the GNU General Public License
-# along with Vega Strike. If not, see <https://www.gnu.org/licenses/>.
+# along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
+#
 
 set -e
 
