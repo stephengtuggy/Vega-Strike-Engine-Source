@@ -54,6 +54,17 @@ from shutil import copystat, move
 from tempfile import NamedTemporaryFile
 import re
 
+COPYRIGHT_VEGA_CONTRIBUTORS_WITH_SPECIFICALLY_REGEX = re.compile(r"^(?:Vega Strike - Space Simulation, Combat and Trading\n)?Copyright \([cC]\) (\d{4})(?:-\d{4})? *The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: ((?:by *)?[\w .<@>]+(?:, *[\w .<@>]+)*)\nCurrent development team: Roy Falk, Benjamen R\. Meyer, Stephen G\. Tuggy$", re.MULTILINE)
+COPYRIGHT_VEGA_CONTRIBUTORS_REGEX = re.compile(r"^(?:Vega Strike - Space Simulation, Combat and Trading\n)?Copyright \([cC]\) (\d{4})(?:-\d{4})? *The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\nCurrent development team: Roy Falk, Benjamen R\. Meyer, Stephen G\. Tuggy$", re.MULTILINE)
+GENERIC_VEGA_COPYRIGHT_REGEX = re.compile(r"^Vega Strike - Space Simulation, Combat and Trading\nCopyright \([cC]\) (\d{4})(?:-\d{4})? *((?:by *)?[\w .<@>]+(?:, *[\w .<@>]+)*)$", re.MULTILINE)
+
+GENERIC_MULTI_COPYRIGHT_REGEX = re.compile(r"^Copyright \([Cc]\) (\d{4})(?:-\d{4})? *(?:, *\d{4}(?:-\d{4})?)* *((?:by *)?[\w .<@>]+(?:, *[\w .<@>]+)*,?\n?(?: ?and other)?\n?(?: ?Vega Strike [Cc]ontributors)?\n+(?:Copyright +\([Cc]\) +\d{4}(?:-\d{4})? *(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?[\w .<@>]+(?:, *[\w .<@>]+)*,?\n?(?: ?and other)?\n?(?: ?Vega Strike [Cc]ontributors)?\n)*)$", re.MULTILINE)
+GENERIC_COPYRIGHT_LINE_AND_OTHER_VEGA_CONTRIBUTORS_REGEX = re.compile(r"^Copyright +\([Cc]\) +(\d{4})(?:-\d{4})? *(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([\w .<@>]+(?:, *[\w .<@>]+)*),? and other Vega Strike [Cc]ontributors$")
+GENERIC_COPYRIGHT_LINE_AND_OTHER_VEGA_CONTRIBUTORS_REGEX_2 = re.compile(r"^Copyright +\([Cc]\) +(\d{4})(?:-\d{4})? *(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([\w .<@>]+(?:, *[\w .<@>]+)*),? and other\nVega Strike [Cc]ontributors$", re.MULTILINE)
+GENERIC_COPYRIGHT_LINE_AND_OTHER_VEGA_CONTRIBUTORS_REGEX_3 = re.compile(r"^Copyright +\([Cc]\) +(\d{4})(?:-\d{4})? *(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([\w .<@>]+(?:, *[\w .<@>]+)*),?\nand other Vega Strike [Cc]ontributors$", re.MULTILINE)
+GENERIC_COPYRIGHT_LINE_REGEX = re.compile(r"^Copyright +\([Cc]\) +(\d{4})(?:-\d{4})? *(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([\w .<@>]+(?:, *[\w .<@>]+)*)$")
+
+THIS_FILE_IS_PART_OF_VEGA_STRIKE_REGEX = re.compile(r"^(?:https://github\.com/vegastrike/Vega-Strike-Engine-Source\n+)?This file is part of Vega Strike\.\n\nVega Strike is free software: you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation, either version [23] of the License, or\n\(at your option\) any later version\.\n\nVega Strike is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE\. +See the\nGNU General Public License for more details\.\n\nYou should have received a copy of the GNU General Public License\nalong with Vega Strike\. +If not, see <https://www\.gnu\.org/licenses/>\.$", re.MULTILINE)
 THIS_FILE_IS_PART_OF_VEGA_STRIKE_TEXT = """
 https://github.com/vegastrike/Vega-Strike-Engine-Source
 
@@ -72,19 +83,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>."""
 
-COPYRIGHT_VEGA_CONTRIBUTORS_WITH_SPECIFICALLY_REGEX = re.compile(r"^(?:Vega Strike - Space Simulation, Combat and Trading\n)?Copyright \([cC]\) (\d{4})(?:-\d{4})? *The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: ((?:by *)?[\w .<@>]+(?:, *[\w .<@>]+)*)\nCurrent development team: Roy Falk, Benjamen R\. Meyer, Stephen G\. Tuggy$", re.MULTILINE)
-COPYRIGHT_VEGA_CONTRIBUTORS_REGEX = re.compile(r"^(?:Vega Strike - Space Simulation, Combat and Trading\n)?Copyright \([cC]\) (\d{4})(?:-\d{4})? *The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\nCurrent development team: Roy Falk, Benjamen R\. Meyer, Stephen G\. Tuggy$", re.MULTILINE)
-GENERIC_VEGA_COPYRIGHT_REGEX = re.compile(r"^Vega Strike - Space Simulation, Combat and Trading\nCopyright \([cC]\) (\d{4})(?:-\d{4})? *((?:by *)?[\w .<@>]+(?:, *[\w .<@>]+)*)$", re.MULTILINE)
-
-GENERIC_MULTI_COPYRIGHT_REGEX = re.compile(r"^Copyright \([Cc]\) (\d{4})(?:-\d{4})? *(?:, *\d{4}(?:-\d{4})?)* *((?:by *)?[\w .<@>]+(?:, *[\w .<@>]+)*,?\n?(?: ?and other)?\n?(?: ?Vega Strike [Cc]ontributors)?\n+(?:Copyright +\([Cc]\) +\d{4}(?:-\d{4})? *(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?[\w .<@>]+(?:, *[\w .<@>]+)*,?\n?(?: ?and other)?\n?(?: ?Vega Strike [Cc]ontributors)?\n)*)$", re.MULTILINE)
-GENERIC_COPYRIGHT_LINE_AND_OTHER_VEGA_CONTRIBUTORS_REGEX = re.compile(r"^Copyright +\([Cc]\) +(\d{4})(?:-\d{4})? *(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([\w .<@>]+(?:, *[\w .<@>]+)*),? and other Vega Strike [Cc]ontributors$")
-GENERIC_COPYRIGHT_LINE_AND_OTHER_VEGA_CONTRIBUTORS_REGEX_2 = re.compile(r"^Copyright +\([Cc]\) +(\d{4})(?:-\d{4})? *(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([\w .<@>]+(?:, *[\w .<@>]+)*),? and other\nVega Strike [Cc]ontributors$", re.MULTILINE)
-GENERIC_COPYRIGHT_LINE_AND_OTHER_VEGA_CONTRIBUTORS_REGEX_3 = re.compile(r"^Copyright +\([Cc]\) +(\d{4})(?:-\d{4})? *(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([\w .<@>]+(?:, *[\w .<@>]+)*),?\nand other Vega Strike [Cc]ontributors$", re.MULTILINE)
-GENERIC_COPYRIGHT_LINE_REGEX = re.compile(r"^Copyright +\([Cc]\) +(\d{4})(?:-\d{4})? *(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([\w .<@>]+(?:, *[\w .<@>]+)*)$")
-
-THIS_FILE_IS_PART_OF_VEGA_STRIKE_REGEX = re.compile(r"^(?:https://github\.com/vegastrike/Vega-Strike-Engine-Source\n+)?This file is part of Vega Strike\.\n\nVega Strike is free software: you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation, either version [23] of the License, or\n\(at your option\) any later version\.\n\nVega Strike is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE\. +See the\nGNU General Public License for more details\.\n\nYou should have received a copy of the GNU General Public License\nalong with Vega Strike\. +If not, see <https://www\.gnu\.org/licenses/>\.$", re.MULTILINE)
 INCORPORATED_FROM_OPCODE_PUBLIC_DOMAIN_REGEX = re.compile(r"^This file is part of OPCODE - Optimized Collision Detection\n\(http://www\.codercorner\.com/Opcode\.htm\) and has been\nincorporated into Vega Strike\n\(https://github\.com/vegastrike/Vega-Strike-Engine-Source\)\.\n\nPublic Domain$", re.MULTILINE)
-
 INCORPORATED_FROM_OPCODE_PUBLIC_DOMAIN_TEXT = """
 This file is part of OPCODE - Optimized Collision Detection
 (http://www.codercorner.com/Opcode.htm) and has been
@@ -92,6 +91,22 @@ incorporated into Vega Strike
 (https://github.com/vegastrike/Vega-Strike-Engine-Source).
 
 Public Domain"""
+
+LIBRARY_GENERAL_PUBLIC_LICENSE_REGEX = re.compile(r"^This library is free software; you can redistribute it and/or\nmodify it under the terms of the GNU Library General Public\nLicense as published by the Free Software Foundation; either\nversion 2 of the License, or \(at your option\) any later version\.\n\nThis library is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE\. +See the GNU\nLibrary General Public License for more details\.\n\nYou should have received a copy of the GNU Library General Public\nLicense along with this library; if not, (?:see\n<https://www\.gnu\.org/licenses/>\.|write to the Free\nSoftware Foundation, Inc\., 675 Mass Ave, Cambridge, MA 02139, USA\.)$", re.MULTILINE)
+LIBRARY_GENERAL_PUBLIC_LICENSE_TEXT = """
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Library General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Library General Public License for more details.
+
+You should have received a copy of the GNU Library General Public
+License along with this library; if not, see
+<https://www.gnu.org/licenses/>."""
 
 # Characters to use for the start, middle and end of a comment block
 C_LIKE_COMMENT = ['/*', ' *', ' */', '/**', '*', '*/']
@@ -510,12 +525,20 @@ def upsert_license_header(filepath: Path) -> None:
             license_header_uncommented_concat_2 = '\n'.join(license_header_uncommented_lines)
 
             if THIS_FILE_IS_PART_OF_VEGA_STRIKE_REGEX.match(license_header_uncommented_concat_2):
+                print(f"File '{filepath}': This file is part of Vega Strike")
                 output_copyright_notice += THIS_FILE_IS_PART_OF_VEGA_STRIKE_TEXT
                 match_group_split_lines = license_header_uncommented_concat_2.splitlines()
                 for i in match_group_split_lines:
                     license_header_uncommented_lines.pop(0)
             elif INCORPORATED_FROM_OPCODE_PUBLIC_DOMAIN_REGEX.match(license_header_uncommented_concat_2):
+                print(f"File '{filepath}': Incorporated from OPCODE; Public Domain")
                 output_copyright_notice += INCORPORATED_FROM_OPCODE_PUBLIC_DOMAIN_TEXT
+                match_group_split_lines = license_header_uncommented_concat_2.splitlines()
+                for i in match_group_split_lines:
+                    license_header_uncommented_lines.pop(0)
+            elif LIBRARY_GENERAL_PUBLIC_LICENSE_REGEX.match(license_header_uncommented_concat_2):
+                print(f"File '{filepath}': GNU Library General Public License")
+                output_copyright_notice += LIBRARY_GENERAL_PUBLIC_LICENSE_TEXT
                 match_group_split_lines = license_header_uncommented_concat_2.splitlines()
                 for i in match_group_split_lines:
                     license_header_uncommented_lines.pop(0)
