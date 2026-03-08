@@ -275,13 +275,19 @@ def comment_block(block: str, script_like_file: bool) -> str:
     if script_like_file:
         ret_val = "##\n"
         for line in individual_lines:
-            ret_val += f"# {line}\n"
+            if line == '':
+                ret_val += "#\n"
+            else:
+                ret_val += f"# {line}\n"
         ret_val += "#\n"
         return ret_val
     else:
         ret_val = "/*\n"
         for line in individual_lines:
-            ret_val += f" * {line}\n"
+            if line == '':
+                ret_val += " *\n"
+            else:
+                ret_val += f" * {line}\n"
         ret_val += " */\n"
         return ret_val
 
@@ -545,7 +551,7 @@ def upsert_license_header(filepath: Path) -> None:
             while len(license_header_uncommented_lines) > 0 and license_header_uncommented_lines[0] == '':
                 license_header_uncommented_lines.pop(0)
 
-            output_file.write(comment_block(output_copyright_notice, script_like_file) + '\n')
+            output_file.write(comment_block(output_copyright_notice, script_like_file))
             if len(already_read_lines) > 0:
                 output_file.write(already_read_lines)
             output_file.write(input_file.read())
