@@ -446,16 +446,16 @@ def upsert_license_header(filepath: Path) -> None:
 
             # Handle copyright clause and list of authors
             license_header_uncommented_concat_1 = '\n'.join(license_header_uncommented_lines)
-            output_copyright_notice += "\nVega Strike - Space Simulation, Combat and Trading\nCopyright (C) "
+            output_copyright_notice += "\nVega Strike - Space Simulation, Combat and Trading\n"
 
             if COPYRIGHT_VEGA_CONTRIBUTORS_WITH_SPECIFICALLY_REGEX.match(license_header_uncommented_concat_1):
                 copyright_notice_match: re.Match[str] = COPYRIGHT_VEGA_CONTRIBUTORS_WITH_SPECIFICALLY_REGEX.match(license_header_uncommented_concat_1)
                 start_year = copyright_notice_match.group(1)
                 specifically_clause = copyright_notice_match.group(2)
                 if start_year == current_year:
-                    output_copyright_notice += current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: " + specifically_clause + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
+                    output_copyright_notice += "Copyright (C) " + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: " + specifically_clause + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
                 else:
-                    output_copyright_notice += start_year + "-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: " + specifically_clause + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
+                    output_copyright_notice += "Copyright (C) " + start_year + "-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: " + specifically_clause + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
 
                 match_group_split_lines = copyright_notice_match.group(0).splitlines()
                 for i in match_group_split_lines:
@@ -464,9 +464,9 @@ def upsert_license_header(filepath: Path) -> None:
                 copyright_notice_match: re.Match[str] = COPYRIGHT_VEGA_CONTRIBUTORS_REGEX.match(license_header_uncommented_concat_1)
                 start_year = copyright_notice_match.group(1)
                 if start_year == current_year:
-                    output_copyright_notice += current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
+                    output_copyright_notice += "Copyright (C) " + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
                 else:
-                    output_copyright_notice += start_year + "-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
+                    output_copyright_notice += "Copyright (C) " + start_year + "-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
 
                 match_group_split_lines = copyright_notice_match.group(0).splitlines()
                 for i in match_group_split_lines:
@@ -476,9 +476,9 @@ def upsert_license_header(filepath: Path) -> None:
                 start_year = copyright_notice_match.group(1)
                 authors: str = copyright_notice_match.group(2)
                 if start_year == current_year:
-                    output_copyright_notice += current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: " + authors + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
+                    output_copyright_notice += "Copyright (C) " + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: " + authors + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
                 else:
-                    output_copyright_notice += start_year + "-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: " + authors + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
+                    output_copyright_notice += "Copyright (C) " + start_year + "-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: " + authors + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
 
                 match_group_split_lines = copyright_notice_match.group(0).splitlines()
                 for i in match_group_split_lines:
