@@ -502,13 +502,11 @@ def upsert_license_header(filepath: Path) -> None:
             license_header_uncommented_concat_2 = '\n'.join(license_header_uncommented_lines)
 
             if THIS_FILE_IS_PART_OF_VEGA_STRIKE_REGEX.match(license_header_uncommented_concat_2):
-                match_result: re.Match[str] = THIS_FILE_IS_PART_OF_VEGA_STRIKE_REGEX.match(license_header_uncommented_concat_2)
                 output_copyright_notice += THIS_FILE_IS_PART_OF_VEGA_STRIKE_TEXT
                 match_group_split_lines = license_header_uncommented_concat_2.splitlines()
                 for i in match_group_split_lines:
                     license_header_uncommented_lines.pop(0)
             elif INCORPORATED_FROM_OPCODE_PUBLIC_DOMAIN_REGEX.match(license_header_uncommented_concat_2):
-                match_result: re.Match[str] = INCORPORATED_FROM_OPCODE_PUBLIC_DOMAIN_REGEX.match(license_header_uncommented_concat_2)
                 output_copyright_notice += INCORPORATED_FROM_OPCODE_PUBLIC_DOMAIN_TEXT
                 match_group_split_lines = license_header_uncommented_concat_2.splitlines()
                 for i in match_group_split_lines:
