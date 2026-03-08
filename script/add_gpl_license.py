@@ -548,10 +548,7 @@ def upsert_license_header(filepath: Path) -> None:
                 Path.unlink(Path(output_file.name))
                 return
 
-            while len(license_header_uncommented_lines) > 0 and license_header_uncommented_lines[0] == '':
-                license_header_uncommented_lines.pop(0)
-
-            output_file.write(comment_block(output_copyright_notice, script_like_file))
+            output_file.write(comment_block(output_copyright_notice, script_like_file) + '\n')
             if len(already_read_lines) > 0:
                 output_file.write(already_read_lines)
             output_file.write(input_file.read())
