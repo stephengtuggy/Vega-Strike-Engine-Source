@@ -364,6 +364,8 @@ def upsert_license_header(filepath: Path) -> None:
                     in_license_header_comment = True
                     license_header_uncommented_lines.append(uncomment_start(second_line, script_like_file))
                     individually_commented = True
+                else:
+                    already_read_lines = second_line
 
             else:
                 already_read_lines = first_line
@@ -420,8 +422,8 @@ def upsert_license_header(filepath: Path) -> None:
                 move(output_file.name, filepath)
                 return
             elif license_header_uncommented_lines[0] == filepath.name:
-                output_copyright_notice += filepath.name
-                output_copyright_notice += '\n\n'
+                output_copyright_notice += filepath.name + '\n'
+                license_header_uncommented_lines.pop(0)
             elif at_file_regex.match(license_header_uncommented_lines[0]):
                 output_copyright_notice += license_header_uncommented_lines[0] + '\n'
                 license_header_uncommented_lines.pop(0)
