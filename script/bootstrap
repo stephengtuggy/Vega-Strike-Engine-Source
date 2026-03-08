@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
-##
-# ====================================
+#====================================
 # @file   : bootstrap
 # @brief  : installs dependencies for building Vega Strike
 # @usage  : sudo script/bootstrap 1 (to update all installed packages on the
-# system in the process)
-# or  : sudo script/bootstrap 0 (to skip updating, and just install the
-# new packages that are needed)
+#           system in the process)
+#     or  : sudo script/bootstrap 0 (to skip updating, and just install the
+#           new packages that are needed)
 # @param  : just one parameter, either a 1 or a 0, to indicate whether or not to
-# UPDATE_ALL_SYSTEM_PACKAGES
-# ====================================
+#           UPDATE_ALL_SYSTEM_PACKAGES
+#====================================
 # 
 # Vega Strike - Space Simulation, Combat and Trading
 # Copyright (C) 2020-2025 Roy Falk, Stephen G. Tuggy, Benjamen R. Meyer,
