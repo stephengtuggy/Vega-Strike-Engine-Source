@@ -235,44 +235,44 @@ def uncomment_start(line: str, script_like_file: bool) -> str:
             return line
 
 
-def uncomment_middle(line: str, script_like_file: bool, num_prefix_whitespace_chars: int) -> str:
+def uncomment_middle(line: str, script_like_file: bool, num_prefix_whitespace_chars: int) -> tuple[str, int]:
     if num_prefix_whitespace_chars < 0:
         if script_like_file:
             if SCRIPT_LIKE_COMMENT_REGEX.match(line):
                 num_prefix_whitespace_chars = len(SCRIPT_LIKE_COMMENT_REGEX.match(line).group(1))
-                return SCRIPT_LIKE_COMMENT_REGEX.match(line).group(2)
+                return SCRIPT_LIKE_COMMENT_REGEX.match(line).group(2), num_prefix_whitespace_chars
             else:
                 print(f"'{line}' is not the middle of a comment")
-                return line
+                return line, num_prefix_whitespace_chars
         else:
             if C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line):
                 num_prefix_whitespace_chars = len(C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line).group(1))
-                return C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line).group(2)
+                return C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line).group(2), num_prefix_whitespace_chars
             elif C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX.match(line):
                 num_prefix_whitespace_chars = len(C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX.match(line).group(1))
-                return C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX.match(line).group(2)
+                return C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX.match(line).group(2), num_prefix_whitespace_chars
             else:
                 print(f"'{line}' is not the middle of a comment")
-                return line
+                return line, num_prefix_whitespace_chars
     else:
         prefix_whitespace_chars: str = f"{num_prefix_whitespace_chars}"
         if script_like_file:
             if SCRIPT_LIKE_COMMENT_REGEX.match(line):
-                comment_regex_adjusted = re.compile(r"^ *#* {" + prefix_whitespace_chars + "}(.*)$")
-                return comment_regex_adjusted.match(line).group(1)
+                comment_regex_adjusted = re.compile(r"^ *#+ {0," + prefix_whitespace_chars + "}(.*)$")
+                return comment_regex_adjusted.match(line).group(1), num_prefix_whitespace_chars
             else:
                 print(f"'{line}' is not the middle of a comment")
-                return line
+                return line, num_prefix_whitespace_chars
         else:
             if C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line):
-                comment_regex_adjusted = re.compile(r"^ *// {" + prefix_whitespace_chars + "}(.*)$")
-                return comment_regex_adjusted.match(line).group(1)
+                comment_regex_adjusted = re.compile(r"^ *// {0," + prefix_whitespace_chars + "}(.*)$")
+                return comment_regex_adjusted.match(line).group(1), num_prefix_whitespace_chars
             elif C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX.match(line):
-                comment_regex_adjusted = re.compile(r"^ *\** {" + prefix_whitespace_chars + "}(.*)$")
-                return comment_regex_adjusted.match(line).group(1)
+                comment_regex_adjusted = re.compile(r"^ *\** {0," + prefix_whitespace_chars + "}(.*)$")
+                return comment_regex_adjusted.match(line).group(1), num_prefix_whitespace_chars
             else:
                 print(f"'{line}' is not the middle of a comment")
-                return line
+                return line, num_prefix_whitespace_chars
 
 
 def uncomment_end(line: str, script_like_file: bool) -> str:
@@ -434,7 +434,8 @@ def upsert_license_header(filepath: Path) -> None:
 
                     elif is_individually_commented(current_line, script_like_file):
                         license_header_commented += current_line
-                        license_header_uncommented_lines.append(uncomment_middle(current_line, script_like_file, num_prefix_whitespace_chars))
+                        uncommented_line, num_prefix_whitespace_chars = uncomment_middle(current_line, script_like_file, num_prefix_whitespace_chars)
+                        license_header_uncommented_lines.append(uncommented_line)
 
                     else:
                         in_license_header_comment = False
@@ -449,7 +450,8 @@ def upsert_license_header(filepath: Path) -> None:
 
                     else:
                         license_header_commented += current_line
-                        license_header_uncommented_lines.append(uncomment_middle(current_line, script_like_file, num_prefix_whitespace_chars))
+                        uncommented_line, num_prefix_whitespace_chars = uncomment_middle(current_line, script_like_file, num_prefix_whitespace_chars)
+                        license_header_uncommented_lines.append(uncommented_line)
 
             # Trim leading blank lines
             while len(license_header_uncommented_lines) > 0 and license_header_uncommented_lines[0] == '':
