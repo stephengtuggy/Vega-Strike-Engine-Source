@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-##
-# ====================================
+#====================================
 # @file   : bootstrap-on-linux.sh
 # @brief  : installs dependencies for building Vega Strike on Linux
 # @usage  : sudo script/bootstrap-on-linux.sh 1 (to update all installed
@@ -9,7 +8,7 @@
 #           just install the new packages that are needed)
 # @param  : just one parameter, either a 1 or a 0, to indicate whether or not to
 #           UPDATE_ALL_SYSTEM_PACKAGES
-# ====================================
+#====================================
 #
 # Vega Strike - Space Simulation, Combat and Trading
 # Copyright (C) 2020-2026 The Vega Strike Contributors:
