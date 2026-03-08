@@ -112,13 +112,13 @@ License along with this library; if not, see
 # Characters to use for the start, middle and end of a comment block
 C_LIKE_COMMENT = ['/*', ' *', ' */', '/**', '*', '*/']
 C_LIKE_COMMENT_BLOCK_START_REGEX = re.compile(r'^/\*+(.*)$')
-C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX = re.compile(r'^ *\** *(.*)$')
+C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX = re.compile(r'^ *\**( *)(.*)$')
 C_LIKE_COMMENT_BLOCK_END_REGEX = re.compile(r'^ *(.*) *\*/$')
-C_LIKE_INDIVIDUAL_COMMENT_REGEX = re.compile(r'^ *// *(.*)$')
+C_LIKE_INDIVIDUAL_COMMENT_REGEX = re.compile(r'^ *//( *)(.*)$')
 C_LIKE_BASIC_OFFSET_HEADER_COMMENT_REGEX = re.compile(r'^ *// *-\*- *mode: *(.*)$')
 
 SCRIPT_LIKE_COMMENT = ['##', '#', '#']
-SCRIPT_LIKE_COMMENT_REGEX = re.compile(r'^ *#+ *(.*)$')
+SCRIPT_LIKE_COMMENT_REGEX = re.compile(r'^ *#+( *)(.*)$')
 
 SHEBANG_REGEX = re.compile(r'^#!(.*)$')
 
@@ -221,13 +221,13 @@ def is_end_of_a_comment(line: str, script_like_file: bool) -> bool:
 def uncomment_start(line: str, script_like_file: bool) -> str:
     if script_like_file:
         if SCRIPT_LIKE_COMMENT_REGEX.match(line):
-            return SCRIPT_LIKE_COMMENT_REGEX.match(line).group(1)
+            return SCRIPT_LIKE_COMMENT_REGEX.match(line).group(2)
         else:
             print(f"'{line}' is not the start of a comment")
             return line
     else:
         if C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line):
-            return C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line).group(1)
+            return C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line).group(2)
         elif C_LIKE_COMMENT_BLOCK_START_REGEX.match(line):
             return C_LIKE_COMMENT_BLOCK_START_REGEX.match(line).group(1)
         else:
@@ -235,33 +235,56 @@ def uncomment_start(line: str, script_like_file: bool) -> str:
             return line
 
 
-def uncomment_middle(line: str, script_like_file: bool) -> str:
-    if script_like_file:
-        if SCRIPT_LIKE_COMMENT_REGEX.match(line):
-            return SCRIPT_LIKE_COMMENT_REGEX.match(line).group(1)
+def uncomment_middle(line: str, script_like_file: bool, num_prefix_whitespace_chars: int) -> str:
+    if num_prefix_whitespace_chars < 0:
+        if script_like_file:
+            if SCRIPT_LIKE_COMMENT_REGEX.match(line):
+                num_prefix_whitespace_chars = len(SCRIPT_LIKE_COMMENT_REGEX.match(line).group(1))
+                return SCRIPT_LIKE_COMMENT_REGEX.match(line).group(2)
+            else:
+                print(f"'{line}' is not the middle of a comment")
+                return line
         else:
-            print(f"'{line}' is not the middle of a comment")
-            return line
+            if C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line):
+                num_prefix_whitespace_chars = len(C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line).group(1))
+                return C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line).group(2)
+            elif C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX.match(line):
+                num_prefix_whitespace_chars = len(C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX.match(line).group(1))
+                return C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX.match(line).group(2)
+            else:
+                print(f"'{line}' is not the middle of a comment")
+                return line
     else:
-        if C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line):
-            return C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line).group(1)
-        elif C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX.match(line):
-            return C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX.match(line).group(1)
+        prefix_whitespace_chars: str = f"{num_prefix_whitespace_chars}"
+        if script_like_file:
+            if SCRIPT_LIKE_COMMENT_REGEX.match(line):
+                comment_regex_adjusted = re.compile(r"^ *#* {" + prefix_whitespace_chars + "}(.*)$")
+                return comment_regex_adjusted.match(line).group(1)
+            else:
+                print(f"'{line}' is not the middle of a comment")
+                return line
         else:
-            print(f"'{line}' is not the middle of a comment")
-            return line
+            if C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line):
+                comment_regex_adjusted = re.compile(r"^ *// {" + prefix_whitespace_chars + "}(.*)$")
+                return comment_regex_adjusted.match(line).group(1)
+            elif C_LIKE_COMMENT_BLOCK_MIDDLE_REGEX.match(line):
+                comment_regex_adjusted = re.compile(r"^ *\** {" + prefix_whitespace_chars + "}(.*)$")
+                return comment_regex_adjusted.match(line).group(1)
+            else:
+                print(f"'{line}' is not the middle of a comment")
+                return line
 
 
 def uncomment_end(line: str, script_like_file: bool) -> str:
     if script_like_file:
         if SCRIPT_LIKE_COMMENT_REGEX.match(line):
-            return SCRIPT_LIKE_COMMENT_REGEX.match(line).group(1)
+            return SCRIPT_LIKE_COMMENT_REGEX.match(line).group(2)
         else:
             print(f"'{line}' is not the end of a comment")
             return line
     else:
         if C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line):
-            return C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line).group(1)
+            return C_LIKE_INDIVIDUAL_COMMENT_REGEX.match(line).group(2)
         elif C_LIKE_COMMENT_BLOCK_END_REGEX.match(line):
             return C_LIKE_COMMENT_BLOCK_END_REGEX.match(line).group(1)
         else:
@@ -399,6 +422,7 @@ def upsert_license_header(filepath: Path) -> None:
                 already_read_lines = first_line
 
             # Continue parsing the input file up to the end of the initial comment block (if any)
+            num_prefix_whitespace_chars: int = -1
             while in_license_header_comment:
                 current_line: str = input_file.readline()
 
@@ -410,7 +434,7 @@ def upsert_license_header(filepath: Path) -> None:
 
                     elif is_individually_commented(current_line, script_like_file):
                         license_header_commented += current_line
-                        license_header_uncommented_lines.append(uncomment_middle(current_line, script_like_file))
+                        license_header_uncommented_lines.append(uncomment_middle(current_line, script_like_file, num_prefix_whitespace_chars))
 
                     else:
                         in_license_header_comment = False
