@@ -120,7 +120,7 @@ SCRIPT_LIKE_COMMENT_REGEX = re.compile(r'^ *#+( *)(.*)$')
 SHEBANG_REGEX = re.compile(r'^#!(.*)$')
 
 C_LIKE_COMMENTS = ['.c', '.cpp', '.h', '.hpp', '.h.in']
-SCRIPT_LIKE_COMMENTS = ['.py', '.cmake', '.txt', '.sh', '.ps1']
+SCRIPT_LIKE_COMMENTS = ['.py', '.cmake', '.deprecated.cmake', '.txt', '.sh', '.ps1']
 
 ROW_OF_EQUALS_SIGNS_REGEX = re.compile(r'^={5,200}$')
 ROW_OF_ASTERISKS_REGEX = re.compile(r'^\*{5,200}$')
@@ -394,10 +394,13 @@ def upsert_license_header(filepath: Path) -> None:
                 license_header_commented += first_line
                 in_license_header_comment = True
                 license_header_uncommented_lines.append(uncomment_start(first_line, script_like_file))
-                if is_start_of_a_block_comment(first_line, script_like_file):
-                    individually_commented = False
-                else:
-                    individually_commented = True
+                individually_commented = False
+
+            elif is_individually_commented(first_line, script_like_file):
+                license_header_commented += first_line
+                in_license_header_comment = True
+                license_header_uncommented_lines.append(uncomment_start(first_line, script_like_file))
+                individually_commented = True
 
             elif ROW_OF_SLASHES_REGEX.match(first_line):
                 output_file.write(first_line)
