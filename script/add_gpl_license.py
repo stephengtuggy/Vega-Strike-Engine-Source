@@ -487,6 +487,27 @@ def upsert_license_header(filepath: Path) -> None:
                 while not ROW_OF_EQUALS_SIGNS_REGEX.match(license_header_uncommented_lines[0]):
                     output_copyright_notice += license_header_uncommented_lines.pop(0) + '\n'
                 output_copyright_notice += license_header_uncommented_lines.pop(0) + '\n'
+            else:
+                found_copyright: bool = False
+                for current_line in license_header_uncommented_lines:
+                    if 'Copyright' in current_line:
+                        found_copyright = True
+                        break
+                if not found_copyright:
+                    print(f"No copyright header at top of file '{filepath}'. Adding")
+                    output_copyright_notice += filepath.name
+                    output_copyright_notice += "\n\nVega Strike - Space Simulation, Combat and Trading\nCopyright (C) 2001-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
+                    output_copyright_notice += THIS_FILE_IS_PART_OF_VEGA_STRIKE_TEXT
+                    output_file.write(comment_block(output_copyright_notice, script_like_file) + '\n')
+                    if already_read_lines:
+                        output_file.write(already_read_lines)
+                    output_file.write(input_file.read())
+                    output_file.close()
+                    # Copy original file attributes and permissions to temp file
+                    copystat(filepath, output_file.name)
+                    # Move temp file into place
+                    move(output_file.name, filepath)
+                    return
 
             # Trim leading blank lines again after filename clause
             while len(license_header_uncommented_lines) > 0 and license_header_uncommented_lines[0] == '':
