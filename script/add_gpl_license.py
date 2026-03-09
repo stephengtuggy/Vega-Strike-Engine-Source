@@ -534,6 +534,7 @@ def upsert_license_header(filepath: Path) -> None:
                 temp: list[str] = license_header_uncommented_lines
                 for current_copyright_line in temp:
                     if not BASIC_COPYRIGHT_REGEX.match(current_copyright_line):
+                        license_header_uncommented_lines.pop(0)
                         break
                     output_copyright_notice += current_copyright_line + '\n'
                     license_header_uncommented_lines.pop(0)
@@ -542,6 +543,7 @@ def upsert_license_header(filepath: Path) -> None:
                 license_header_uncommented_split_lines_1 = license_header_uncommented_concat_1.splitlines()
                 for current_copyright_line in license_header_uncommented_split_lines_1:
                     if not BASIC_COPYRIGHT_REGEX.match(current_copyright_line):
+                        license_header_uncommented_lines.pop(0)
                         break
                     output_copyright_notice += current_copyright_line + '\n'
                     license_header_uncommented_lines.pop(0)
