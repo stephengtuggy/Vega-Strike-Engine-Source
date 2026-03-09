@@ -334,6 +334,7 @@ def upsert_license_header(filepath: Path) -> None:
     start_year: str = "2001"
     current_year: str = datetime.now(timezone.utc).strftime("%Y")
     copyright_current_year_regex = re.compile(r'^Copyright +\([Cc]\) +' + current_year)
+    copyright_current_year_regex_2 = re.compile(r'^Copyright +\([Cc]\) +\d{4}-' + current_year)
     already_read_lines: str = ""
 
     # Open our input and output files
@@ -568,6 +569,8 @@ def upsert_license_header(filepath: Path) -> None:
                         output_copyright_notice += current_copyright_line + '\n'
                         license_header_uncommented_lines.pop(0)
                         if copyright_current_year_regex.match(current_copyright_line):
+                            found_current_year = True
+                        elif copyright_current_year_regex_2.match(current_copyright_line):
                             found_current_year = True
                     else:
                         license_header_uncommented_lines.pop(0)
