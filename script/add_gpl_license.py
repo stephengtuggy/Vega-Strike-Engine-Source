@@ -397,12 +397,6 @@ def upsert_license_header(filepath: Path) -> None:
                 license_header_uncommented_lines.append(uncomment_start(first_line, script_like_file))
                 individually_commented = False
 
-            elif is_individually_commented(first_line, script_like_file):
-                license_header_commented += first_line
-                in_license_header_comment = True
-                license_header_uncommented_lines.append(uncomment_start(first_line, script_like_file))
-                individually_commented = True
-
             elif ROW_OF_SLASHES_REGEX.match(first_line):
                 output_file.write(first_line)
                 second_line: str = input_file.readline()
@@ -418,6 +412,12 @@ def upsert_license_header(filepath: Path) -> None:
                     individually_commented = True
                 else:
                     already_read_lines = second_line
+
+            elif is_individually_commented(first_line, script_like_file):
+                license_header_commented += first_line
+                in_license_header_comment = True
+                license_header_uncommented_lines.append(uncomment_start(first_line, script_like_file))
+                individually_commented = True
 
             else:
                 already_read_lines = first_line
