@@ -531,6 +531,12 @@ def upsert_license_header(filepath: Path) -> None:
                 match_group_split_lines = copyright_notice_match.group(0).splitlines()
                 for i in match_group_split_lines:
                     license_header_uncommented_lines.pop(0)
+                temp: list[str] = license_header_uncommented_lines
+                for current_copyright_line in temp:
+                    if not BASIC_COPYRIGHT_REGEX.match(current_copyright_line):
+                        break
+                    output_copyright_notice += current_copyright_line + '\n'
+                    license_header_uncommented_lines.pop(0)
             elif GENERIC_MULTI_COPYRIGHT_REGEX.match(license_header_uncommented_concat_1):
                 found_current_year: bool = False
                 license_header_uncommented_split_lines_1 = license_header_uncommented_concat_1.splitlines()
@@ -574,7 +580,10 @@ def upsert_license_header(filepath: Path) -> None:
                 Path.unlink(Path(output_file.name))
                 return
 
-            output_file.write(comment_block(output_copyright_notice, script_like_file) + '\n')
+            if individually_commented:
+                output_file.write(comment_block(output_copyright_notice, script_like_file) + '\n')
+            else:
+                output_file.write(comment_block(output_copyright_notice, script_like_file))
             if len(already_read_lines) > 0:
                 output_file.write(already_read_lines)
             output_file.write(input_file.read())
