@@ -466,7 +466,10 @@ def upsert_license_header(filepath: Path) -> None:
                 output_copyright_notice += filepath.name
                 output_copyright_notice += "\n\nVega Strike - Space Simulation, Combat and Trading\nCopyright (C) 2001-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
                 output_copyright_notice += THIS_FILE_IS_PART_OF_VEGA_STRIKE_TEXT
-                output_file.write(comment_block(output_copyright_notice, script_like_file) + '\n')
+                if individually_commented:
+                    output_file.write(comment_block(output_copyright_notice, script_like_file) + '\n')
+                else:
+                    output_file.write(comment_block(output_copyright_notice, script_like_file))
                 if already_read_lines:
                     output_file.write(already_read_lines)
                 output_file.write(input_file.read())
@@ -499,7 +502,15 @@ def upsert_license_header(filepath: Path) -> None:
                     output_copyright_notice += filepath.name
                     output_copyright_notice += "\n\nVega Strike - Space Simulation, Combat and Trading\nCopyright (C) 2001-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
                     output_copyright_notice += THIS_FILE_IS_PART_OF_VEGA_STRIKE_TEXT
-                    output_file.write(comment_block(output_copyright_notice, script_like_file) + '\n')
+                    old_header: str = '\n'.join(license_header_uncommented_lines)
+                    if individually_commented:
+                        output_file.write(comment_block(output_copyright_notice, script_like_file) + '\n\n')
+                    else:
+                        output_file.write(comment_block(output_copyright_notice, script_like_file) + '\n')
+                    if individually_commented:
+                        output_file.write(comment_block(old_header, script_like_file) + '\n\n')
+                    else:
+                        output_file.write(comment_block(old_header, script_like_file) + '\n')
                     if already_read_lines:
                         output_file.write(already_read_lines)
                     output_file.write(input_file.read())
