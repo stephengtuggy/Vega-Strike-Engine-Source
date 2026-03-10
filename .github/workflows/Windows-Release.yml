@@ -27,12 +27,17 @@ jobs:
           - os:              windows-2022
             triplet:         x64-win10
             preset-name:     VS2022Win64-pie-enabled-RelWithDebInfo
-            python-version:  3.13.9
+            python-version:  3.13.12
             is-release:      1
           - os:              windows-2025
             triplet:         x64-win10
             preset-name:     VS2022Win64-pie-enabled-RelWithDebInfo
-            python-version:  3.13.9
+            python-version:  3.13.12
+            is-release:      1
+          - os:              windows-2025-vs2026
+            triplet:         x64-win10
+            preset-name:     VS2026Win64-pie-enabled-RelWithDebInfo
+            python-version:  3.13.12
             is-release:      1
 
     env:
