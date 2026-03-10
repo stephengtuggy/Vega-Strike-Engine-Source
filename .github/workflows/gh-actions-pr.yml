@@ -22,55 +22,39 @@ jobs:
           - FROM:     'ubuntu:questing'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            INSTALL_SDL3: 0
+            INSTALL_SDL3_IMAGE: 0
             allow_failure: false
-          - FROM:     'ubuntu:noble'
+          - FROM:     'dhi.io/python:3.13-debian13-dev'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
-            allow_failure: false
-          - FROM:     'ubuntu:noble'
-            COMPILER: 'clang'
-            preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
-            allow_failure: false
-          - FROM:     'linuxmintd/mint22.2-amd64'
-            COMPILER: 'gcc'
-            preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
-            allow_failure: false
-          - FROM:     'linuxmintd/mint22-amd64'
-            COMPILER: 'clang'
-            preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
-            allow_failure: false
-          - FROM:     'debian:trixie'
-            COMPILER: 'gcc'
-            preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
-            allow_failure: false
-          - FROM:     'debian:bookworm'
-            COMPILER: 'clang'
-            preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            INSTALL_SDL3: 0
+            INSTALL_SDL3_IMAGE: 0
             allow_failure: false
           - FROM:     'fedora:43'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            INSTALL_SDL3: 0
+            INSTALL_SDL3_IMAGE: 0
             allow_failure: false
           - FROM:     'fedora:42'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
-            allow_failure: false
-          - FROM:     'fedora:41'
-            COMPILER: 'clang'
-            preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
-            allow_failure: false
-          - FROM:     'opensuse/leap:16.0'
-            COMPILER: 'gcc'
-            preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
-            allow_failure: false
-          - FROM:     'rockylinux/rockylinux:10.0'
-            COMPILER: 'gcc'
-            preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            INSTALL_SDL3: 0
+            INSTALL_SDL3_IMAGE: 0
             allow_failure: false
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 2
           submodules: false
@@ -92,12 +76,15 @@ jobs:
         env:
           FROM:       ${{ matrix.FROM }}
           COMPILER:   ${{ matrix.COMPILER }}
-          MY_OS_NAME: linux
+          INSTALL_GTEST: ${{ matrix.INSTALL_GTEST }}
+          USE_GTEST: ${{ matrix.USE_GTEST }}
+          INSTALL_SDL3: ${{ matrix.INSTALL_SDL3 }}
+          INSTALL_SDL3_IMAGE: ${{ matrix.INSTALL_SDL3_IMAGE }}
           IS_RELEASE: 0
         run: script/cibuild --preset-name="${{ matrix.preset-name }}"
 
       - name: Upload test results
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         if: failure()
         with:
           name: test_results_xml

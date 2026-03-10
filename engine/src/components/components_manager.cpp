@@ -217,6 +217,18 @@ bool ComponentsManager::AllowedUpgrade(const Cargo& upgrade) const {
     return true;
 }
 
+bool ComponentsManager::UpgradeAlreadyInstalled(const Cargo& upgrade) const {
+    const ComponentType component_type = GetComponentTypeFromName(upgrade.GetName());
+    const Component *component = GetComponentByType(component_type);
+    if(component) {
+        return component->Installed();
+    }
+
+    // Note that this method returns true for error, so we err on the side of caution
+    // and not install an upgrade.
+    return true;
+}
+
 /** A convenience struct to hold the data used below */
 struct HudText {
     const Component *component;
@@ -341,10 +353,13 @@ bool ComponentsManager::_Buy(CargoHold *hold, ComponentsManager *seller, Cargo *
     int max_affordable_quantity = static_cast<int>(std::floor(credits / price));
     quantity = std::min(max_affordable_quantity, quantity);
 
-    // Check the maximum you can fit in your hold
-    int max_stackable_quantity = static_cast<int>(std::floor(hold->AvailableCapacity() / item->GetVolume()));
-    quantity = std::min(max_stackable_quantity, quantity);
-
+    // Check the maximum you can fit in your hold, but only if volume != 0 and not a weapon.
+    // Weapons go on hard points and don't count for volume calculations.
+    if(item->GetVolume() > 0 && !item->IsWeapon()) {
+        int max_stackable_quantity = static_cast<int>(std::floor(hold->AvailableCapacity() / item->GetVolume()));
+        quantity = std::min(max_stackable_quantity, quantity);
+    }
+    
     // Sanity check of the quantity - isn't 0 or negative
     if(quantity <= 0) {
         return false;
@@ -352,6 +367,18 @@ bool ComponentsManager::_Buy(CargoHold *hold, ComponentsManager *seller, Cargo *
 
     // Actual transaction
     Cargo sold_cargo = seller->cargo_hold.RemoveCargo(seller, index, quantity);
+
+    // We're upgrading, not just bying cargo
+    if(hold == &upgrade_space) {
+        // Installed components should be marked as such
+        sold_cargo.SetInstalled(true);
+
+        // Weapons in upgrade space don't take upgrade volume
+        if(sold_cargo.IsWeapon()) {
+            sold_cargo.SetVolume(0);
+        }
+    }
+
     ComponentsManager::credits -= price * quantity;
     hold->AddCargo(this, sold_cargo);
     return true;
@@ -411,6 +438,12 @@ bool ComponentsManager::_Sell(CargoHold *hold, ComponentsManager *buyer, Cargo *
 }
 
 Component* ComponentsManager::GetComponentByType(const ComponentType type) {
+    return const_cast<Component*>(
+        static_cast<const ComponentsManager&>(*this).GetComponentByType(type)
+    );
+}
+
+const Component* ComponentsManager::GetComponentByType(const ComponentType type) const {
     switch(type) {
         case ComponentType::Hull: return &hull;
         case ComponentType::Armor: return &armor;

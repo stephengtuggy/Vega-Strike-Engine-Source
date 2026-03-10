@@ -70,6 +70,13 @@
 #include "resource/random_utils.h"
 #include "root_generic/options.h"
 
+#include "gui/pause_screen.h"
+
+#include "imgui/imgui.h"
+#include "backends/imgui_impl_sdl3.h"
+#include "backends/imgui_impl_opengl3.h"
+#include "backends/imgui_impl_sdlrenderer3.h"
+
 // Using
 using namespace VSFileSystem;
 using namespace GalaxyXML;
@@ -368,7 +375,7 @@ StarSystem *Universe::Init(string systemfile, const Vector &centr, const string 
 
 // Gameplay Methods
 void Universe::Loop(void main_loop()) {
-    GFXLoop(main_loop);
+     GFXLoop(main_loop);
 }
 
 void Universe::WriteSaveGame(bool auto_save) {
@@ -379,7 +386,28 @@ void Universe::WriteSaveGame(bool auto_save) {
     }
 }
 
+
+static constexpr ImGuiWindowFlags window_flags =
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoScrollbar |
+        ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoBackground |
+        ImGuiWindowFlags_NoDecoration;   // makes it transparent
+
 void Universe::StartDraw() {
+    // Handle game pausing -stop the loop and enter a new loop until a key is pressed
+    if(paused) {
+        pauseGame();
+
+        // We need to call this because the game tracks the actual time between frames.
+        // If we pause the game for a second, the game will move ships on the board as is a second has passed.
+        // This means ships will move significantly from where they were when we paused.
+        UpdateTime();
+        paused = false;
+    }
+
 #ifndef WIN32
     RESETTIME();
 #endif
@@ -407,9 +435,31 @@ void Universe::StartDraw() {
 #if defined(LOG_TIME_TAKEN_DETAILS)
         const double update_gfx_end_time = realTime();
 #endif
+        // ImGui Init
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplSDL3_NewFrame();
+        ImGui::NewFrame();
+
+        // End ImGui Init
+        ImGui::SetNextWindowPos(ImVec2(0,0), ImGuiCond_Always);
+        const ImVec2 window_size(configuration().graphics.resolution_x,
+                                configuration().graphics.resolution_y);
+        ImGui::SetNextWindowSize(window_size, ImGuiCond_Always);
+        ImGui::Begin("main_window", nullptr, window_flags);
+
         if (!RefreshGUI() && !UniverseUtil::isSplashScreenShowing()) {
             activeStarSystem()->Draw();
         }
+
+        // ImGui End Frame
+        ImGui::End();
+        // Rendering
+        ImGui::Render();
+
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        SDL_Window* current_window = SDL_GL_GetCurrentWindow();
+        SDL_GL_SwapWindow(current_window);
+        // End ImGui
 #if defined(LOG_TIME_TAKEN_DETAILS)
         const double draw_active_star_system_end_time = realTime();
         VS_LOG(trace,
@@ -798,6 +848,9 @@ unsigned int Universe::numPlayers() {
     return _cockpits.size();
 }
 
+void Universe::TogglePause() {
+    paused = !paused;
+}
 
 /////////////////////////////////////////////////////////
 // Unsorted

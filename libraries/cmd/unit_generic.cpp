@@ -85,7 +85,7 @@
 #include "vegadisk/savegame.h"
 #include "resource/manifest.h"
 #include "cmd/dock_utils.h"
-#include "vega_cast_utils.h"
+#include "src/vega_cast_utils.h"
 #include "resource/random_utils.h"
 #include "gldrv/mouse_cursor.h"
 
@@ -1769,7 +1769,6 @@ void Unit::SetCollisionParent(Unit *name) {
 
 //This function should not be used on server side
 extern vector<Vector> perplines;
-extern vector<int> turretcontrol;
 
 float Unit::querySphereClickList(const QVector &st, const QVector &dir, float err) const {
     float retval = 0;
@@ -2006,7 +2005,11 @@ int Unit::ForceDock(Unit *utdw, unsigned int whichdockport) {
 
     // Change mouse pointer to arrow
     if(IsPlayerShip()) {
-        changeCursor(CursorType::arrow);
+        if(configuration().mouse.enabled) {
+            changeCursor(CursorType::arrow);
+        } else {
+            showCursor();
+        }
     }
 
     return whichdockport + 1;
@@ -2058,7 +2061,6 @@ bool Unit::isDocked(const Unit *d) const {
 }
 
 extern vector<int> switchunit;
-extern vector<int> turretcontrol;
 
 bool Unit::UnDock(Unit *utdw) {
     unsigned int i = 0;
@@ -2102,18 +2104,17 @@ bool Unit::UnDock(Unit *utdw) {
                     }
                 }
             }
-            if (name == "return_to_cockpit" || this->name == "return_to_cockpit") {
-                while (turretcontrol.size() <= _Universe->CurrentCockpit()) {
-                    turretcontrol.push_back(0);
-                }
-                turretcontrol[_Universe->CurrentCockpit()] = 1;
-            }
+           
             // Send notification that a ship has undocked from a station
             _Universe->AccessCockpit()->OnDockEnd(utdw, this);
 
             // Change mouse cursor to crosshairs
             if(IsPlayerShip()) {
-                changeCursor(CursorType::crosshairs);
+                if(configuration().mouse.enabled) {
+                    changeCursor(CursorType::crosshairs);
+                } else {
+                    hideCursor();
+                }
             }
 
             return true;

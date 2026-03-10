@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - name: Setup Python
-        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         id: vega-py-setup
         with:
           python-version: ${{ matrix.python-version }}
@@ -46,7 +46,7 @@ jobs:
         run: brew install bash
 
       - name: Check out repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 2
           submodules: false
@@ -74,6 +74,10 @@ jobs:
           PYTHONHOME: ""
           PYTHONPATH: ""
           IS_RELEASE: 1
+          INSTALL_GTEST: 0
+          USE_GTEST: 0
+          INSTALL_SDL3: 0
+          INSTALL_SDL3_IMAGE: 0
         run: script/cibuild --preset-name=${{ matrix.preset-name }}
 
       - name: Package it
@@ -81,7 +85,7 @@ jobs:
         run: cpack -V --preset-name="package-${{ matrix.preset-name }}"
 
       - name: Upload the artifacts
-        uses: softprops/action-gh-release@5be0e66d93ac7ed76da52eca8bb058f665c3a5fe # v2.4.2
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
         if: startsWith(github.ref, 'refs/tags/')
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

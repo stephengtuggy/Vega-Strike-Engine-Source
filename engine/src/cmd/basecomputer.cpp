@@ -87,25 +87,92 @@ using VSFileSystem::SaveFile;
 #include <sys/types.h>
 #endif
 #include <sys/stat.h>
+#include <locale>
 #include "src/vega_cast_utils.h"
 
-// Can't declare in header because PyObject is problematic
-extern const std::string GetString(const std::string function_name,
-                            const std::string module_name,
-                            const std::string file_name,
-                            PyObject* args);
+enum class Color {
+    prohibited, downgrade, incompatible, no_space, no_money, destroyed, 
+    category, mission, default_upgrade, mount_prohibited, mount_empty, mount_full
+};
 
-using namespace XMLSupport; // FIXME -- Shouldn't include an entire namespace, according to Google Style Guide -- stephengtuggy 2021-09-07
+GFXColor getColor(Color color) {
+    switch(color) {
+        case Color::prohibited:
+            return vs_config->getColor("prohibited_upgrade", GFXColor(1, .1, 0, 1));
+        case Color::downgrade:
+            return vs_config->getColor("downgrade_or_noncompatible", GFXColor(.75, .5, .5, 1));
+        case Color::incompatible:
+            return vs_config->getColor("downgrade_or_noncompatible", GFXColor(.75, .5, .5, 1));
+        case Color::no_space:
+            return vs_config->getColor("no_room_for_upgrade", GFXColor(1, 0, 1, 1));
+        case Color::no_money:
+            return vs_config->getColor("no_money", GFXColor(1, 1, .3, 1));
+        case Color::destroyed:
+            return vs_config->getColor("upgrade_item_destroyed", GFXColor(0.2, 0.2, 0.2, 1));
+        case Color::category:
+            return vs_config->getColor("base_category_color", GFXColor(0, .75, 0, 1));
+        case Color::mission:
+            return vs_config->getColor("base_mission_color", GFXColor(.66, .2, 0, 1));
+        case Color::default_upgrade:
+            return vs_config->getColor("base_upgrade_color", GFXColor(1, 1, 1, 1));
+        case Color::mount_prohibited:
+            return GFXColor(1, .7, .7);
+        case Color::mount_empty:
+            return GFXColor(.2, 1, .2);
+        case Color::mount_full:
+            return GFXColor(1, 1, 0);
+        default:
+            return GFXColor(0, 0, 0);
+    }
+}
+
+
+static GFXColor transaction_color;
+
+
+/************************************
+ * Boost Python Module
+ ***********************************/
+BOOST_PYTHON_MODULE(base_computer)
+{
+    using namespace boost::python;
+
+    enum_<BaseComputer::TransactionType>("TransactionType")
+        .value("BUY_CARGO", BaseComputer::TransactionType::BUY_CARGO)
+        .value("SELL_CARGO", BaseComputer::TransactionType::SELL_CARGO)
+        .value("BUY_UPGRADE", BaseComputer::TransactionType::BUY_UPGRADE)
+        .value("SELL_UPGRADE", BaseComputer::TransactionType::SELL_UPGRADE)
+        .value("BUY_SHIP", BaseComputer::TransactionType::BUY_SHIP)
+        // We're missing sell ship for some reason
+        .value("ACCEPT_MISSION", BaseComputer::TransactionType::ACCEPT_MISSION)
+        .value("NULL_TRANSACTION", BaseComputer::TransactionType::NULL_TRANSACTION)
+        .export_values();
+}
+
+void InitBaseComputer() {
+    PyImport_AppendInittab("base_computer", PyInit_base_computer);
+}
+
+// Can't declare in header because PyObject is problematic
+extern boost::python::object WrapObject(PyObject* raw_object);
+
+extern boost::python::object GetPyObject(const std::string& function_name,
+                                        const std::string& module_name,
+                                        const std::string& file_name,
+                                        PyObject* raw_args);
+
+extern std::string GetString(const std::string& function_name,
+                            const std::string& module_name,
+                            const std::string& file_name,
+                            PyObject* raw_args);
+
+extern boost::python::object MapToObject(const std::map<std::string, std::string>& cpp_map);
 
 //end for directory thing
 extern const char *DamagedCategory;
 
 int BaseComputer::dirty = 0;
 
-static GFXColor UnsaturatedColor(float r, float g, float b, float a = 1.0f) {
-    GFXColor ret(r, g, b, a);
-    return ret;
-}
 
 std::string emergency_downgrade_mode;
 extern std::string CurrentSaveGameName;
@@ -121,23 +188,15 @@ std::vector<std::string> getWeapFilterVec() {
 
 std::vector<std::string> weapfiltervec = getWeapFilterVec();
 
-bool upgradeNotAddedToCargo(std::string category) {
-    for (const auto & i : weapfiltervec) {
-        if (i.find(category) == 0) {
-            return true;
-        }
-    }
-    return false;
-}
 
 extern vector<unsigned int> base_keyboard_queue;
 
 // This will break because we have cargo_hold and upgrade_space
 std::string getDisplayCategory(const Cargo &cargo) {
-    std::string::size_type where = cargo.GetDescription().find("<");
+    std::string::size_type where = cargo.GetDescription().find('<');
     if (where != string::npos) {
         std::string category = cargo.GetDescription().substr(where + 1);
-        where = category.find(">");
+        where = category.find('>');
         return category.substr(0, where);
     }
     return cargo.GetCategory();
@@ -148,74 +207,11 @@ static const char CATEGORY_SEP = '/';
 //Tag that says this is a category not an item.
 static const char CATEGORY_TAG = (-1);
 
-//Color of an item that there isn't enough money to buy.
-//We read this out of the config file (or use a default).
-static bool color_prohibited_upgrade_flag = false;
-static bool color_downgrade_or_noncompatible_flag = false;
-static bool color_insufficient_space_flag = false;
-static bool color_insufficient_money_flag = false;
-
-static GFXColor NO_MONEY_COLOR() {
-    static GFXColor NMC = vs_config->getColor("no_money", GFXColor(1, 1, .3, 1));
-    return NMC;       //Start out with bogus color.
-}
-
-//Make the variable static, so it won't print so many annoying messages!
-static GFXColor PROHIBITED_COLOR() {
-    static GFXColor PU = vs_config->getColor("prohibited_upgrade", GFXColor(1, .1, 0, 1));
-    return PU;
-}
-
-static GFXColor DOWNGRADE_OR_NONCOMPAT_COLOR() {
-    static GFXColor DNC = vs_config->getColor("downgrade_or_noncompatible", GFXColor(.75, .5, .5, 1));
-    return DNC;
-}
-
-static GFXColor NO_ROOM_COLOR() {
-    static GFXColor NRFU = vs_config->getColor("no_room_for_upgrade", GFXColor(1, 0, 1, 1));
-    return NRFU;
-}
-
-static GFXColor ITEM_DESTROYED_COLOR() {
-    static GFXColor IDC = vs_config->getColor("upgrade_item_destroyed", GFXColor(0.2, 0.2, 0.2, 1));
-    return IDC;
-}
-
-//Color of the text of a category.
-static GFXColor CATEGORY_TEXT_COLOR() {
-    static GFXColor CTC = vs_config->getColor("base_category_color", GFXColor(0, .75, 0, 1));
-    return CTC;
-}
-
-static GFXColor MISSION_COLOR() {
-    static GFXColor MiC = vs_config->getColor("base_mission_color", GFXColor(.66, .2, 0, 1));
-    return MiC;
-}
-
 //Space between mode buttons.
 static const float MODE_BUTTON_SPACE = 0.03;
 
-//Default color in CargoColor.
-static GFXColor DEFAULT_UPGRADE_COLOR() {
-    static GFXColor DuC = vs_config->getColor("base_upgrade_color", GFXColor(1, 1, 1, 1));
-    return DuC;
-}
 
-//MOUNT ENTRY COLORS
-//Mount point that cannot be selected.
-static GFXColor MOUNT_POINT_NO_SELECT() {
-    return GFXColor(1, .7, .7);
-}
 
-//Empty mount point.
-static GFXColor MOUNT_POINT_EMPTY() {
-    return GFXColor(.2, 1, .2);
-}
-
-//Mount point that contains weapon.
-static GFXColor MOUNT_POINT_FULL() {
-    return GFXColor(1, 1, 0);
-}
 
 //Some mission declarations.
 //These should probably be in a header file somewhere.
@@ -246,11 +242,10 @@ extern void RespawnNow(Cockpit *cockpit);
 
 //headers for functions used internally
 //build the previous description for a ship purchase item
-string buildShipDescription(Cargo &item, string &descriptiontexture);
+string buildShipDescription(Cargo &item, string &texture_description);
 //build the previous description from a cargo purchase item
 string buildCargoDescription(const Cargo &item, BaseComputer &computer, float price);
 //put in buffer a pretty prepresentation of the POSITIVE float f (ie 4,732.17)
-void prettyPrintFloat(char *buffer, float f, int digitsBefore, int digitsAfter, int bufferLen = 128);
 string buildUpgradeDescription(Cargo &item, std::map<std::string, std::string> ship_map);
 int basecargoassets(Unit *base, string cargoname);
 
@@ -422,44 +417,24 @@ static float SellPrice(Unit *playerUnit, const Cargo *item) {
 const Unit *getUnitFromUpgradeName(const string &upgradeName, int myUnitFaction = 0);
 
 
+std::string prettyPrintFloat(float value, int precision = 2) {
+    // TODO: Need to place this somewhere else
+    // Call this once if you want your whole program to follow system locale
 
-#define PRETTY_ADD(str, val, digits)                        \
-    do {                                                      \
-        text += "#n#";                                        \
-        text += prefix;                                       \
-        text += str;                                          \
-        prettyPrintFloat( conversionBuffer, val, 0, digits ); \
-        text += conversionBuffer;                             \
-    }                                                         \
-    while (0)
+    std::locale::global(std::locale(""));
 
-#define PRETTY_ADDN(str, val, digits)                       \
-    do {                                                      \
-        text += str;                                          \
-        prettyPrintFloat( conversionBuffer, val, 0, digits ); \
-        text += conversionBuffer;                             \
-    }                                                         \
-    while (0)
+    std::ostringstream out;
 
-#define PRETTY_ADDU(str, val, digits, unit)                 \
-    do {                                                      \
-        text += "#n#";                                        \
-        text += prefix;                                       \
-        text += str;                                          \
-        prettyPrintFloat( conversionBuffer, val, 0, digits ); \
-        text += conversionBuffer;                             \
-        text += " ";                                          \
-        text += unit;                                         \
-    }                                                         \
-    while (0)
+    // Use the user's global locale (setlocale/std::locale::global)
+    out.imbue(std::locale(""));
 
-#define MODIFIES(mode, playerUnit, blankUnit, what)                                 \
-    (   (((playerUnit) -> what) != 0)                                               \
-     && ( (mode != 0) || (((playerUnit) -> what) != ((blankUnit) -> what)) )   )
+    // Fixed n digits after decimal + locale separators
+    out << std::fixed << std::setprecision(precision) << value;
 
-#define MODIFIES_ALTEMPTY(mode, playerUnit, blankUnit, what, empty)                 \
-    (   (((playerUnit) -> what) != (empty))                                         \
-     && ( (mode != 0) || (((playerUnit) -> what) != ((blankUnit) -> what)) )   )
+    return out.str();
+}
+
+
 
 //CONSTRUCTOR.
 BaseComputer::BaseComputer(Unit *player, Unit *base, const std::vector<DisplayMode> &modes) :
@@ -660,13 +635,13 @@ void BaseComputer::constructControls(void) {
         //Seller picker.
         SimplePicker *sellpick = new SimplePicker;
         sellpick->setRect(Rect(-.96, -.4, .76, .95));
-        sellpick->setColor(UnsaturatedColor(color.r, color.g, color.b, .1));
+        sellpick->setColor(GFXColor(color.r, color.g, color.b, .1));
         sellpick->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
         sellpick->setTextColor(GUI_OPAQUE_WHITE());
         sellpick->setFont(Font(.07));
         sellpick->setTextMargins(Size(0.02, 0.01));
-        sellpick->setSelectionColor(UnsaturatedColor(0, .6, 0, .8));
-        sellpick->setHighlightColor(UnsaturatedColor(0, .6, 0, .35));
+        sellpick->setSelectionColor(GFXColor(0, .6, 0, .8));
+        sellpick->setHighlightColor(GFXColor(0, .6, 0, .35));
         sellpick->setHighlightTextColor(GUI_OPAQUE_WHITE());
         sellpick->setId("BaseUpgrades");
         sellpick->setScroller(sellerScroller);
@@ -677,9 +652,9 @@ void BaseComputer::constructControls(void) {
         //Scroller for inventory.
         Scroller *invScroller = new Scroller;
         invScroller->setRect(Rect(.91, -.4, .05, .95));
-        invScroller->setColor(UnsaturatedColor(color.r, color.g, color.b, .1));
-        invScroller->setThumbColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
-        invScroller->setButtonColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4));
+        invScroller->setColor(GFXColor(color.r, color.g, color.b, .1));
+        invScroller->setThumbColor(GFXColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
+        invScroller->setButtonColor(GFXColor(color.r * .4, color.g * .4, color.b * .4));
         invScroller->setTextColor(GUI_OPAQUE_WHITE());
         invScroller->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
 
@@ -689,8 +664,8 @@ void BaseComputer::constructControls(void) {
         ipick->setColor(GFXColor(color.r, color.g, color.b, .1));
         ipick->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
         ipick->setTextColor(GUI_OPAQUE_WHITE());
-        ipick->setSelectionColor(UnsaturatedColor(0, .6, 0, .8));
-        ipick->setHighlightColor(UnsaturatedColor(0, .6, 0, .35));
+        ipick->setSelectionColor(GFXColor(0, .6, 0, .8));
+        ipick->setHighlightColor(GFXColor(0, .6, 0, .35));
         ipick->setHighlightTextColor(GUI_OPAQUE_WHITE());
         ipick->setFont(Font(.07));
         ipick->setTextMargins(Size(0.02, 0.01));
@@ -733,9 +708,9 @@ void BaseComputer::constructControls(void) {
         //Scroller for description.
         Scroller *descScroller = new Scroller;
         descScroller->setRect(Rect(.91, -.95, .05, .5));
-        descScroller->setColor(UnsaturatedColor(color.r, color.g, color.b, .1));
-        descScroller->setThumbColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
-        descScroller->setButtonColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4));
+        descScroller->setColor(GFXColor(color.r, color.g, color.b, .1));
+        descScroller->setThumbColor(GFXColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
+        descScroller->setButtonColor(GFXColor(color.r * .4, color.g * .4, color.b * .4));
         descScroller->setTextColor(GUI_OPAQUE_WHITE());
         descScroller->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
 
@@ -770,9 +745,9 @@ void BaseComputer::constructControls(void) {
         //Scroller for picker.
         Scroller *pickScroller = new Scroller;
         pickScroller->setRect(Rect(.91, 0, .05, .65));
-        pickScroller->setColor(UnsaturatedColor(color.r, color.g, color.b, .1));
-        pickScroller->setThumbColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
-        pickScroller->setButtonColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4));
+        pickScroller->setColor(GFXColor(color.r, color.g, color.b, .1));
+        pickScroller->setThumbColor(GFXColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
+        pickScroller->setButtonColor(GFXColor(color.r * .4, color.g * .4, color.b * .4));
         pickScroller->setTextColor(GUI_OPAQUE_WHITE());
         pickScroller->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
 
@@ -782,8 +757,8 @@ void BaseComputer::constructControls(void) {
         pick->setColor(GFXColor(color.r, color.g, color.b, .1));
         pick->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
         pick->setTextColor(GUI_OPAQUE_WHITE());
-        pick->setSelectionColor(UnsaturatedColor(0, .6, 0, .8));
-        pick->setHighlightColor(UnsaturatedColor(0, .6, 0, .35));
+        pick->setSelectionColor(GFXColor(0, .6, 0, .8));
+        pick->setHighlightColor(GFXColor(0, .6, 0, .35));
         pick->setHighlightTextColor(GUI_OPAQUE_WHITE());
         pick->setFont(Font(.07));
         pick->setTextMargins(Size(0.02, 0.01));
@@ -796,9 +771,9 @@ void BaseComputer::constructControls(void) {
         //Scroller for description.
         Scroller *descScroller = new Scroller;
         descScroller->setRect(Rect(.91, -.95, .05, .90));
-        descScroller->setColor(UnsaturatedColor(color.r, color.g, color.b, .1));
-        descScroller->setThumbColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
-        descScroller->setButtonColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4));
+        descScroller->setColor(GFXColor(color.r, color.g, color.b, .1));
+        descScroller->setThumbColor(GFXColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
+        descScroller->setButtonColor(GFXColor(color.r * .4, color.g * .4, color.b * .4));
         descScroller->setTextColor(GUI_OPAQUE_WHITE());
         descScroller->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
 
@@ -825,9 +800,9 @@ void BaseComputer::constructControls(void) {
         //Scroller for picker.
         Scroller *pickScroller = new Scroller;
         pickScroller->setRect(Rect(-.20, -.7, .05, 1.4));
-        pickScroller->setColor(UnsaturatedColor(color.r, color.g, color.b, .1));
-        pickScroller->setThumbColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
-        pickScroller->setButtonColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4));
+        pickScroller->setColor(GFXColor(color.r, color.g, color.b, .1));
+        pickScroller->setThumbColor(GFXColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
+        pickScroller->setButtonColor(GFXColor(color.r * .4, color.g * .4, color.b * .4));
         pickScroller->setTextColor(GUI_OPAQUE_WHITE());
         pickScroller->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
 
@@ -837,8 +812,8 @@ void BaseComputer::constructControls(void) {
         pick->setColor(GFXColor(color.r, color.g, color.b, .1));
         pick->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
         pick->setTextColor(GUI_OPAQUE_WHITE());
-        pick->setSelectionColor(UnsaturatedColor(0, .6, 0, .8));
-        pick->setHighlightColor(UnsaturatedColor(0, .6, 0, .35));
+        pick->setSelectionColor(GFXColor(0, .6, 0, .8));
+        pick->setHighlightColor(GFXColor(0, .6, 0, .35));
         pick->setHighlightTextColor(GUI_OPAQUE_WHITE());
         pick->setFont(Font(.07));
         pick->setTextMargins(Size(0.02, 0.01));
@@ -851,9 +826,9 @@ void BaseComputer::constructControls(void) {
         //Scroller for description.
         Scroller *descScroller = new Scroller;
         descScroller->setRect(Rect(.91, -.7, .05, 1.4));
-        descScroller->setColor(UnsaturatedColor(color.r, color.g, color.b, .1));
-        descScroller->setThumbColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
-        descScroller->setButtonColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4));
+        descScroller->setColor(GFXColor(color.r, color.g, color.b, .1));
+        descScroller->setThumbColor(GFXColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
+        descScroller->setButtonColor(GFXColor(color.r * .4, color.g * .4, color.b * .4));
         descScroller->setTextColor(GUI_OPAQUE_WHITE());
         descScroller->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
 
@@ -875,10 +850,10 @@ void BaseComputer::constructControls(void) {
         //Scroller for description.
         Scroller *inputTextScroller = new Scroller;
         inputTextScroller->setRect(Rect(.61, -0.95, .05, .2));
-        inputTextScroller->setColor(UnsaturatedColor(color.r, color.g, color.b, .1));
-        inputTextScroller->setThumbColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4),
+        inputTextScroller->setColor(GFXColor(color.r, color.g, color.b, .1));
+        inputTextScroller->setThumbColor(GFXColor(color.r * .4, color.g * .4, color.b * .4),
                 GUI_OPAQUE_WHITE());
-        inputTextScroller->setButtonColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4));
+        inputTextScroller->setButtonColor(GFXColor(color.r * .4, color.g * .4, color.b * .4));
         inputTextScroller->setTextColor(GUI_OPAQUE_WHITE());
         inputTextScroller->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
 
@@ -1021,9 +996,9 @@ void BaseComputer::constructControls(void) {
         //Scroller for picker.
         Scroller *pickScroller = new Scroller;
         pickScroller->setRect(Rect(-.20, -.8, .05, 1.45));
-        pickScroller->setColor(UnsaturatedColor(color.r, color.g, color.b, .1));
-        pickScroller->setThumbColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
-        pickScroller->setButtonColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4));
+        pickScroller->setColor(GFXColor(color.r, color.g, color.b, .1));
+        pickScroller->setThumbColor(GFXColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
+        pickScroller->setButtonColor(GFXColor(color.r * .4, color.g * .4, color.b * .4));
         pickScroller->setTextColor(GUI_OPAQUE_WHITE());
         pickScroller->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
 
@@ -1033,8 +1008,8 @@ void BaseComputer::constructControls(void) {
         pick->setColor(GFXColor(color.r, color.g, color.b, .1));
         pick->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
         pick->setTextColor(GUI_OPAQUE_WHITE());
-        pick->setSelectionColor(UnsaturatedColor(0, .6, 0, .8));
-        pick->setHighlightColor(UnsaturatedColor(0, .6, 0, .35));
+        pick->setSelectionColor(GFXColor(0, .6, 0, .8));
+        pick->setHighlightColor(GFXColor(0, .6, 0, .35));
         pick->setHighlightTextColor(GUI_OPAQUE_WHITE());
         pick->setFont(Font(.07));
         pick->setTextMargins(Size(0.02, 0.01));
@@ -1047,9 +1022,9 @@ void BaseComputer::constructControls(void) {
         //Scroller for description.
         Scroller *descScroller = new Scroller;
         descScroller->setRect(Rect(.91, -.8, .05, 1.45));
-        descScroller->setColor(UnsaturatedColor(color.r, color.g, color.b, .1));
-        descScroller->setThumbColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
-        descScroller->setButtonColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4));
+        descScroller->setColor(GFXColor(color.r, color.g, color.b, .1));
+        descScroller->setThumbColor(GFXColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
+        descScroller->setButtonColor(GFXColor(color.r * .4, color.g * .4, color.b * .4));
         descScroller->setTextColor(GUI_OPAQUE_WHITE());
         descScroller->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
 
@@ -1093,9 +1068,9 @@ void BaseComputer::constructControls(void) {
         //Scroller for picker.
         Scroller *pickScroller = new Scroller;
         pickScroller->setRect(Rect(-.20, -.8, .05, 1.45));
-        pickScroller->setColor(UnsaturatedColor(color.r, color.g, color.b, .1));
-        pickScroller->setThumbColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
-        pickScroller->setButtonColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4));
+        pickScroller->setColor(GFXColor(color.r, color.g, color.b, .1));
+        pickScroller->setThumbColor(GFXColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
+        pickScroller->setButtonColor(GFXColor(color.r * .4, color.g * .4, color.b * .4));
         pickScroller->setTextColor(GUI_OPAQUE_WHITE());
         pickScroller->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
 
@@ -1105,8 +1080,8 @@ void BaseComputer::constructControls(void) {
         pick->setColor(GFXColor(color.r, color.g, color.b, .1));
         pick->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
         pick->setTextColor(GUI_OPAQUE_WHITE());
-        pick->setSelectionColor(UnsaturatedColor(0, .6, 0, .8));
-        pick->setHighlightColor(UnsaturatedColor(0, .6, 0, .35));
+        pick->setSelectionColor(GFXColor(0, .6, 0, .8));
+        pick->setHighlightColor(GFXColor(0, .6, 0, .35));
         pick->setHighlightTextColor(GUI_OPAQUE_WHITE());
         pick->setFont(Font(.07));
         pick->setTextMargins(Size(0.02, 0.01));
@@ -1119,9 +1094,9 @@ void BaseComputer::constructControls(void) {
         //Scroller for description.
         Scroller *descScroller = new Scroller;
         descScroller->setRect(Rect(.91, -.5, .05, 1.15));
-        descScroller->setColor(UnsaturatedColor(color.r, color.g, color.b, .1));
-        descScroller->setThumbColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
-        descScroller->setButtonColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4));
+        descScroller->setColor(GFXColor(color.r, color.g, color.b, .1));
+        descScroller->setThumbColor(GFXColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
+        descScroller->setButtonColor(GFXColor(color.r * .4, color.g * .4, color.b * .4));
         descScroller->setTextColor(GUI_OPAQUE_WHITE());
         descScroller->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
 
@@ -1210,9 +1185,9 @@ void BaseComputer::constructControls(void) {
         //Scroller for description.
         Scroller *descScroller = new Scroller;
         descScroller->setRect(Rect(.91, -.95, .05, 1.4));
-        descScroller->setColor(UnsaturatedColor(color.r, color.g, color.b, .1));
-        descScroller->setThumbColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
-        descScroller->setButtonColor(UnsaturatedColor(color.r * .4, color.g * .4, color.b * .4));
+        descScroller->setColor(GFXColor(color.r, color.g, color.b, .1));
+        descScroller->setThumbColor(GFXColor(color.r * .4, color.g * .4, color.b * .4), GUI_OPAQUE_WHITE());
+        descScroller->setButtonColor(GFXColor(color.r * .4, color.g * .4, color.b * .4));
         descScroller->setTextColor(GUI_OPAQUE_WHITE());
         descScroller->setOutlineColor(GUI_OPAQUE_MEDIUM_GRAY());
 
@@ -1376,7 +1351,7 @@ void BaseComputer::run(void) {
 
 //Redo the title strings for the display.
 void BaseComputer::recalcTitle() {
-    if (m_displayModes.size() == 1) {
+    if (m_displayModes.size() == 1 || m_displayModes.at(0) == NETWORK) {
         return;
     }
 
@@ -1410,7 +1385,7 @@ void BaseComputer::recalcTitle() {
         }
     }
     //Set the string in the base title control.
-    StaticDisplay *baseTitleDisplay = vega_dynamic_cast_ptr<StaticDisplay>(window()->findControlById("baseTitle"));
+    StaticDisplay *baseTitleDisplay = vega_dynamic_cast_ptr<StaticDisplay>(window()->findControlById("BaseInfoTitle"));
     baseTitleDisplay->setText(baseTitle);
 
     //Generic player title for display
@@ -1554,25 +1529,25 @@ void BaseComputer::hideCommitControls(void) {
     //The three buy/sell buttons.
     NewButton *commitButton = vega_dynamic_cast_ptr<NewButton>(window()->findControlById("Commit"));
     commitButton->setHidden(true);
-    NewButton *commit10Button = vega_dynamic_cast_ptr<NewButton>(window()->findControlById("Commit10"));
-    if (commit10Button != NULL) {
+    NewButton *commit10Button = vega_dynamic_cast_ptr<NewButton>(window()->findControlById("Commit10"), true);
+    if (commit10Button != nullptr) {
         commit10Button->setHidden(true);
     }
-    NewButton *commitAllButton = vega_dynamic_cast_ptr<NewButton>(window()->findControlById("CommitAll"));
-    if (commitAllButton != NULL) {
+    NewButton *commitAllButton = vega_dynamic_cast_ptr<NewButton>(window()->findControlById("CommitAll"), true);
+    if (commitAllButton != nullptr) {
         commitAllButton->setHidden(true);
     }
-    NewButton *commitFixButton = vega_dynamic_cast_ptr<NewButton>(window()->findControlById("CommitFix"));
-    if (commitFixButton != NULL) {
+    NewButton *commitFixButton = vega_dynamic_cast_ptr<NewButton>(window()->findControlById("CommitFix"), true);
+    if (commitFixButton != nullptr) {
         commitFixButton->setHidden(true);
     }
     //The price and "max" displays.
-    StaticDisplay *totalPrice = vega_dynamic_cast_ptr<StaticDisplay>(window()->findControlById("TotalPrice"));
-    if (totalPrice != NULL) {
+    StaticDisplay *totalPrice = vega_dynamic_cast_ptr<StaticDisplay>(window()->findControlById("TotalPrice"), true);
+    if (totalPrice != nullptr) {
         totalPrice->setText("");
     }
-    StaticDisplay *maxForPlayer = vega_dynamic_cast_ptr<StaticDisplay>(window()->findControlById("MaxQuantity"));
-    if (maxForPlayer != NULL) {
+    StaticDisplay *maxForPlayer = vega_dynamic_cast_ptr<StaticDisplay>(window()->findControlById("MaxQuantity"), true);
+    if (maxForPlayer != nullptr) {
         maxForPlayer->setText("");
     }
 }
@@ -1817,7 +1792,6 @@ void BaseComputer::updateTransactionControlsForSelection(TransactionList *tlist)
         }
     }
     //The description string.
-    char conversionBuffer[128];
     string text = "";
     string descString;
     string tailString;
@@ -1894,7 +1868,7 @@ void BaseComputer::updateTransactionControlsForSelection(TransactionList *tlist)
                     //the current base.  "Buying" this ship makes it my current ship.
                     tempString = (boost::format("#b#Transport cost: %1$.2f#-b#n1.5#") % item.GetPrice()).str();
                 } else {
-                    PRETTY_ADDN("", baseUnit->PriceCargo(item.GetName()), 2);
+                    text += prettyPrintFloat(baseUnit->PriceCargo(item.GetName()));
                     tempString = (boost::format("Price: #b#%1%#-b#n#") % text).str();
                     const bool printvolume = configuration().graphics.bases.print_cargo_volume;
                     if (printvolume) {
@@ -1987,33 +1961,35 @@ void BaseComputer::updateTransactionControlsForSelection(TransactionList *tlist)
     descString += tailString;
 
     //Change the description control.
-    string::size_type pic;
+    string::size_type pic = descString.find('@');
     StaticImageDisplay
-            *descimage = vega_dynamic_cast_ptr<StaticImageDisplay>(window()->findControlById("DescriptionImage"));
-    if ((pic = descString.find("@")) != string::npos) {
+            *desc_image = vega_dynamic_cast_ptr<StaticImageDisplay>(window()->findControlById("DescriptionImage"), true);
+    
+    if (pic != string::npos) {
         std::string texture = descString.substr(pic + 1);
         descString = descString.substr(0, pic);
-        string::size_type picend = texture.find("@");
+        string::size_type picend = texture.find('@');
         if (picend != string::npos) {
             descString += texture.substr(picend + 1);
             texture = texture.substr(0, picend);
         }
-        if (descimage) {
-            descimage->setTexture(texture);
+        if (desc_image) {
+            desc_image->setTexture(texture);
         }
     } else {
-        if (descimage && descriptiontexture == "") {
-            descimage->setTexture("blackclear.png");
-        } else if (descimage) {
-            descimage->setTexture(descriptiontexture);
+        if (desc_image && descriptiontexture.empty()) {
+            desc_image->setTexture("blackclear.png");
+        } else if (desc_image) {
+            desc_image->setTexture(descriptiontexture);
         }
     }
     {
-        pic = descString.find("<");
+        pic = descString.find('<');
         if (pic != string::npos) {
             std::string tmp = descString.substr(pic + 1);
             descString = descString.substr(0, pic);
-            if ((pic = tmp.find(">")) != string::npos) {
+            pic = tmp.find('>');
+            if (pic != string::npos) {
                 descString += tmp.substr(pic + 1);
             }
         }
@@ -2053,7 +2029,7 @@ bool BaseComputer::pickerChangedSelection(const EventCommandId &command, Control
 
 bool UpgradeAllowed(const Cargo &item, Unit *playerUnit) {
     if(!playerUnit->AllowedUpgrade(item)) {
-        color_prohibited_upgrade_flag = true;
+        transaction_color = getColor(Color::prohibited);
         return false;
     }
 
@@ -2063,7 +2039,7 @@ bool UpgradeAllowed(const Cargo &item, Unit *playerUnit) {
 //Return whether or not the current item and quantity can be "transacted".
 bool BaseComputer::isTransactionOK(const Cargo &originalItem, TransactionType transType, int quantity) {
     if (originalItem.IsMissionFlag() && transType != SELL_CARGO) {
-        color_downgrade_or_noncompatible_flag = true;
+        transaction_color = getColor(Color::incompatible);
         return false;
     }
     //Make sure we have somewhere to put stuff.
@@ -2079,21 +2055,22 @@ bool BaseComputer::isTransactionOK(const Cargo &originalItem, TransactionType tr
     Cargo item = originalItem;
     item.SetQuantity(quantity);
     Unit *baseUnit = m_base.GetUnit();
-    bool havemoney = true;
-    bool havespace = true;
+    bool have_money = true;
+    bool have_space = true;
+    bool upgrade_already_installed = false;
     switch (transType) {
         case BUY_CARGO:
             //Enough credits and room for the item in the ship.
-            havemoney = item.GetPrice() * quantity <= ComponentsManager::credits;
-            havespace = playerUnit->cargo_hold.CanAddCargo(item);
-            if (havemoney && havespace) {
+            have_money = item.GetPrice() * quantity <= ComponentsManager::credits;
+            have_space = playerUnit->cargo_hold.CanAddCargo(item);
+            if (have_money && have_space) {
                 return true;
             } else {
-                if (!havemoney) {
-                    color_insufficient_money_flag = true;
+                if (!have_money) {
+                    transaction_color = getColor(Color::no_money);
                 }
-                if (!havespace) {
-                    color_insufficient_space_flag = true;
+                if (!have_space) {
+                    transaction_color = getColor(Color::no_space);
                 }
             }
             break;
@@ -2109,7 +2086,7 @@ bool BaseComputer::isTransactionOK(const Cargo &originalItem, TransactionType tr
                 if (item.GetPrice() * quantity <= ComponentsManager::credits) {
                     return true;
                 } else {
-                    color_insufficient_money_flag = true;
+                    transaction_color = getColor(Color::no_money);
                 }
             }
             break;
@@ -2125,22 +2102,39 @@ bool BaseComputer::isTransactionOK(const Cargo &originalItem, TransactionType tr
             return true;
 
         case BUY_UPGRADE:
-            //cargo.mission == true means you can't do the transaction.
-            havemoney = item.GetPrice() * quantity <= ComponentsManager::credits;
-            havespace = (playerUnit->upgrade_space.CanAddCargo(item) || upgradeNotAddedToCargo(item.GetCategory()));
+            have_money = item.GetPrice() * quantity <= ComponentsManager::credits;
+            have_space = (playerUnit->upgrade_space.CanAddCargo(item) || item.IsWeapon());
+            upgrade_already_installed = playerUnit->UpgradeAlreadyInstalled(item);
 
-            //UpgradeAllowed must be first -- short circuit && operator
-            if (UpgradeAllowed(item, playerUnit) && havemoney && havespace && !item.IsMissionFlag()) {
-                return true;
-            } else {
-                if (!havemoney) {
-                    color_insufficient_money_flag = true;
-                }
-                if (!havespace) {
-                    color_insufficient_space_flag = true;
-                }
+            // Simply not allowed
+            if (!UpgradeAllowed(item, playerUnit)) {
+                transaction_color = getColor(Color::prohibited);
+                return false;
             }
-            break;
+
+            // Mission cargo can't be bought. Not really possible but for check for completeness sake.
+            if(item.IsMissionFlag()) {
+                return false;
+            }
+
+            // No money
+            if (!have_money) {
+                transaction_color = getColor(Color::no_money);
+                return false;
+            }
+
+            // At this point, we can always upgrade weapons
+            if(item.IsWeapon()) {
+                return true;
+            }
+
+            // No space, but only for non-weapon upgrades. Weapons take no space.
+            if (!have_space || upgrade_already_installed) {
+                transaction_color = getColor(Color::no_space);
+                return false;
+            }
+
+            return true;
         default:
             assert(false);            //Missed an enum in transaction switch statement.
             break;
@@ -2177,7 +2171,7 @@ SimplePickerCell *BaseComputer::createCategoryCell(SimplePickerCells &cells,
         //Need to make a new cell for this.
         cells.addCell(new SimplePickerCell(beautify(currentCategory),
                 currentCategory,
-                CATEGORY_TEXT_COLOR(),
+                getColor(Color::category),
                 CATEGORY_TAG));
     }
     SimplePickerCell
@@ -2220,6 +2214,13 @@ void BaseComputer::loadListPicker(TransactionList &tlist,
     for (size_t i = 0; i < tlist.masterList.size(); i++) {
         Cargo &item = tlist.masterList.at(i).cargo;
 
+        // Before we do anything, let's get the default colors straight
+        // Clear color means use the text color in the picker.
+        GFXColor base_color = GUI_CLEAR;
+        if(item.IsMissionFlag()) {
+            base_color = getColor(Color::mission);
+        } 
+
         std::string icategory = getDisplayCategory(item);
         if (icategory != currentCategory) {
             //Create new cell(s) for the new category.
@@ -2229,7 +2230,9 @@ void BaseComputer::loadListPicker(TransactionList &tlist,
         }
         //Construct the cell for this item.
         //JS_NUDGE -- this is where I'll need to do the upgrades colorations goop hooks
-        const bool transOK = isTransactionOK(item, transType);
+        if(!isTransactionOK(item, transType)) {
+            base_color = transaction_color;
+        }
 
         string itemName = beautify(UniverseUtil::LookupUnitStat(item.GetName(), "upgrades", "Name"));
         string originalName = itemName;
@@ -2242,24 +2245,6 @@ void BaseComputer::loadListPicker(TransactionList &tlist,
         }
 //*******************************************************************************
 
-        //Clear color means use the text color in the picker.
-        GFXColor bad_trans_color = NO_MONEY_COLOR();
-        if (color_downgrade_or_noncompatible_flag) {
-            bad_trans_color = DOWNGRADE_OR_NONCOMPAT_COLOR();
-        } else if (color_prohibited_upgrade_flag) {
-            bad_trans_color = PROHIBITED_COLOR();
-        } else if (color_insufficient_space_flag) {
-            bad_trans_color = NO_ROOM_COLOR();
-        } else if (color_insufficient_money_flag) {
-            //Just in case we want to change the default reason for non-purchase
-            bad_trans_color = NO_MONEY_COLOR();
-        }
-        GFXColor base_color = (transOK ? (item.IsMissionFlag() ? MISSION_COLOR() : GUI_CLEAR) : bad_trans_color);
-        //Reset cause-color flags
-        color_prohibited_upgrade_flag = false;
-        color_downgrade_or_noncompatible_flag = false;
-        color_insufficient_space_flag = false;
-        color_insufficient_money_flag = false;
         GFXColor final_color;
         if (transType == SELL_UPGRADE && m_player.GetUnit()) {
             //Adjust the base color if the item is 'damaged'
@@ -2276,7 +2261,7 @@ void BaseComputer::loadListPicker(TransactionList &tlist,
                 final_color = base_color;
             }               //working = normal color
             if (percent_working == 0.0) {
-                final_color = ITEM_DESTROYED_COLOR();
+                final_color = getColor(Color::destroyed);
             }                   //dead = grey
         } else {
             final_color = base_color;
@@ -2794,7 +2779,7 @@ void BaseComputer::loadMissionsMasterList(TransactionList &tlist) {
     if (!active_missions.empty()) {
         for (unsigned int i = 1; i < active_missions.size(); ++i) {
             CargoColor amission;
-            amission.cargo.SetName(XMLSupport::tostring(i) + " " + active_missions[i]->mission_name);
+            amission.cargo.SetName(std::to_string(i) + " " + active_missions[i]->mission_name);
             amission.cargo.SetPrice(0);
             amission.cargo.SetQuantity(1);
             amission.cargo.SetCategory("Active_Missions");
@@ -2802,11 +2787,11 @@ void BaseComputer::loadMissionsMasterList(TransactionList &tlist) {
             for (unsigned int j = 0; j < active_missions[i]->objectives.size(); ++j) {
                 amission.cargo.SetDescription(
                         amission.cargo.GetDescription() + active_missions[i]->objectives.at(j).objective + ": "
-                                + XMLSupport::tostring((int) (100
+                                + std::to_string((int) (100
                                         * active_missions[i]->objectives.at(j).completeness))
                                 + "%\\");
             }
-            amission.color = DEFAULT_UPGRADE_COLOR();
+            amission.color = getColor(Color::default_upgrade);
             tlist.masterList.push_back(amission);
         }
     }
@@ -2911,7 +2896,7 @@ void BaseComputer::loadBuyUpgradeControls(void) {
     tlist.masterList.clear();     //Just in case
 
     //Get all the upgrades.
-    assert(equalColors(CargoColor().color, DEFAULT_UPGRADE_COLOR()));
+    assert(equalColors(CargoColor().color, getColor(Color::default_upgrade)));
     std::vector<std::string> filtervec;
     filtervec.push_back("upgrades");
     loadMasterList(baseUnit, baseUnit->cargo_hold, filtervec, std::vector<std::string>(), true, tlist);
@@ -2919,8 +2904,9 @@ void BaseComputer::loadBuyUpgradeControls(void) {
 
     //Mark all the upgrades that we can't do.
     //cargo.mission == true means we can't upgrade this.
+    // TODO: fix this nonsense. We should get mission status from the colors but the other way around.
     for (auto iter = tlist.masterList.begin(); iter != tlist.masterList.end(); ++iter) {
-        iter->cargo.SetMissionFlag((!equalColors(iter->color, DEFAULT_UPGRADE_COLOR())));
+        iter->cargo.SetMissionFlag((!equalColors(iter->color, getColor(Color::default_upgrade))));
     }
 
     // Filter integral from masterList
@@ -2980,9 +2966,10 @@ void BaseComputer::loadSellUpgradeControls(void) {
     }
     //Mark all the upgrades that we can't do.
     //cargo.mission == true means we can't upgrade this.
+    // TODO: fix this nonsense. We should get mission status from the colors but the other way around.
     vector<CargoColor>::iterator iter;
     for (iter = tlist.masterList.begin(); iter != tlist.masterList.end(); iter++) {
-        iter->cargo.SetMissionFlag((!equalColors(iter->color, DEFAULT_UPGRADE_COLOR())));
+        iter->cargo.SetMissionFlag((!equalColors(iter->color, getColor(Color::default_upgrade))));
     }
     std::vector<std::string> invplayerfiltervec = weapfiltervec;
     std::vector<string> playerfiltervec;
@@ -3286,7 +3273,7 @@ void BaseComputer::BuyUpgradeOperation::selectMount(void) {
         const bool selectable = playerUnit->canUpgrade(m_newPart, i, m_selectedTurret, 0, false, percent);
 
         //Figure color and label based on weapon that is in the slot.
-        GFXColor mountColor = MOUNT_POINT_NO_SELECT();
+        GFXColor mountColor = getColor(Color::mount_prohibited);
         string mountName;
         string ammoexp;
         if (playerUnit->mounts.at(i).status == Mount::ACTIVE || playerUnit->mounts.at(i).status == Mount::INACTIVE) {
@@ -3295,15 +3282,16 @@ void BaseComputer::BuyUpgradeOperation::selectMount(void) {
                     (playerUnit->mounts.at(i).ammo == -1) ? string("") : string((" ammo: "
                             + tostring(playerUnit->mounts.at(i).ammo)));
             mountName += ammoexp;
-            mountColor = MOUNT_POINT_FULL();
+            mountColor = getColor(Color::mount_full);
         } else {
             const std::string temp = getMountSizeString(playerUnit->mounts.at(i).size);
             mountName = tostring(i + 1) + " (Empty) " + temp.c_str();
-            mountColor = MOUNT_POINT_EMPTY();
+            mountColor = getColor(Color::mount_empty);
         }
         //If the mount point won't work with the weapon, don't let user select it.
         if (!selectable) {
-            mountColor = MOUNT_POINT_NO_SELECT();
+            // This is redundant
+            mountColor = getColor(Color::mount_prohibited);
         }
         //Now we add the cell.  Note that "selectable" is stored in the tag property.
         picker->addCell(new SimplePickerCell(mountName, "", mountColor, (selectable ? 1 : 0)));
@@ -3330,7 +3318,7 @@ bool BaseComputer::BuyUpgradeOperation::checkTransaction(void) {
     }
 }
 
-//Finish the transaction.
+//Finish the transaction - seems only for mounts
 void BaseComputer::BuyUpgradeOperation::concludeTransaction(void) {
     Unit *playerUnit = m_parent.m_player.GetUnit();
     Unit *baseUnit = m_parent.m_base.GetUnit();
@@ -3338,41 +3326,37 @@ void BaseComputer::BuyUpgradeOperation::concludeTransaction(void) {
         finish();
         return;
     }
-    //Get the upgrade percentage to calculate the full price.
-    double percent;
-    int numleft = basecargoassets(baseUnit, m_part.GetName());
-    while (numleft > 0
-            && playerUnit->canUpgrade(m_newPart, m_selectedMount, m_selectedTurret, 0, true, percent)) {
-        const float price = m_part.GetPrice();         //* (1-usedValue(percent));
-        if (ComponentsManager::credits >= price) {
-            //Have enough money.  Buy it.
-            ComponentsManager::credits -= price;
+    
+    int quantity = 1; // By default, we buy one unit
+    if(m_newPart->mounts[0].IsMissileMount()) {
+        int mount_size = playerUnit->mounts[m_selectedMount].size;
+        const Mount mount = m_newPart->mounts[0];
+        const WeaponInfo* info = mount.type;
+        int missile_size = as_integer(info->size);
+        
+        // This is not as clear as it looks.
+        // Light missile size is 64. Medium is 128. Light and medium is 192.
+        // This hack produces inconsistent but plausible results.
+        quantity = mount_size / missile_size;
+        VS_LOG(important_info, (boost::format("Buying %1% missiles (%2%/%3%)") % quantity % missile_size % mount_size));
+    }
+    
 
-            //Upgrade the ship.
-            playerUnit->Upgrade(m_newPart, m_selectedMount, m_selectedTurret, 0, true, percent);
-            const bool allow_special_with_weapons = configuration().physics.allow_special_and_normal_gun_combo;
-            if (!allow_special_with_weapons) {
-                playerUnit->ToggleWeapon(false, /*backwards*/ true);
-                playerUnit->ToggleWeapon(false, /*backwards*/ false);
-            }
-            //Remove the item from the base, since we bought it.
-            int index = baseUnit->cargo_hold.GetIndex(m_part.GetName());
-            Cargo upgrade = baseUnit->cargo_hold.GetCargo(index);
-            upgrade.SetInstalled(true);
-            baseUnit->cargo_hold.RemoveCargo(baseUnit, index, 1);
-            playerUnit->upgrade_space.AddCargo(playerUnit, upgrade);
-        } else {
-            break;
+    double percent = 0; // Dummy variable. No longer used
+    if(playerUnit->BuyUpgrade(baseUnit, &m_part, quantity)) {
+        // Modify upgrade quantity according to cargo quantity
+        m_newPart->mounts[0].ammo = quantity;
+
+        //Upgrade the ship.
+        playerUnit->Upgrade(m_newPart, m_selectedMount, m_selectedTurret, 0, true, percent);
+        const bool allow_special_with_weapons = configuration().physics.allow_special_and_normal_gun_combo;
+        if (!allow_special_with_weapons) {
+            playerUnit->ToggleWeapon(false, /*backwards*/ true);
+            playerUnit->ToggleWeapon(false, /*backwards*/ false);
         }
-        if (m_newPart->mounts.size() == 0) {
-            break;
-        } else if (m_newPart->mounts.at(0).ammo <= 0) {
-            break;
-        }
-        numleft = basecargoassets(baseUnit, m_part.GetName());
     }
     updateUI();
-
+    
     finish();
 }
 
@@ -3496,7 +3480,9 @@ void BaseComputer::SellUpgradeOperation::selectMount(void) {
             mountName = tostring(i + 1) + " (Empty) " + temp.c_str();
         }
         //Now we add the cell.  Note that "selectable" is stored in the tag property.
-        const GFXColor mountColor = (selectable ? MOUNT_POINT_FULL() : MOUNT_POINT_NO_SELECT());
+        const GFXColor mountColor = (selectable ? 
+                                     getColor(Color::mount_full) : 
+                                     getColor(Color::mount_prohibited));
         picker->addCell(new SimplePickerCell(mountName, "", mountColor, (selectable ? 1 : 0)));
     }
     assert(selectableCount > 0);              //We should have found at least one unit mounted.
@@ -3777,7 +3763,7 @@ void SwapInNewShipName(Cockpit *cockpit, Unit *base, const std::string &newFileN
     cockpit->GetUnitFileName() = newFileName;
 }
 
-string buildShipDescription(Cargo &item, std::string &texturedescription) {
+string buildShipDescription(Cargo &item, std::string &texture_description) {
     VS_LOG(debug, "Entering buildShipDescription");
     //load the Unit
     string newModifications;
@@ -3808,25 +3794,30 @@ string buildShipDescription(Cargo &item, std::string &texturedescription) {
             if (delim != string::npos) {
                 sHudImage = sHudImage.substr(delim + 2);
             }
-            texturedescription = "../units/" + sHudImage + "/" + sImage;
+            texture_description = "../units/" + sHudImage + "/" + sImage;
         }
     }
 
-    std::map<std::string, std::string> ship_map = newPart->UnitToMap();
-    std::string str = GetString("get_ship_description", "ship_view",
-                          "ship_view.py",
-                          ship_map);
+    std::string str;
+    try {
+        std::map<std::string, std::string> ship_map = newPart->UnitToMap();
+        boost::python::object dict = MapToObject(ship_map);
+        str = GetString("get_ship_description", "ship_view", "ship_view.py", dict.ptr());
+    } catch (const std::runtime_error& e) {
+        VS_LOG(error, (boost::format("Error in buildShipDescription: %1%") % e.what()));
+    }
+    
 
     VS_LOG(debug, "buildShipDescription: killing newPart");
     newPart->Kill();
     // VS_LOG(debug, "buildShipDescription: deleting newPart");
     // delete newPart;
     // newPart = nullptr;
-    if (texturedescription != "" && (string::npos == str.find('@'))) {
-        str = "@" + texturedescription + "@" + str;
+    if (!texture_description.empty() && (string::npos == str.find('@'))) {
+        str = "@" + texture_description + "@" + str;
     }
-    VS_LOG(debug, (boost::format("buildShipDescription: texturedescription == %1%") % texturedescription));
-    VS_LOG(debug, (boost::format("buildShipDescription: return value       == %1%") % str));
+    VS_LOG(debug, (boost::format("buildShipDescription: texture_description == %1%") % texture_description));
+    VS_LOG(debug, (boost::format("buildShipDescription: return value        == %1%") % str));
     VS_LOG(debug, "Leaving buildShipDescription");
     return str;
 }
@@ -3835,9 +3826,15 @@ string buildShipDescription(Cargo &item, std::string &texturedescription) {
 string buildUpgradeDescription(Cargo &item, std::map<std::string, std::string> ship_map) {
     const std::string key = item.GetName() + "__upgrades";
     ship_map["upgrade_key"] = key;
-    const std::string text = GetString("get_upgrade_info", "upgrade_view",
-        "upgrade_view.py", ship_map);
+    try {
+        boost::python::object dict = MapToObject(ship_map);
+        const std::string text = GetString("get_upgrade_info", "upgrade_view",
+                                           "upgrade_view.py", dict.ptr());
     return text;
+    } catch (const std::runtime_error& e) {
+        VS_LOG(error, (boost::format("Error in buildUpgradeDescription: %1%") % e.what()));
+    }
+    return std::string();
 }
 
 class PriceSort {
@@ -3996,7 +3993,7 @@ void trackPrice(int whichplayer, const Cargo &item, float price, const string &s
         const vector<float> &recordedLowestPrices = getSaveData(whichplayer, lopricek);
 
         string prefix = "   ";
-        char conversionBuffer[128];
+        
 
         VS_LOG(info, "Tracking data:");
         VS_LOG(info, (boost::format("  highest locs: (%1%)") % recordedHighestLocs.size()));
@@ -4036,7 +4033,7 @@ void trackPrice(int whichplayer, const Cargo &item, float price, const string &s
         {
             for (size_t i = 0; i < recordedHighestPrices.size(); ++i) {
                 string &text = highest[i];
-                PRETTY_ADD("", recordedHighestPrices.at(i), 2);
+                text += "#n#" + prefix + prettyPrintFloat(recordedHighestPrices.at(i));
                 text += " (at " + recordedHighestLocs.at(i) + ")";
 
                 VS_LOG(info, (boost::format("Highest item %1%") % text));
@@ -4048,7 +4045,7 @@ void trackPrice(int whichplayer, const Cargo &item, float price, const string &s
         {
             for (size_t i = 0; i < recordedLowestPrices.size(); ++i) {
                 string &text = lowest[i];
-                PRETTY_ADD("", recordedLowestPrices.at(i), 2);
+                text += "#n#" + prefix + prettyPrintFloat(recordedLowestPrices.at(i));
                 text += " (at " + recordedLowestLocs.at(i) + ")";
 
                 VS_LOG(info, (boost::format("Lowest item %1%") % text));
@@ -4394,10 +4391,14 @@ bool BaseComputer::showPlayerInfo(const EventCommandId &command, Control *contro
     boost::python::list relations_list = VectorToList(relations_vector);
     boost::python::list kills_list = VectorToList(kills_vector);
 
-    PyObject* args = PyTuple_Pack(3, names_list.ptr(), relations_list.ptr(), kills_list.ptr());
-
-    const std::string text = GetString("get_player_info", "player_info",
-        "player_info.py", args);
+    std::string text;
+    try {
+        boost::python::object args = WrapObject(PyTuple_Pack(3, names_list.ptr(), relations_list.ptr(), kills_list.ptr()));
+        text = GetString("get_player_info", "player_info", "player_info.py", args.ptr());
+    } catch (const std::runtime_error& e) {
+        VS_LOG(error, (boost::format("Error in showPlayerInfo: %1%") % e.what()));
+    }
+    
 
     //Put this in the description.
     StaticDisplay *desc = vega_dynamic_cast_ptr<StaticDisplay>(window()->findControlById("Description"));
@@ -4408,68 +4409,6 @@ bool BaseComputer::showPlayerInfo(const EventCommandId &command, Control *contro
     return true;
 }
 
-//does not work with negative numbers!!
-void prettyPrintFloat(char *buffer, float f, int digitsBefore, int digitsAfter, int bufferLen) {
-    int bufferPos = 0;
-    if (!FINITE(f) || ISNAN(f)) {
-        buffer[0] = 'n';
-        buffer[1] = '/';
-        buffer[2] = 'a';
-        buffer[3] = '\0';
-        return;
-    }
-    if (f < 0) {
-        buffer[0] = '-';
-        bufferPos = 1;
-        f = (-f);
-    }
-    float temp = f;
-    int before = 0;
-    while (temp >= 1.0f) {
-        before++;
-        temp /= 10.0f;
-    }
-    while (bufferPos < (bufferLen - 4 - digitsAfter) && before < digitsBefore) {
-        buffer[bufferPos++] = '0';
-        digitsBefore--;
-    }
-    if (before) {
-        for (int p = before; bufferPos < (bufferLen - 4 - digitsAfter) && p > 0; p--) {
-            temp = f;
-            float substractor = 1;
-            for (int i = 0; i < p - 1; i++) {
-                temp /= 10.0f;
-                substractor *= 10.0;
-            }                                                                          //whe cant't cast to int before in case of overflow
-            int digit = ((int) temp) % 10;
-            buffer[bufferPos++] = '0' + digit;
-            //reason for the folowing line: otherwise the  "((int)temp)%10" may overflow when converting
-            f = f - ((float) digit * substractor);
-            if ((p != 1) && (p % 3 == 1)) {
-                buffer[bufferPos++] = ' ';
-            } // thousand separator
-        }
-    } else {
-        buffer[bufferPos++] = '0';
-    }
-    if (digitsAfter == 0) {
-        buffer[bufferPos] = 0;
-        return;
-    }
-
-    if (bufferPos < bufferLen) {
-        buffer[bufferPos++] = '.';
-    }
-
-    temp = f;
-    for (int i = 0; bufferPos < (bufferLen - 1) && i < digitsAfter; i++) {
-        temp *= 10;
-        buffer[bufferPos++] = '0' + (((int) temp) % 10);
-    }
-    if (bufferPos < bufferLen) {
-        buffer[bufferPos] = 0;
-    }
-}
 
 static const char *WeaponTypeStrings[] = {
         "UNKNOWN",
@@ -4491,9 +4430,15 @@ bool BaseComputer::showShipStats(const EventCommandId &command, Control *control
     Cargo uninitcargo;
 
     std::map<std::string, std::string> ship_map = playerUnit->UnitToMap();
-    std::string text = GetString("get_ship_description", "ship_view",
-                          "ship_view.py",
-                          ship_map);
+    std::string text;
+    try {
+        boost::python::object dict = MapToObject(ship_map);
+        text = GetString("get_ship_description", "ship_view",
+                          "ship_view.py", dict.ptr());
+    } catch (const std::runtime_error& e) {
+        VS_LOG(error, (boost::format("Error in showShipStats: %1%") % e.what()));
+    }
+    
 
     //remove picture, if any
     string::size_type pic;
