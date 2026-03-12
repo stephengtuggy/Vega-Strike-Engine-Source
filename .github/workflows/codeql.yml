@@ -34,7 +34,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
         with:
           fetch-depth: 2
 
@@ -54,6 +54,13 @@ jobs:
       - name: Run manual build steps
         if: matrix.build-mode == 'manual'
         shell: bash
+        env:
+          COMPILER: gcc
+          INSTALL_GTEST: 0
+          USE_GTEST: 0
+          INSTALL_SDL3: 1
+          INSTALL_SDL3_IMAGE: 1
+          IS_RELEASE: 0
         run: |
           sudo script/bootstrap
           script/build --preset-name=linux-unix-makefiles-pie-enabled-glvnd-debug
