@@ -3,8 +3,10 @@
 ##
 # docker-entrypoint.sh
 #
+# Vega Strike - Space Simulation, Combat and Trading
 # Copyright (c) 2001-2025 Daniel Horn, pyramid3d, Stephen G. Tuggy,
 # and other Vega Strike Contributors
+# Copyright (C) 2026 The Vega Strike Contributors
 #
 # https://github.com/vegastrike/Vega-Strike-Engine-Source
 #
