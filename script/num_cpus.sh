@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+##
+# num_cpus.sh
+#
+# Copyright (C) 2026 Stephen G. Tuggy and other Vega Strike contributors
+#
+# https://github.com/vegastrike/Vega-Strike-Engine-Source
+#
+# This file is part of Vega Strike.
+#
+# Vega Strike is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Vega Strike is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+# Adapted from the following:
+# https://stackoverflow.com/a/23378780
+# https://stackoverflow.com/a/23569003
+# https://stackoverflow.com/a/73686274
+# https://stackoverflow.com/a/68273982
+# https://stackoverflow.com/a/47594483
+# https://stackoverflow.com/a/64853379
+
+os_name="$(uname | tr '[:upper:]' '[:lower:]')"
+export os_name
+
+if [ "$os_name" = 'darwin' ]
+then
+    getconf _NPROCESSORS_ONLN
+elif [ "$os_name" = 'linux' ] || [ "$os_name" = 'linux-gnu' ]
+then
+    if [ -f /proc/stat ]
+    then
+        grep -c 'cpu[0-9]' /proc/stat
+    else
+        getconf _NPROCESSORS_ONLN
+    fi
+elif [ "$os_name" = 'freebsd' ] || [ "$os_name" = 'pc-bsd' ]
+then
+    getconf NPROCESSORS_ONLN
+elif [ "$os_name" = 'windows' ]
+then
+    echo "$NUMBER_OF_PROCESSORS"
+fi
