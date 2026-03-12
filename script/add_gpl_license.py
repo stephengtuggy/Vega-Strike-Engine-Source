@@ -441,6 +441,8 @@ def upsert_license_header(filepath: Path) -> None:
 
                     else:
                         in_license_header_comment = False
+                        if len(current_line) > 1:
+                            already_read_lines = current_line
                         break
                 else:
                     if is_end_of_a_comment(current_line, script_like_file):
