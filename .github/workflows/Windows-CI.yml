@@ -67,8 +67,7 @@ jobs:
           ninjaVersion: 1.12.1
 
       - name: Get CPU count
-        run: ./script/num_cpus.sh
-        shell: bash
+        run: ./script/num_cpus
 
       - name: run-vcpkg
         uses: lukka/run-vcpkg@5e0cab206a5ea620130caf672fce3e4a6b5666a1 # v11.5

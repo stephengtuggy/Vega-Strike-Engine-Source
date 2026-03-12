@@ -1,7 +1,5 @@
-#!/usr/bin/env bash
-
 ##
-# num_cpus.sh
+# num_cpus
 #
 # Copyright (C) 2026 Stephen G. Tuggy and other Vega Strike contributors
 #

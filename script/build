@@ -79,12 +79,12 @@ mkdir -pv "${BUILD_DIR}"
 cmake --preset "$preset_name"
 
 MAX_THREADS_TO_BUILD_WITH=8
-if [ -f ./script/num_cpus.sh ] && [ -x ./script/num_cpus.sh ]
+if [ -f ./script/num_cpus ] && [ -x ./script/num_cpus ]
 then
-  num_threads_to_build_with=$(./script/num_cpus.sh)
-elif [ -f ./num_cpus.sh ] && [ -x ./num_cpus.sh ]
+  num_threads_to_build_with=$(./script/num_cpus)
+elif [ -f ./num_cpus ] && [ -x ./num_cpus ]
 then
-  num_threads_to_build_with=$(./num_cpus.sh)
+  num_threads_to_build_with=$(./num_cpus)
 else
   echo "Error locating num_cpus.sh"
   exit 3
