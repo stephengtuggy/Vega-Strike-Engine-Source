@@ -2,7 +2,7 @@
 # build.ps1
 #
 # Vega Strike - Space Simulation, Combat and Trading
-# Copyright (C) 2001-2025 The Vega Strike Contributors:
+# Copyright (C) 2001-2026 The Vega Strike Contributors:
 # Project creator: Daniel Horn
 # Original development team: As listed in the AUTHORS file
 # Current development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy
@@ -43,12 +43,15 @@ if ($GitSha -ieq "not-applicable" ) {
     $GitSha = ""
 }
 
+[Int32]$MAX_THREADS_TO_BUILD_WITH=8
+[Int32]$num_threads_to_build_with=[Int32]::Parse($env:NUMBER_OF_PROCESSORS)
+$num_threads_to_build_with=[Int32]::Min($num_threads_to_build_with, $MAX_THREADS_TO_BUILD_WITH)
 
 [String]$baseDir = (Get-Location -PSProvider "FileSystem").Path
 [String]$binaryDir = "$baseDir\build\$PresetName"
 Push-Location $baseDir
 cmake --preset $PresetName
-cmake --build --preset "build-$PresetName" -v
+cmake --build --preset "build-$PresetName" -v -j $num_threads_to_build_with
 Pop-Location
 
 New-Item bin -ItemType Directory -Force
