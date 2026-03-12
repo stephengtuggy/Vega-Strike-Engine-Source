@@ -121,7 +121,7 @@ SCRIPT_LIKE_COMMENT_REGEX = re.compile(r'^ *#+( *)(.*)$')
 SHEBANG_REGEX = re.compile(r'^#!(.*)$')
 
 C_LIKE_COMMENTS = ['.c', '.cpp', '.h', '.hpp', '.h.in']
-SCRIPT_LIKE_COMMENTS = ['.py', '.cmake', '.deprecated.cmake', '.txt', '.sh', '.ps1']
+SCRIPT_LIKE_COMMENTS = ['.py', '.cmake', '.deprecated.cmake', '.txt', '.sh', '.ps1', '.yml', '.yaml']
 
 ROW_OF_EQUALS_SIGNS_REGEX = re.compile(r'^={5,200}$')
 ROW_OF_ASTERISKS_REGEX = re.compile(r'^\*{5,200}$')
