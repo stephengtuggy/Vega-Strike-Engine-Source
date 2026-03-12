@@ -29,24 +29,4 @@
 # https://stackoverflow.com/a/47594483
 # https://stackoverflow.com/a/64853379
 
-os_name="$(uname | tr '[:upper:]' '[:lower:]')"
-export os_name
-
-if [ "$os_name" = 'darwin' ]
-then
-    getconf _NPROCESSORS_ONLN
-elif [ "$os_name" = 'linux' ] || [ "$os_name" = 'linux-gnu' ]
-then
-    if [ -f /proc/stat ]
-    then
-        grep -c 'cpu[0-9]' /proc/stat
-    else
-        getconf _NPROCESSORS_ONLN
-    fi
-elif [ "$os_name" = 'freebsd' ] || [ "$os_name" = 'pc-bsd' ]
-then
-    getconf NPROCESSORS_ONLN
-elif [ "$os_name" = 'windows' ]
-then
-    echo "$NUMBER_OF_PROCESSORS"
-fi
+grep -c 'cpu[0-9]' /proc/stat || getconf _NPROCESSORS_ONLN || getconf NPROCESSORS_ONLN || echo "$NUMBER_OF_PROCESSORS"
