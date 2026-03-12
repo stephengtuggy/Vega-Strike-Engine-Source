@@ -114,6 +114,8 @@ jobs:
           - FROM:     'rockylinux/rockylinux:10.1'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
             allow_failure: false
           - FROM:     'rockylinux/rockylinux:10.0'
             COMPILER: 'gcc'
