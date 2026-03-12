@@ -25,6 +25,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
 #
+
 set -e
 
 DETECT_MAC_OS_VERSION=$(sw_vers -productVersion | cut -f 1,2 -d '.')
