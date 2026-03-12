@@ -48,46 +48,68 @@ jobs:
           - FROM:     'ubuntu:questing'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
             allow_failure: false
           - FROM:     'ubuntu:noble'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
             allow_failure: false
           - FROM:     'ubuntu:noble'
             COMPILER: 'clang'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
             allow_failure: false
           - FROM:     'linuxmintd/mint22.2-amd64'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
             allow_failure: false
           - FROM:     'linuxmintd/mint22-amd64'
             COMPILER: 'clang'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
             allow_failure: false
-          - FROM:     'debian:trixie'
+          - FROM:     'dhi.io/python:3.13-debian13-dev'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
             allow_failure: false
           - FROM:     'debian:bookworm'
             COMPILER: 'clang'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
             allow_failure: false
           - FROM:     'fedora:43'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
             allow_failure: false
           - FROM:     'fedora:42'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
             allow_failure: false
           - FROM:     'fedora:41'
             COMPILER: 'clang'
             preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
             allow_failure: false
           - FROM:     'opensuse/leap:16.0'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
             allow_failure: false
           - FROM:     'rockylinux/rockylinux:10.1'
             COMPILER: 'gcc'
@@ -96,6 +118,8 @@ jobs:
           - FROM:     'rockylinux/rockylinux:10.0'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
             allow_failure: false
 
     steps:
@@ -122,6 +146,8 @@ jobs:
         env:
           FROM:       ${{ matrix.FROM }}
           COMPILER:   ${{ matrix.COMPILER }}
+          INSTALL_GTEST: ${{ matrix.INSTALL_GTEST }}
+          USE_GTEST: ${{ matrix.USE_GTEST }}
           IS_RELEASE: 0
         run: script/cibuild --preset-name="${{ matrix.preset-name }}"
 
