@@ -86,7 +86,7 @@ elif [ -f ./num_cpus ] && [ -x ./num_cpus ]
 then
   num_threads_to_build_with=$(./num_cpus)
 else
-  echo "Error locating num_cpus.sh"
+  echo "Error locating num_cpus script"
   exit 3
 fi
 
