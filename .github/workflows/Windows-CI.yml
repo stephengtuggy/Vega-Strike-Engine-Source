@@ -1,3 +1,31 @@
+##
+# Windows-CI.yml
+#
+# Vega Strike - Space Simulation, Combat and Trading
+# Copyright (C) 2001-2026 The Vega Strike Contributors:
+# Project creator: Daniel Horn
+# Original development team: As listed in the AUTHORS file
+# Current development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy
+#
+# https://github.com/vegastrike/Vega-Strike-Engine-Source
+#
+# This file is part of Vega Strike.
+#
+# Vega Strike is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Vega Strike is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+
 name: Windows-CI
 permissions:
     contents: read
@@ -64,7 +92,13 @@ jobs:
         uses: lukka/get-cmake@f176ccd3f28bda569c43aae4894f06b2435a3375 # v4.2.3
 
       - name: Get CPU count
-        run: ./script/num_cpus.ps1
+        run: |
+          [Int32]$MAX_THREADS_TO_BUILD_WITH=4
+          [Int32]$num_threads_to_build_with=[Int32]::Parse($env:NUMBER_OF_PROCESSORS)
+          echo "Number of threads to build with before capping: $num_threads_to_build_with"
+          $num_threads_to_build_with=[Int32]::Min($num_threads_to_build_with, $MAX_THREADS_TO_BUILD_WITH)
+          echo "Number of threads to build with after capping: $num_threads_to_build_with"
+          echo "THREADS_TO_BUILD_WITH=$num_threads_to_build_with" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         shell: pwsh
 
       - name: run-vcpkg
@@ -91,6 +125,7 @@ jobs:
         with:
           configurePreset: ${{ matrix.preset-name }}
           buildPreset: "build-${{ matrix.preset-name }}"
+          buildPresetAdditionalArgs: '[/p:CL_MPcount=$THREADS_TO_BUILD_WITH]'
           testPreset: "test-${{ matrix.preset-name }}"
 
       - name: Save vcpkg cache
@@ -99,10 +134,6 @@ jobs:
         with:
           path: ${{ github.workspace }}/vcpkg_cache
           key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
-
-      - name: Run the tests
-        working-directory: ${{ github.workspace }}
-        run: ctest -V --preset "test-${{ matrix.preset-name }}"
 
       - name: Upload test results
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
