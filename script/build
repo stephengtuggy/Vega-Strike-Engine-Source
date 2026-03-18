@@ -93,7 +93,7 @@ fi
 echo "Number of threads to build with before capping: $num_threads_to_build_with"
 if [ ${num_threads_to_build_with} -gt ${MAX_THREADS_TO_BUILD_WITH} ]
 then
-    num_threads_to_build_with=${MAX_THREADS_TO_BUILD_WITH}
+  num_threads_to_build_with=${MAX_THREADS_TO_BUILD_WITH}
 fi
 echo "Number of threads to build with after capping: $num_threads_to_build_with"
 
@@ -108,16 +108,16 @@ declare -a directories_to_copy_if_they_exist=("${BUILD_DIR}/vegastrike-engine.ap
 
 for i in "${files_to_copy_if_they_exist[@]}"
 do
-    if [ -f "$i" ]
-    then
-        cp -v "$i" "${BIN_DIR}"/
-    fi
+  if [ -f "$i" ]
+  then
+    cp -v "$i" "${BIN_DIR}"/
+  fi
 done
 
 for i in "${directories_to_copy_if_they_exist[@]}"
 do
-    if [ -d "$i" ]
-    then
-        cp -v "$i" "${BIN_DIR}"/
-    fi
+  if [ -d "$i" ]
+  then
+    cp -v "$i" "${BIN_DIR}"/
+  fi
 done
