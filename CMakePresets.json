@@ -705,7 +705,7 @@
         },
         "VCPKG_TARGET_TRIPLET": "x64-win10",
         "VCPKG_HOST_TRIPLET": "x64-win10",
-        "VCPKG_INSTALL_OPTIONS": "--x-buildtrees-root=C:\\Projects\\vbuild"
+        "VCPKG_INSTALL_OPTIONS": "--x-buildtrees-root=$env{VCPKG_ROOT}/../vbuild"
       },
       "debug": {
         "output": true,
