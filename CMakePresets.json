@@ -696,7 +696,8 @@
       "environment": {
         "VCPKG_TARGET_TRIPLET": "x64-win10",
         "VCPKG_HOST_TRIPLET": "x64-win10",
-        "X_VCPKG_APPLOCAL_DEPS_INSTALL": "ON"
+        "X_VCPKG_APPLOCAL_DEPS_INSTALL": "ON",
+        "VCPKG_INSTALL_OPTIONS": "--debug"
       },
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": {
