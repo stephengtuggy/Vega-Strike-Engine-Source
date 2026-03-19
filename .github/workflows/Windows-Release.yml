@@ -26,8 +26,8 @@
 #
 name: Windows-Release
 permissions:
-    contents: write
-    pull-requests: read
+  contents: write
+  pull-requests: read
 
 # Controls when the action will run.
 on:
@@ -64,7 +64,8 @@ jobs:
     env:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
       VCPKG_DEFAULT_HOST_TRIPLET: ${{ matrix.triplet }}
-      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}/vcpkg_cache,readwrite
+      VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'
+      VCPKG_OVERLAY_PORTS: "${{ github.workspace }}/custom-triplets"
 
     steps:
       # Process the `github.sha` value to produce the SHORT_SHA we'll need later
@@ -86,13 +87,19 @@ jobs:
           fetch-depth: 2
           submodules: false
 
-      - name: Restore vcpkg cache
-        id: cache-vcpkg-restore
-        uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
-        with:
-          path: ${{ github.workspace }}/vcpkg_cache
-          key: vcpkg-${{ matrix.os }}-${{ matrix.triplet }}-${{ hashFiles('vcpkg.json') }}
-          restore-keys: vcpkg-${{ matrix.os }}-${{ matrix.triplet }}-
+      - name: 'Setup NuGet Credentials'
+        shell: 'pwsh'
+        run: |
+          & $(vcpkg fetch nuget | select -last 1) \
+            sources add \
+            -source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+            -storepasswordincleartext \
+            -name "GitHub" \
+            -username "${{ github.repository_owner }}" \
+            -password "${{ secrets.GITHUB_TOKEN }}"
+          & $(vcpkg fetch nuget | select -last 1) \
+            setapikey "${{ secrets.GITHUB_TOKEN }}" \
+            -source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
 
       - name: Setup Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -132,13 +139,6 @@ jobs:
           configurePreset: ${{ matrix.preset-name }}
           buildPreset: "build-${{ matrix.preset-name }}"
           testPreset: "test-${{ matrix.preset-name }}"
-
-      - name: Save vcpkg cache
-        id: cache-vcpkg-save
-        uses: actions/cache/save@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
-        with:
-          path: ${{ github.workspace }}/vcpkg_cache
-          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
 
       - name: Package the installer(s)
         working-directory: ${{ github.workspace }}
