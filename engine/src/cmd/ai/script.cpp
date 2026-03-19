@@ -321,8 +321,8 @@ void AIScript::beginElement(const string &name, const AttributeList &attributes)
         case ANGULAR:
         case VECTOR:
             xml->unitlevel++;
-            xml->vectors.push(QVector(0, 0, 0));
-            for (iter = attributes.begin(); iter != attributes.end(); iter++) {
+            xml->vectors.emplace(0, 0, 0);
+            for (iter = attributes.begin(); iter != attributes.end(); ++iter) {
                 switch (attribute_map.lookup((*iter).name)) {
                     case X:
                         topv().i = parse_float((*iter).value);
@@ -384,6 +384,9 @@ void AIScript::beginElement(const string &name, const AttributeList &attributes)
 
                     case YOURV:
                         topv() = (this->parent->GetVelocity());
+                        break;
+                    default:
+                        VS_LOG(warning, (boost::format("Unknown attribute_map lookup value: %1%") % attribute_map.lookup((*iter).name)));
                         break;
                 }
             }
@@ -812,17 +815,17 @@ void AIScript::LoadXML() {
                     % parent->name
                     % parent->computer.threatlevel));
         }
-        if (parent->Target()->IsPlayerShip()) {
+        if (parent && parent->Target() && parent->Target()->IsPlayerShip()) {
             double value;
             const double game_speed = configuration().physics.game_speed_dbl;
             const double game_accel = configuration().physics.game_accel_dbl;
             {
-                Unit *targ = parent->Target();
+                const Unit *targ = parent->Target();
                 if (targ) {
-                    Vector PosDifference = (targ->Position() - parent->Position()).Cast();
-                    double pdmag = PosDifference.Magnitude();
+                    const Vector PosDifference = (targ->Position() - parent->Position()).Cast();
+                    const double pdmag = PosDifference.Magnitude();
                     value = (pdmag - parent->rSize() - targ->rSize());
-                    double myvel =
+                    const double myvel =
                             pdmag > 0 ? PosDifference.Dot(parent->GetVelocity() - targ->GetVelocity()) / pdmag : 0;
                     if (myvel > 0) {
                         value -= myvel * myvel / (2 * (parent->drive.retro / parent->GetMass()));
@@ -833,16 +836,14 @@ void AIScript::LoadXML() {
                 value /= game_speed * game_accel;
             }
             if (aidebug > 0) {
-                UniverseUtil::IOmessage(0, parent->name, "all", string("using script ") + string(
-                        filename) + " threat " + XMLSupport::tostring(
-                        parent->computer.threatlevel) + " dis "
-                        + std::to_string(value));
+                UniverseUtil::IOmessage(0, parent->name, "all", (boost::format("using script %1% threat %2% dis %3%") % filename % parent->computer.threatlevel % value).str());
             }
         }
         return;
     } else {
-        if (aidebug > 1)
+        if (aidebug > 1) {
             VS_LOG(debug, (boost::format("using soft coded script %1%") % filename));
+        }
         if (aidebug > 0) {
             UniverseUtil::IOmessage(0, parent->name, "all", string("FAILED(or missile) script ") + string(
                     filename) + " threat " + XMLSupport::tostring(parent->computer.threatlevel));
