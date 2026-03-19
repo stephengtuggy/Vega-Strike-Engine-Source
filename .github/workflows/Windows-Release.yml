@@ -140,7 +140,7 @@ jobs:
         with:
           configurePreset: ${{ matrix.preset-name }}
           buildPreset: "build-${{ matrix.preset-name }}"
-          buildPresetAdditionalArgs: '[["/p:CL_MPcount=$THREADS_TO_BUILD_WITH"]]'
+          buildPresetAdditionalArgs: "['/p:CL_MPcount=$THREADS_TO_BUILD_WITH']"
           packagePreset: "package-${{ matrix.preset-name }}"
 
       - name: Save vcpkg cache
