@@ -69,6 +69,7 @@ jobs:
       VCPKG_BINARY_SOURCES: 'clear;nuget,https://nuget.pkg.github.com/stephengtuggy/index.json,readwrite'
       VCPKG_OVERLAY_PORTS: ${{ github.workspace }}/custom-triplets
       GH_PKG_REGISTRY_TOKEN: ${{ secrets.GH_PKG_REGISTRY_RW_TOKEN }}
+      NUGET_AUTH_TOKEN: ${{ secrets.GH_PKG_REGISTRY_RW_TOKEN }}
 
     steps:
       # Process the `github.sha` value to produce the SHORT_SHA we'll need later
