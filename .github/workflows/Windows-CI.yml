@@ -73,11 +73,6 @@ jobs:
           fetch-depth: 2
           submodules: false
 
-      - name: Debugging output
-        shell: pwsh
-        run: |
-          echo "VCPKG_ROOT: $Env:VCPKG_ROOT"
-
       - name: Setup Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         id: vega-py-setup
@@ -102,14 +97,14 @@ jobs:
       - name: 'Setup NuGet Credentials'
         shell: 'pwsh'
         run: |
-          & $(& $Env:VCPKG_ROOT/vcpkg.exe fetch nuget | select -last 1) sources add \
-            -source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
-            -storepasswordincleartext \
-            -name "GitHub" \
-            -username "${{ github.repository_owner }}" \
+          & $(& $Env:VCPKG_ROOT/vcpkg.exe fetch nuget | select -last 1) sources add `
+            -source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" `
+            -storepasswordincleartext `
+            -name "GitHub" `
+            -username "${{ github.repository_owner }}" `
             -password "${{ secrets.GITHUB_TOKEN }}"
-          & $(& $Env:VCPKG_ROOT/vcpkg.exe fetch nuget | select -last 1) \
-            setapikey "${{ secrets.GITHUB_TOKEN }}" \
+          & $(& $Env:VCPKG_ROOT/vcpkg.exe fetch nuget | select -last 1) `
+            setapikey "${{ secrets.GITHUB_TOKEN }}" `
             -source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
 
       - name: run-cmake
