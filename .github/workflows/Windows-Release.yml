@@ -112,15 +112,17 @@ jobs:
 
       - name: 'Setup NuGet Credentials'
         shell: 'pwsh'
+        env:
+          GH_PKG_REGISTRY_TOKEN: ${{ secrets.GH_PKG_REGISTRY_RW_TOKEN }}
         run: |
           & $(& $Env:VCPKG_ROOT/vcpkg.exe fetch nuget | select -last 1) sources add `
             -source "https://nuget.pkg.github.com/stephengtuggy/index.json" `
             -storepasswordincleartext `
             -name "GitHub" `
             -username "stephengtuggy" `
-            -password "${{ secrets.GH_PKG_REGISTRY_RW_TOKEN }}"
+            -password "$Env:GH_PKG_REGISTRY_TOKEN"
           & $(& $Env:VCPKG_ROOT/vcpkg.exe fetch nuget | select -last 1) `
-            setapikey "${{ secrets.GH_PKG_REGISTRY_RW_TOKEN }}" `
+            setapikey "$Env:GH_PKG_REGISTRY_TOKEN" `
             -source "https://nuget.pkg.github.com/stephengtuggy/index.json"
 
       - name: run-cmake
