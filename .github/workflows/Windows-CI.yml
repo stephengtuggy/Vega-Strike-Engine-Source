@@ -66,6 +66,7 @@ jobs:
       VCPKG_DEFAULT_HOST_TRIPLET: ${{ matrix.triplet }}
       VCPKG_BINARY_SOURCES: 'clear;nuget,https://nuget.pkg.github.com/stephengtuggy/index.json,readwrite'
       VCPKG_OVERLAY_PORTS: ${{ github.workspace }}\custom-triplets
+      GH_PKG_REGISTRY_TOKEN: ${{ secrets.GH_PKG_REGISTRY_RW_TOKEN }}
 
     steps:
       - name: checkout
@@ -98,8 +99,7 @@ jobs:
       - name: Set up NuGet Credentials
         shell: pwsh
         env:
-          GH_PKG_REGISTRY_TOKEN: "${{ secrets.GH_PKG_REGISTRY_RW_TOKEN }}"
-          NuGetPackageSourceCredentials_GitHub: "Username=stephengtuggy;Password=${{ secrets.GH_PKG_REGISTRY_RW_TOKEN }}"
+          NuGetPackageSourceCredentials_GitHub: "Username=stephengtuggy;Password=$GH_PKG_REGISTRY_TOKEN"
         run: |
           & $(& $Env:VCPKG_ROOT/vcpkg.exe fetch nuget | select -last 1) sources add `
             -source "https://nuget.pkg.github.com/stephengtuggy/index.json" `
