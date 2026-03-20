@@ -91,7 +91,7 @@ jobs:
       - name: run-vcpkg
         uses: lukka/run-vcpkg@5e0cab206a5ea620130caf672fce3e4a6b5666a1 # v11.5
         with:
-          vcpkgDirectory: $VCPKG_ROOT
+          vcpkgDirectory: ${{ env.VCPKG_ROOT }}
         env:
           Python3_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
           Python_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
