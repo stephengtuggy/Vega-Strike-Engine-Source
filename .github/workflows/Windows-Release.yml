@@ -114,7 +114,7 @@ jobs:
       - name: Set up NuGet Credentials
         shell: pwsh
         env:
-          NuGetPackageSourceCredentials_GitHub: "Username=stephengtuggy;Password=$GH_PKG_REGISTRY_TOKEN"
+          NuGetPackageSourceCredentials_GitHub: "UserName=stephengtuggy;Password=$GH_PKG_REGISTRY_TOKEN"
         run: |
           & $(& $Env:VCPKG_ROOT/vcpkg.exe fetch nuget | select -last 1) sources add `
             -source "https://nuget.pkg.github.com/stephengtuggy/index.json" `
