@@ -95,10 +95,10 @@ jobs:
           PYTHONHOME: ""
           PYTHONPATH: ""
 
-      - name: 'Setup NuGet Credentials'
-        shell: 'pwsh'
+      - name: Setup NuGet Credentials
+        shell: pwsh
         env:
-          GH_PKG_REGISTRY_TOKEN: ${{ secrets.GH_PKG_REGISTRY_RW_TOKEN }}
+          GH_PKG_REGISTRY_TOKEN: "${{ secrets.GH_PKG_REGISTRY_RW_TOKEN }}"
         run: |
           & $(& $Env:VCPKG_ROOT/vcpkg.exe fetch nuget | select -last 1) sources add `
             -source "https://nuget.pkg.github.com/stephengtuggy/index.json" `
