@@ -104,7 +104,7 @@ jobs:
           & $(& $Env:VCPKG_ROOT/vcpkg.exe fetch nuget | select -last 1) sources add `
             -Source https://nuget.pkg.github.com/stephengtuggy/index.json `
             -Name GitHub
-          & $(& $Env:VCPKG_ROOT/vcpkg.exe fetch nuget | select -last 1) setapikey $GH_PKG_REGISTRY_TOKEN `
+          & $(& $Env:VCPKG_ROOT/vcpkg.exe fetch nuget | select -last 1) setapikey "$GH_PKG_REGISTRY_TOKEN" `
             -Source https://nuget.pkg.github.com/stephengtuggy/index.json
 
       - name: run-cmake
