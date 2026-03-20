@@ -74,7 +74,7 @@ jobs:
           fetch-depth: 2
           submodules: false
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         id: vega-py-setup
         with:
@@ -95,7 +95,7 @@ jobs:
           PYTHONHOME: ""
           PYTHONPATH: ""
 
-      - name: Setup NuGet Credentials
+      - name: Set up NuGet Credentials
         shell: pwsh
         env:
           GH_PKG_REGISTRY_TOKEN: "${{ secrets.GH_PKG_REGISTRY_RW_TOKEN }}"
