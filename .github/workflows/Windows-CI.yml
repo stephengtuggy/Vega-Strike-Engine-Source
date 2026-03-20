@@ -102,8 +102,10 @@ jobs:
           NuGetPackageSourceCredentials_GitHub: "UserName=stephengtuggy;Password=$GH_PKG_REGISTRY_TOKEN"
         run: |
           & $(& $Env:VCPKG_ROOT/vcpkg.exe fetch nuget | select -last 1) sources add `
-            -source "https://nuget.pkg.github.com/stephengtuggy/index.json" `
-            -name "GitHub"
+            -Source https://nuget.pkg.github.com/stephengtuggy/index.json `
+            -Name GitHub
+          & $(& $Env:VCPKG_ROOT/vcpkg.exe fetch nuget | select -last 1) setapikey $GH_PKG_REGISTRY_TOKEN `
+            -Source https://nuget.pkg.github.com/stephengtuggy/index.json
 
       - name: run-cmake
         uses: lukka/run-cmake@af1be47fd7c933593f687731bc6fdbee024d3ff4 # v10.8
