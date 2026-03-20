@@ -91,19 +91,19 @@ incorporated into Vega Strike
 
 Public Domain"""
 
-LIBRARY_GENERAL_PUBLIC_LICENSE_REGEX = re.compile(r"^This library is free software; you can redistribute it and/or\nmodify it under the terms of the GNU Library General Public\nLicense as published by the Free Software Foundation; either\nversion 2 of the License, or \(at your option\) any later version\.\n\nThis library is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE\. +See the GNU\nLibrary General Public License for more details\.\n\nYou should have received a copy of the GNU Library General Public\nLicense along with this library; if not, (?:see\n<https://www\.gnu\.org/licenses/>\.|write to the Free\nSoftware Foundation, Inc\., 675 Mass Ave, Cambridge, MA 02139, USA\.)$", re.MULTILINE)
-LIBRARY_GENERAL_PUBLIC_LICENSE_TEXT = """
+LGPL_REGEX = re.compile(r"^This library is free software; you can redistribute it and/or\nmodify it under the terms of the GNU (?:Library|Lesser) General Public\nLicense as published by the Free Software Foundation; either\nversion (?:2|2\.0|2\.1|3|3\.0) of the License, or \(at your option\) any later version\.\n\nThis library is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE\. +See the GNU\n(?:Library|Lesser) General Public License for more details\.\n\nYou should have received a copy of the GNU (?:Library|Lesser) General Public\nLicense along with this library; if not, (?:see\n<https://www\.gnu\.org/licenses/>\.|write to the Free\nSoftware Foundation, Inc\., 675 Mass Ave, Cambridge, MA 02139, USA\.)$", re.MULTILINE)
+LGPL_TEXT = """
 This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Library General Public
+modify it under the terms of the GNU Lesser General Public
 License as published by the Free Software Foundation; either
-version 2 of the License, or (at your option) any later version.
+version 3 of the License, or (at your option) any later version.
 
 This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Library General Public License for more details.
+Lesser General Public License for more details.
 
-You should have received a copy of the GNU Library General Public
+You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, see
 <https://www.gnu.org/licenses/>."""
 
@@ -611,9 +611,9 @@ def upsert_license_header(filepath: Path) -> None:
                 match_group_split_lines = license_header_uncommented_concat_2.splitlines()
                 for i in match_group_split_lines:
                     license_header_uncommented_lines.pop(0)
-            elif LIBRARY_GENERAL_PUBLIC_LICENSE_REGEX.match(license_header_uncommented_concat_2):
-                print(f"File '{filepath}': GNU Library General Public License")
-                output_copyright_notice += LIBRARY_GENERAL_PUBLIC_LICENSE_TEXT
+            elif LGPL_REGEX.match(license_header_uncommented_concat_2):
+                print(f"File '{filepath}': GNU LGPL")
+                output_copyright_notice += LGPL_TEXT
                 match_group_split_lines = license_header_uncommented_concat_2.splitlines()
                 for i in match_group_split_lines:
                     license_header_uncommented_lines.pop(0)
