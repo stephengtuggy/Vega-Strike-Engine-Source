@@ -28,6 +28,7 @@ name: Windows-CI
 permissions:
   contents: read
   pull-requests: read
+  packages: write
 
 # Controls when the action will run.
 on:
@@ -98,14 +99,14 @@ jobs:
         shell: 'pwsh'
         run: |
           & $(& $Env:VCPKG_ROOT/vcpkg.exe fetch nuget | select -last 1) sources add `
-            -source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" `
+            -source "https://nuget.pkg.github.com/stephengtuggy/index.json" `
             -storepasswordincleartext `
             -name "GitHub" `
-            -username "${{ github.repository_owner }}" `
-            -password "${{ secrets.GITHUB_TOKEN }}"
+            -username "stephengtuggy" `
+            -password "${{ secrets.GH_PKG_REGISTRY_RW_TOKEN }}"
           & $(& $Env:VCPKG_ROOT/vcpkg.exe fetch nuget | select -last 1) `
-            setapikey "${{ secrets.GITHUB_TOKEN }}" `
-            -source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+            setapikey "${{ secrets.GH_PKG_REGISTRY_RW_TOKEN }}" `
+            -source "https://nuget.pkg.github.com/stephengtuggy/index.json"
 
       - name: run-cmake
         uses: lukka/run-cmake@af1be47fd7c933593f687731bc6fdbee024d3ff4 # v10.8
