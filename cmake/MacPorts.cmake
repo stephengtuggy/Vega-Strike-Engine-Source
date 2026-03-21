@@ -24,6 +24,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
 #
+
 SET(CMAKE_PREFIX_PATH "/opt/local")
 SET(Boost_INCLUDE_DIR "/opt/local/libexec/boost/1.87/include" CACHE STRING "Boost install directory")
 SET(Boost_DIR "/opt/local/libexec/boost/1.87/lib/cmake/Boost-1.87.0" CACHE STRING "Boost root directory")

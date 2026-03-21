@@ -24,6 +24,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
 #
+
 EXECUTE_PROCESS(COMMAND brew --prefix
                 OUTPUT_VARIABLE HomebrewPrefixOut
                 ERROR_VARIABLE HomebrewPrefixErr
