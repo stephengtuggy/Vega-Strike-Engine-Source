@@ -2,13 +2,11 @@
  * director_server.cpp
  *
  * Vega Strike - Space Simulation, Combat and Trading
- * Copyright (C) 2001-2025 The Vega Strike Contributors:
+ * Copyright (C) 2001-2026 The Vega Strike Contributors:
  * Project creator: Daniel Horn
- * Original development team: As listed in the AUTHORS file. Specifically:
- * klausfreire, dan_w, safemode, ace123, balloyd1, khepri, surfdargent
+ * Original development team: As listed in the AUTHORS file. Specifically: klausfreire, dan_w, safemode, ace123, balloyd1, khepri, surfdargent
  * Also: pyramid3d, Nachum Barcohen
  * Current development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy
- *
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
