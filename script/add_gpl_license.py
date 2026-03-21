@@ -54,13 +54,15 @@ from shutil import copystat, move
 from tempfile import NamedTemporaryFile
 import re
 
-COPYRIGHT_VEGA_CONTRIBUTORS_WITH_SPECIFICALLY_REGEX = re.compile(r"^(?:Vega Strike - Space Simulation, Combat and Trading\n)?Copyright \([cC]\) (\d{4})(?:-\d{4})? *The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: ((?:by *)?[A-Za-z0-9 .<@>]+(?:, *[A-Za-z0-9 .<@>]+){0,20})\nCurrent development team: Roy Falk, Benjamen R\. Meyer, Stephen G\. Tuggy(?:\nCopyright \([cC]\) \d{4}(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>]+(?:, *[A-Za-z0-9 .<@>]+){0,20})(?:(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors)?)*$", re.MULTILINE)
-COPYRIGHT_VEGA_CONTRIBUTORS_REGEX = re.compile(r"^(?:Vega Strike - Space Simulation, Combat and Trading\n)?Copyright \([cC]\) (\d{4})(?:-\d{4})? *The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\nCurrent development team: Roy Falk, Benjamen R\. Meyer, Stephen G\. Tuggy(?:\nCopyright \([cC]\) \d{4}(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>]+(?:, *[A-Za-z0-9 .<@>]+){0,20})(?:(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors)?)*$", re.MULTILINE)
-GENERIC_VEGA_COPYRIGHT_REGEX = re.compile(r"^Vega Strike - Space Simulation, Combat and Trading(?:\nCopyright \([cC]\) \d{4}(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>]+(?:, *[A-Za-z0-9 .<@>]+){0,20})(?:(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors)?)*$", re.MULTILINE)
+COPYRIGHT_VEGA_CONTRIBUTORS_WITH_SPECIFICALLY_AND_ALSO_REGEX = re.compile(r"^(?:Vega Strike - Space Simulation, Combat and Trading\n)?Copyright \([cC]\) (\d{4})(?:-\d{4})? *The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\. Specifically:\s+((?:by\s+)?[A-Za-z0-9 .<@>_]+(?:,\s*[A-Za-z0-9 .<@>_]+){0,20})\nAlso:\s+((?:by *)?[A-Za-z0-9 .<@>_]+(?:,\s*[A-Za-z0-9 .<@>_]+){0,20})\nCurrent development team: Roy Falk, Benjamen R\. Meyer, Stephen G\. Tuggy(?:\nCopyright \([cC]\) \d{4}(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>_]+(?:, *[A-Za-z0-9 .<@>_]+){0,20})(?:(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors)?)*$", re.MULTILINE)
+COPYRIGHT_VEGA_CONTRIBUTORS_WITH_SPECIFICALLY_REGEX = re.compile(r"^(?:Vega Strike - Space Simulation, Combat and Trading\n)?Copyright \([cC]\) (\d{4})(?:-\d{4})? *The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\. Specifically:\s+((?:by\s+)?[A-Za-z0-9 .<@>_]+(?:,\s*[A-Za-z0-9 .<@>_]+){0,20})\nCurrent development team: Roy Falk, Benjamen R\. Meyer, Stephen G\. Tuggy(?:\nCopyright \([cC]\) \d{4}(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>_]+(?:, *[A-Za-z0-9 .<@>_]+){0,20})(?:(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors)?)*$", re.MULTILINE)
+COPYRIGHT_VEGA_CONTRIBUTORS_WITH_ALSO_REGEX = re.compile(r"^(?:Vega Strike - Space Simulation, Combat and Trading\n)?Copyright \([cC]\) (\d{4})(?:-\d{4})? *The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\.?\nAlso:\s+((?:by *)?[A-Za-z0-9 .<@>_]+(?:,\s*[A-Za-z0-9 .<@>_]+){0,20})\nCurrent development team: Roy Falk, Benjamen R\. Meyer, Stephen G\. Tuggy(?:\nCopyright \([cC]\) \d{4}(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>_]+(?:, *[A-Za-z0-9 .<@>_]+){0,20})(?:(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors)?)*$", re.MULTILINE)
+COPYRIGHT_VEGA_CONTRIBUTORS_REGEX = re.compile(r"^(?:Vega Strike - Space Simulation, Combat and Trading\n)?Copyright \([cC]\) (\d{4})(?:-\d{4})? *The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\nCurrent development team: Roy Falk, Benjamen R\. Meyer, Stephen G\. Tuggy(?:\nCopyright \([cC]\) \d{4}(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>_]+(?:, *[A-Za-z0-9 .<@>_]+){0,20})(?:(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors)?)*$", re.MULTILINE)
+GENERIC_VEGA_COPYRIGHT_REGEX = re.compile(r"^Vega Strike - Space Simulation, Combat and Trading(?:\nCopyright \([cC]\) \d{4}(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>_]+(?:, *[A-Za-z0-9 .<@>_]+){0,20})(?:(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors)?)*$", re.MULTILINE)
 
-BASIC_COPYRIGHT_REGEX = re.compile(r'^Copyright +\([Cc]\) +\d{4}(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>]+(?:, *[A-Za-z0-9 .<@>]+){0,20})(?:, *)?$')
-GENERIC_MULTI_COPYRIGHT_REGEX = re.compile(r"^Copyright \([cC]\) (\d{4})(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>]+(?:, *[A-Za-z0-9 .<@>]+){0,20})(?:(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors)?(?:\nCopyright \([cC]\) (\d{4})(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>]+(?:, *[A-Za-z0-9 .<@>]+){0,20})(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors|Largely +[Rr]ewritten +[Bb]y +[A-Za-z0-9 .<@>]+){0,20}$", re.MULTILINE)
-LARGELY_REWRITTEN_BY_REGEX = re.compile(r'^Largely +[Rr]ewritten +[Bb]y +[A-Za-z0-9 .<@>]+$')
+BASIC_COPYRIGHT_REGEX = re.compile(r'^Copyright +\([Cc]\) +\d{4}(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>_]+(?:,\s*[A-Za-z0-9 .<@>_]+){0,20})(?:, *)?$', re.MULTILINE)
+GENERIC_MULTI_COPYRIGHT_REGEX = re.compile(r"^Copyright \([cC]\) (\d{4})(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>_]+(?:, *[A-Za-z0-9 .<@>_]+){0,20})(?:(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors)?(?:\nCopyright \([cC]\) (\d{4})(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>_]+(?:, *[A-Za-z0-9 .<@>_]+){0,20})(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors|Largely +[Rr]ewritten +[Bb]y +[A-Za-z0-9 .<@>_]+){0,20}$", re.MULTILINE)
+LARGELY_REWRITTEN_BY_REGEX = re.compile(r'^Largely +[Rr]ewritten +[Bb]y +[A-Za-z0-9 .<@>_]+$')
 VEGA_STRIKE_CONTRIBUTORS_REGEX = re.compile(r'^(?: ?and other| ?The)? ?Vega Strike [Cc]ontributors$')
 
 THIS_FILE_IS_PART_OF_VEGA_STRIKE_REGEX = re.compile(r"^(?:https://github\.com/vegastrike/Vega-Strike-Engine-Source\n+)?This file is part of Vega Strike\.\n\nVega Strike is free software: you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation, either version [23] of the License, or\n\(at your option\) any later version\.\n\nVega Strike is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE\. +See the\nGNU General Public License for more details\.\n\nYou should have received a copy of the GNU General Public License\nalong with Vega Strike\. +If not, see <https://www\.gnu\.org/licenses/>\.$", re.MULTILINE)
@@ -91,19 +93,25 @@ incorporated into Vega Strike
 
 Public Domain"""
 
-LIBRARY_GENERAL_PUBLIC_LICENSE_REGEX = re.compile(r"^This library is free software; you can redistribute it and/or\nmodify it under the terms of the GNU Library General Public\nLicense as published by the Free Software Foundation; either\nversion 2 of the License, or \(at your option\) any later version\.\n\nThis library is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE\. +See the GNU\nLibrary General Public License for more details\.\n\nYou should have received a copy of the GNU Library General Public\nLicense along with this library; if not, (?:see\n<https://www\.gnu\.org/licenses/>\.|write to the Free\nSoftware Foundation, Inc\., 675 Mass Ave, Cambridge, MA 02139, USA\.)$", re.MULTILINE)
-LIBRARY_GENERAL_PUBLIC_LICENSE_TEXT = """
+SIMPLIFIED_OPCODE_PUBLIC_DOMAIN_REGEX = re.compile(r"^Public Domain\n\nHomepage: http://www\.codercorner\.com/Opcode\.htm$", re.MULTILINE)
+SIMPLIFIED_OPCODE_PUBLIC_DOMAIN_TEXT = """
+Public Domain
+
+Homepage: http://www.codercorner.com/Opcode.htm"""
+
+LGPL_REGEX = re.compile(r"^This library is free software; you can redistribute it and/or\nmodify it under the terms of the GNU (?:Library|Lesser) General Public\nLicense as published by the Free Software Foundation; either\nversion (?:2|2\.0|2\.1|3|3\.0) of the License, or \(at your option\) any later version\.\n\nThis library is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE\. +See the GNU\n(?:Library|Lesser) General Public License for more details\.\n\nYou should have received a copy of the GNU (?:Library|Lesser) General Public\nLicense along with this library; if not, (?:see\n<https://www\.gnu\.org/licenses/>\.|write to the Free\nSoftware Foundation, Inc\., 675 Mass Ave, Cambridge, MA 02139, USA\.)$", re.MULTILINE)
+LGPL_TEXT = """
 This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Library General Public
+modify it under the terms of the GNU Lesser General Public
 License as published by the Free Software Foundation; either
-version 2 of the License, or (at your option) any later version.
+version 3 of the License, or (at your option) any later version.
 
 This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Library General Public License for more details.
+Lesser General Public License for more details.
 
-You should have received a copy of the GNU Library General Public
+You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, see
 <https://www.gnu.org/licenses/>."""
 
@@ -120,7 +128,7 @@ SCRIPT_LIKE_COMMENT_REGEX = re.compile(r'^ *#+( *)(.*)$')
 
 SHEBANG_REGEX = re.compile(r'^#!(.*)$')
 
-C_LIKE_COMMENTS = ['.c', '.cpp', '.h', '.hpp', '.h.in']
+C_LIKE_COMMENTS = ['.c', '.cpp', '.h', '.hpp', '.h.in', '.yacc', '.lex']
 SCRIPT_LIKE_COMMENTS = ['.py', '.cmake', '.deprecated.cmake', '.txt', '.sh', '.ps1', '.yml', '.yaml']
 
 ROW_OF_EQUALS_SIGNS_REGEX = re.compile(r'^={5,200}$')
@@ -532,7 +540,21 @@ def upsert_license_header(filepath: Path) -> None:
             license_header_uncommented_concat_1 = '\n'.join(license_header_uncommented_lines)
             output_copyright_notice += "\nVega Strike - Space Simulation, Combat and Trading\n"
 
-            if COPYRIGHT_VEGA_CONTRIBUTORS_WITH_SPECIFICALLY_REGEX.match(license_header_uncommented_concat_1):
+            if COPYRIGHT_VEGA_CONTRIBUTORS_WITH_SPECIFICALLY_AND_ALSO_REGEX.match(license_header_uncommented_concat_1):
+                print(f"File '{filepath}': Copyright Vega Contributors with Specifically and Also clauses")
+                copyright_notice_match: re.Match[str] = COPYRIGHT_VEGA_CONTRIBUTORS_WITH_SPECIFICALLY_AND_ALSO_REGEX.match(license_header_uncommented_concat_1)
+                start_year = copyright_notice_match.group(1)
+                specifically_clause = copyright_notice_match.group(2)
+                also_clause = copyright_notice_match.group(3)
+                if start_year == current_year:
+                    output_copyright_notice += "Copyright (C) " + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: " + specifically_clause + "\nAlso: " + also_clause + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
+                else:
+                    output_copyright_notice += "Copyright (C) " + start_year + "-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: " + specifically_clause + "\nAlso: " + also_clause + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
+
+                match_group_split_lines = copyright_notice_match.group(0).splitlines()
+                for i in match_group_split_lines:
+                    license_header_uncommented_lines.pop(0)
+            elif COPYRIGHT_VEGA_CONTRIBUTORS_WITH_SPECIFICALLY_REGEX.match(license_header_uncommented_concat_1):
                 print(f"File '{filepath}': Copyright Vega Contributors with Specifically clause")
                 copyright_notice_match: re.Match[str] = COPYRIGHT_VEGA_CONTRIBUTORS_WITH_SPECIFICALLY_REGEX.match(license_header_uncommented_concat_1)
                 start_year = copyright_notice_match.group(1)
@@ -541,6 +563,19 @@ def upsert_license_header(filepath: Path) -> None:
                     output_copyright_notice += "Copyright (C) " + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: " + specifically_clause + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
                 else:
                     output_copyright_notice += "Copyright (C) " + start_year + "-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file. Specifically: " + specifically_clause + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
+
+                match_group_split_lines = copyright_notice_match.group(0).splitlines()
+                for i in match_group_split_lines:
+                    license_header_uncommented_lines.pop(0)
+            elif COPYRIGHT_VEGA_CONTRIBUTORS_WITH_ALSO_REGEX.match(license_header_uncommented_concat_1):
+                print(f"File '{filepath}': Copyright Vega Contributors with Also clause")
+                copyright_notice_match: re.Match[str] = COPYRIGHT_VEGA_CONTRIBUTORS_WITH_ALSO_REGEX.match(license_header_uncommented_concat_1)
+                start_year = copyright_notice_match.group(1)
+                also_clause = copyright_notice_match.group(2)
+                if start_year == current_year:
+                    output_copyright_notice += "Copyright (C) " + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file.\nAlso: " + also_clause + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
+                else:
+                    output_copyright_notice += "Copyright (C) " + start_year + "-" + current_year + " The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file.\nAlso: " + also_clause + "\nCurrent development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy\n"
 
                 match_group_split_lines = copyright_notice_match.group(0).splitlines()
                 for i in match_group_split_lines:
@@ -592,6 +627,35 @@ def upsert_license_header(filepath: Path) -> None:
                         break
                 if not found_current_year:
                     output_copyright_notice += "Copyright (C) " + current_year + " The Vega Strike Contributors\n"
+            elif BASIC_COPYRIGHT_REGEX.match(license_header_uncommented_concat_1):
+                print(f"File '{filepath}': Basic (single-clause) copyright section")
+                found_current_year: bool = False
+                license_header_uncommented_split_lines_1 = license_header_uncommented_concat_1.splitlines()
+                previous_line: str = ''
+                copyright_clause: str = ''
+                for current_copyright_line in license_header_uncommented_split_lines_1:
+                    if BASIC_COPYRIGHT_REGEX.match(current_copyright_line) or LARGELY_REWRITTEN_BY_REGEX.match(current_copyright_line) or VEGA_STRIKE_CONTRIBUTORS_REGEX.match(current_copyright_line):
+                        copyright_clause = current_copyright_line + '\n'
+                        license_header_uncommented_lines.pop(0)
+                        if copyright_current_year_regex.match(current_copyright_line):
+                            found_current_year = True
+                        elif copyright_current_year_regex_2.match(current_copyright_line):
+                            found_current_year = True
+                    elif BASIC_COPYRIGHT_REGEX.match(previous_line + '\n' + current_copyright_line):
+                        copyright_clause = previous_line + '\n' + current_copyright_line + '\n'
+                        license_header_uncommented_lines.pop(0)
+                        if copyright_current_year_regex.match(previous_line + '\n' + current_copyright_line):
+                            found_current_year = True
+                        elif copyright_current_year_regex_2.match(previous_line + '\n' + current_copyright_line):
+                            found_current_year = True
+                    else:
+                        license_header_uncommented_lines.pop(0)
+                        break
+                    previous_line = current_copyright_line
+
+                output_copyright_notice += copyright_clause
+                if not found_current_year:
+                    output_copyright_notice += "Copyright (C) " + current_year + " The Vega Strike Contributors\n"
 
             # Trim leading blank lines again after copyright clause(s)
             while len(license_header_uncommented_lines) > 0 and license_header_uncommented_lines[0] == '':
@@ -611,9 +675,15 @@ def upsert_license_header(filepath: Path) -> None:
                 match_group_split_lines = license_header_uncommented_concat_2.splitlines()
                 for i in match_group_split_lines:
                     license_header_uncommented_lines.pop(0)
-            elif LIBRARY_GENERAL_PUBLIC_LICENSE_REGEX.match(license_header_uncommented_concat_2):
-                print(f"File '{filepath}': GNU Library General Public License")
-                output_copyright_notice += LIBRARY_GENERAL_PUBLIC_LICENSE_TEXT
+            elif SIMPLIFIED_OPCODE_PUBLIC_DOMAIN_REGEX.match(license_header_uncommented_concat_2):
+                print(f"File '{filepath}': Simplified OPCODE Public Domain clause")
+                output_copyright_notice += SIMPLIFIED_OPCODE_PUBLIC_DOMAIN_TEXT
+                match_group_split_lines = license_header_uncommented_concat_2.splitlines()
+                for i in match_group_split_lines:
+                    license_header_uncommented_lines.pop(0)
+            elif LGPL_REGEX.match(license_header_uncommented_concat_2):
+                print(f"File '{filepath}': GNU LGPL")
+                output_copyright_notice += LGPL_TEXT
                 match_group_split_lines = license_header_uncommented_concat_2.splitlines()
                 for i in match_group_split_lines:
                     license_header_uncommented_lines.pop(0)
