@@ -60,7 +60,7 @@ COPYRIGHT_VEGA_CONTRIBUTORS_WITH_ALSO_REGEX = re.compile(r"^(?:Vega Strike - Spa
 COPYRIGHT_VEGA_CONTRIBUTORS_REGEX = re.compile(r"^(?:Vega Strike - Space Simulation, Combat and Trading\n)?Copyright \([cC]\) (\d{4})(?:-\d{4})? *The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\nCurrent development team: Roy Falk, Benjamen R\. Meyer, Stephen G\. Tuggy(?:\nCopyright \([cC]\) \d{4}(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>_]+(?:, *[A-Za-z0-9 .<@>_]+){0,20})(?:(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors)?)*$", re.MULTILINE)
 GENERIC_VEGA_COPYRIGHT_REGEX = re.compile(r"^Vega Strike - Space Simulation, Combat and Trading(?:\nCopyright \([cC]\) \d{4}(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>_]+(?:, *[A-Za-z0-9 .<@>_]+){0,20})(?:(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors)?)*$", re.MULTILINE)
 
-BASIC_COPYRIGHT_REGEX = re.compile(r'^Copyright +\([Cc]\) +\d{4}(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>_]+(?:, *[A-Za-z0-9 .<@>_]+){0,20})(?:, *)?$')
+BASIC_COPYRIGHT_REGEX = re.compile(r'^Copyright +\([Cc]\) +\d{4}(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>_]+(?:,\s*[A-Za-z0-9 .<@>_]+){0,20})(?:, *)?$', re.MULTILINE)
 GENERIC_MULTI_COPYRIGHT_REGEX = re.compile(r"^Copyright \([cC]\) (\d{4})(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>_]+(?:, *[A-Za-z0-9 .<@>_]+){0,20})(?:(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors)?(?:\nCopyright \([cC]\) (\d{4})(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>_]+(?:, *[A-Za-z0-9 .<@>_]+){0,20})(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors|Largely +[Rr]ewritten +[Bb]y +[A-Za-z0-9 .<@>_]+){0,20}$", re.MULTILINE)
 LARGELY_REWRITTEN_BY_REGEX = re.compile(r'^Largely +[Rr]ewritten +[Bb]y +[A-Za-z0-9 .<@>_]+$')
 VEGA_STRIKE_CONTRIBUTORS_REGEX = re.compile(r'^(?: ?and other| ?The)? ?Vega Strike [Cc]ontributors$')
@@ -619,6 +619,35 @@ def upsert_license_header(filepath: Path) -> None:
                     else:
                         license_header_uncommented_lines.pop(0)
                         break
+                if not found_current_year:
+                    output_copyright_notice += "Copyright (C) " + current_year + " The Vega Strike Contributors\n"
+            elif BASIC_COPYRIGHT_REGEX.match(license_header_uncommented_concat_1):
+                print(f"File '{filepath}': Basic (single-clause) copyright section")
+                found_current_year: bool = False
+                license_header_uncommented_split_lines_1 = license_header_uncommented_concat_1.splitlines()
+                previous_line: str = ''
+                copyright_clause: str = ''
+                for current_copyright_line in license_header_uncommented_split_lines_1:
+                    if BASIC_COPYRIGHT_REGEX.match(current_copyright_line) or LARGELY_REWRITTEN_BY_REGEX.match(current_copyright_line) or VEGA_STRIKE_CONTRIBUTORS_REGEX.match(current_copyright_line):
+                        copyright_clause = current_copyright_line + '\n'
+                        license_header_uncommented_lines.pop(0)
+                        if copyright_current_year_regex.match(current_copyright_line):
+                            found_current_year = True
+                        elif copyright_current_year_regex_2.match(current_copyright_line):
+                            found_current_year = True
+                    elif BASIC_COPYRIGHT_REGEX.match(previous_line + '\n' + current_copyright_line):
+                        copyright_clause = previous_line + '\n' + current_copyright_line + '\n'
+                        license_header_uncommented_lines.pop(0)
+                        if copyright_current_year_regex.match(previous_line + '\n' + current_copyright_line):
+                            found_current_year = True
+                        elif copyright_current_year_regex_2.match(previous_line + '\n' + current_copyright_line):
+                            found_current_year = True
+                    else:
+                        license_header_uncommented_lines.pop(0)
+                        break
+                    previous_line = current_copyright_line
+
+                output_copyright_notice += copyright_clause
                 if not found_current_year:
                     output_copyright_notice += "Copyright (C) " + current_year + " The Vega Strike Contributors\n"
 
