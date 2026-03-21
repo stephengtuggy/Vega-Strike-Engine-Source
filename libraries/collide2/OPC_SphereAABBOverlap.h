@@ -1,10 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
+/*
  * OPC_SphereAABBOverlap.h
  *
+ * Vega Strike - Space Simulation, Combat and Trading
  * Copyright (C) 2001 Pierre Terdiman
  * Copyright (C) 2021, 2022, 2025 Stephen G. Tuggy
  * Copyright (C) 2023 Benjamen R. Meyer
+ * Copyright (C) 2026 The Vega Strike Contributors
  *
  * This file is part of OPCODE - Optimized Collision Detection
  * (http://www.codercorner.com/Opcode.htm) and has been
