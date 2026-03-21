@@ -1,12 +1,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
+/**
  * OPC_SweepAndPrune.h
  *
- * Vega Strike - Space Simulation, Combat and Trading
- * Copyright (C) 2001-2026 The Vega Strike Contributors:
- * Project creator: Daniel Horn
- * Original development team: As listed in the AUTHORS file. Specifically: Pierre Terdiman
- * Current development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy
+ * Copyright (C) 2001 Pierre Terdiman
+ * Copyright (C) 2021, 2022, 2025 Stephen G. Tuggy
+ * Copyright (C) 2023 Benjamen R. Meyer
  *
  * This file is part of OPCODE - Optimized Collision Detection
  * (http://www.codercorner.com/Opcode.htm) and has been
