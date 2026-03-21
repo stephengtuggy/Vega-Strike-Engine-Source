@@ -4,7 +4,7 @@
  * Vega Strike - Space Simulation, Combat and Trading
  * Copyright (C) 2001-2025 The Vega Strike Contributors:
  * Project creator: Daniel Horn
- * Original development team: As listed in the AUTHORS file. Specifically Alexander Rawass
+ * Original development team: As listed in the AUTHORS file. Specifically: Alexander Rawass
  * Current development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy
  *
  *
