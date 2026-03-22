@@ -77,4 +77,4 @@ jobs:
         if: failure()
         with:
           name: test_results_xml
-          path: ${{ github.workspace }}/**/test-results/**/*.xml
+          path: "${{ github.workspace }}/build/${{ matrix.preset-name }}/test-results/**/*.xml"
