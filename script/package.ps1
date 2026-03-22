@@ -40,8 +40,4 @@ if ($GitSha -ieq "not-applicable" ) {
     $GitSha = ""
 }
 
-[String]$baseDir = (Get-Location -PSProvider "FileSystem").Path
-
-Push-Location $baseDir
 cpack -V --preset "package-$PresetName"
-Pop-Location
