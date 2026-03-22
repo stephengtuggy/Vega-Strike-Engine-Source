@@ -3,19 +3,13 @@ permissions:
   contents: read
   pull-requests: read
 
-# Controls when the action will run.
 on:
   push:
   pull_request:
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -74,11 +68,13 @@ jobs:
         uses: lukka/run-vcpkg@5e0cab206a5ea620130caf672fce3e4a6b5666a1 # v11.5
 
       - name: Build the code
-        run: "${{ github.workspace }}\\script\\build.ps1" -PresetName "${{ matrix.preset-name }}"
+        run: |
+          & "${{ github.workspace }}\\script\\build.ps1" -PresetName "${{ matrix.preset-name }}"
         shell: pwsh
 
       - name: Test the code
-        run: "${{ github.workspace }}\\script\\test.ps1" -PresetName "${{ matrix.preset-name }}"
+        run: |
+          & "${{ github.workspace }}\\script\\test.ps1" -PresetName "${{ matrix.preset-name }}"
         shell: pwsh
 
       - name: Upload test results
