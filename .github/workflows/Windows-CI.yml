@@ -2,16 +2,13 @@ name: Windows-CI
 permissions:
   contents: read
   pull-requests: read
-
 on:
   push:
   pull_request:
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-
     strategy:
       fail-fast: false
       matrix:
@@ -31,7 +28,6 @@ jobs:
             preset-name: VS2026Win64-pie-enabled-RelWithDebInfo
             python-version: 3.13.12
             is-release: 0
-
     env:
       VCPKG_ROOT: ${{ github.workspace }}\\v
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
@@ -46,7 +42,6 @@ jobs:
       USE_GTEST: 1
       INSTALL_SDL3: 0
       INSTALL_SDL3_IMAGE: 0
-
     steps:
       - name: checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -60,23 +55,18 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           update-environment: true
-
       - name: Install CMake
         uses: lukka/get-cmake@f176ccd3f28bda569c43aae4894f06b2435a3375 # v4.2.3
-
       - name: Install vcpkg
         uses: lukka/run-vcpkg@5e0cab206a5ea620130caf672fce3e4a6b5666a1 # v11.5
-
       - name: Build the code
         run: |
           & "${{ github.workspace }}\\script\\build.ps1" -PresetName "${{ matrix.preset-name }}"
         shell: pwsh
-
       - name: Test the code
         run: |
           & "${{ github.workspace }}\\script\\test.ps1" -PresetName "${{ matrix.preset-name }}"
         shell: pwsh
-
       - name: Upload test results
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         if: failure()
