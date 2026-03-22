@@ -89,11 +89,11 @@ jobs:
         uses: lukka/run-vcpkg@5e0cab206a5ea620130caf672fce3e4a6b5666a1 # v11.5
 
       - name: Build the code
-        run: "${{ github.workspace }}\script\build.ps1" -PresetName "${{ matrix.preset-name }}"
+        run: "${{ github.workspace }}\\script\\build.ps1" -PresetName "${{ matrix.preset-name }}"
         shell: pwsh
 
       - name: Package the code
-        run: "${{ github.workspace }}\script\package.ps1" -PresetName "${{ matrix.preset-name }}"
+        run: "${{ github.workspace }}\\script\\package.ps1" -PresetName "${{ matrix.preset-name }}"
 
       - name: Upload the artifacts
         uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2.6.1
