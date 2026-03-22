@@ -33,9 +33,6 @@ jobs:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
       VCPKG_DEFAULT_HOST_TRIPLET: ${{ matrix.triplet }}
       VCPKG_OVERLAY_PORTS: ${{ github.workspace }}\\custom-triplets
-      Python3_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
-      Python_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
-      pythonLocation: ${{ steps.vega-py-setup.outputs.python-path }}
       PYTHONHOME: ""
       PYTHONPATH: ""
       INSTALL_GTEST: 1
@@ -63,10 +60,18 @@ jobs:
         run: |
           & "${{ github.workspace }}\\script\\build.ps1" -PresetName "${{ matrix.preset-name }}"
         shell: pwsh
+        env:
+          Python3_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
+          Python_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
+          pythonLocation: ${{ steps.vega-py-setup.outputs.python-path }}
       - name: Test the code
         run: |
           & "${{ github.workspace }}\\script\\test.ps1" -PresetName "${{ matrix.preset-name }}"
         shell: pwsh
+        env:
+          Python3_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
+          Python_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
+          pythonLocation: ${{ steps.vega-py-setup.outputs.python-path }}
       - name: Upload test results
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         if: failure()

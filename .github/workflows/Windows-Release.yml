@@ -35,9 +35,6 @@ jobs:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
       VCPKG_DEFAULT_HOST_TRIPLET: ${{ matrix.triplet }}
       VCPKG_OVERLAY_PORTS: ${{ github.workspace }}\\custom-triplets
-      Python3_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
-      Python_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
-      pythonLocation: ${{ steps.vega-py-setup.outputs.python-path }}
       PYTHONHOME: ""
       PYTHONPATH: ""
       INSTALL_GTEST: 1
@@ -74,10 +71,18 @@ jobs:
         run: |
           & "${{ github.workspace }}\\script\\build.ps1" -PresetName "${{ matrix.preset-name }}"
         shell: pwsh
+        env:
+          Python3_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
+          Python_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
+          pythonLocation: ${{ steps.vega-py-setup.outputs.python-path }}
       - name: Package the code
         run: |
           & "${{ github.workspace }}\\script\\package.ps1" -PresetName "${{ matrix.preset-name }}"
         shell: pwsh
+        env:
+          Python3_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
+          Python_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
+          pythonLocation: ${{ steps.vega-py-setup.outputs.python-path }}
       - name: Upload the artifacts
         uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2.6.1
         if: startsWith(github.ref, 'refs/tags/')
