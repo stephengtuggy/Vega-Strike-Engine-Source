@@ -41,10 +41,10 @@ jobs:
             is-release:      1
 
     env:
-      VCPKG_ROOT: ${{ github.workspace }}\v
+      VCPKG_ROOT: ${{ github.workspace }}\\v
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
       VCPKG_DEFAULT_HOST_TRIPLET: ${{ matrix.triplet }}
-      VCPKG_OVERLAY_PORTS: ${{ github.workspace }}\custom-triplets
+      VCPKG_OVERLAY_PORTS: ${{ github.workspace }}\\custom-triplets
       Python3_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
       Python_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
       pythonLocation: ${{ steps.vega-py-setup.outputs.python-path }}
