@@ -71,6 +71,16 @@ jobs:
       - name: install-cmake
         uses: lukka/get-cmake@f176ccd3f28bda569c43aae4894f06b2435a3375 # v4.2.3
 
+      - name: Get CPU count
+        run: |
+          [Int32]$MAX_THREADS_TO_BUILD_WITH=4
+          [Int32]$num_threads_to_build_with=[Int32]::Parse($env:NUMBER_OF_PROCESSORS)
+          echo "Number of threads to build with before capping: $num_threads_to_build_with"
+          $num_threads_to_build_with=[Int32]::Min($num_threads_to_build_with, $MAX_THREADS_TO_BUILD_WITH)
+          echo "Number of threads to build with after capping: $num_threads_to_build_with"
+          echo "THREADS_TO_BUILD_WITH=$num_threads_to_build_with" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        shell: pwsh
+
       - name: run-vcpkg
         uses: lukka/run-vcpkg@5e0cab206a5ea620130caf672fce3e4a6b5666a1 # v11.5
         env:
@@ -95,6 +105,7 @@ jobs:
         with:
           configurePreset: ${{ matrix.preset-name }}
           buildPreset: "build-${{ matrix.preset-name }}"
+          buildPresetAdditionalArgs: "['/p:CL_MPcount=$THREADS_TO_BUILD_WITH']"
           testPreset: "test-${{ matrix.preset-name }}"
 
       - name: Save vcpkg cache
