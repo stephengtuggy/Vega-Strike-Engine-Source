@@ -51,7 +51,7 @@ echo "Number of threads to build with after capping: $num_threads_to_build_with"
 [String]$baseDir = (Get-Location -PSProvider "FileSystem").Path
 [String]$binaryDir = "$baseDir\build\$PresetName"
 Push-Location $baseDir
-cmake --preset $PresetName -DNUM_THREADS_TO_BUILD_WITH=$num_threads_to_build_with
+cmake --preset $PresetName "-DNUM_THREADS_TO_BUILD_WITH=$num_threads_to_build_with"
 cmake --build --preset "build-$PresetName" -v
 Pop-Location
 
