@@ -32,8 +32,6 @@ param(
 
 [String]$baseDir = (Get-Location -PSProvider "FileSystem").Path
 [String]$testBaseDir = "$baseDir\build\$PresetName"
-Push-Location $testBaseDir
 
-GTEST_OUTPUT=xml:$testBaseDir/test-results ctest -V --preset "test-$PresetName"
-
-Pop-Location
+$env:GTEST_OUTPUT = "xml:$testBaseDir/test-results"
+ctest -V --preset "test-$PresetName"
