@@ -9,7 +9,7 @@
 # to change build target (in Release, RelWithDebInfo, Debug, Profiler)
 # > cmake -DCMAKE_BUILD_TYPE=Debug <path to source tree>
 #====================================
-# Copyright (C) 2001-2025 safemode, Anth0rx, pyramid, Roy Falk,
+# Copyright (C) 2001-2026 safemode, Anth0rx, pyramid, Roy Falk,
 # Nachum Barcohen, Rune Morling, Stephen G. Tuggy, Benjamen Meyer, s0600204,
 # Evert Vorster, and other Vega Strike contributors.
 #
@@ -181,10 +181,6 @@ ELSE (ENABLE_PIE)
     SET(CMAKE_POSITION_INDEPENDENT_CODE OFF)
 ENDIF (ENABLE_PIE)
 
-SET(NUM_THREADS_TO_BUILD_WITH "1" CACHE STRING "Number of threads to build with in parallel on MSBuild")
-ADD_COMPILE_OPTIONS(
-        "$<$<CXX_COMPILER_ID:MSVC>:/MP${NUM_THREADS_TO_BUILD_WITH}>"
-)
 SET(FPS_AVG_INTERVAL "0.5" CACHE STRING "Average displayed frame rate over this interval in seconds")
 
 INCLUDE(CheckIncludeFile)
