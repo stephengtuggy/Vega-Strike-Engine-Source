@@ -1,8 +1,10 @@
 /*
  * OPC_BoxBoxOverlap.h
  *
+ * Vega Strike - Space Simulation, Combat and Trading
  * Copyright (C) 2001-2025 Daniel Horn, pyramid3d, Stephen G. Tuggy, Benjamen R. Meyer,
  * and other Vega Strike contributors.
+ * Copyright (C) 2026 The Vega Strike Contributors
  *
  * Public Domain
  *
