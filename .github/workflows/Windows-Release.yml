@@ -67,6 +67,14 @@ jobs:
           fetch-depth: 2
           submodules: false
 
+      - name: Restore vcpkg cache
+        id: cache-vcpkg-restore
+        uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        with:
+          path: ${{ github.workspace }}/vcpkg_cache
+          key: vcpkg-${{ matrix.os }}-${{ matrix.triplet }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: vcpkg-${{ matrix.os }}-${{ matrix.triplet }}-
+
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         id: vega-py-setup
@@ -97,6 +105,13 @@ jobs:
           Python3_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
           Python_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
           pythonLocation: ${{ steps.vega-py-setup.outputs.python-path }}
+
+      - name: Save vcpkg cache
+        id: cache-vcpkg-save
+        uses: actions/cache/save@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        with:
+          path: ${{ github.workspace }}/vcpkg_cache
+          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
 
       - name: Upload the artifacts
         uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
