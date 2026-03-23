@@ -85,6 +85,12 @@ jobs:
             INSTALL_GTEST: 1
             USE_GTEST: 1
             allow_failure: false
+          - FROM:     'rockylinux/rockylinux:10.1'
+            COMPILER: 'gcc'
+            preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            allow_failure: false
           - FROM:     'rockylinux/rockylinux:10.0'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
@@ -122,7 +128,7 @@ jobs:
         run: script/cibuild --preset-name="${{ matrix.preset-name }}"
 
       - name: Upload test results
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         if: failure()
         with:
           name: test_results_xml
