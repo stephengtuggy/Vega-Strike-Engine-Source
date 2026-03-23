@@ -6,6 +6,7 @@
  * Copyright (C) 2023 by Benjamen R. Meyer
  * Copyright (C) 2025 by Stephen G. Tuggy
  * Copyright (C) 2026 The Vega Strike Contributors
+ * Written by John Harger <jharger AT users.sourceforge.net>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
