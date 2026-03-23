@@ -704,7 +704,7 @@ def upsert_license_header(filepath: Path) -> None:
 
     # Copy original file attributes and permissions to temp file
     copystat(filepath, output_file.name)
-    # Update the last-modified timestamp
+    # Update the last-modified and last-accessed timestamps
     utime(output_file.name, None)
     # Move temp file into place
     move(output_file.name, filepath)
