@@ -48,11 +48,12 @@ Usage:
     python3 add_gpl_license.py PATH [PATH ...]
 """
 from datetime import datetime, timezone
-import sys
+from sys import argv, stdin
 from pathlib import Path
 from shutil import copystat, move
 from tempfile import NamedTemporaryFile
 import re
+from os import utime
 
 COPYRIGHT_VEGA_CONTRIBUTORS_WITH_SPECIFICALLY_AND_ALSO_REGEX = re.compile(r"^(?:Vega Strike - Space Simulation, Combat and Trading\n)?Copyright \([cC]\) (\d{4})(?:-\d{4})? *The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\. Specifically:\s+((?:by\s+)?[A-Za-z0-9 .<@>_]+(?:,\s*[A-Za-z0-9 .<@>_]+){0,20})\nAlso:\s+((?:by *)?[A-Za-z0-9 .<@>_]+(?:,\s*[A-Za-z0-9 .<@>_]+){0,20})\nCurrent development team: Roy Falk, Benjamen R\. Meyer, Stephen G\. Tuggy(?:\nCopyright \([cC]\) \d{4}(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>_]+(?:, *[A-Za-z0-9 .<@>_]+){0,20})(?:(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors)?)*$", re.MULTILINE)
 COPYRIGHT_VEGA_CONTRIBUTORS_WITH_SPECIFICALLY_REGEX = re.compile(r"^(?:Vega Strike - Space Simulation, Combat and Trading\n)?Copyright \([cC]\) (\d{4})(?:-\d{4})? *The Vega Strike Contributors:\nProject creator: Daniel Horn\nOriginal development team: As listed in the AUTHORS file\. Specifically:\s+((?:by\s+)?[A-Za-z0-9 .<@>_]+(?:,\s*[A-Za-z0-9 .<@>_]+){0,20})\nCurrent development team: Roy Falk, Benjamen R\. Meyer, Stephen G\. Tuggy(?:\nCopyright \([cC]\) \d{4}(?:-\d{4})?(?:, *\d{4}(?:-\d{4})?)* *(?:by *)?([A-Za-z0-9 .<@>_]+(?:, *[A-Za-z0-9 .<@>_]+){0,20})(?:(?:, *)?\n?(?: ?and other| ?The)\n? ?Vega Strike [Cc]ontributors)?)*$", re.MULTILINE)
@@ -703,18 +704,20 @@ def upsert_license_header(filepath: Path) -> None:
 
     # Copy original file attributes and permissions to temp file
     copystat(filepath, output_file.name)
+    # Update the last-modified and last-accessed timestamps
+    utime(output_file.name, None)
     # Move temp file into place
     move(output_file.name, filepath)
 
 
 def main():
-    if len(sys.argv) > 1 and sys.argv[1] in ('-h', '--help'):
+    if len(argv) > 1 and argv[1] in ('-h', '--help'):
         print(__doc__)
         return
-    elif len(sys.argv) > 1:
-        files = sys.argv[1:]
+    elif len(argv) > 1:
+        files = argv[1:]
     else:
-        files = sys.stdin
+        files = stdin
 
     for filepath in map(Path, (f.removesuffix('\n') for f in files)):
         upsert_license_header(filepath)

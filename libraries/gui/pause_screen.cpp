@@ -7,7 +7,6 @@
  * Original development team: As listed in the AUTHORS file
  * Current development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy
  *
- *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
  * This file is part of Vega Strike.
