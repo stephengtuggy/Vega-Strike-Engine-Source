@@ -1,8 +1,10 @@
 /*
  * OPC_TriTriOverlap.h
  *
+ * Vega Strike - Space Simulation, Combat and Trading
  * Copyright (C) 2001-2025 Pierre Terdiman, Daniel Horn, pyramid3d,
  * Stephen G. Tuggy, Benjamen R. Meyer, and other Vega Strike contributors.
+ * Copyright (C) 2026 The Vega Strike Contributors
  *
  * This file is part of OPCODE - Optimized Collision Detection
  * (http://www.codercorner.com/Opcode.htm) and has been
