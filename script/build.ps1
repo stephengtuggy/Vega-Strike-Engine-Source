@@ -42,7 +42,7 @@ if ($GitSha -ieq "not-applicable" ) {
     $GitSha = ""
 }
 
-[Int32]$MAX_THREADS_TO_BUILD_WITH=4
+[Int32]$MAX_THREADS_TO_BUILD_WITH=6
 [Int32]$num_threads_to_build_with=[Int32]::Parse($env:NUMBER_OF_PROCESSORS)
 echo "Number of threads to build with before capping: $num_threads_to_build_with"
 $num_threads_to_build_with=[Int32]::Min($num_threads_to_build_with, $MAX_THREADS_TO_BUILD_WITH)
@@ -51,8 +51,8 @@ echo "Number of threads to build with after capping: $num_threads_to_build_with"
 [String]$baseDir = (Get-Location -PSProvider "FileSystem").Path
 [String]$binaryDir = "$baseDir\build\$PresetName"
 Push-Location $baseDir
-cmake --preset $PresetName
-cmake --build --preset "build-$PresetName" -v -- /p:CL_MPcount=$num_threads_to_build_with
+cmake --preset $PresetName "-DNUM_THREADS_TO_BUILD_WITH=$num_threads_to_build_with"
+cmake --build --preset "build-$PresetName" -v
 Pop-Location
 
 New-Item bin -ItemType Directory -Force
