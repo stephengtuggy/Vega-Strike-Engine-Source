@@ -70,8 +70,7 @@ jobs:
         uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: ${{ github.workspace }}/vcpkg_cache
-          key: vcpkg-${{ matrix.os }}-${{ matrix.triplet }}-${{ hashFiles('vcpkg.json') }}
-          restore-keys: vcpkg-${{ matrix.os }}-${{ matrix.triplet }}-
+          key: vcpkg_cache-${{ github.repository_owner }}-${{ matrix.os }}-${{ matrix.triplet }}-${{ hashFiles('vcpkg.json') }}
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -110,6 +109,7 @@ jobs:
         with:
           path: ${{ github.workspace }}/vcpkg_cache
           key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
+        if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
 
       - name: Upload the artifacts
         uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2.6.1
