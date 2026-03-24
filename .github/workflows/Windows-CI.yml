@@ -2,10 +2,12 @@ name: Windows-CI
 permissions:
   contents: read
   pull-requests: read
+
 on:
   push:
   pull_request:
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -28,8 +30,10 @@ jobs:
             preset-name: VS2026Win64-pie-enabled-RelWithDebInfo
             python-version: 3.13.12
             is-release: 0
+
     env:
       VCPKG_ROOT: ${{ github.workspace }}\\v
+      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}/vcpkg_cache,readwrite
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
       VCPKG_DEFAULT_HOST_TRIPLET: ${{ matrix.triplet }}
       VCPKG_OVERLAY_PORTS: ${{ github.workspace }}\\custom-triplets
@@ -39,6 +43,7 @@ jobs:
       USE_GTEST: 1
       INSTALL_SDL3: 0
       INSTALL_SDL3_IMAGE: 0
+
     steps:
       - name: checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -46,16 +51,26 @@ jobs:
           fetch-depth: 2
           submodules: false
 
+      - name: Restore vcpkg cache
+        id: cache-vcpkg-restore
+        uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        with:
+          path: ${{ github.workspace }}/vcpkg_cache
+          key: vcpkg_cache-${{ github.repository_owner }}-${{ matrix.os }}-${{ matrix.triplet }}-${{ hashFiles('vcpkg.json') }}
+
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         id: vega-py-setup
         with:
           python-version: ${{ matrix.python-version }}
           update-environment: true
+
       - name: Install CMake
         uses: lukka/get-cmake@b78306120111dc2522750771cfd09ee7ca723687 # v4.3.0
+
       - name: Install vcpkg
         uses: lukka/run-vcpkg@5e0cab206a5ea620130caf672fce3e4a6b5666a1 # v11.5
+
       - name: Build the code
         run: |
           & "${{ github.workspace }}\\script\\build.ps1" -PresetName "${{ matrix.preset-name }}"
@@ -64,6 +79,7 @@ jobs:
           Python3_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
           Python_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
           pythonLocation: ${{ steps.vega-py-setup.outputs.python-path }}
+
       - name: Test the code
         run: |
           & "${{ github.workspace }}\\script\\test.ps1" -PresetName "${{ matrix.preset-name }}"
@@ -72,6 +88,15 @@ jobs:
           Python3_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
           Python_ROOT_DIR: ${{ steps.vega-py-setup.outputs.python-path }}
           pythonLocation: ${{ steps.vega-py-setup.outputs.python-path }}
+
+      - name: Save vcpkg cache
+        id: cache-vcpkg-save
+        uses: actions/cache/save@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        with:
+          path: ${{ github.workspace }}/vcpkg_cache
+          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
+        if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
+
       - name: Upload test results
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         if: failure()
