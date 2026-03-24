@@ -130,7 +130,6 @@ ADD_COMPILE_OPTIONS("$<$<CXX_COMPILER_ID:MSVC>:/FI${Vega_Strike_BINARY_DIR}/engi
                     "$<$<CXX_COMPILER_ID:MSVC>:/wd4244>"
                     "$<$<CXX_COMPILER_ID:MSVC>:/wd4267>"
                     "$<$<CXX_COMPILER_ID:MSVC>:/wd4305>"
-                    "$<$<CXX_COMPILER_ID:MSVC>:/MP>"
                     "$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<CONFIG:Debug>>:/Z7>"
 )
 # for DEBUG remove all optimizations
@@ -182,6 +181,11 @@ ELSE (ENABLE_PIE)
     SET(CMAKE_POSITION_INDEPENDENT_CODE OFF)
 ENDIF (ENABLE_PIE)
 
+
+SET(NUM_THREADS_TO_BUILD_WITH "1" CACHE STRING "Number of threads to build with in parallel on MSVC")
+ADD_COMPILE_OPTIONS(
+        "$<$<CXX_COMPILER_ID:MSVC>:/MP${NUM_THREADS_TO_BUILD_WITH}>"
+)
 SET(FPS_AVG_INTERVAL "0.5" CACHE STRING "Average displayed frame rate over this interval in seconds")
 
 INCLUDE(CheckIncludeFile)

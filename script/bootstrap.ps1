@@ -47,7 +47,7 @@ $newPath = $path + ";$VCPKG_PARENT_DIR\v\downloads\tools\cmake-$CMAKE_VERSION-wi
 [Environment]::SetEnvironmentVariable('PATH', $newPath, 'User')
 $env:PATH = $newPath
 
-$triplet = 'x64-windows'
+$triplet = 'x64-win10'
 [Environment]::SetEnvironmentVariable('VCPKG_DEFAULT_TRIPLET', $triplet, 'User')
 $env:VCPKG_DEFAULT_TRIPLET = $triplet
 [Environment]::SetEnvironmentVariable('VCPKG_DEFAULT_HOST_TRIPLET', $triplet, 'User')
