@@ -1,4 +1,4 @@
-name: 'GH Actions - Release'
+name: Linux-Release
 permissions:
     contents: write
     pull-requests: read
@@ -8,6 +8,9 @@ on:
     types:
       - created
       - edited
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
