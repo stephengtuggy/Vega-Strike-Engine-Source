@@ -1,19 +1,15 @@
-name: 'GH Actions - Release'
+name: Linux - PR
 permissions:
-    contents: write
-    pull-requests: read
+  contents: read
+  pull-requests: read
 
-on:
-  release:
-    types:
-      - created
-      - edited
+on: [ pull_request ]
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-24.04
-    continue-on-error: true
+    continue-on-error: ${{ matrix.allow_failure }}
 
     defaults:
       run:
@@ -26,56 +22,81 @@ jobs:
           - FROM:     'ubuntu:questing'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
-            ARTIFACT_EXT: 'deb'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            allow_failure: false
+          - FROM:     'ubuntu:noble'
+            COMPILER: 'gcc'
+            preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            allow_failure: false
           - FROM:     'ubuntu:noble'
             COMPILER: 'clang'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
-            ARTIFACT_EXT: 'deb'
-          # Source tarballs only
-          - FROM:     'ubuntu:noble'
-            COMPILER: 'clang'
-            preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
-            ARTIFACT_EXT: 'tar.[xb]z*'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            allow_failure: false
           - FROM:     'linuxmintd/mint22.2-amd64'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
-            ARTIFACT_EXT: 'deb'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            allow_failure: false
           - FROM:     'linuxmintd/mint22-amd64'
             COMPILER: 'clang'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
-            ARTIFACT_EXT: 'deb'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            allow_failure: false
           - FROM:     'dhi.io/python:3.13-debian13-dev'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
-            ARTIFACT_EXT: 'deb'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            allow_failure: false
           - FROM:     'debian:bookworm'
             COMPILER: 'clang'
             preset-name: 'linux-unix-makefiles-pie-disabled-glvnd-RelWithDebInfo'
-            ARTIFACT_EXT: 'deb'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            allow_failure: false
           - FROM:     'fedora:43'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
-            ARTIFACT_EXT: 'rpm'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            allow_failure: false
           - FROM:     'fedora:42'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
-            ARTIFACT_EXT: 'rpm'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            allow_failure: false
           - FROM:     'fedora:41'
             COMPILER: 'clang'
             preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
-            ARTIFACT_EXT: 'rpm'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            allow_failure: false
           - FROM:     'opensuse/leap:16.0'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
-            ARTIFACT_EXT: 'rpm'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            allow_failure: false
           - FROM:     'rockylinux/rockylinux:10.1'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
-            ARTIFACT_EXT: 'rpm'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            allow_failure: false
           - FROM:     'rockylinux/rockylinux:10.0'
             COMPILER: 'gcc'
             preset-name: 'linux-unix-makefiles-pie-enabled-glvnd-RelWithDebInfo'
-            ARTIFACT_EXT: 'rpm'
+            INSTALL_GTEST: 1
+            USE_GTEST: 1
+            allow_failure: false
 
     steps:
       - name: Check out repository
@@ -84,25 +105,31 @@ jobs:
           fetch-depth: 2
           submodules: false
 
-      - name: Extract tag name and short SHA
+      # Ensure PRs are built against the PR Head
+      # As opposed to the merge commit
+      - name: Move to PR HEAD
+        run: git checkout ${{ github.event.pull_request.head.sha }}
+
+      - name: Extract short SHA
         shell: bash
         run: |
-          echo "TAG_NAME=$(echo ${GITHUB_REF#refs/tags/} | sed 's/\//_/g')" >> $GITHUB_ENV
-          echo "SHORT_SHA=`git rev-parse --short HEAD`" >> $GITHUB_ENV
-      - name: Test tag name and short SHA
+          echo "SHORT_SHA=`git rev-parse --short ${{ github.event.pull_request.head.sha }}`" >> $GITHUB_ENV
+      - name: Test short SHA
         run: |
-          echo "${TAG_NAME}"
           echo "${SHORT_SHA}"
-      - name: Run CI
+
+      - name: Build and Test
         env:
           FROM:       ${{ matrix.FROM }}
           COMPILER:   ${{ matrix.COMPILER }}
-          IS_RELEASE: 1
-        run: script/cibuild --preset-name=${{ matrix.preset-name }}
-      - name: Upload the artifacts
-        uses: skx/github-action-publish-binaries@44887b225ceca96efd8a912d39c09ad70312af31 # master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ARTIFACT_EXT: ${{ matrix.ARTIFACT_EXT }}
+          INSTALL_GTEST: ${{ matrix.INSTALL_GTEST }}
+          USE_GTEST: ${{ matrix.USE_GTEST }}
+          IS_RELEASE: 0
+        run: script/cibuild --preset-name="${{ matrix.preset-name }}"
+
+      - name: Upload test results
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        if: failure()
         with:
-          args: "packages/*.${{ matrix.ARTIFACT_EXT }}"
+          name: test_results_xml
+          path: ${{github.workspace}}/test-results/**/*.xml
