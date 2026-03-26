@@ -1,7 +1,7 @@
 name: 'MacOS-Release'
 permissions:
-    contents: write
-    pull-requests: read
+  contents: write
+  pull-requests: read
 
 on:
   release:
@@ -11,6 +11,9 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
