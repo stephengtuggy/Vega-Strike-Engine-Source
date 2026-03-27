@@ -1,8 +1,10 @@
 /*
  * configuration.cpp
  *
+ * Vega Strike - Space Simulation, Combat and Trading
  * Copyright (C) 2021-2025 Daniel Horn, Roy Falk, ministerofinformation,
  * David Wales, Stephen G. Tuggy, and other Vega Strike contributors
+ * Copyright (C) 2026 The Vega Strike Contributors
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
  *
