@@ -433,7 +433,8 @@ void StarSystem::Draw(bool DrawCockpit) {
     UnitWithinRangeOfPosition<UnitDrawer> drawer(configuration().graphics.precull_dist_dbl, 0, key_iterator);
     //Need to draw really big stuff (i.e. planets, deathstars, and other mind-bogglingly big things that shouldn't be culled despited extreme distance
     Unit *unit;
-    if ((drawer.action.parent = _Universe->AccessCockpit()->GetParent()) != nullptr) {
+    drawer.action.parent = _Universe->AccessCockpit()->GetParent();
+    if (drawer.action.parent != nullptr) {
         drawer.action.parenttarget = drawer.action.parent->Target();
     }
     for (un_iter iter = this->gravitational_units.createIterator(); (unit = *iter); ++iter) {
