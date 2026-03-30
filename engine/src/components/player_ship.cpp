@@ -33,6 +33,12 @@
 
 #include <boost/format.hpp>
 
+ShipNotFoundException::ShipNotFoundException(int index): 
+    std::runtime_error((boost::format("GetShipByIndex. Index %1% not found.") % index).str()) {}
+
+ShipNotFoundException::ShipNotFoundException(const std::string& name):
+    std::runtime_error((boost::format("GetShipByIndex. Index %1% not found.") % name).str()) {}
+
 static const std::string player_fleet_category = "starships/My_Fleet";
 
 // An identifier of the ship in question. This is NOT the index in the player_fleet vector.
@@ -59,7 +65,7 @@ PlayerShip& PlayerShip::GetActiveShip() {
         }
     }
 
-    throw std::runtime_error("No active ship found in player fleet.");
+    throw NoActiveShipNotFoundException();
 }
 
 // Note: this is saved in the savegame file. 
@@ -73,7 +79,7 @@ int PlayerShip::GetActiveShipIndex() {
         i++;
     }
 
-    throw std::runtime_error("No active ship found in player fleet.");
+    throw NoActiveShipNotFoundException();
 }
 
 std::string PlayerShip::GetName() {
@@ -108,7 +114,7 @@ PlayerShip& PlayerShip::GetShipByIndex(int index) {
         }
     }
 
-    throw std::runtime_error((boost::format("GetShipByIndex. Index %1% not found.") % index).str());
+    throw ShipNotFoundException(index);
 }
 
 PlayerShip& PlayerShip::GetShipByName(const std::string ship_name) {
@@ -118,7 +124,7 @@ PlayerShip& PlayerShip::GetShipByName(const std::string ship_name) {
         }
     }
 
-    throw std::runtime_error((boost::format("GetShipByName. ship %1% not found.") % ship_name).str());
+    throw ShipNotFoundException(ship_name);
 }
 
 bool PlayerShip::IsShipInSameBase(const std::string& destination_system, 
@@ -147,7 +153,7 @@ Cargo PlayerShip::RemoveShip(int index) {
         }
     }
 
-    throw std::runtime_error((boost::format("RemoveShip. index %1% not found.") % index).str());
+    throw ShipNotFoundException(index);
 }
 
 void PlayerShip::SwitchShips(int index) {

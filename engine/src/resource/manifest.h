@@ -34,6 +34,12 @@
 
 #include "resource/cargo.h"
 
+class ManifestCargoNotFoundException : public std::runtime_error {
+public:
+    explicit ManifestCargoNotFoundException(const std::string& name)
+        : std::runtime_error("Cargo with name '" + name + "' not found in manifest.") {}
+};
+
 /**
  * A manifest is a list of items in a cargo hold.
  * The master part list is a special, singleton instance holding all items
@@ -61,7 +67,7 @@ public:
     
     std::vector<Cargo> GetItems() const;
     bool Empty() const;
-    int Size() const;
+    size_t Size() const;
 
     int GetIndex(const Cargo& cargo) const;
     int GetIndex(const std::string& name, const std::string& category = "") const;

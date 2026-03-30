@@ -827,7 +827,7 @@ bool BuyShip(std::string name, bool my_fleet, bool force_base_inventory) {
         // Get cargo
         Cargo cargo = Manifest::MPL().GetCargoByName(name);
         return ::buyShip(base, un, &cargo, nullptr);
-    } catch(std::runtime_error& e) {
+    } catch(ManifestCargoNotFoundException& e) {
         VS_LOG(error, e.what());
     }
     

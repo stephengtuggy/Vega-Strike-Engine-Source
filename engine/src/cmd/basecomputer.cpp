@@ -2397,7 +2397,7 @@ void BaseComputer::loadMasterList(Unit *un,  CargoHold &hold,
         bool removezero,
         TransactionList &tlist) {
     vector<CargoColor> *items = &tlist.masterList;
-    for (int i = 0; i < hold.Size(); i++) {
+    for (size_t i = 0; i < hold.Size(); i++) {
         bool filter = filtervec.empty();
         bool invfilter = true;
         size_t vecindex;

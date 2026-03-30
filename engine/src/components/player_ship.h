@@ -36,6 +36,18 @@
 
 class ComponentsManager;
 
+class ShipNotFoundException : public std::runtime_error {
+public:
+    explicit ShipNotFoundException(int index);
+    explicit ShipNotFoundException(const std::string& name);
+};
+
+class NoActiveShipNotFoundException : public std::runtime_error {
+public:
+    explicit NoActiveShipNotFoundException()
+        : std::runtime_error("No active ship found in player fleet.") {}
+};
+
 struct PlayerShip {
     bool active;        // The ship we're flying
     
