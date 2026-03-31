@@ -49,6 +49,9 @@
 #include "src/universe.h"
 #include "cmd/mount_size.h"
 #include "cmd/weapon_info.h"
+#include "components/player_ship.h"
+#include "resource/manifest.h"
+#include "cmd/unit_csv_factory.h"
 
 #include <algorithm>
 
@@ -56,6 +59,8 @@
 
 vector<int> respawnunit;
 vector<int> switchunit;
+
+const std::string NEW_SAVE_GAME_FORMAT = "NSGF";
 
 void Cockpit::beginElement(void *userData, const XML_Char *name, const XML_Char **atts) {
     ((Cockpit *) userData)->beginElement(name, AttributeList(atts));
@@ -140,23 +145,26 @@ void Cockpit::Init(const char *file, bool isDisabled) {
 // This function potentially returns the current subunit, so its target can be extracted.
 // See star_system.cpp
 Unit *Cockpit::GetSaveParent() {
-    return current_unit;
+    if (!current_unit) {
+        return parent.GetUnit();
+    } else {
+        return current_unit;
+    }
 }
 
-void Cockpit::SetParent(Unit *unit, const char *filename, const char *unitmodname, const QVector &pos) {
-    VS_LOG(debug, (boost::format("SetParent: full name: %1% filename: %2% filename (param): %3% unitmodname: %4%")
-                        % unit->getFullname() % unit->getFilename() % filename % unitmodname ));
-    if (unit->getFlightgroup() != NULL) {
+void Cockpit::SetParent(Unit *unit, const QVector &position) {
+    VS_LOG(debug, (boost::format("SetParent: full name: %1% filename: %2%")
+                        % unit->getFullname() % unit->getFilename() ));
+    
+    if (unit->getFlightgroup() != nullptr) {
         fg = unit->getFlightgroup();
     }
+
     activeStarSystem = _Universe->activeStarSystem();          //cannot switch to units in other star systems.
     parent.SetUnit(unit);
     unit->SetPlayerShip(); // This is the place to set it.
-    savegame->SetPlayerLocation(pos);
-    if (filename[0] != '\0') {
-        this->GetUnitFileName() = std::string(filename);
-        this->unitmodname = std::string(unitmodname);
-    }
+    savegame->SetPlayerLocation(position);
+    
     if (unit) {
         this->unitfaction = unit->faction;
     }
@@ -492,8 +500,7 @@ bool Cockpit::Update() {
                             //this refers to cockpit
                             if (!(k->name == "return_to_cockpit")) {
                                 VS_LOG(debug, "Cockpit::Update() return_to_cockpit 2");
-                                this->SetParent(un, GetUnitFileName().c_str(),
-                                        this->unitmodname.c_str(), savegame->GetPlayerLocation());
+                                this->SetParent(un, savegame->GetPlayerLocation());
                             }
                             if (!(k->name == "return_to_cockpit")) {
                                 k->Kill();
@@ -502,8 +509,7 @@ bool Cockpit::Update() {
                         if (proceed) {
                             SwitchUnits(k, un);
                             VS_LOG(debug, "Cockpit::Update() proceed");
-                            this->SetParent(un, GetUnitFileName().c_str(),
-                                    this->unitmodname.c_str(), savegame->GetPlayerLocation());
+                            this->SetParent(un, savegame->GetPlayerLocation());
                         }
                         break;
                     }
@@ -533,6 +539,8 @@ bool Cockpit::Update() {
     if (!par) {
         if (respawnunit.size() > _Universe->CurrentCockpit()) {
             if (respawnunit.at(_Universe->CurrentCockpit())) {
+                // Respawn
+
                 VS_LOG(debug, "respawnunit.at(_Universe->CurrentCockpit()) is truthy");
                 const float initialzoom = configuration().graphics.initial_zoom_factor_flt;
                 zoomfactor = initialzoom;
@@ -571,12 +579,10 @@ bool Cockpit::Update() {
                         setplayerXloc,
                         packedInfo,
                         k);
-                UnpackUnitInfo(packedInfo);
                 if (pos.i == FLT_MAX && pos.j == FLT_MAX && pos.k == FLT_MAX) {
                     pos = tmpoldpos;
                 }
                 savegame->SetPlayerLocation(pos);
-                CopySavedShips(savegame->GetCallsign(), whichcp, packedInfo, true);
                 bool actually_have_save = false;
                 const bool persistent_on_load = configuration().physics.persistent_on_load;
                 if (savegame->GetStarSystem() != "") {
@@ -619,18 +625,22 @@ bool Cockpit::Update() {
                     saved.pop_back();
                 }
                 ss->SwapIn();
-                int fgsnumber = 0;
-                if (fg) {
-                    fgsnumber = fg->flightgroup_nr++;
-                    fg->nr_ships++;
-                    fg->nr_ships_left++;
+
+                // Get the active unit from the player fleet.
+                // Even though this is the respawn procedure, it is run at the start of the game.
+                Unit *un = nullptr;
+                try {
+                    PlayerShip& player_ship = PlayerShip::GetActiveShip();
+                    un = vega_dynamic_cast_ptr<Unit>(player_ship.unit);
+                } catch(const std::runtime_error& e) {
+                    VS_LOG_FLUSH_EXIT(fatal, (boost::format("Failed to spawn unit. %1%") % e.what()), 66);
                 }
-                Unit *un = new Unit(
-                        GetUnitFileName().c_str(), false, this->unitfaction, unitmodname, fg, fgsnumber);
+                
+                
                 un->SetCurPosition(UniverseUtil::SafeEntrancePoint(savegame->GetPlayerLocation()));
                 ss->AddUnit(un);
 
-                this->SetParent(un, GetUnitFileName().c_str(), unitmodname.c_str(), savegame->GetPlayerLocation());
+                this->SetParent(un, savegame->GetPlayerLocation());
                 SwitchUnits(NULL, un);
                 DoCockpitKeys();
                 _Universe->popActiveStarSystem();
@@ -691,81 +701,142 @@ void Cockpit::SetInsidePanPitchSpeed(float) {
 void Cockpit::PackUnitInfo(vector<std::string> &info) const {
     info.clear();
 
-    // First entry, current ship
-    if (GetNumUnits() > 0) {
-        info.push_back(GetUnitFileName());
+    // Nothing to pack
+    if(player_fleet.size() == 0) {
+        return;
     }
 
+    // First entry, indicate new save game format
+    info.push_back(NEW_SAVE_GAME_FORMAT);
+    
+    // Push active ship index
+    info.push_back(std::to_string(PlayerShip::GetActiveShipIndex()));
+
     // Following entries, ship/location pairs
-    for (size_t i = 1, n = GetNumUnits(); i < n; ++i) {
-        info.push_back(GetUnitFileName(i));
-        info.push_back(GetUnitSystemName(i) + "@" + GetUnitBaseName(i));
+    for (PlayerShip& ship : player_fleet) {
+        info.push_back(ship.cargo.GetName());
+        info.push_back(ship.system + "@" + ship.base);
     }
+}
+
+
+static void pushShipToFleet(bool active, 
+                            const std::string& filename, 
+                            const std::string& system,
+                            const std::string& base,
+                            const int faction,
+                            Flightgroup *flight_group,
+                            int fgsnumber,
+                            int current_index,
+                            int active_index) {
+    Unit *unit = nullptr;
+    if(SaveGame::new_save_game_format) {
+        VS_LOG(trace, (boost::format("Create new format player ship %1% with index %2%, faction %3% and flight group %4%") %
+            filename % current_index % faction % flight_group->name));
+        
+        const std::string ship_name = std::string("player_ship_") + std::to_string(current_index);
+
+        unit = new Unit(ship_name.c_str(), false, faction, "player", flight_group, fgsnumber);
+    } else {
+        VS_LOG(trace, (boost::format("Create old format player ship %1% with index %2%, faction %3% and flight group %4%") %
+            filename % current_index % faction % flight_group->name));
+
+        std::cerr << (boost::format("Create old format player ship %1% with index %2%, faction %3% and flight group %4%") %
+            filename % current_index % faction % flight_group->name).str() << std::endl;
+        unit = new Unit(filename.c_str(), false, faction, "player", flight_group, fgsnumber);
+    }
+    
+    Cargo cargo;
+    try {
+        cargo = Manifest::MPL().GetCargoByName(filename);
+    } catch (const std::exception &e) {
+        VS_LOG(warning, (boost::format("Failed to load player ship %1%: %2%.\nGenerating dummy cargo entry.") % filename % e.what()));
+        cargo = Cargo(filename, "Spaceship", 1, 1, 1, 1);
+    }
+    
+    PlayerShip player_ship(active, unit, cargo, system, base);
+
+    if(current_index == active_index) {
+        VS_LOG(trace, (boost::format("Set %1%/%2% as active.") % filename % active_index));
+        player_ship.active = true;
+    }
+
+    player_fleet.push_back(player_ship);
 }
 
 void Cockpit::UnpackUnitInfo(vector<std::string> &info) {
-    vector<string> filenames, systemnames, basenames;
+    player_fleet.clear();
 
-    // First entry, current ship
-    if (!info.empty()) {
-        filenames.push_back(info[0]);
-        systemnames.push_back("");
-        basenames.push_back("");
+    // Nothing to unpack
+    if(info.empty()) {
+        return;
     }
+
+    int fgsnumber = 0;
+    if (fg) {
+        fgsnumber = fg->flightgroup_nr++;
+        fg->nr_ships++;
+        fg->nr_ships_left++;
+    }
+
+    auto it = info.begin();
+    int active_index = -1;    // Only relevant for new save game format
+    int i = 0;               // Only relevant for new save game format
+
+    // Parse first
+    std::string filename = *it;
+    it++;
+
+    VS_LOG(trace, (boost::format("Unpack %1% units to player fleet.") % UnitCSVFactory::units.size()));
+
+    // Is it the new save game format or the old one?
+    if(filename == NEW_SAVE_GAME_FORMAT) {
+        SaveGame::new_save_game_format = true;
+        active_index = std::stoi(*it);
+        it++;
+    } else {
+        // Push the active ship to the fleet
+        // There's no way to extract the base from the save game. It's not saved.
+        // Instead, we update the active ship location in UpdateTransportPrice
+        pushShipToFleet(true, filename, "", "", this->unitfaction, fg, fgsnumber, i, active_index);
+    }
+    
 
     // Following entries, ship/location pairs
-    for (size_t i = 1, n = info.size(); i < n; i += 2) {
-        filenames.push_back(info[i]);
+    while (it != info.end()) {
+        if (fg) {
+            fgsnumber = fg->flightgroup_nr++;
+            fg->nr_ships++;
+            fg->nr_ships_left++;
+        }
 
-        string location = ((i + 1) < n) ? info[i + 1] : "";
-        string::size_type atpos = location.find_first_of('@');
+        std::string filename = *it;
+        it++;
 
-        systemnames.push_back(location.substr(0, atpos));
-        basenames.push_back((atpos != string::npos) ? location.substr(atpos + 1) : "");
-    }
+        // Shouldn't happen, but let's check for this edge case
+        if(it == info.end()) {
+            // Print Error
+            break;
+        }
 
-    unitfilename.swap(filenames);
-    unitsystemname.swap(systemnames);
-    unitbasename.swap(basenames);
-}
+        string location = *it;
+        it++;
+        
+        string::size_type at_position = location.find_first_of('@');
+        
+        if(at_position == string::npos) {
+            // Print Error
+            break;
+        }
 
-static const std::string emptystring;
-
-const std::string &Cockpit::GetUnitFileName(unsigned int which) const {
-    if (which >= unitfilename.size()) {
-        return emptystring;
-    } else {
-        return unitfilename[which];
-    }
-}
-
-const std::string &Cockpit::GetUnitSystemName(unsigned int which) const {
-    if (which >= unitsystemname.size()) {
-        return emptystring;
-    } else {
-        return unitsystemname[which];
-    }
-}
-
-const std::string &Cockpit::GetUnitBaseName(unsigned int which) const {
-    if (which >= unitbasename.size()) {
-        return emptystring;
-    } else {
-        return unitbasename[which];
+        std::string system = location.substr(0, at_position);
+        std::string base = location.substr(at_position + 1);
+        std::cout << std::endl << std::endl << filename << " " << system << " " << base << std::endl << std::endl;
+        pushShipToFleet(false, filename, system, base, this->unitfaction, fg, fgsnumber, i, active_index);
+        i++;
     }
 }
 
-void Cockpit::RemoveUnit(unsigned int which) {
-    if (which < unitfilename.size()) {
-        unitfilename.erase(unitfilename.begin() + which);
-    }
-    if (which < unitsystemname.size()) {
-        unitsystemname.erase(unitsystemname.begin() + which);
-    }
-    if (which < unitbasename.size()) {
-        unitbasename.erase(unitbasename.begin() + which);
-    }
-}
 
 string Cockpit::MakeBaseName(const Unit *base) {
     string name;

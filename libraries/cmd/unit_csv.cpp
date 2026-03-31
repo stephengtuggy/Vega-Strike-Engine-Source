@@ -603,10 +603,16 @@ void Unit::LoadRow(std::string unit_identifier, string modification, bool saved_
         this->unit_description = "";
     }
     
+    
+    // This shadows the unit variable, making it possible to have:
+    // this->unit_key = "Llama.begin"   - Stores appropriate key
+    // unit_key = "player_ship_0"       - Add support for multiships and legacy save game
+    std::string unit_key = unit_identifier;
 
-    // This shadows the unit variable. It also doesn't support more than one ship.
-    // TODO: figure this out.
-    std::string unit_key = (saved_game ? "player_ship" : unit_identifier);
+    // Add support for legacy save game player ships
+    if(saved_game && !SaveGame::new_save_game_format) {
+        unit_key = "player_ship";
+    }
 
     if(saved_game) {
         SetPlayerShip();
@@ -885,47 +891,9 @@ void Unit::LoadRow(std::string unit_identifier, string modification, bool saved_
     GenerateHudText(getDamageColor);
 }
 
-void Unit::WriteUnit(const char *modifications) {
-    bool bad = false;
-    if (!modifications) {
-        bad = true;
-    }
-    if (!bad) {
-        if (!strlen(modifications)) {
-            bad = true;
-        }
-    }
-    if (bad) {
-        VS_LOG(error,
-                (boost::format("Cannot Write out unit file %1% %2% that has no filename") % name.get().c_str()
-                        % csvRow.get().c_str()));
-        return;
-    }
-    std::string savedir = modifications;
-    VSFileSystem::CreateDirectoryHome(VSFileSystem::savedunitpath + "/" + savedir);
-    VSFileSystem::VSFile f;
-    VSFileSystem::VSError err = f.OpenCreateWrite(savedir + "/" + name + ".json", VSFileSystem::UnitFile);
-    if (err > VSFileSystem::Ok) {
-        VS_LOG(error, (boost::format("!!! ERROR : Writing saved unit file : %1%") % f.GetFullPath().c_str()));
-        return;
-    }
-
-    std::map<std::string, std::string> map = UnitToMap();
-    boost::json::array json_root_array;
-    json_root_array.emplace_back(boost::json::value_from(map));
-    std::string towrite = boost::json::serialize(json_root_array);
-    f.Write(towrite.c_str(), towrite.length());
-    f.Close();
-}
 
 using XMLSupport::tostring;
 
-static void mapToStringVec(vsUMap<string, string> a, vector<string> &key, vector<string> &value) {
-    for (vsUMap<string, string>::iterator i = a.begin(); i != a.end(); ++i) {
-        key.push_back(i->first);
-        value.push_back(i->second);
-    }
-}
 
 static string tos(double val) {
     return XMLSupport::tostring((float) val);

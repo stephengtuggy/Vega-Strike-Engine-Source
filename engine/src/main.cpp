@@ -66,6 +66,7 @@
 #include "audio/SceneManager.h"
 #include "audio/renderers/OpenAL/BorrowedOpenALRenderer.h"
 #include "configuration/configuration.h"
+#include "components/player_ship.h"
 #include <time.h>
 #if !defined(_WIN32) && !defined (__HAIKU__)
 #include <signal.h>
@@ -580,8 +581,13 @@ void SetStartupView(Cockpit *cp) {
 void bootstrap_main_loop() {
     static bool LoadMission = true;
     // InitTime();
+
+    // TODO: refactor this. 
+    // This code runs once but is called from above 4 times.
     if (LoadMission) {
         LoadMission = false;
+
+        // Load main menu
         active_missions.push_back(mission = new Mission(configuration().game_start.default_mission.c_str()));
 
         mission->initMission();
@@ -615,7 +621,6 @@ void bootstrap_main_loop() {
             playername.push_back(pname);
             playerpasswd.push_back(ppasswd);
         }
-        float credits = XMLSupport::parse_float(mission->getVariable("credits", "0"));
         g_game.difficulty = XMLSupport::parse_float(mission->getVariable("difficulty", "1"));
         string savegamefile = mission->getVariable("savegame", "");
         vector<SavedUnits> savedun;
@@ -646,9 +651,10 @@ void bootstrap_main_loop() {
             }
         }
         vector<SavedUnits> saved;
-        vector<string> packedInfo;
+        
 
         if (configuration().general.load_last_savegame) {
+            vector<string> packedInfo;
             ComponentsManager::credits = _Universe->AccessCockpit(k)->savegame->ParseSaveGame(savegamefile,
                     mysystem,
                     mysystem,
@@ -656,13 +662,19 @@ void bootstrap_main_loop() {
                     setplayerXloc,
                     packedInfo,
                     k);
+            _Universe->AccessCockpit(k)->UnpackUnitInfo(packedInfo);
         } else {
             _Universe->AccessCockpit(k)->savegame->SetOutputFileName(savegamefile);
         }
-
-        _Universe->AccessCockpit(k)->UnpackUnitInfo(packedInfo);
-        CopySavedShips(playername[k], k, packedInfo, true);
-        playersaveunit.push_back(_Universe->AccessCockpit(k)->GetUnitFileName());
+        
+        // Pushes the dummy ship unless loading something from the command line
+        std::string ship_name = "Dummy";
+        try {
+            ship_name = PlayerShip::GetActiveShip().GetName();
+        } catch(const std::runtime_error& e) {
+            // Do nothing. This is the default behavior.
+        }
+        playersaveunit.push_back(ship_name);
         ss.push_back(_Universe->Init(mysystem, Vector(0, 0, 0), planetname));
         if (setplayerXloc) {
             playerNloc.push_back(pos);

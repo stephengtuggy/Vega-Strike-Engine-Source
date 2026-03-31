@@ -115,6 +115,7 @@ class UnitCSVFactory {
 
     friend class UnitJSONFactory;
     friend class UnitOptimizeFactory;
+    friend class Cockpit;
 public:
     template<class T>
     static inline T GetVariable(std::string unit_key, std::string const &attribute_key, T default_value) = delete;

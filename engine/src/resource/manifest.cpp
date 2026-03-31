@@ -115,7 +115,7 @@ Cargo Manifest::GetCargoByName(const std::string name) const {
         }
     }
 
-    throw std::runtime_error("Cargo with name '" + name + "' not found in manifest.");
+    throw ManifestCargoNotFoundException(name);
 }
 
 Cargo Manifest::GetRandomCargo(int quantity) const {
@@ -178,7 +178,7 @@ bool Manifest::Empty() const {
     return _items.empty(); 
 }
 
-int Manifest::Size() const { 
+size_t Manifest::Size() const { 
     return _items.size(); 
 }
 

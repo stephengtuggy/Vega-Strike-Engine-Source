@@ -48,6 +48,8 @@
 #include "root_generic/options.h"
 #include "cmd/vega_py_run.h"
 #include "src/vs_exit.h"
+#include "components/player_ship.h"
+#include "cmd/unit_json_factory.h"
 
 #include <iostream>
 #include <fstream>
@@ -63,112 +65,55 @@ using std::vector;
 using std::string;
 using std::allocator;
 
-std::string CurrentSaveGameName = "";
 
-std::string GetHelperPlayerSaveGame(int num) {
-    if (CurrentSaveGameName.length() > 0) {
-        if (configuration().general.remember_savegame) {
-            VSFile f;
-            VSError err = f.OpenCreateWrite("save.4.x.txt", UnknownFile);
-            if (err <= Ok) {
-                f.Write(CurrentSaveGameName);
-                f.Close();
-            }
-        }
-        if (num != 0) {
-            return CurrentSaveGameName + XMLSupport::tostring(num);
-        }
-        return CurrentSaveGameName;
-    }
-    VS_LOG(info, (boost::format("Hi helper play %1%") % num));
-    static string *res = NULL;
-    if (res == NULL) {
-        res = new std::string;
-        VSFile f;
-        //TRY TO OPEN THE save.4.x.txt FILE WHICH SHOULD CONTAIN THE NAME OF THE SAVE TO USE
-        VSError err = f.OpenReadOnly("save.4.x.txt", UnknownFile); // DELETE .4.x no longer used
-        if (err > Ok) {
-            //IF save.4.x.txt DOES NOT EXIST WE CREATE ONE WITH "default" AS SAVENAME
-            err = f.OpenCreateWrite("save.4.x.txt", UnknownFile);
-            if (err <= Ok) {
-                f.Write(configuration().general.new_game_save_name.c_str(), configuration().general.new_game_save_name.length());
-                f.Write("\n", 1);
-                f.Close();
-            } else {
-                VS_LOG_AND_FLUSH(fatal,
-                                 (boost::format("!!! ERROR : Creating default save.4.x.txt file : %1%")
-                                  % f.GetFullPath()));
-                VSExit(1);
-            }
-            err = f.OpenReadOnly("save.4.x.txt", UnknownFile);
-            if (err > Ok) {
-                VS_LOG_AND_FLUSH(fatal, "!!! ERROR : Opening the default save we just created");
-                VSExit(1);
-            }
-        }
-        if (err <= Ok) {
-            long length = f.Size();
-            if (length > 0) {
-                char *temp = (char *) malloc(length + 1);
-                temp[length] = '\0';
-                f.Read(temp, length);
-                bool end = true;
-                for (int i = length - 1; i >= 0; i--) {
-                    if (temp[i] == '\r' || temp[i] == '\n') {
-                        temp[i] = (end ? '\0' : '_');
-                    } else if (temp[i] == '\0' || temp[i] == ' ' || temp[i] == '\t') {
-                        temp[i] = (end ? '\0' : '_');
-                    } else {
-                        end = false;
-                    }
-                }
-                *res = (temp);
-                free(temp);
-            }
-            f.Close();
-        }
-        if (configuration().general.remember_savegame && !res->empty()) {
-            //Set filetype to Unknown so that it is searched in homedir/
-            if (*res->begin() == '~') {
-                err = f.OpenCreateWrite("save.4.x.txt", VSFileSystem::UnknownFile);
-                if (err <= Ok) {
-                    for (unsigned int i = 1; i < res->length(); i++) {
-                        char cc = *(res->begin() + i);
-                        f.Write(&cc, sizeof(char));
-                    }
-                    char cc = 0;
-                    f.Write(&cc, sizeof(char));
-                    f.Close();
-                }
-            }
+// This section deals with saving the latest save game name
+// so it can be automatically loaded on startup
+std::string current_savegame_name = "";
+bool SaveGame::new_save_game_format = false;
+
+namespace {
+    // Helper to trim trailing whitespace and newlines from string
+    void trimTrailingWhitespace(string& str) {
+        const auto end_pos = str.find_last_not_of(" \t\r\n\0");
+        if (end_pos != string::npos) {
+            str.erase(end_pos + 1);
+        } else {
+            str.clear();
         }
     }
-    if (num == 0 || res->empty()) {
-        VS_LOG(info, "Here");
-        return *res;
+
+    // Helper to replace invalid characters with underscores
+    void sanitizeFilename(string& str) {
+        // TODO: use std::erase_if when we migrate to C++20
+        str.erase(
+            std::remove_if(str.begin(), str.end(), [](char c) {
+                return c == '\r' || c == '\n' || c == '\0' || c == '\t';
+            }), str.end()
+        );
     }
-    return (*res) + XMLSupport::tostring(num);
 }
 
-std::string GetWritePlayerSaveGame(int num) {
-    string ret = GetHelperPlayerSaveGame(num);
-    if (!ret.empty()) {
-        if (*ret.begin() == '~') {
-            return ret.substr(1, ret.length());
-        }
-    }
-    return ret;
+std::string GetSaveGame() {
+    if (current_savegame_name.empty()) {
+        current_savegame_name = configuration().general.new_game_save_name;
+     }
+
+    return current_savegame_name;
 }
 
-std::string GetReadPlayerSaveGame(int num) {
-    string ret = GetHelperPlayerSaveGame(num);
-    if (!ret.empty()) {
-        if (*ret.begin() == '~') {
-            return "";
-        }
-    }
-    return ret;
+
+void SetSaveGame(std::string save_game) {
+    trimTrailingWhitespace(save_game);
+    sanitizeFilename(save_game);
+    current_savegame_name = save_game;
+    configuration().general.new_game_save_name = save_game;
+
+    // TODO: save to JSON - otherwise loading mission on startup won't work
 }
+
+// End of automatic save game load on startup
+
+
 
 //Used only to copy a savegame to a different named one
 void SaveFileCopy(const char *src, const char *dst) {
@@ -409,41 +354,41 @@ string createPipedString(vector<string> s) {
     return ret;
 }
 
-void CopySavedShips(std::string filename, int player_num, const std::vector<std::string> &starships, bool load) {
-    for (unsigned int i = 0; i < starships.size(); i += 2) {
-        if (i == 2) {
-            i = 1;
-        }
-        VSFile src, dst;
-        string srcnam = filename;
-        string dstnam = GetWritePlayerSaveGame(player_num);
-        string tmp;
-        if (load) {
-            tmp = srcnam;
-            srcnam = dstnam;
-            dstnam = tmp;
-        }
-        VSError e = src.OpenReadOnly(srcnam + "/" + starships[i] + ".json", UnitSaveFile);
-        if (e <= Ok) {
-            VSFileSystem::CreateDirectoryHome(VSFileSystem::savedunitpath + "/" + dstnam);
-            VSError f = dst.OpenCreateWrite(dstnam + "/" + starships[i] + ".json", UnitFile);
-            if (f <= Ok) {
-                string srcdata = src.ReadFull();
-                dst.Write(srcdata);
-            } else {
-                VS_LOG(error,
-                       (boost::format("Error: Cannot Copy Unit %1% from save file %2% to %3%")
-                        % starships[i]
-                        % srcnam
-                        % dstnam));
-            }
-        } else {
-            VS_LOG(error,
-                   (boost::format("Error: Cannot Open Unit %1% from save file %2%.")
-                    % starships[i]
-                    % srcnam));
-        }
+
+
+void WriteUnits() {
+    const std::string savegame_root_dir = homedir + "/";
+    const std::string save_dir = savegame_root_dir + VSFileSystem::savedunitpath + "/" + current_savegame_name;
+    const std::string file_path = save_dir + "/player_fleet.json";
+    
+    if(boost::filesystem::exists(save_dir)) {
+        boost::uintmax_t count = boost::filesystem::remove_all(save_dir);
+        std::cout << "Directory and its contents removed: " << save_dir << std::endl;
+        std::cout << "Total items removed: " << count << std::endl;
+    } else {
+        std::cerr << "Directory does not exist: " << save_dir << std::endl;
     }
+    boost::filesystem::create_directory(save_dir);
+
+    boost::json::array json_root_array;
+
+    for(const PlayerShip& ship : player_fleet) {
+        Unit* unit = vega_dynamic_cast_ptr<Unit>(ship.unit);
+        std::map<std::string, std::string> map = unit->UnitToMap();
+        json_root_array.emplace_back(boost::json::value_from(map));
+    }
+
+    std::string json_text = boost::json::serialize(json_root_array);
+    
+    std::ofstream output_file(file_path);
+
+    if (!output_file.is_open()) {
+        VS_LOG(error, (boost::format("Error. Failed to write units file to %1%") % file_path));
+        return;
+    }
+
+    output_file << json_text;
+    output_file.close(); 
 }
 
 void WriteSaveGame(Cockpit *cp, bool auto_save) {
@@ -455,21 +400,25 @@ void WriteSaveGame(Cockpit *cp, bool auto_save) {
     }
     Unit *un = cp->GetSaveParent();
     if (!un) {
+        // Error
         return;
     }
-    if (!un->Destroyed()) {
-        vector<string> packedInfo;
-        cp->PackUnitInfo(packedInfo);
-
-        cp->savegame->WriteSaveGame(cp->activeStarSystem->getFileName().c_str(),
-                                    un->LocalPosition(), packedInfo, auto_save ? -1 : player_num);
-        un->WriteUnit(cp->GetUnitModifications().c_str());
-        if (GetWritePlayerSaveGame(player_num).length() && !auto_save) {
-            cp->savegame->SetStarSystem(cp->activeStarSystem->getFileName());
-            cp->savegame->SetPlayerLocation(un->LocalPosition());
-            CopySavedShips(cp->GetUnitModifications(), player_num, packedInfo, false);
-        }
+    if (un->Destroyed()) {
+        // Error
+        return;
     }
+
+    vector<string> packedInfo;
+    cp->PackUnitInfo(packedInfo);
+
+    cp->savegame->WriteSaveGame(cp->activeStarSystem->getFileName().c_str(),
+                                un->LocalPosition(), packedInfo, auto_save ? -1 : player_num);
+    if (current_savegame_name.length() && !auto_save) {
+        cp->savegame->SetStarSystem(cp->activeStarSystem->getFileName());
+        cp->savegame->SetPlayerLocation(un->LocalPosition());
+    }
+
+    WriteUnits();
 }
 
 int hopto(char *buf, char endln, char endln2, int readlen) {
@@ -1014,7 +963,7 @@ string SaveGame::WriteSaveGame(const char *systemname,
                 if (player_num != -1) {
                     //AND THEN COPY IT TO THE SPECIFIED SAVENAME (from save.4.x.txt)
                     last_pickled_data = last_written_pickled_data;
-                    string sg = GetWritePlayerSaveGame(player_num);
+                    string sg = GetSaveGame();
                     SaveFileCopy(outputsavegame.c_str(), sg.c_str());
                 }
             } else {
@@ -1060,7 +1009,7 @@ float SaveGame::ParseSaveGame(const string &filename_p,
     VSError err = FileNotFound;
     if (read) {
         //TRY TO GET THE SPECIFIED SAVENAME TO LOAD
-        string plsave = GetReadPlayerSaveGame(player_num);
+        string plsave = GetSaveGame();
         if (plsave.length()) {
             err = f.OpenReadOnly(plsave, SaveFile);
             if (err > Ok) {                             //failed in SaveFile
@@ -1164,18 +1113,33 @@ float SaveGame::ParseSaveGame(const string &filename_p,
         FSS = ForceStarSystem;
     }
 
+    if(quick_read) {
+        return credits;
+    }
+
+    // Here we load the player fleet from serialized_xml
+    const std::string save_game_name = GetSaveGame();
+    const std::string savegame_root_dir = homedir + "/";
+    const std::string save_dir = savegame_root_dir + VSFileSystem::savedunitpath + "/" + save_game_name;
+    const std::string file_path = save_dir + "/player_fleet.json";
+    
+    std::ifstream file(file_path);
+    
+    if (!file.is_open()) {
+        VS_LOG(debug, (boost::format("Failed to open player fleet file %1%. Legacy save game format.") % file_path));
+    } else {
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        UnitJSONFactory::ParseJSONArray(buffer.str());
+    }
+
+    Cockpit *cockpit = _Universe->AccessCockpit();
+    cockpit->UnpackUnitInfo(savedstarship);
+
     return credits;
 }
 
-const string &GetCurrentSaveGame() {
-    return CurrentSaveGameName;
-}
 
-string SetCurrentSaveGame(string newname) {
-    string oldname = CurrentSaveGameName;
-    CurrentSaveGameName = newname;
-    return oldname;
-}
 
 const string &GetSaveDir() {
     static string ret_val{VSFileSystem::GetSavePath().string()};

@@ -36,5 +36,6 @@ class UnitJSONFactory {
 
 public:
     static void ParseJSON(VSFileSystem::VSFile &file, bool player_ship = false);
+    static void ParseJSONArray(const std::string &file_path);
 };
 #endif //VEGA_STRIKE_ENGINE_CMD_UNIT_JSON_FACTORY_H

@@ -39,6 +39,18 @@
 #include "src/SharedPool.h"
 #include "cmd/unit_type.h"
 
+// TODO: implement ParseSaveGameHeader
+struct SaveGameHeader {
+    float credits;
+    std::string force_star_system;
+    std::string original_star_system;
+    QVector previous_position;
+    std::vector<std::string> fleet;
+};
+
+std::string GetSaveGame();
+void SetSaveGame(std::string save_game);
+
 struct SavedUnits {
     StringPool::Reference filename;
     Vega_UnitType type;
@@ -55,6 +67,7 @@ class MissionStringDat;
 class SaveGame {
     SaveGame(const SaveGame &) {
     } //not used!
+
     std::string savestring;
     std::string ForceStarSystem;
     QVector PlayerLocation;
@@ -155,12 +168,11 @@ public:
             const std::set<std::string> &select_data_filter =
             std::set<std::string>());
     void LoadSavedMissions();
+
+    static bool new_save_game_format;
 };
 void WriteSaveGame(class Cockpit *cp, bool auto_save);
-const std::string &GetCurrentSaveGame();
-std::string SetCurrentSaveGame(std::string newname);
 const std::string &GetSaveDir();
-void CopySavedShips(std::string filename, int player_num, const std::vector<std::string> &starships, bool load);
 bool isUtf8SaveGame(std::string filename);
 
 #endif //VEGA_STRIKE_ENGINE_SAVEGAME_H

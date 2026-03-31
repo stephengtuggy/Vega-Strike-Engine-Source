@@ -71,6 +71,7 @@ typedef boost::python::dictionary BoostPythonDictionary;
 
 #include "root_generic/configxml.h"
 #include "src/vs_logging.h"
+#include "components/player_ship.h"
 
 extern float getFontHeight();
 
@@ -820,13 +821,24 @@ int GetNumRoom() {
 bool BuyShip(std::string name, bool my_fleet, bool force_base_inventory) {
     Unit *base = BaseInterface::CurrentBase->baseun.GetUnit();
     Unit *un = BaseInterface::CurrentBase->caller.GetUnit();
-    return ::buyShip(base, un, name, my_fleet, force_base_inventory, NULL);
+
+    try {
+        // Get cargo
+        Cargo cargo = Manifest::MPL().GetCargoByName(name);
+        return ::buyShip(base, un, &cargo, nullptr);
+    } catch(ManifestCargoNotFoundException& e) {
+        VS_LOG(error, e.what());
+    }
+    
+    return false; 
 }
 
+// This function is not used
 bool SellShip(std::string name) {
     Unit *base = BaseInterface::CurrentBase->baseun.GetUnit();
     Unit *un = BaseInterface::CurrentBase->caller.GetUnit();
-    return ::sellShip(base, un, name, NULL);
+    PlayerShip& ship = PlayerShip::GetShipByName(name);
+    return ::sellShip(base, un, &(ship.cargo), nullptr);
 }
 
 Dictionary &_GetEventData() {
