@@ -811,7 +811,7 @@ void AIScript::LoadXML() {
                     % parent->name
                     % parent->computer.threatlevel));
         }
-        if (parent->Target()->IsPlayerShip()) {
+        if (parent && parent->Target() && parent->Target()->IsPlayerShip()) {
             double value;
             const double game_speed = configuration().physics.game_speed_dbl;
             const double game_accel = configuration().physics.game_accel_dbl;
@@ -840,8 +840,9 @@ void AIScript::LoadXML() {
         }
         return;
     } else {
-        if (aidebug > 1)
+        if (aidebug > 1) {
             VS_LOG(debug, (boost::format("using soft coded script %1%") % filename));
+        }
         if (aidebug > 0) {
             UniverseUtil::IOmessage(0, parent->name, "all", string("FAILED(or missile) script ") + string(
                     filename) + " threat " + XMLSupport::tostring(parent->computer.threatlevel));

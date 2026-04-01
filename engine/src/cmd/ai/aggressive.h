@@ -70,7 +70,7 @@ public:
         return "aggressive";
     }
 
-    void AfterburnerJumpTurnTowards(Unit *target);
+    void AfterburnerJumpTurnTowards(const Unit *target);
     float Fshield_prev{};
     float Fshield_rate_old{};
     double Fshield_prev_time{};

@@ -1574,7 +1574,10 @@ void AggressiveAI::ExecuteNoEnemies() {
     }
 }
 
-void AggressiveAI::AfterburnerJumpTurnTowards(Unit *target) {
+void AggressiveAI::AfterburnerJumpTurnTowards(const Unit *target) {
+    if (!target) {
+        return;     // Is this right? SGT 2026-03-28
+    }
     AfterburnTurnTowards(this, parent);
     const float jump_time_limit = configuration().ai.force_jump_after_time_flt;
     if (jump_time_check == 0) {
