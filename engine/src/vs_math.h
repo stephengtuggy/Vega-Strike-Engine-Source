@@ -23,8 +23,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
- *
- * Portions of this code from Tux Racer by Jasmin F. Patry www.tuxracer.com
  */
 #ifndef VEGA_STRIKE_ENGINE_VS_MATH_H
 #define VEGA_STRIKE_ENGINE_VS_MATH_H
