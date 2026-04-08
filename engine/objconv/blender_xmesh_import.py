@@ -2,28 +2,26 @@
 ##
 # blender_xmesh_import.py
 #
-# Vega Strike - Space Simulation, Combat and Trading
-# Copyright (C) 2001-2026 The Vega Strike Contributors:
-# Project creator: Daniel Horn
-# Original development team: As listed in the AUTHORS file
-# Current development team: Roy Falk, Benjamen R. Meyer, Stephen G. Tuggy
+# xmesh_import.py | Python Script for Blender3D | imports a VegaStrike .xmesh
+# Copyright (C) 2005 Alex 'CubOfJudahsLion' Feterman, dandandaman
+# Copyright (C) 2007 ace123
+# Copyright (C) 2013 cellsafemode, klaussfreire
+# Copyright (C) 2020 pyramid3d
+# Copyright (C) 2025, 2026 Stephen G. Tuggy
 #
-# https://github.com/vegastrike/Vega-Strike-Engine-Source
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
 #
-# This file is part of Vega Strike.
-#
-# Vega Strike is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Vega Strike is distributed in the hope that it will be useful,
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
+# along with this program; if not, see
+# <https://www.gnu.org/licenses/>.
 #
 """
 Name: 'VegaStrike (.xmesh)...'
