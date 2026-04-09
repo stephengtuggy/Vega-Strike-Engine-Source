@@ -1,7 +1,7 @@
 /*
  * Tux Racer
  * Copyright (C) 1999-2001 Jasmin F. Patry
- * Copyright (C) 2001-2025 Daniel Horn, pyramid3d, Stephen G. Tuggy,
+ * Copyright (C) 2001-2026 Daniel Horn, pyramid3d, Stephen G. Tuggy,
  * and other Vega Strike contributors as part of Vega Strike (see below)
  *
  * This program is free software; you can redistribute it and/or
@@ -19,7 +19,7 @@
  *
  * Incorporated into Vega Strike
  *
- * Copyright (C) 2001-2025 Daniel Horn, pyramid3d, Stephen G. Tuggy,
+ * Copyright (C) 2001-2026 Daniel Horn, pyramid3d, Stephen G. Tuggy,
  * and other Vega Strike contributors.
  *
  * https://github.com/vegastrike/Vega-Strike-Engine-Source
