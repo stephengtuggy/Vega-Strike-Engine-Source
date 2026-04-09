@@ -27,15 +27,13 @@
 
 
 #include "navigation.h"
-#include "root_generic/macosx_math.h"
-#include <math.h>
+#include <cmath>
+#include <numbers>
 #ifndef _WIN32
-#include <assert.h>
+#include <cassert>
 #endif
 #include "cmd/unit_generic.h"
-#include "root_generic/lin_time.h"
 #include "cmd/script/flightgroup.h"
-#include "src/config_xml.h"
 #include "root_generic/vs_globals.h"
 #include "src/vs_logging.h"
 #include "warpto.h"
@@ -61,9 +59,9 @@ constexpr float M_PI_FLT = M_PI;
  * t = ( -2v0 (+/-) sqrtf (4*v0^2 - 4*(.5*v0^2 - accel*Length) ) / (2*accel))
  * t = -v0/accel (+/-) sqrtf (.5*v0^2 + Length*accel)/accel;
  *
- * 8/15/05 Patched Calulate BalancedDecel time: our previous quantization factor ignored the quantization during ACCEL phase and also ignored the fact that we overestimated the integral rather than underestimated
+ * 8/15/05 Patched Calculate BalancedDecel time: our previous quantization factor ignored the quantization during ACCEL phase and also ignored the fact that we overestimated the integral rather than underestimated
  *         new quantization factor is .5*accel*simulation_atom_var*simulation_atom_var-.5*initialVelocity*simulation_atom_var
- *            also this threshold idea is silly--accelerate if t>SIM_ATOM decel if t<0  still havent fixed t between 0 and SIM_ATOM...have decent approx for now.
+ *            also this threshold idea is silly--accelerate if t>SIM_ATOM decel if t<0  still haven't fixed t between 0 and SIM_ATOM...have decent approx for now.
  * 3/2/02  Patched CalculateBalancedDecel time with the fact that length should be more by a
  * quantity of .5*initialVelocity*simulation_atom_var
  *
@@ -597,7 +595,7 @@ void AutoLongHaul::Execute() {
     const float go_perpendicular_speed = configuration().physics.warp_perpendicular_flt;
     const float min_warp_orbit_radius = configuration().physics.min_warp_orbit_radius_flt;
     const float warp_orbit_multiplier = configuration().physics.warp_orbit_multiplier_flt;
-    const float warp_behind_angle = cos(M_PI_FLT * configuration().physics.warp_behind_angle_flt / 180.0F);
+    const float warp_behind_angle = cos(std::numbers::pi_v<float> * configuration().physics.warp_behind_angle_flt / 180.0F);
     QVector myposition = parent->isSubUnit() ? parent->Position() : parent->LocalPosition();     //get unit pos
     QVector destination = target->isSubUnit() ? target->Position() : target->LocalPosition();     //get destination
     QVector destinationdirection = (destination - myposition);       //find vector from us to destination

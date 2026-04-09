@@ -28,13 +28,8 @@
 #define VEGA_STRIKE_ENGINE_GFX_SPHERE_H
 
 #include "gfx_generic/mesh.h"
-#include "gfx_generic/quaternion.h"
-#include <assert.h>
+#include <cassert>
 #include <string>
-
-#ifndef M_PI
-#define M_PI (3.1415926536F)
-#endif
 
 class SphereMesh : public Mesh {
 //no local vars allowed
@@ -58,9 +53,9 @@ protected:
             const BLENDFUNC b = ZERO,
             bool envMap = false,
             float rho_min = 0.0,
-            float rho_max = M_PI,
+            float rho_max = std::numbers::pi_v<float>,
             float theta_min = 0.0,
-            float theta_max = 2 * M_PI,
+            float theta_max = 2.0F * std::numbers::pi_v<float>,
             FILTER mipmap = MIPMAP,
             bool reverse_normals = false,
             bool subclass = false);
@@ -76,22 +71,22 @@ public:
     void SelectCullFace(int whichdrawqueue) override;
     void RestoreCullFace(int whichdrawqueue) override;
 
-    SphereMesh(float radius,
-            int stacks,
-            int slices,
+    SphereMesh(const float radius,
+            const int stacks,
+            const int slices,
             const char *texture,
             const std::string &technique,
-            const char *alpha = NULL,
-            bool insideout = false,
+            const char *alpha = nullptr,
+            const bool insideout = false,
             const BLENDFUNC a = ONE,
             const BLENDFUNC b = ZERO,
-            bool envMap = false,
-            float rho_min = 0.0,
-            float rho_max = M_PI,
-            float theta_min = 0.0,
-            float theta_max = 2 * M_PI,
-            FILTER mipmap = MIPMAP,
-            bool reverse_normals = false) {
+            const bool envMap = false,
+            const float rho_min = 0.0,
+            const float rho_max = std::numbers::pi_v<float>,
+            const float theta_min = 0.0,
+            const float theta_max = 2.0F * std::numbers::pi_v<float>,
+            const FILTER mipmap = MIPMAP,
+            const bool reverse_normals = false) {
         InitSphere(radius,
                 stacks,
                 slices,
@@ -146,9 +141,9 @@ public:
             const BLENDFUNC b = ZERO,
             bool envMap = false,
             float rho_min = 0.0,
-            float rho_max = M_PI,
+            float rho_max = std::numbers::pi_v<float>,
             float theta_min = 0.0,
-            float theta_max = 2 * M_PI,
+            float theta_max = 2.0F * std::numbers::pi_v<float>,
             bool inside_out = true);
     void ProcessDrawQueue(int whichpass, int which, bool zsort, const QVector &sortctr) override;
 

@@ -29,10 +29,10 @@
 #include "cmd/missile.h"
 
 #include <cmath>
+#include <numbers>
 
 #include "cmd/damageable.h"
 
-#include "cmd/mount_size.h"
 #include "src/universe_util.h"
 #include "cmd/unit_generic.h"
 #include "src/vegastrike.h"
@@ -41,9 +41,6 @@
 #include "cmd/images.h"
 #include "cmd/collection.h"
 #include "cmd/role_bitmask.h"
-#include "cmd/ai/order.h"
-#include "root_generic/faction_generic.h"
-#include "cmd/unit_util.h"
 #include "src/vs_logging.h"
 #include "src/star_system.h"
 #include "src/universe.h"
@@ -147,8 +144,8 @@ void MissileEffect::DoApplyDamage(Unit *parent, Unit *un, float distance, float 
         if (total_area > 0.0) {
             VS_LOG(info, (boost::format("Missile subunit damage of %1$.3f%%") % (total_area * (100.0 / 4.0 * M_PI))));
         }
-        if (total_area < 4.0 * M_PI) {
-            total_area = 4.0 * M_PI;
+        if (total_area < 4.0 * std::numbers::pi_v<double>) {
+            total_area = 4.0 * std::numbers::pi_v<double>;
         }
 
         un_iter i = un->getSubUnits();

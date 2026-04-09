@@ -26,7 +26,8 @@
  */
 
 
-#include <math.h>
+#include <cmath>
+#include <numbers>
 #include "src/vegastrike.h"
 #include "cmd/planet.h"
 #include "src/gfxlib.h"
@@ -63,6 +64,7 @@
 #include "src/universe_util.h"
 
 using std::endl;
+using namespace std::numbers;
 
 extern float ScaleJumpRadius(float);
 extern Flightgroup *getStaticBaseFlightgroup(int faction);
@@ -433,8 +435,8 @@ void Planet::InitPlanet(QVector x,
     const float densityOfRock = configuration().physics.density_of_rock_flt;
     const float densityOfJumpPoint = configuration().physics.density_of_jump_point_flt;
     //const float massofplanet = configuration().physics.mass_of_planet;
-    hull.Set((4.0 / 3.0) * M_PI * radius * radius * radius * (notJumppoint ? densityOfRock : densityOfJumpPoint));
-    this->SetMass((4.0 / 3.0) * M_PI * radius * radius * radius * (notJumppoint ? densityOfRock : (densityOfJumpPoint / 100000)));
+    hull.Set((4.0 / 3.0) * pi_v<double> * radius * radius * radius * (notJumppoint ? densityOfRock : densityOfJumpPoint));
+    this->SetMass((4.0 / 3.0) * pi_v<double> * radius * radius * radius * (notJumppoint ? densityOfRock : (densityOfJumpPoint / 100000)));
     SetAI(new PlanetaryOrbit(this, vely, pos, x, y, orbitcent, parent));     //behavior
     terraintrans = nullptr;
 
@@ -552,7 +554,7 @@ void Planet::AddCity(const std::string &texture,
     m.power = 0.0;
     const int stacks = configuration().graphics.planet_detail_level;
     meshdata.push_back(new CityLights(radius, stacks, stacks, texture.c_str(), numwrapx, numwrapy, inside_out, ONE, ONE,
-            false, 0, M_PI, 0.0, 2 * M_PI, reverse_normals));
+            false, 0, pi_v<float>, 0.0, 2 * pi_v<float>, reverse_normals));
     meshdata.back()->setEnvMap(GFXFALSE);
     meshdata.back()->SetMaterial(m);
 
@@ -618,8 +620,8 @@ void Planet::AddRing(const std::string &texture,
                     blendSrc,
                     blendDst,
                     false,
-                    i * (2 * M_PI) / ((float) slices),
-                    (i + 1) * (2 * M_PI) / ((float) slices)));
+                    i * (2.0F * pi_v<float>) / static_cast<float>(slices),
+                    (i + 1) * (2.0F * pi_v<float>) / static_cast<float>(slices)));
         }
     }
     meshdata.push_back(shield);
