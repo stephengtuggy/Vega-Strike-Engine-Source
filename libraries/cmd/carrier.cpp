@@ -26,9 +26,9 @@
  */
 
 
-#include "cmd/carrier.h"
+#include <numbers>
 
-#include "root_generic/configxml.h"
+#include "cmd/carrier.h"
 
 #include "cmd/unit_generic.h"
 #include "cmd/ship.h"
@@ -42,14 +42,12 @@
 #include "src/vs_logging.h"
 #include "src/vega_cast_utils.h"
 
+using namespace std::numbers;
 
 // TODO: find out where this is and maybe refactor
 extern int SelectDockPort(Unit *, Unit *parent);
 extern void SwitchUnits(Unit *, Unit *);
 extern void PlayDockingSound(int dock);
-
-constexpr float M_PI_FLT = M_PI;
-
 
 
 // TODO: move these two functions to vector and make into single constructor
@@ -158,10 +156,10 @@ void Carrier::EjectCargo(unsigned int index) {
                 }
             }
             float arot = 0;
-            const float grot = configuration().graphics.generic_cargo_rotation_speed_flt * M_PI_FLT / 180.0F;
+            const float grot = configuration().graphics.generic_cargo_rotation_speed_flt * pi_v<float> / 180.0F;
             if (!cargo) {
-                const float crot = configuration().graphics.cargo_rotation_speed_flt * M_PI_FLT / 180.0F;
-                const float erot = configuration().graphics.eject_rotation_speed_flt * M_PI_FLT / 180.0F;
+                const float crot = configuration().graphics.cargo_rotation_speed_flt * pi_v<float> / 180.0F;
+                const float erot = configuration().graphics.eject_rotation_speed_flt * pi_v<float> / 180.0F;
                 if (tmpcontent == "eject") {
                     if (isplayer) {
                         Flightgroup *fg = unit->getFlightgroup();

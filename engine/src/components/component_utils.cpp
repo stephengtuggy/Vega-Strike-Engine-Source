@@ -26,7 +26,7 @@
  */
 
 #define _USE_MATH_DEFINES
-#include <math.h>
+#include <numbers>
 #include <boost/format.hpp>
 
 #include "component_utils.h"
@@ -48,7 +48,7 @@
 #include "cmd/unit_csv_factory.h"
 #include "configuration/configuration.h"
 
-
+using namespace std::numbers;
 
 
 const ComponentType GetComponentTypeFromName(const std::string name) {
@@ -187,8 +187,8 @@ void ResourceYawPitchRollParser(std::string unit_key, const YPR ypr,
                         const double minimum_functionality) {
     double left, right;
     DoubleYawPitchRollParser(unit_key, ypr, right, left);
-    left *= M_PI / 180.0;
-    right *= M_PI / 180.0;
+    left *= pi_v<double> / 180.0;
+    right *= pi_v<double> / 180.0;
     right_value = Resource<double>(right,right * minimum_functionality,right);
     left_value = Resource<double>(left,right * minimum_functionality,left);
 }

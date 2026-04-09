@@ -44,8 +44,6 @@
 
 using namespace Orders;
 
-constexpr float M_PI_FLT = M_PI;
-
 /**
  * the time we need to start slowing down from now calculation (if it's in this frame we'll only accelerate for partial
  * vslowdown - decel * t = 0               t = vslowdown/decel
@@ -681,7 +679,7 @@ void AutoLongHaul::Execute() {
         if (speed > .01) {
             cfacing = cfacing * (1. / speed);
         }
-        const float dotLimit = cos(M_PI_FLT * configuration().physics.auto_pilot_spec_lining_up_angle_flt / 180.0F);
+        const float dotLimit = cosf(std::numbers::pi_v<float> * configuration().physics.auto_pilot_spec_lining_up_angle_flt / 180.0F);
         if (cfacing.Dot(destinationdirection) < dotLimit) {          //if wanting to face target but overshooting.
             deactivatewarp = true;
         }              //turn off drive

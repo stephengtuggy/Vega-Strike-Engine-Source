@@ -264,7 +264,7 @@ Color StarColor(float radius, unsigned int &entityindex) {
 }
 
 float LengthOfYear(Vector r, Vector s) {
-    float a = 2 * M_PI * mmax(r.Mag(), s.Mag());
+    const float a = 2 * std::numbers::pi_v<float> * mmax(r.Mag(), s.Mag());
     float speed = minspeed + (maxspeed - minspeed) * grand();
     return a / speed;
 }

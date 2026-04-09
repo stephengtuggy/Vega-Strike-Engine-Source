@@ -28,6 +28,7 @@
 
 
 #include <cmath>
+#include <numbers>
 #include <algorithm>
 #include <vector>
 #include <boost/assign/std/vector.hpp>
@@ -43,10 +44,12 @@
 
 #define POINT_SIZE_GRANULARITY 0.5
 
+using namespace std::numbers;
+
 namespace {
 
 float Degree2Radian(float angle) {
-    const float ratio = M_PI / 180.0;
+    const float ratio = pi_v<float> / 180.0;
     return angle * ratio;
 }
 
@@ -139,11 +142,11 @@ PlaneDisplay::PlaneDisplay()
     CalculateRotation();
 
     // Calculate ground plane
-    const float edges = 32;
-    const float full = 2 * M_PI;
-    const float step = full / edges;
-    for (float angle = 0.0; angle < full; angle += step) {
-        groundPlane.push_back(Vector(cosf(angle), 0.0f, sinf(angle)));
+    constexpr float edges = 32.0F;
+    constexpr float full = 2.0F * pi_v<float>;
+    constexpr float step = full / edges;
+    for (float angle = 0.0F; angle < full; angle += step) {
+        groundPlane.push_back(Vector(cosf(angle), 0.0F, sinf(angle)));
     }
 
     // Sequences start in 1 and ends in 0

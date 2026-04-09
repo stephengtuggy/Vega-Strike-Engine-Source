@@ -142,7 +142,7 @@ void MissileEffect::DoApplyDamage(Unit *parent, Unit *un, float distance, float 
             }
         }
         if (total_area > 0.0) {
-            VS_LOG(info, (boost::format("Missile subunit damage of %1$.3f%%") % (total_area * (100.0 / 4.0 * M_PI))));
+            VS_LOG(info, (boost::format("Missile subunit damage of %1$.3f%%") % (total_area * (100.0 / 4.0 * std::numbers::pi_v<double>))));
         }
         if (total_area < 4.0 * std::numbers::pi_v<double>) {
             total_area = 4.0 * std::numbers::pi_v<double>;

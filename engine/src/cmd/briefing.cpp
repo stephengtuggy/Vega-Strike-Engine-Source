@@ -35,6 +35,8 @@
 #include "gfx_generic/matrix.h"
 #include "src/universe.h"
 
+using namespace std::numbers;
+
 Briefing::Ship::Ship(const char *filename, int faction, const Vector &position) {
     VSCONSTRUCT2('s')
     Unit *tmp = new Unit(filename, true, faction);
@@ -73,8 +75,8 @@ void SetDirection(Matrix &mat, Vector start, Vector end, const Matrix cam, bool 
         q = q - r * (r.Dot(q) / r.MagnitudeSquared());
         if (q.MagnitudeSquared() < .000001) {
             q = r;
-            q.Yaw(std::numbers::pi_v<double> / 2.0);
-            q.Pitch(M_PI / 2);
+            q.Yaw(pi_v<float> / 2.0F);
+            q.Pitch(pi_v<float> / 2.0F);
             q = q - r * (r.Dot(q) / r.MagnitudeSquared());
         }
         Normalize(q);

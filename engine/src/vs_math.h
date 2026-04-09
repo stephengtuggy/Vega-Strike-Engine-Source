@@ -40,7 +40,6 @@
     #include <ieeefp.h>
 #endif //HAVE_IEEEFP_H
 
-// #define VEGA_PI std::numbers::pi_v<double>
 // #ifndef PI
 //     #define PI M_PI
 // #endif //PI

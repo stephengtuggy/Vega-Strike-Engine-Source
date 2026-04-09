@@ -65,7 +65,7 @@
 #include "cmd/ai/aggressive.h"
 #include "cmd/ai/autodocking.h"
 #include "src/main_loop.h"
-#include <assert.h>     //needed for assert() calls
+#include <cassert>     //needed for assert() calls
 #include "vegadisk/savegame.h"
 #include "gfx/animation.h"
 #include "gfx_generic/mesh.h"
@@ -90,7 +90,9 @@
 
 #include <cstddef>
 #include <cfloat>
+#include <numbers>
 
+using namespace std::numbers;
 using std::min;
 using std::max;
 
@@ -932,7 +934,7 @@ GameCockpit::GameCockpit(const char *file, Unit *parent, const std::string &pilo
     smooth_fov = limit_y;
     projection_limit_y = limit_y;
     //The angle between the center of the screen and the border is half the fov.
-    projection_limit_y = tan(projection_limit_y * M_PI / (180 * 2));
+    projection_limit_y = tan(projection_limit_y * pi_v<float> / (180.0F * 2.0F));
     projection_limit_x = projection_limit_y * configuration().graphics.aspect_flt;
     //Precompute this division... performance.
     inv_screen_aspect_ratio = 1 / configuration().graphics.aspect_flt;
@@ -1364,7 +1366,7 @@ static void DrawHeadingMarker(Cockpit &cp, const GFXColor &col) {
     cam->GetPQR(p, q, r);
 
     // znear offset
-    float offset = 2 * configuration().graphics.znear_flt / cos(cam->GetFov() * M_PI / 180.0);
+    const float offset = 2 * configuration().graphics.znear_flt / cos(cam->GetFov() * pi_v<float> / 180.0F);
     v *= offset;
     d *= offset;
 

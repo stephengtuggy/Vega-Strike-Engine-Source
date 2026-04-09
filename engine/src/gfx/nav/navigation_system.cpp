@@ -25,6 +25,8 @@
  * along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
+#include <numbers>
 #include "navigation_system.h"
 
 #include "system_draw_node.h"
@@ -34,6 +36,7 @@
 #include "imgui.h"
 #include "root_generic/vs_globals.h"
 
+using namespace std::numbers;
 
 void NavigationSystem::CachedSystemIterator::SystemInfo::UpdateColor() {
     const float GrayColorArray[4] = {.5, .5, .5, .5};
@@ -835,7 +838,7 @@ QVector NavigationSystem::SystemIterator::Position() {
         float screensmash = 1; //arbitrary constant used in calculating position below
 
         //float y = (k-100000)/(200000.);
-        return QVector(ratio * cos(locatio * 2 * M_PI), ratio * sin(locatio * 2 * M_PI), 0)
+        return QVector(ratio * cos(locatio * 2.0 * pi_v<double>), ratio * sin(locatio * 2.0 * pi_v<double>), 0)
                 * screensmash;
     }
 }
