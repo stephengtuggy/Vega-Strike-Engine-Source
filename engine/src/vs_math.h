@@ -40,14 +40,6 @@
     #include <ieeefp.h>
 #endif //HAVE_IEEEFP_H
 
-// #ifndef PI
-//     #define PI M_PI
-// #endif //PI
-
-#ifndef M_1_PI
-    #define M_1_PI (1/M_PI)
-#endif //M_1_PI
-
 #define FINITE(x) ( std::isfinite( x ) )
 #define ISNAN(x) ( std:: isnan( x ) )
 
