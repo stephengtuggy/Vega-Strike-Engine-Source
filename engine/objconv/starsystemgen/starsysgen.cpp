@@ -33,6 +33,7 @@
 #include <math.h>
 #include <time.h>
 #include <assert.h>
+#include <stdint.h>
 
 #ifndef M_PI
 #define M_PI 3.1415926536
@@ -48,8 +49,8 @@ static void seedrand(int seed) {
     starsysrandom = seed;
 }
 
-static unsigned int ssrand() {
-    starsysrandom = (starsysrandom * 1103515245 + 12345) % ((unsigned long) RAND_MAX + 1);
+static uint_fast32_t ssrand() {
+    starsysrandom = (starsysrandom * 1103515245 + 12345) % (static_cast<unsigned long>(RAND_MAX) + 1);
     return starsysrandom;
 }
 
@@ -59,7 +60,7 @@ float mmax(float a, float b) {
 }
 
 int rnd(int lower, int upper) {
-    return (int) (lower + (((float(upper - lower)) * ssrand()) / (float(RAND_MAX) + 1.)));
+    return static_cast<int>(lower + ((static_cast<float>(upper - lower) * ssrand()) / (static_cast<float>(RAND_MAX) + 1.)));
 }
 
 const char nada[1] = "";
@@ -296,9 +297,9 @@ Color StarColor(float radius, unsigned int &entityindex) {
     return Color(r, g, b);
 }
 
-float LengthOfYear(Vector r, Vector s) {
-    float a = 2 * M_PI * mmax(r.Mag(), s.Mag());
-    float speed = minspeed + (maxspeed - minspeed) * grand();
+float LengthOfYear(const Vector &r, Vector s) {
+    const float a = 2 * std::numbers::pi_v<float> * mmax(r.Mag(), s.Mag());
+    const float speed = minspeed + (maxspeed - minspeed) * grand();
     return a / speed;
 }
 

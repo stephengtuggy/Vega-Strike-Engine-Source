@@ -921,7 +921,7 @@ void Unit::UpdateSubunitPhysics(const Transformation &trans,
                         ) {
                     if (do_subunit_scheduling) {
                         #if defined(RANDOMIZE_SIM_ATOMS)
-                                                                                                                                                int priority = UnitUtil::getPhysicsPriority( su );
+                            uint_fast32_t priority = UnitUtil::getPhysicsPriority( su );
                             //Add some scattering
                             priority = (priority+rand()%priority)/2;
                             if (priority < 1) priority = 1;
@@ -3040,7 +3040,7 @@ void Unit::ImportPartList(const std::string &category, float price, float priced
 
         //stupid way
         c.SetQuantity(c.GetQuantity() + float_to_int((quantdev * 2 + 1) * static_cast<double>(rand()) / (static_cast<double>(RAND_MAX) + 1)));
-        c.SetPrice(c.GetPrice() + pricedev * 2 * static_cast<float>(rand()) / RAND_MAX);
+        c.SetPrice(c.GetPrice() + pricedev * 2 * vs_random.randomFloat());
         c.SetPrice(fabs(c.GetPrice()));
         c.SetPrice((c.GetPrice() + (baseprice * aveweight)) / (aveweight + 1));
         if (c.GetQuantity() <= 0) {
@@ -3210,12 +3210,12 @@ void Unit::Repair() {
     float ammt_repair = simulation_atom_var / repairtime * repair_bot.Get();
 
     unsigned int numg = (1 + UnitImages<void>::NUMGAUGES + MAXVDUS);
-    unsigned int which = vsrandom.genrand_int31() % numg;
+    unsigned int which = vs_random.gen_rand_int31() % numg;
     const float hud_repair_quantity = configuration().physics.hud_repair_unit_flt;
 
     if (mounts.size()) {
         const float mount_repair_quantity = configuration().physics.mount_repair_unit_flt;
-        unsigned int i = vsrandom.genrand_int31() % mounts.size();
+        unsigned int i = vs_random.gen_rand_int31() % mounts.size();
         if (mounts[i].functionality < mounts[i].maxfunctionality) {
             mounts[i].functionality += mount_repair_quantity;
             if (mounts[i].functionality > mounts[i].maxfunctionality) {

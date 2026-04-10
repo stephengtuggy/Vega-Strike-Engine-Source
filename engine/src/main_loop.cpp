@@ -894,10 +894,10 @@ void createObjects(std::vector<std::string> &fighter0name,
                                 for (unsigned int i = 0; i < siz; ++i) {
                                     if (srcsys == grav->GetDestinations()[i]) {
                                         QVector newpos = grav->LocalPosition()
-                                                + QVector(vsrandom.uniformExc(-grav->rSize() / 4, grav->rSize() / 4),
-                                                        vsrandom.uniformExc(-grav->rSize() / 4,
+                                                + QVector(vs_random.uniformExc(-grav->rSize() / 4, grav->rSize() / 4),
+                                                        vs_random.uniformExc(-grav->rSize() / 4,
                                                                 grav->rSize() / 4),
-                                                        vsrandom.uniformExc(-grav->rSize() / 4,
+                                                        vs_random.uniformExc(-grav->rSize() / 4,
                                                                 grav->rSize() / 4));
                                         if (grav->getUnitType() != Vega_UnitType::planet) {
                                             newpos = UniverseUtil::SafeEntrancePoint(newpos);

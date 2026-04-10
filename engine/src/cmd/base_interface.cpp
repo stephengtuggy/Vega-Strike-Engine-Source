@@ -32,6 +32,7 @@
 #include <Python.h>
 #include <algorithm>
 
+#include "vs_random.h"
 #include "src/vega_cast_utils.h"
 #include "cmd/vega_py_run.h"
 #include "cmd/base.h"
@@ -1341,11 +1342,11 @@ void BaseInterface::Room::Launch::Click(BaseInterface *base, float x, float y, i
     }
 }
 
-inline float aynrand(float min, float max) {
-    return (static_cast<float>(rand()) / RAND_MAX) * (max - min) + min;
+inline float aynrand(const float min, const float max) {
+    return vs_random.randomFloatInRange(min, max);
 }
 
-inline QVector randyVector(float min, float max) {
+inline QVector randyVector(const float min, const float max) {
     return QVector(aynrand(min, max),
             aynrand(min, max),
             aynrand(min, max));

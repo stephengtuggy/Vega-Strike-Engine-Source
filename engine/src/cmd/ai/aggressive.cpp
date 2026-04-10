@@ -36,14 +36,12 @@
 #include "root_generic/vs_globals.h"
 #include "vegadisk/vsfilesystem.h"
 #include "src/vs_logging.h"
-#include "src/config_xml.h"
 #include "root_generic/xml_support.h"
 #include "cmd/unit_generic.h"
 #include "communication.h"
 #include "cmd/script/flightgroup.h"
 #include "flybywire.h"
 #include "hard_coded_scripts.h"
-#include "cmd/script/mission.h"
 #include "gfx_generic/cockpit_generic.h"
 #include "root_generic/lin_time.h"
 #include "root_generic/faction_generic.h"
@@ -55,7 +53,6 @@
 #include "src/vs_random.h"
 #include "src/python/python_compile.h"
 #include "cmd/unit_find.h"
-#include "root_generic/faction_generic.h"
 #include "docking.h"
 #include "src/star_system.h"
 #include "src/universe.h"
@@ -1265,25 +1262,25 @@ static Unit *ChooseNavPoint(Unit *parent, Unit **otherdest, float *lurk_on_arriv
     const unsigned int maxrand = 5;
     unsigned int additionalrand[maxrand];
     if (civilian) {
-        firstRand = vsrandom.genrand_int31();
-        secondRand = vsrandom.uniformExc(0, 1);
-        thirdRand = vsrandom.genrand_int31();
+        firstRand = vs_random.gen_rand_int31();
+        secondRand = vs_random.uniformExc(0, 1);
+        thirdRand = vs_random.gen_rand_int31();
         for (unsigned int i = 0; i < maxrand; ++i) {
             additionalrand[i] = thirdRand + i;
         }
     } else {
-        int k = (int) (getNewTime() / timehash);        //two minutes
+        uint_fast32_t k = static_cast<uint_fast32_t>(getNewTime() / timehash);        //two minutes
         string key = UnitUtil::getFlightgroupName(parent);
         std::string::const_iterator start = key.begin();
         for (; start != key.end(); start++) {
             k += (k * 128) + *start;
         }
         VSRandom choosePlace(k);
-        firstRand = choosePlace.genrand_int31();
+        firstRand = choosePlace.gen_rand_int31();
         secondRand = choosePlace.uniformExc(0, 1);
-        thirdRand = choosePlace.genrand_int31();
+        thirdRand = choosePlace.gen_rand_int31();
         for (unsigned int i = 0; i < maxrand; ++i) {
-            additionalrand[i] = choosePlace.genrand_int31();
+            additionalrand[i] = choosePlace.gen_rand_int31();
         }
     }
     bool asteroidhide = false;

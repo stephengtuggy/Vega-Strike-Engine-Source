@@ -339,7 +339,7 @@ void CommunicatingAI::AdjustRelationTo(Unit *un, float factor) {
 
 //modified not to check player when hostiles are around--unless player IS the hostile
 Unit *CommunicatingAI::GetRandomUnit(float playaprob, float targprob) {
-    if (vsrandom.uniformInc(0, 1) < playaprob) {
+    if (vs_random.uniformInc(0, 1) < playaprob) {
         Unit *playa = _Universe->AccessCockpit(rand() % _Universe->numPlayers())->GetParent();
         if (playa) {
             if ((playa->Position() - parent->Position()).Magnitude() - parent->rSize() - playa->rSize()) {
@@ -347,14 +347,14 @@ Unit *CommunicatingAI::GetRandomUnit(float playaprob, float targprob) {
             }
         }
     }
-    if (vsrandom.uniformInc(0, 1) < targprob && parent->Target()) {
+    if (vs_random.uniformInc(0, 1) < targprob && parent->Target()) {
         return parent->Target();
     }
     //FIXME FOR TESTING ONLY
     //return parent->Target();
-    QVector where = parent->Position() + parent->radar.GetMaxRange() * QVector(vsrandom.uniformInc(-1, 1),
-            vsrandom.uniformInc(-1, 1),
-            vsrandom.uniformInc(-1, 1));
+    QVector where = parent->Position() + parent->radar.GetMaxRange() * QVector(vs_random.uniformInc(-1, 1),
+            vs_random.uniformInc(-1, 1),
+            vs_random.uniformInc(-1, 1));
     Collidable wherewrapper(0, 0, where);
 
     NearestUnitLocator unitLocator;

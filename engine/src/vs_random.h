@@ -1,10 +1,11 @@
 /*
  *  A C-program for MT19937, with initialization improved 2002/1/26.
  *  Coded by Takuji Nishimura and Makoto Matsumoto.
- *  Before using, initialize the state by using init_genrand(seed)
+ *  Before using, initialize the state by using init_gen_rand(seed)
  *  or init_by_array(init_key, key_length).
  *  Copyright (C) 1997 - 2002, Makoto Matsumoto and Takuji Nishimura,
  *  Copyright (C) 2023 Benjamen R. Meyer
+ *  Copyright (C) 2026 Stephen G. Tuggy -- Overhauled to use c++11 random number generation
  *  All rights reserved.
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -32,177 +33,145 @@
  *  http://www.math.keio.ac.jp/matumoto/emt.html
  *  email: matumoto@math.keio.ac.jp
  */
-// NO HEADER GUARD
-
-/*
- * #define N 624
- * #define M 397
- * #define MATRIX_A 0x9908b0dfUL   // constant vector a
- * #define UPPER_MASK 0x80000000UL // most significant w-r bits
- * #define LOWER_MASK 0x7fffffffUL // least significant r bits
- */
+#ifndef VS_RANDOM_H
+#define VS_RANDOM_H
 
 #define VS_RAND_MAX 0x7fffffffUL
+#include <random>
+#include <cstdint>
 
 class VSRandom {
-#define NN_CONSTANT 624
+    std::mt19937 gen;
 
-    static const unsigned int N() {
-        return NN_CONSTANT;
-    }
-
-    static const unsigned int M() {
-        return 397;
-    }
-
-    static const unsigned int MATRIX_A() {
-        return 0x9908b0dfUL;
-    }
-
-    static const unsigned int UPPER_MASK() {
-        return 0x80000000UL;
-    }
-
-    static const unsigned int LOWER_MASK() {
-        return 0x7fffffffUL;
-    }
-
-    unsigned int mt[NN_CONSTANT]; /* the array for the state vector  */
-#undef NN_CONSTANT
-    unsigned int mti; /* mti==N+1 means mt[N] is not initialized */
-/* initializes mt[N] with a seed */
 public:
-    VSRandom(unsigned int s) : mti(N() + 1) {
-        init_genrand(s);
+
+    explicit VSRandom() {
+        std::random_device rd;
+        gen.seed(rd());
     }
 
-    void init_genrand(unsigned int s) {
-        mt[0] = s & 0xffffffffUL;
-        for (mti = 1; mti < N(); mti++) {
-            mt[mti] =
-                    (1812433253UL * (mt[mti - 1] ^ (mt[mti - 1] >> 30)) + mti);
-            /*
-             * See Knuth TAOCP Vol2. 3	rd Ed. P.106 for multiplier.
-             * In the previous versions, MSB	s of the seed affect
-             * only MSBs of the array mt[].
-             * 2002/01/09 modified by Makoto Matsumoto
-             */
-            mt[mti] &= 0xffffffffUL;
-            /* for >32 bit machines */
-        }
+    /* initializes random number generator with a specific seed */
+    explicit VSRandom(const uint_fast32_t s) {
+        init_gen_rand(s);
     }
 
-/*
- * initialize by an array with array-length
- * init_key is the array for initializing keys
- * key_length is its length
- */
-    VSRandom(unsigned int init_key[], unsigned int key_length) : mti(N() + 1) {
-        unsigned int i, j, k;
-        init_genrand(19650218UL);
-        i = 1;
-        j = 0;
-        k = (N() > key_length ? N() : key_length);
-        for (; k; k--) {
-            mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 30)) * 1664525UL))
-                    + init_key[j] + j;       /* non linear */
-            mt[i] &= 0xffffffffUL;     /* for WORDSIZE > 32 machines */
-            i++;
-            j++;
-            if (i >= N()) {
-                mt[0] = mt[N() - 1];
-                i = 1;
-            }
-            if (j >= key_length) {
-                j = 0;
-            }
-        }
-        for (k = N() - 1; k; k--) {
-            mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 30)) * 1566083941UL))
-                    - i;     /* non linear */
-            mt[i] &= 0xffffffffUL;     /* for WORDSIZE > 32 machines */
-            i++;
-            if (i >= N()) {
-                mt[0] = mt[N() - 1];
-                i = 1;
-            }
-        }
-        mt[0] = 0x80000000UL; /* MSB is 1; assuring non-zero initial array */
+    void init_gen_rand(const uint_fast32_t s) {
+        gen.seed(s);
     }
 
-/* generates a random number on [0,0xffffffff]-interval */
-    unsigned int genrand_int32(void) {
-        unsigned int y;
-        static unsigned int mag01[2] = {0x0UL, MATRIX_A()};
-        /* mag01[x] = x * MATRIX_A  for x=0,1 */
-        if (mti >= N()) {
-            /* generate N words at one time */
-            unsigned int kk;
-            if (mti == N() + 1) {      /* if init_genrand() has not been called, */
-                init_genrand(5489UL);
-            }          /* a default initial seed is used */
-            for (kk = 0; kk < N() - M(); kk++) {
-                y = (mt[kk] & UPPER_MASK()) | (mt[kk + 1] & LOWER_MASK());
-                mt[kk] = mt[kk + M()] ^ (y >> 1) ^ mag01[y & 0x1UL];
-            }
-            for (; kk < N() - 1; kk++) {
-                y = (mt[kk] & UPPER_MASK()) | (mt[kk + 1] & LOWER_MASK());
-                mt[kk] = mt[kk + (M() - N())] ^ (y >> 1) ^ mag01[y & 0x1UL];
-            }
-            y = (mt[N() - 1] & UPPER_MASK()) | (mt[0] & LOWER_MASK());
-            mt[N() - 1] = mt[M() - 1] ^ (y >> 1) ^ mag01[y & 0x1UL];
-            mti = 0;
-        }
-        y = mt[mti++];
-        /* Tempering */
-        y ^= (y >> 11);
-        y ^= (y << 7) & 0x9d2c5680UL;
-        y ^= (y << 15) & 0xefc60000UL;
-        y ^= (y >> 18);
-        return y;
+    /*
+     * initialize by an array with array-length
+     * init_key is the array for initializing keys
+     * key_length is its length
+     */
+    VSRandom(uint_fast32_t init_key[], const size_t key_length) {
+        std::seed_seq seq(init_key, init_key + key_length);
+        gen.seed(seq);
     }
 
-/* generates a random number on [0,0x7fffffff]-interval */
-    int genrand_int31(void) {
-        return (int) (genrand_int32() >> 1);
+    /* generates a random number on [0,0xffffffff]-interval */
+    uint_fast32_t gen_rand_uint32() {
+        return gen();
     }
 
-    unsigned int rand() {
-        return genrand_int31();
+    /* generates a random number on [0,0x7fffffff]-interval */
+    int_fast32_t gen_rand_int31() {
+        return static_cast<int_fast32_t>(gen_rand_uint32() >> 1);
     }
 
-/* generates a random number on [0,1]-real-interval */
-    double genrand_real1(void) {
-        return genrand_int32() * (1.0 / 4294967295.0);
+    uint_fast32_t rand() {
+        return gen_rand_uint32();
+    }
+
+    /* generates a random number on [0,1]-real-interval */
+    double gen_rand_real1() {
+        std::uniform_real_distribution<double> real_dist(0.0, 4294967295.0);
+        return real_dist(gen);
+        // return gen_rand_uint32() * (1.0 / 4294967295.0);
         /* divided by 2^32-1 */
     }
 
 /* generates a random number on [0,1)-real-interval */
-    double genrand_real2(void) {
-        return genrand_int32() * (1.0 / 4294967296.0);
+    double gen_rand_real2() {
+        std::uniform_real_distribution<double> real_dist(0.0, 4294967296.0);
+        return real_dist(gen);
+        // return gen_rand_uint32() * (1.0 / 4294967296.0);
         /* divided by 2^32 */
     }
 
-    double uniformInc(double min, double max) {
-        return genrand_real1() * (max - min) + min;
+    double uniformInc(const double min, const double max) {
+        return gen_rand_real1() * (max - min) + min;
     }
 
-    double uniformExc(double min, double max) {
-        return genrand_real2() * (max - min) + min;
+    double uniformExc(const double min, const double max) {
+        return gen_rand_real2() * (max - min) + min;
     }
 
-/* generates a random number on (0,1)-real-interval */
-    double genrand_real3(void) {
-        return (((double) genrand_int32()) + 0.5) * (1.0 / 4294967296.0);
+    /* generates a random number on (0,1)-real-interval */
+    double gen_rand_real3() {
+        return (static_cast<double>(gen_rand_uint32()) + 0.5) * (1.0 / 4294967296.0);
         /* divided by 2^32 */
     }
 
-/* generates a random number on [0,1) with 53-bit resolution*/
-    double genrand_res53(void) {
-        unsigned int a = genrand_int32() >> 5, b = genrand_int32() >> 6;
+    /* generates a random number on [0,1) with 53-bit resolution*/
+    double gen_rand_res53() {
+        const uint_fast32_t a = gen_rand_uint32() >> 5;
+        const uint_fast32_t b = gen_rand_uint32() >> 6;
         return (a * 67108864.0 + b) * (1.0 / 9007199254740992.0);
     }
 /* These real versions are due to Isaku Wada, 2002/01/09 added */
-};
-extern VSRandom vsrandom;
 
+    int_fast32_t random_int32_in_range(const int_fast32_t min, const int_fast32_t max) {
+        return gen_rand_int31() * (max - min) + min;
+    }
+
+    int_fast32_t random_int32_up_to(const int_fast32_t max) {
+        return random_int32_in_range(0, max);
+    }
+
+    uint_fast32_t random_uint32_in_range(const uint_fast32_t min, const uint_fast32_t max) {
+        return gen_rand_uint32() * (max - min) + min;
+    }
+
+    uint_fast32_t random_uint32_up_to(const uint_fast32_t max) {
+        return random_uint32_in_range(0, max);
+    }
+
+    double randomRealInRange(const double min, const double max) {
+        return uniformInc(min, max);
+    }
+
+    double randomDoubleInRange(const double min, const double max) {
+        return uniformInc(min, max);
+    }
+
+    double randomDoubleUpTo(const double max) {
+        return randomDoubleInRange(0, max);
+    }
+
+    double randomDouble() {
+        // constexpr int kPrecision = 10000;
+        // std::uniform_int_distribution<std::mt19937::result_type> int_dist(0,kPrecision);
+        // const unsigned int random_int = int_dist(gen);
+        // return static_cast<double>(random_int) / kPrecision;
+        std::uniform_real_distribution<double> real_dist(0.0, 1.0);
+        return real_dist(gen);
+    }
+
+    float randomFloatInRange(const float min, const float max) {
+        return uniformInc(min, max);
+    }
+
+    float randomFloatUpTo(const float max) {
+        return randomFloatInRange(0, max);
+    }
+
+    float randomFloat() {
+        std::uniform_real_distribution<float> real_dist(0.0F, 1.0F);
+        return real_dist(gen);
+    }
+};
+
+extern VSRandom vs_random;
+
+#endif // VS_RANDOM_H

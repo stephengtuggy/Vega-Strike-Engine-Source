@@ -31,8 +31,7 @@
 #include "src/audiolib.h"
 
 #include <vector>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
 #include "root_generic/lin_time.h"
 #include "src/vegastrike.h"
 #include "vegadisk/vsfilesystem.h"
@@ -41,7 +40,7 @@
 #include "src/vs_random.h"
 #include "gldrv/gl_globals.h"
 #include <set>
-#include <math.h>
+#include <cmath>
 
 using std::set;
 static set<AnimatedTexture *> anis;
@@ -543,7 +542,7 @@ void AnimatedTexture::LoadAni(VSFileSystem::VSFile &f, int stage, enum FILTER is
         SetLoop(false);
     }
     if (XMLSupport::parse_option_ispresent(options, "startRandom")) {
-        int curf = vsrandom.genrand_int32() % numframes;
+        const uint_fast32_t curf = vs_random.gen_rand_uint32() % numframes;
         setTime((0.00001 + curf) * timeperframe);
     }
     string addrmodestr = XMLSupport::parse_option_value(options, "addressMode", "");

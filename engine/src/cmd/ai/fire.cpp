@@ -57,7 +57,7 @@ static bool NoDockWithClear() {
     return nodockwithclear;
 }
 
-VSRandom targrand(time(NULL));
+VSRandom target_rand{};
 
 Unit *getAtmospheric(Unit *targ) {
     if (targ) {
@@ -146,7 +146,7 @@ void FireAt::ReInit(float aggressivitylevel) {
     agg = aggressivitylevel;
     distance = 1;
     //JS --- spreading target switch times
-    lastchangedtarg = 0.0F - targrand.uniformInc(0, 1) * configuration().ai.targeting.min_time_to_switch_targets_flt;
+    lastchangedtarg = 0.0F - target_rand.uniformInc(0, 1) * configuration().ai.targeting.min_time_to_switch_targets_flt;
     had_target = false;
 }
 
@@ -523,7 +523,7 @@ void FireAt::ChooseTargets(int numtargs, bool force) {
     }
     bool wasnull = (curtarg == NULL);
     Flightgroup *fg = parent->getFlightgroup();
-    lastchangedtarg = 0 + targrand.uniformInc(0, 1)
+    lastchangedtarg = 0 + target_rand.uniformInc(0, 1)
             * mintimetoswitch;     //spread out next valid time to switch targets - helps to ease per-frame loads.
     if (fg) {
         if (!fg->directive.empty()) {
@@ -617,7 +617,7 @@ void FireAt::ChooseTargets(int numtargs, bool force) {
                 nextframenumpollers[hastarg] = maxnumpollers;
             }
         } else {
-            lastchangedtarg += targrand.uniformInc(0, 1) * minnulltimetoswitch;
+            lastchangedtarg += target_rand.uniformInc(0, 1) * minnulltimetoswitch;
             nextframenumpollers[hastarg] -= .05;
             if (nextframenumpollers[hastarg] < minnumpollers) {
                 nextframenumpollers[hastarg] = minnumpollers;
@@ -677,20 +677,20 @@ bool FireAt::ShouldFire(Unit *targ, bool &missilelock) {
         VS_LOG(trace, (boost::format("%1%: retval = true") % __FUNCTION__));
         if (Cockpit::tooManyAttackers()) {
             VS_LOG(trace, (boost::format("%1%: too many attackers") % __FUNCTION__));
-            Cockpit *player = _Universe->isPlayerStarship(targ);
+            const Cockpit *player = _Universe->isPlayerStarship(targ);
             if (player) {
                 VS_LOG(trace, (boost::format("%1%: player is not null") % __FUNCTION__));
                 const int max_attackers = configuration().ai.max_player_attackers;
-                int attackers = player->number_of_attackers;
+                const int attackers = player->number_of_attackers;
                 if (attackers > max_attackers && max_attackers > 0) {
                     VS_LOG(trace, (boost::format("%1%: attackers > max_attackers && max_attackers > 0") % __FUNCTION__));
                     const float attacker_switch_time = configuration().ai.attacker_switch_time_flt;
-                    int curtime =
-                            (int) fmod(floor(UniverseUtil::GetGameTime() / attacker_switch_time), (float) (1 << 24));
-                    int seed = ((((size_t) parent) & 0xffffffff) ^ curtime);
+                    const uint_fast32_t current_time =
+                            fmod(floor(UniverseUtil::GetGameTime() / attacker_switch_time), static_cast<float>(1 << 24));
+                    const uint_fast32_t seed = ((reinterpret_cast<size_t>(parent) & 0xffffffff) ^ current_time);
                     static VSRandom decide(seed);
-                    decide.init_genrand(seed);
-                    if (decide.genrand_int31() % attackers >= max_attackers) {
+                    decide.init_gen_rand(seed);
+                    if (decide.gen_rand_int31() % attackers >= max_attackers) {
                         VS_LOG(trace, (boost::format("%1%: randomly decided to return false") % __FUNCTION__));
                         return false;
                     }
@@ -759,7 +759,7 @@ using std::string;
 
 void FireAt::PossiblySwitchTarget(bool unused) {
     const float targettime = configuration().ai.targeting.time_until_switch_flt;
-    if ((targettime <= 0) || (vsrandom.uniformInc(0, 1) < simulation_atom_var / targettime)) {
+    if ((targettime <= 0) || (vs_random.uniformInc(0, 1) < simulation_atom_var / targettime)) {
         bool ct = true;
         Flightgroup *fg;
         if ((fg = parent->getFlightgroup())) {

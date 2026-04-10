@@ -258,7 +258,7 @@ void Carrier::EjectCargo(unsigned int index) {
                 arot = grot;
             }
             Vector rotation
-                    (vsrandom.uniformInc(-arot, arot), vsrandom.uniformInc(-arot, arot), vsrandom.uniformInc(-arot,
+                    (vs_random.uniformInc(-arot, arot), vs_random.uniformInc(-arot, arot), vs_random.uniformInc(-arot,
                             arot));
             const bool all_rotate_same = configuration().graphics.cargo_rotates_at_same_speed;
             if (all_rotate_same && arot != 0) {

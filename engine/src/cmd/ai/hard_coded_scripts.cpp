@@ -280,7 +280,7 @@ public:
         m.SetParent(parent1);
     }
 
-    LoopAround(bool aggressive, bool afterburn, bool force_afterburn, int seed) : FaceTargetITTS(false, 3),
+    LoopAround(const bool aggressive, const bool afterburn, const bool force_afterburn, const uint_fast32_t seed) : FaceTargetITTS(false, 3),
             m(Vector(0, 0, 1000),
                     true,
                     afterburn,
@@ -375,7 +375,7 @@ class LoopAroundAgro : public Orders::FaceTargetITTS {
     bool afterburn;
     bool force_afterburn;
 public:
-    LoopAroundAgro(bool aggressive, bool afterburn, bool force_afterburn, int seed) : FaceTargetITTS(false, 3),
+    LoopAroundAgro(const bool aggressive, const bool afterburn, const bool force_afterburn, const uint_fast32_t seed) : FaceTargetITTS(false, 3),
             m(false, 2, false) {
         VSRandom vsr(seed);
         this->afterburn = afterburn;
@@ -467,7 +467,7 @@ public:
         m.SetParent(parent1);
     }
 
-    FacePerpendicular(bool aggressive, bool afterburn, bool force_afterburn, int seed) : FaceTargetITTS(false, 3),
+    FacePerpendicular(const bool aggressive, const bool afterburn, const bool force_afterburn, const uint_fast32_t seed) : FaceTargetITTS(false, 3),
             m(Vector(0, 0, 1000),
                     true,
                     afterburn,
@@ -552,12 +552,12 @@ public:
 }
 
 void LoopAround(Order *aisc, Unit *un) {
-    Order *broll = new Orders::LoopAround(false, true, false, (int) (size_t) un);
+    Order *broll = new Orders::LoopAround(false, true, false, static_cast<uint_fast32_t>(reinterpret_cast<size_t>(un)));
     AddOrd(aisc, un, broll);
 }
 
 void AggressiveLoopAround(Order *aisc, Unit *un) {
-    Order *broll = new Orders::LoopAroundAgro(true, true, false, (int) (size_t) un);
+    Order *broll = new Orders::LoopAroundAgro(true, true, false, static_cast<uint_fast32_t>(reinterpret_cast<size_t>(un)));
     AddOrd(aisc, un, broll);
 }
 
@@ -596,47 +596,47 @@ void RollRightHard(Order *aisc, Unit *un) {
 }
 
 void LoopAroundFast(Order *aisc, Unit *un) {
-    Order *broll = new Orders::LoopAround(false, true, true, (int) (size_t) un);
+    Order *broll = new Orders::LoopAround(false, true, true, static_cast<uint_fast32_t>(reinterpret_cast<size_t>(un)));
     AddOrd(aisc, un, broll);
 }
 
 void FacePerpendicularFast(Order *aisc, Unit *un) {
-    Order *broll = new Orders::FacePerpendicular(false, true, true, (int) (size_t) un);
+    Order *broll = new Orders::FacePerpendicular(false, true, true, static_cast<uint_fast32_t>(reinterpret_cast<size_t>(un)));
     AddOrd(aisc, un, broll);
 }
 
 void FacePerpendicular(Order *aisc, Unit *un) {
-    Order *broll = new Orders::FacePerpendicular(false, true, false, (int) (size_t) un);
+    Order *broll = new Orders::FacePerpendicular(false, true, false, static_cast<uint_fast32_t>(reinterpret_cast<size_t>(un)));
     AddOrd(aisc, un, broll);
 }
 
 void FacePerpendicularSlow(Order *aisc, Unit *un) {
-    Order *broll = new Orders::FacePerpendicular(false, false, false, (int) (size_t) un);
+    Order *broll = new Orders::FacePerpendicular(false, false, false, static_cast<uint_fast32_t>(reinterpret_cast<size_t>(un)));
     AddOrd(aisc, un, broll);
 }
 
 void RollFacePerpendicularFast(Order *aisc, Unit *un) {
-    Order *broll = new Orders::FacePerpendicular(true, true, true, (int) (size_t) un);
+    Order *broll = new Orders::FacePerpendicular(true, true, true, static_cast<uint_fast32_t>(reinterpret_cast<size_t>(un)));
     AddOrd(aisc, un, broll);
 }
 
 void RollFacePerpendicular(Order *aisc, Unit *un) {
-    Order *broll = new Orders::FacePerpendicular(true, true, false, (int) (size_t) un);
+    Order *broll = new Orders::FacePerpendicular(true, true, false, static_cast<uint_fast32_t>(reinterpret_cast<size_t>(un)));
     AddOrd(aisc, un, broll);
 }
 
 void RollFacePerpendicularSlow(Order *aisc, Unit *un) {
-    Order *broll = new Orders::FacePerpendicular(true, false, false, (int) (size_t) un);
+    Order *broll = new Orders::FacePerpendicular(true, false, false, static_cast<uint_fast32_t>(reinterpret_cast<size_t>(un)));
     AddOrd(aisc, un, broll);
 }
 
 void AggressiveLoopAroundFast(Order *aisc, Unit *un) {
-    Order *broll = new Orders::LoopAroundAgro(true, true, true, (int) (size_t) un);
+    Order *broll = new Orders::LoopAroundAgro(true, true, true, static_cast<uint_fast32_t>(reinterpret_cast<size_t>(un)));
     AddOrd(aisc, un, broll);
 }
 
 void LoopAroundSlow(Order *aisc, Unit *un) {
-    Order *broll = new Orders::LoopAround(false, false, false, (int) (size_t) un);
+    Order *broll = new Orders::LoopAround(false, false, false, static_cast<uint_fast32_t>(reinterpret_cast<size_t>(un)));
     AddOrd(aisc, un, broll);
 }
 
@@ -649,7 +649,7 @@ void SelfDestruct(Order *aisc, Unit *un) {
 }
 
 void AggressiveLoopAroundSlow(Order *aisc, Unit *un) {
-    Order *broll = new Orders::LoopAroundAgro(true, false, false, (int) (size_t) un);
+    Order *broll = new Orders::LoopAroundAgro(true, false, false, static_cast<uint_fast32_t>(reinterpret_cast<size_t>(un)));
     AddOrd(aisc, un, broll);
 }
 

@@ -32,7 +32,7 @@
 #include "src/vs_logging.h"
 
 static double firsttime;
-VSRandom vsrandom(time(NULL));
+VSRandom vs_random{};
 
 #ifdef WIN32
 #ifndef NOMINMAX
