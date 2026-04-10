@@ -95,6 +95,7 @@
 using std::endl;
 using std::list;
 
+using namespace std::numbers;
 
 
 // This is a left over kludge because I don't want to mess with python interfaces yet.
@@ -1134,7 +1135,7 @@ extern std::string getDamageColor(double);
 //NUMGAUGES has been moved to pImages.h in UnitImages<void>
 void Unit::DamageRandSys(float dam, const Vector &vec) {
     // TODO: take actual damage into account when damaging components.
-    const float deg = fabs(180.0F * atan2(vec.i, vec.k) / std::numbers::pi_v<float>);
+    const float deg = fabs(180.0F * atan2(vec.i, vec.k) / pi_v<float>);
     const float random_number = randomDouble();
     const float inv_min_dam = 1.0F - configuration().physics.min_damage_flt;
     const float inv_max_dam = 1.0F - configuration().physics.max_damage_flt;
@@ -2095,7 +2096,7 @@ bool Unit::UnDock(Unit *utdw) {
                         GetOrientation(p, q, r);
                     }
                     if (r.Dot(methem) < 0) {
-                        Rotate(p * (PI / theta));
+                        Rotate(p * (pi_v<float> / theta));
                     }
                 }
             }

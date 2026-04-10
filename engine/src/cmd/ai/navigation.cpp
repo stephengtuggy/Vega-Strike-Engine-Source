@@ -43,6 +43,7 @@
 #include "src/universe.h"
 
 using namespace Orders;
+using namespace std::numbers;
 
 /**
  * the time we need to start slowing down from now calculation (if it's in this frame we'll only accelerate for partial
@@ -303,7 +304,7 @@ void ChangeHeading::TurnToward(float atancalc, float ang_veli, float &torquei) {
     if (t < 0) {
         //if it can't make it: try the other way
         torquei = fabs(torquei);         //copy sign again
-        t = CalculateBalancedDecelTime(atancalc > 0 ? atancalc - 2 * PI : atancalc + 2 * PI,
+        t = CalculateBalancedDecelTime(atancalc > 0 ? atancalc - 2.0F * pi_v<float> : atancalc + 2.0F * pi_v<float>,
                 ang_veli,
                 torquei,
                 parent->GetMoment());
@@ -348,7 +349,7 @@ void ChangeHeading::Execute() {
     const bool AICheat = configuration().ai.turn_cheat;
     bool cheater = false;
     const float min_for_no_oversteer = configuration().ai.min_angular_accel_cheat_flt;
-    if (AICheat && ((parent->drive.yaw + parent->drive.pitch) * 180 / (PI * parent->GetMass()) > min_for_no_oversteer)
+    if (AICheat && ((parent->drive.yaw + parent->drive.pitch) * 180.0 / (pi_v<double> * parent->GetMass()) > min_for_no_oversteer)
             && !parent->isSubUnit()) {
         if (xswitch || yswitch) {
             Vector P, Q, R;
@@ -593,7 +594,7 @@ void AutoLongHaul::Execute() {
     const float go_perpendicular_speed = configuration().physics.warp_perpendicular_flt;
     const float min_warp_orbit_radius = configuration().physics.min_warp_orbit_radius_flt;
     const float warp_orbit_multiplier = configuration().physics.warp_orbit_multiplier_flt;
-    const float warp_behind_angle = cos(std::numbers::pi_v<float> * configuration().physics.warp_behind_angle_flt / 180.0F);
+    const float warp_behind_angle = cos(pi_v<float> * configuration().physics.warp_behind_angle_flt / 180.0F);
     QVector myposition = parent->isSubUnit() ? parent->Position() : parent->LocalPosition();     //get unit pos
     QVector destination = target->isSubUnit() ? target->Position() : target->LocalPosition();     //get destination
     QVector destinationdirection = (destination - myposition);       //find vector from us to destination
@@ -679,7 +680,7 @@ void AutoLongHaul::Execute() {
         if (speed > .01) {
             cfacing = cfacing * (1. / speed);
         }
-        const float dotLimit = cosf(std::numbers::pi_v<float> * configuration().physics.auto_pilot_spec_lining_up_angle_flt / 180.0F);
+        const float dotLimit = cosf(pi_v<float> * configuration().physics.auto_pilot_spec_lining_up_angle_flt / 180.0F);
         if (cfacing.Dot(destinationdirection) < dotLimit) {          //if wanting to face target but overshooting.
             deactivatewarp = true;
         }              //turn off drive
