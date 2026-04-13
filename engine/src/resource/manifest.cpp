@@ -35,7 +35,7 @@
 #include <boost/json.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 
-#include "resource/random_utils.h"
+#include "vs_random.h"
 #include "resource/json_utils.h"
 
 
@@ -118,14 +118,14 @@ Cargo Manifest::GetCargoByName(const std::string name) const {
     throw ManifestCargoNotFoundException(name);
 }
 
-Cargo Manifest::GetRandomCargo(int quantity) const {
+Cargo Manifest::GetRandomCargo(const int quantity) const {
     // TODO: Need to figure a better solution here
     if(_items.empty()) {
         return Cargo();
     }
 
-    int index = randomInt(_items.size()-1);
-    Cargo c = _items[index];
+    const uint_fast32_t index = vs_random.random_uint32_up_to(_items.size() - 1);
+    Cargo c = _items.at(index);
     c.SetQuantity(quantity);
     return c;
 }
