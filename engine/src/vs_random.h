@@ -91,7 +91,7 @@ public:
         /* divided by 2^32-1 */
     }
 
-/* generates a random number on [0,1)-real-interval */
+    /* generates a random number on [0,1)-real-interval */
     double gen_rand_real2() {
         std::uniform_real_distribution<double> real_dist(0.0, 4294967296.0);
         return real_dist(gen);
@@ -100,11 +100,13 @@ public:
     }
 
     double uniformInc(const double min, const double max) {
-        return gen_rand_real1() * (max - min) + min;
+        std::uniform_real_distribution<double> real_dist(min, max);
+        return real_dist(gen);
     }
 
     double uniformExc(const double min, const double max) {
-        return gen_rand_real2() * (max - min) + min;
+        std::uniform_real_distribution<double> real_dist(min, max - 1.0 / 4294967296.0);
+        return real_dist(gen);
     }
 
     /* generates a random number on (0,1)-real-interval */
@@ -119,10 +121,13 @@ public:
         const uint_fast32_t b = gen_rand_uint32() >> 6;
         return (a * 67108864.0 + b) * (1.0 / 9007199254740992.0);
     }
-/* These real versions are due to Isaku Wada, 2002/01/09 added */
+/* The above real-number versions are due to Isaku Wada, 2002/01/09 added */
+
+    /* The following methods were added by Stephen G. Tuggy 2026-04-11 */
 
     int_fast32_t random_int32_in_range(const int_fast32_t min, const int_fast32_t max) {
-        return gen_rand_int31() * (max - min) + min;
+        std::uniform_int_distribution<int_fast32_t> int_dist(min, max);
+        return int_dist(gen);
     }
 
     int_fast32_t random_int32_up_to(const int_fast32_t max) {
@@ -130,7 +135,8 @@ public:
     }
 
     uint_fast32_t random_uint32_in_range(const uint_fast32_t min, const uint_fast32_t max) {
-        return gen_rand_uint32() * (max - min) + min;
+        std::uniform_int_distribution<uint_fast32_t> uint_dist(min, max);
+        return uint_dist(gen);
     }
 
     uint_fast32_t random_uint32_up_to(const uint_fast32_t max) {
