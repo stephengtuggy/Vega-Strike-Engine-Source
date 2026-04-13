@@ -25,8 +25,8 @@
  * along with Vega Strike.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef NAVITEMSTODRAW_H
-#define NAVITEMSTODRAW_H
+#ifndef GFX_NAV_NAVITEMSTODRAW_H
+#define GFX_NAV_NAVITEMSTODRAW_H
 
 #include "src/vs_math.h"
 
@@ -435,4 +435,4 @@ inline void NavigationSystem::DrawNavCircle(float x, float y, float size, float 
 }
 //**********************************
 
-#endif // NAVITEMSTODRAW_H
+#endif // GFX_NAV_NAVITEMSTODRAW_H
