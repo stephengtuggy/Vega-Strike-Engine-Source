@@ -27,6 +27,7 @@
 
 
 #include <numbers>
+#include "src/vs_math.h"
 #include "root_generic/xml_serializer.h"
 #include "cmd/images.h"
 #include "vegadisk/vsfilesystem.h"
@@ -64,7 +65,7 @@ std::string scaledFloatStarHandler(const XMLType &input, void *mythis) {
 }
 
 std::string angleStarHandler(const XMLType &input, void *mythis) {
-    return XMLSupport::tostring(*input.w.f * 180.0F / std::numbers::pi_v<float>);
+    return XMLSupport::tostring(*input.w.f * 180.0F / kVegaPiFloat);
 }
 
 std::string doubleStarHandler(const XMLType &input, void *mythis) {

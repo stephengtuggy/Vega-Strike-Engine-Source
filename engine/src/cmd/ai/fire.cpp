@@ -662,10 +662,10 @@ bool FireAt::ShouldFire(Unit *targ, bool &missilelock) {
     }
     const float firewhen = configuration().ai.firing.in_weapon_range_flt;
     const float fireangle_minagg =
-            cosf(std::numbers::pi_v<float> * configuration().ai.firing.maximum_firing_angle.minagg
+            cosf(kVegaPiFloat * configuration().ai.firing.maximum_firing_angle.minagg
                  / 180.0F);                                                                      //Roughly 10 degrees
     const float fireangle_maxagg =
-            cosf(std::numbers::pi_v<float> * configuration().ai.firing.maximum_firing_angle.maxagg
+            cosf(kVegaPiFloat * configuration().ai.firing.maximum_firing_angle.maxagg
                  / 180.0F);                                                                      //Roughly 18 degrees
     float temp = parent->TrackingGuns(missilelock);
     bool isjumppoint = targ->getUnitType() == Vega_UnitType::planet && ((Planet *) targ)->GetDestinations().empty() == false;

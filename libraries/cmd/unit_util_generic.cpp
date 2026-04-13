@@ -46,6 +46,7 @@
 #include "cmd/planetary_orbit.h"
 #include "src/universe.h"
 #include "src/vs_logging.h"
+#include "src/vs_math.h"
 #include "cmd/weapon_info.h"
 #include "cmd/unit_csv_factory.h"
 
@@ -330,7 +331,7 @@ int getPhysicsPriority(Unit *un) {
 void orbit(Unit *my_unit, Unit *orbitee, const float speed, const QVector &R, const QVector &S, const QVector &center) {
     if (my_unit) {
         my_unit->PrimeOrders(new PlanetaryOrbit(my_unit,
-                                                speed / (std::numbers::pi_v<double> * (S.Magnitude() + R.Magnitude())),
+                                                speed / (kVegaPiDouble * (S.Magnitude() + R.Magnitude())),
                                                 0,
                                                 R,
                                                 S,

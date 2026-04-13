@@ -36,10 +36,9 @@
 #include <math.h>
 #endif
 
-#include <numbers>
+#include "src/vs_math.h"
 
 using namespace std;
-using namespace std::numbers;
 
 char FileName[256];
 struct LVector {
@@ -909,9 +908,9 @@ int main(int argc, char **argv) {
         Stat.Accel = readf(shp) * 15;
         Stat.ABAccel = readf(shp) * 20;         //*.002;
         Stat.Mass = readf(shp) / 2;
-        Stat.Yaw = 1.2F * readf(shp) * pi_v<float> / 360.0F;
-        Stat.Pitch = 1.2F * readf(shp) * pi_v<float> / 360.0F;
-        Stat.Roll = 1.2F * readf(shp) * pi_v<float> / 360.0F;         //make maneuverability less should be /180
+        Stat.Yaw = 1.2F * readf(shp) * kVegaPiFloat / 360.0F;
+        Stat.Pitch = 1.2F * readf(shp) * kVegaPiFloat / 360.0F;
+        Stat.Roll = 1.2F * readf(shp) * kVegaPiFloat / 360.0F;         //make maneuverability less should be /180
     } else {
         Stat.NumShieldFacing = 4;
         Stat.MaxShield = new float[4];
@@ -964,9 +963,9 @@ int main(int argc, char **argv) {
             float r;
             printf("Yaw Pitch Roll");
             scanf("%f %f %f", &hll, &hr, &r);
-            Stat.Yaw = 1.2F * hll * pi_v<float> / 360.0F;
-            Stat.Pitch = 1.2F * hr * pi_v<float> / 360.0F;
-            Stat.Roll = 1.2F * r * pi_v<float> / 360.0F;             //make maneuverability less should be /180
+            Stat.Yaw = 1.2F * hll * kVegaPiFloat / 360.0F;
+            Stat.Pitch = 1.2F * hr * kVegaPiFloat / 360.0F;
+            Stat.Roll = 1.2F * r * kVegaPiFloat / 360.0F;             //make maneuverability less should be /180
         }
     }
     fclose(shp);

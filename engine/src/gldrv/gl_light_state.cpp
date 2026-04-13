@@ -32,6 +32,7 @@
 #include "gl_light.h"
 
 #include <math.h>
+#include "src/vs_math.h"
 #include "gfx_generic/matrix.h"
 
 QVector _light_offset(0, 0, 0);
@@ -104,7 +105,7 @@ void GFXUploadLightState(int max_light_location,
                         // Which happens to resolve to:
                         //lightCosAngle = float(lightDistance / (lightDistance + lightSize));
                         lightCosAngle = lightDistance / sqrt(lightDistance * lightDistance + lightSize * lightSize);
-                        lightSolidAngle = 2.0 * std::numbers::pi_v<double> * (1.0 - lightCosAngle);
+                        lightSolidAngle = 2.0 * kVegaPiDouble * (1.0 - lightCosAngle);
                         // Light steradians is:
                         //  Steradians = Fractional Area * 4 * Pi
                         //  Fractional Area = Apparent light area / Sky area at light distance
@@ -119,7 +120,7 @@ void GFXUploadLightState(int max_light_location,
                         // NOTE: the constants aren't capricious, they're the right
                         //  constants for a light coming from all around.
                         lightCosAngle = 0.0;
-                        lightSolidAngle = 2.0 * std::numbers::pi_v<double>;
+                        lightSolidAngle = 2.0 * kVegaPiDouble;
                     }
                 }
                 lightSizes[i * 4 + 0] = float(lightSize);

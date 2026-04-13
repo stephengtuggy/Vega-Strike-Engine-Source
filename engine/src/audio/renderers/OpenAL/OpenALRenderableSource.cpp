@@ -29,7 +29,6 @@
 //
 // C++ Implementation: Audio::OpenALRenderableListener
 //
-#include <numbers>
 #include "src/vega_cast_utils.h"
 #include "OpenALRenderableSource.h"
 #include "OpenALSimpleSound.h"
@@ -118,8 +117,8 @@ void OpenALRenderableSource::updateImpl(int flags, const Listener &sceneListener
         // Cone
         {
             Range<Scalar> angleRange = source->getAngleRange();
-            alSourcef(als, AL_CONE_INNER_ANGLE, angleRange.min * std::numbers::inv_pi_v<float> * 360.0F);
-            alSourcef(als, AL_CONE_OUTER_ANGLE, angleRange.max * std::numbers::inv_pi_v<float> * 360.0F);
+            alSourcef(als, AL_CONE_INNER_ANGLE, angleRange.min * kVegaInvPiFloat * 360.0F);
+            alSourcef(als, AL_CONE_OUTER_ANGLE, angleRange.max * kVegaInvPiFloat * 360.0F);
             alSourcef(als, AL_CONE_OUTER_GAIN, 0.f);
         }
         // Relativity

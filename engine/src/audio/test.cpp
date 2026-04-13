@@ -45,7 +45,6 @@
 #include <string>
 //#include <limits>
 #include <cassert>
-#include <numbers>
 #include "src/vega_cast_utils.h"
 
 #include "utils.h"
@@ -325,7 +324,7 @@ void testComplexScene(bool doppler) {
             new EngParticleListener(engpaths, world_size));
 
     {
-        constexpr double kPhaseStep = 2.0 * std::numbers::pi_v<double> / nengs;
+        constexpr double kPhaseStep = 2.0 * kVegaPiDouble / nengs;
         for (size_t n = 0; n < nengs; ++n) {
             const double phase = n * kPhaseStep;
             const double speed = 2.0 * kPhaseStep * (static_cast<double>(rand() + RAND_MAX / 2) / RAND_MAX);
@@ -346,7 +345,7 @@ void testComplexScene(bool doppler) {
     }
 
     for (double t = getRealTime(); (getRealTime() - t) < 20.0;) { // 20s = 200 ticks
-        constexpr double kPhaseStep = 2.0 * std::numbers::pi_v<double> / 20.0;
+        constexpr double kPhaseStep = 2.0 * kVegaPiDouble / 20.0;
         const double phase = (getRealTime() - t) * kPhaseStep;
         constexpr double speed = kPhaseStep;
 

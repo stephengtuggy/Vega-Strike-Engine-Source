@@ -42,6 +42,7 @@
 #include "src/vs_random.h"
 #include "src/universe.h"
 #include "src/vs_logging.h"
+#include "src/vs_math.h"
 
 #ifndef _WIN32
 #include <ctype.h>
@@ -402,7 +403,7 @@ GFXColor getStarColorFromRadius(float radius) {
 }
 
 float LengthOfYear(const Vector &r, const Vector &s) {
-    const float a = 2.0F * std::numbers::pi_v<float> * mmax(r.Mag(), s.Mag());
+    const float a = 2.0F * kVegaPiFloat * mmax(r.Mag(), s.Mag());
     const float speed = minspeed + (maxspeed - minspeed) * grand();
     return a / speed;
 }

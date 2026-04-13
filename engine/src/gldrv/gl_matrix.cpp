@@ -26,6 +26,7 @@
  */
 
 #include <numbers>
+#include "src/vs_math.h"
 #include "gl_globals.h"
 #include "src/gfxlib.h"
 #include "gfx_generic/vec.h"
@@ -341,7 +342,7 @@ void /*GFXDRVAPI*/ GFXPerspective(float fov, float aspect, float znear, float zf
 
     float xmin, xmax, ymin, ymax;
 
-    ymax = znear * tanf(fov * std::numbers::pi_v<float> / 360.0F);       //78.0 --> 4.7046
+    ymax = znear * tanf(fov * kVegaPiFloat / 360.0F);       //78.0 --> 4.7046
 
     ymin = -ymax;     //-4.7046
 

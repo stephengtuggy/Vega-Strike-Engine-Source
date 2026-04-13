@@ -73,7 +73,7 @@ Atmosphere::Atmosphere(const Parameters &params) : user_params(params), cap(null
                           ZERO,
                           false,
                           0,
-                          std::numbers::pi_v<float> / 2.0F);
+                          kVegaPiFloat / 2.0F);
 }
 
 Atmosphere::~Atmosphere() {
@@ -128,7 +128,7 @@ void Atmosphere::Update(const QVector &position, const Matrix &tmatrix) {
         }
     }
     if (!sunboxes.empty()) {
-        float rho = acos(rho1) / (std::numbers::pi_v<float> / 2.0F);
+        float rho = acos(rho1) / (kVegaPiFloat / 2.0F);
         float radius = user_params.radius;
         /* index 0 is the top color, index 1 is the bottom color */
         GFXLight light0 = GFXLight();
@@ -152,7 +152,7 @@ void Atmosphere::Update(const QVector &position, const Matrix &tmatrix) {
         Matrix m;
         QVector r;
         ScaledCrossProduct(QVector(0, 1, 0), localDir, r);
-        Rotate(m, r.Cast(), -80.0F * (std::numbers::pi_v<float> / 180.0F));
+        Rotate(m, r.Cast(), -80.0F * (kVegaPiFloat / 180.0F));
         r = Transform(m, QVector(0, 0, 1));
         float sradius = 1.1 * radius;
         light2.SetProperties(POSITION, GFXColor(sradius * r.i, sradius * r.j, sradius * r.k, 1));

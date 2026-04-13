@@ -28,7 +28,7 @@
 #ifndef NAVITEMSTODRAW_H
 #define NAVITEMSTODRAW_H
 
-#include <numbers>
+#include "src/vs_math.h"
 
 //This draws the mouse cursor
 //**********************************
@@ -114,7 +114,7 @@ inline void NavigationSystem::DrawCircle(const float x, const float y, const flo
     // 20 segments
     static VertexBuilder<> verts;
     verts.clear();
-    for (float i = 0.0F; i < 2.0F * std::numbers::pi_v<float> + std::numbers::pi_v<float> / 10.0F; i += std::numbers::pi_v<float> / 10.0F) {
+    for (float i = 0.0F; i < 2.0F * kVegaPiFloat + kVegaPiFloat / 10.0F; i += kVegaPiFloat / 10.0F) {
         verts.insert(
                 x + 0.5F * size * cos(i),
                 y + 0.5F * size * sin(i),
@@ -138,7 +138,7 @@ inline void NavigationSystem::DrawHalfCircleTop(const float x, const float y, co
     // 10 segments
     static VertexBuilder<> verts;
     verts.clear();
-    for (float i = 0.0F; i < std::numbers::pi_v<float> + std::numbers::pi_v<float> / 10.0F; i += std::numbers::pi_v<float> / 10.0F) {
+    for (float i = 0.0F; i < kVegaPiFloat + kVegaPiFloat / 10.0F; i += kVegaPiFloat / 10.0F) {
         verts.insert(
                 x + 0.5F * size * cos(i),
                 y + 0.5F * size * sin(i) - 0.25F * size,
@@ -162,7 +162,7 @@ inline void NavigationSystem::DrawHalfCircleBottom(const float x, const float y,
     // 10 segments
     static VertexBuilder<> verts;
     verts.clear();
-    for (float i = std::numbers::pi_v<float>; i < 2.0F * std::numbers::pi_v<float> + std::numbers::pi_v<float> / 10.0F; i += std::numbers::pi_v<float> / 10.0F) {
+    for (float i = kVegaPiFloat; i < 2.0F * kVegaPiFloat + kVegaPiFloat / 10.0F; i += kVegaPiFloat / 10.0F) {
         verts.insert(
                 x + 0.5F * size * cos(i),
                 y + 0.5F * size * sin(i) + 0.25F * size,
@@ -185,15 +185,15 @@ inline void NavigationSystem::DrawPlanet(float x, float y, float size, const GFX
 
     static VertexBuilder<> verts;
     verts.clear();
-    for (float i = 0.0F; i < 2.0F * std::numbers::pi_v<float>; i += std::numbers::pi_v<float> / 10.0F) {
+    for (float i = 0.0F; i < 2.0F * kVegaPiFloat; i += kVegaPiFloat / 10.0F) {
         verts.insert(
                 x + 0.5F * size * cos(i),
                 y + 0.5F * size * sin(i),
                 0
         );
         verts.insert(
-                x + 0.5F * size * cos(i + std::numbers::pi_v<float> / 10.0F),
-                y + 0.5F * size * sin(i + std::numbers::pi_v<float> / 10.0F),
+                x + 0.5F * size * cos(i + kVegaPiFloat / 10.0F),
+                y + 0.5F * size * sin(i + kVegaPiFloat / 10.0F),
                 0
         );
     }
@@ -260,15 +260,15 @@ inline void NavigationSystem::DrawJump(float x, float y, float size, const GFXCo
 
     static VertexBuilder<> verts;
     verts.clear();
-    for (float i = 0.0; i < 2.0 * std::numbers::pi_v<float>; i += std::numbers::pi_v<float> / 10.0F) {
+    for (float i = 0.0; i < 2.0 * kVegaPiFloat; i += kVegaPiFloat / 10.0F) {
         verts.insert(
                 x + 0.5F * size * cos(i),
                 y + 0.5F * size * sin(i),
                 0
         );
         verts.insert(
-                x + 0.5F * size * cos(i + std::numbers::pi_v<float> / 10.0F),
-                y + 0.5F * size * sin(i + std::numbers::pi_v<float> / 10.0F),
+                x + 0.5F * size * cos(i + kVegaPiFloat / 10.0F),
+                y + 0.5F * size * sin(i + kVegaPiFloat / 10.0F),
                 0
         );
     }
@@ -370,10 +370,10 @@ inline void NavigationSystem::DrawNavCircle(float x, float y, float size, float 
     static VertexBuilder<float, 3, 0, 4> verts;
     verts.clear();
     verts.reserve(vnum);
-    for (float i = 0.0F; i < 2.0F * std::numbers::pi_v<float>; i += (2.0F * std::numbers::pi_v<float> / segments)) {
+    for (float i = 0.0F; i < 2.0F * kVegaPiFloat; i += (2.0F * kVegaPiFloat / segments)) {
         GFXColor ci(col.r, col.g, col.b * fabs(sin(i / 2.0)), col.a);
         QVector pos1((0.6 * size * cos(i)), (0.6 * size * sin(i)), 0);
-        QVector pos2((0.6 * size * cos(i + (2.0 * std::numbers::pi_v<double> / segments))), (0.6 * size * sin(i + (2.0 * std::numbers::pi_v<double> / segments))), 0);
+        QVector pos2((0.6 * size * cos(i + (2.0 * kVegaPiDouble / segments))), (0.6 * size * sin(i + (2.0 * kVegaPiDouble / segments))), 0);
 
         pos1 = dxyz(pos1, 0, 0, rot_y);
         pos1 = dxyz(pos1, rot_x, 0, 0);
@@ -399,7 +399,7 @@ inline void NavigationSystem::DrawNavCircle(float x, float y, float size, float 
             verts.insert(GFXColorVertex(pos2t, ci));
         }
     }
-    for (float i = 0.0F; i < 2.0F * std::numbers::pi_v<float>; i += (2.0F * std::numbers::pi_v<float> / segments2)) {
+    for (float i = 0.0F; i < 2.0F * kVegaPiFloat; i += (2.0F * kVegaPiFloat / segments2)) {
         GFXColor ci(col.r, col.g, col.b * fabs(sin(i / 2.0F)), col.a);
         QVector pos1((0.6 * size * cos(i) / static_cast<float>(circles * 2)), (0.6 * size * sin(i) / static_cast<float>(circles * 2)), 0);
         QVector pos2((0.6 * size * cos(i)), (0.6 * size * sin(i)), 0);

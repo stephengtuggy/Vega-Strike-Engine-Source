@@ -29,7 +29,6 @@
 #include "cmd/missile.h"
 
 #include <cmath>
-#include <numbers>
 
 #include "cmd/damageable.h"
 
@@ -142,10 +141,10 @@ void MissileEffect::DoApplyDamage(Unit *parent, Unit *un, float distance, float 
             }
         }
         if (total_area > 0.0) {
-            VS_LOG(info, (boost::format("Missile subunit damage of %1$.3f%%") % (total_area * (100.0 / 4.0 * std::numbers::pi_v<double>))));
+            VS_LOG(info, (boost::format("Missile subunit damage of %1$.3f%%") % (total_area * (100.0 / 4.0 * kVegaPiDouble))));
         }
-        if (total_area < 4.0 * std::numbers::pi_v<double>) {
-            total_area = 4.0 * std::numbers::pi_v<double>;
+        if (total_area < 4.0 * kVegaPiDouble) {
+            total_area = 4.0 * kVegaPiDouble;
         }
 
         un_iter i = un->getSubUnits();

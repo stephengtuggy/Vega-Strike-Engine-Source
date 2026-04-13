@@ -41,7 +41,6 @@
 #include "cmd/role_bitmask.h"
 #include "cmd/unit_csv.h"
 #include <algorithm>
-#include <numbers>
 #include <boost/json/array.hpp>
 #include <boost/json/value_from.hpp>
 #include <boost/json/serialize.hpp>
@@ -59,8 +58,6 @@
 #include "cmd/upgradeable_unit.h"
 #include "resource/manifest.h"
 #include "components/component_utils.h"
-
-using namespace std::numbers;
 
 extern int GetModeFromName(const char *input_buffer);
 extern void pushMesh(std::vector<Mesh *> &mesh,
@@ -339,7 +336,7 @@ static vector<SubUnitStruct> GetSubUnits(const std::string &subunits) {
             Q.i = nextElementFloat(subunits, elemstart, elemend);
             Q.j = nextElementFloat(subunits, elemstart, elemend);
             Q.k = nextElementFloat(subunits, elemstart, elemend);
-            const double restricted = cos(nextElementFloat(subunits, elemstart, elemend, 180.0) * pi_v<double> / 180.0);
+            const double restricted = cos(nextElementFloat(subunits, elemstart, elemend, 180.0) * kVegaPiDouble / 180.0);
 
             ret.push_back(SubUnitStruct(filename, pos, Q, R, restricted));
         } else {
@@ -1008,7 +1005,7 @@ std::map<std::string, std::string> Unit::UnitToMap() const {
                     % subunits.at(k).Q.i
                     % subunits.at(k).Q.j
                     % subunits.at(k).Q.k
-                    % (acos(subunits.at(k).restricted) * 180.0 / pi_v<double>)).str();
+                    % (acos(subunits.at(k).restricted) * 180.0 / kVegaPiDouble)).str();
                 str += tmp;
             }
             unit["Sub_Units"] = str;

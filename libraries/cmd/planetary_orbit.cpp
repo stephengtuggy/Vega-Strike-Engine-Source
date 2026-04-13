@@ -27,6 +27,7 @@
 
 
 #include <numbers>
+#include "src/vs_math.h"
 #include "cmd/planetary_orbit.h"
 
 #include "cmd/unit_generic.h"
@@ -179,7 +180,7 @@ void PlanetaryOrbit::Execute() {
         }
         sum_orbiting_average *= 1. / (limit == 0 ? 1 : limit);
     }
-    constexpr double div2pi = (1.0 / (2.0 * std::numbers::pi_v<double>));
+    constexpr double div2pi = (1.0 / (2.0 * kVegaPiDouble));
     theta += velocity * simulation_atom_var * div2pi;
 
     QVector x_offset = cos(theta) * x_size;

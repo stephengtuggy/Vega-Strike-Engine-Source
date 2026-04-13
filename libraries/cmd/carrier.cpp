@@ -38,11 +38,10 @@
 #include "cmd/ai/aggressive.h"
 #include "cmd/missile.h"
 #include "resource/random_utils.h"
+#include "src/vs_math.h"
 #include "src/vs_random.h"
 #include "src/vs_logging.h"
 #include "src/vega_cast_utils.h"
-
-using namespace std::numbers;
 
 // TODO: find out where this is and maybe refactor
 extern int SelectDockPort(Unit *, Unit *parent);
@@ -156,10 +155,10 @@ void Carrier::EjectCargo(unsigned int index) {
                 }
             }
             float arot = 0;
-            const float grot = configuration().graphics.generic_cargo_rotation_speed_flt * pi_v<float> / 180.0F;
+            const float grot = configuration().graphics.generic_cargo_rotation_speed_flt * kVegaPiFloat / 180.0F;
             if (!cargo) {
-                const float crot = configuration().graphics.cargo_rotation_speed_flt * pi_v<float> / 180.0F;
-                const float erot = configuration().graphics.eject_rotation_speed_flt * pi_v<float> / 180.0F;
+                const float crot = configuration().graphics.cargo_rotation_speed_flt * kVegaPiFloat / 180.0F;
+                const float erot = configuration().graphics.eject_rotation_speed_flt * kVegaPiFloat / 180.0F;
                 if (tmpcontent == "eject") {
                     if (isplayer) {
                         Flightgroup *fg = unit->getFlightgroup();

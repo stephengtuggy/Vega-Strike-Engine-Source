@@ -27,6 +27,7 @@
 
 
 #include <numbers>
+#include "src/vs_math.h"
 #include "gfx_generic/boltdrawmanager.h"
 
 #include "matrix.h"
@@ -95,7 +96,7 @@ void BoltDrawManager::Draw() {
     GFXAlphaTest(GREATER, .1);
 
     float pixel_angle = 2
-            * sin(configuration().graphics.fov_flt * std::numbers::pi_v<float> / 180.0F
+            * sin(configuration().graphics.fov_flt * kVegaPiFloat / 180.0F
                     / (configuration().graphics.resolution_y
                             > configuration().graphics.resolution_x ? configuration().graphics.resolution_y : configuration().graphics.resolution_x))
             * configuration().graphics.bolt_pixel_size_flt;

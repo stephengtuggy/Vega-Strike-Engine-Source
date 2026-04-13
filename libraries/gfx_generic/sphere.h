@@ -28,6 +28,7 @@
 #define VEGA_STRIKE_ENGINE_GFX_SPHERE_H
 
 #include "gfx_generic/mesh.h"
+#include "src/vs_math.h"
 #include <cassert>
 #include <string>
 
@@ -53,9 +54,9 @@ protected:
             const BLENDFUNC b = ZERO,
             bool envMap = false,
             float rho_min = 0.0,
-            float rho_max = std::numbers::pi_v<float>,
+            float rho_max = kVegaPiFloat,
             float theta_min = 0.0,
-            float theta_max = 2.0F * std::numbers::pi_v<float>,
+            float theta_max = 2.0F * kVegaPiFloat,
             FILTER mipmap = MIPMAP,
             bool reverse_normals = false,
             bool subclass = false);
@@ -82,9 +83,9 @@ public:
             const BLENDFUNC b = ZERO,
             const bool envMap = false,
             const float rho_min = 0.0,
-            const float rho_max = std::numbers::pi_v<float>,
+            const float rho_max = kVegaPiFloat,
             const float theta_min = 0.0,
-            const float theta_max = 2.0F * std::numbers::pi_v<float>,
+            const float theta_max = 2.0F * kVegaPiFloat,
             const FILTER mipmap = MIPMAP,
             const bool reverse_normals = false) {
         InitSphere(radius,
@@ -141,9 +142,9 @@ public:
             const BLENDFUNC b = ZERO,
             bool envMap = false,
             float rho_min = 0.0,
-            float rho_max = std::numbers::pi_v<float>,
+            float rho_max = kVegaPiFloat,
             float theta_min = 0.0,
-            float theta_max = 2.0F * std::numbers::pi_v<float>,
+            float theta_max = 2.0F * kVegaPiFloat,
             bool inside_out = true);
     void ProcessDrawQueue(int whichpass, int which, bool zsort, const QVector &sortctr) override;
 

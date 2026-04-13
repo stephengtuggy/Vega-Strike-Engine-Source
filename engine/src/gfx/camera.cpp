@@ -37,7 +37,7 @@
 #include "root_generic/lin_time.h"
 
 #include <cassert>     //needed for assert() calls
-#include <numbers>
+#include "src/vs_math.h"
 
 #include "src/vs_logging.h"
 #include "src/vs_exit.h"
@@ -55,7 +55,7 @@ Camera::Camera(ProjectionType proj) : projectionType(proj), myPhysics(0.1, 0.075
     changed = GFXTRUE;
     //SetPosition();
     //SetOrientation();
-    Yaw(std::numbers::pi_v<float>);
+    Yaw(kVegaPiFloat);
     x = y = 0;
     xsize = ysize = 1.0;
     zoom = 1.0;

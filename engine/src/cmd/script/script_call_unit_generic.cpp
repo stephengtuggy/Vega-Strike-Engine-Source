@@ -62,8 +62,6 @@
 #include "src/vs_logging.h"
 #include "resource/manifest.h"
 
-using namespace std::numbers;
-
 extern const vector<string> &ParseDestinations(const string &value);
 
 extern bool PlanetHasLights(Unit *un);
@@ -427,7 +425,7 @@ varInst *Mission::call_unit(missionNode *node, int mode) {
                 QVector vectothem = QVector(other_unit->Position() - my_unit->Position()).Normalize();
                 my_unit->GetOrientation(p, q, r);
                 angle = acos(vectothem.Dot(r.Cast()));
-                angle = (angle / pi_v<float>) * 180.0;
+                angle = (angle / kVegaPiFloat) * 180.0;
             }
             viret = newVarInst(VI_TEMP);
             viret->type = VAR_FLOAT;
@@ -440,7 +438,7 @@ varInst *Mission::call_unit(missionNode *node, int mode) {
                 QVector vectothem = QVector(other_pos - my_unit->Position()).Normalize();
                 my_unit->GetOrientation(p, q, r);
                 angle = acos(vectothem.Dot(r.Cast()));
-                angle = (angle / pi_v<double>) * 180.0;
+                angle = (angle / kVegaPiDouble) * 180.0;
             }
             viret = newVarInst(VI_TEMP);
             viret->type = VAR_FLOAT;

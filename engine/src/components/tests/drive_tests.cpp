@@ -28,14 +28,12 @@
 #include <gtest/gtest.h>
 #include <map>
 #include <utility>
-#include <numbers>
 
+#include "src/vs_math.h"
 #include "components/drive.h"
 #include "components/drive_upgrade.h"
 
 #include "cmd/unit_csv_factory.h"
-
-using namespace std::numbers;
 
 static const std::string upgrades_suffix_string = "__upgrades";
 static const std::string drive_string = "drive";
@@ -91,21 +89,21 @@ static const std::map<std::string,std::string> drive_upgrade_map = {
 };
 
 static void DriveExpectEq(const Drive& drive, const double value) {
-    EXPECT_FLOAT_EQ(drive.yaw.MaxValue(), value * pi_v<double> / 180.0);
-    EXPECT_FLOAT_EQ(drive.pitch.MaxValue(), value * pi_v<double> / 180.0);
-    EXPECT_FLOAT_EQ(drive.roll.MaxValue(), value * pi_v<double> / 180.0);
+    EXPECT_FLOAT_EQ(drive.yaw.MaxValue(), value * kVegaPiDouble / 180.0);
+    EXPECT_FLOAT_EQ(drive.pitch.MaxValue(), value * kVegaPiDouble / 180.0);
+    EXPECT_FLOAT_EQ(drive.roll.MaxValue(), value * kVegaPiDouble / 180.0);
     EXPECT_EQ(drive.forward.MaxValue(), value);
     EXPECT_EQ(drive.retro.MaxValue(), value);
     EXPECT_EQ(drive.lateral.MaxValue(), value);
     EXPECT_EQ(drive.vertical.MaxValue(), value);
     EXPECT_EQ(drive.speed.MaxValue(), value);
 
-    EXPECT_FLOAT_EQ(drive.max_pitch_down.MaxValue(), value * pi_v<double> / 180.0);
-    EXPECT_FLOAT_EQ(drive.max_pitch_up.MaxValue(), value * pi_v<double> / 180.0);
-    EXPECT_FLOAT_EQ(drive.max_roll_left.MaxValue(), value * pi_v<double> / 180.0);
-    EXPECT_FLOAT_EQ(drive.max_roll_right.MaxValue(), value * pi_v<double> / 180.0);
-    EXPECT_FLOAT_EQ(drive.max_yaw_left.MaxValue(), value * pi_v<double> / 180.0);
-    EXPECT_FLOAT_EQ(drive.max_yaw_right.MaxValue(), value * pi_v<double> / 180.0);
+    EXPECT_FLOAT_EQ(drive.max_pitch_down.MaxValue(), value * kVegaPiDouble / 180.0);
+    EXPECT_FLOAT_EQ(drive.max_pitch_up.MaxValue(), value * kVegaPiDouble / 180.0);
+    EXPECT_FLOAT_EQ(drive.max_roll_left.MaxValue(), value * kVegaPiDouble / 180.0);
+    EXPECT_FLOAT_EQ(drive.max_roll_right.MaxValue(), value * kVegaPiDouble / 180.0);
+    EXPECT_FLOAT_EQ(drive.max_yaw_left.MaxValue(), value * kVegaPiDouble / 180.0);
+    EXPECT_FLOAT_EQ(drive.max_yaw_right.MaxValue(), value * kVegaPiDouble / 180.0);
 }
 
 static void DriveUpgradeExpectEq(const DriveUpgrade& upgrade, const double value) {

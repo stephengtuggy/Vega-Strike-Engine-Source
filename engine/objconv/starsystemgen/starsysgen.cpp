@@ -33,7 +33,7 @@
 #include <cmath>
 #include <ctime>
 #include <cassert>
-#include <numbers>
+#include "src/vs_math.h"
 
 static const size_t BUFFER_SIZE = 16000;
 static const char SCANF_FORMAT_STRING[] = "%15999s";
@@ -264,7 +264,7 @@ Color StarColor(float radius, unsigned int &entityindex) {
 }
 
 float LengthOfYear(Vector r, Vector s) {
-    const float a = 2 * std::numbers::pi_v<float> * mmax(r.Mag(), s.Mag());
+    const float a = 2 * kVegaPiFloat * mmax(r.Mag(), s.Mag());
     float speed = minspeed + (maxspeed - minspeed) * grand();
     return a / speed;
 }

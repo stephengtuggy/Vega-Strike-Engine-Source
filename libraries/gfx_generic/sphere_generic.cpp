@@ -34,6 +34,7 @@
 #include "root_generic/xml_support.h"
 #include "gfx/camera.h"
 #include "src/universe.h"
+#include "src/vs_math.h"
 
 extern Texture *createTexture(const char *filename,
         int stage = 0,
@@ -130,7 +131,7 @@ void SphereMesh::InitSphere(float radius,
     vector<MeshDrawContext> *odq = NULL;
     for (int l = 0; l < numspheres; l++) {
         draw_queue = new vector<MeshDrawContext>[NUM_ZBUF_SEQ + 1];
-        if (subclass || rho_max != std::numbers::pi_v<float> || rho_min != 0.0F || theta_min != 0.0F || theta_max != 2.0F * std::numbers::pi_v<float>) {
+        if (subclass || rho_max != kVegaPiFloat || rho_min != 0.0F || theta_min != 0.0F || theta_max != 2.0F * kVegaPiFloat) {
             odq = draw_queue;
         }
         vlist = NULL;

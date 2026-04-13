@@ -40,6 +40,11 @@
     #include <ieeefp.h>
 #endif //HAVE_IEEEFP_H
 
+constexpr double kVegaPiDouble = std::numbers::pi_v<double>;
+constexpr float kVegaPiFloat = std::numbers::pi_v<float>;
+constexpr double kVegaInvPiDouble = std::numbers::inv_pi_v<double>;
+constexpr float kVegaInvPiFloat = std::numbers::inv_pi_v<float>;
+
 #define FINITE(x) ( std::isfinite( x ) )
 #define ISNAN(x) ( std:: isnan( x ) )
 

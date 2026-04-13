@@ -33,7 +33,6 @@
 #include <cmath>
 #include <cstring>
 #include <cassert>
-#include <numbers>
 #ifdef WIN32
 #ifndef NOMINMAX
 #define NOMINMAX
@@ -46,6 +45,7 @@
 #include "vegadisk/vsfilesystem.h"
 #include "src/vs_logging.h"
 #include "gldrv/winsys.h"
+#include "src/vs_math.h"
 
 //#include <GL/glu.h>
 
@@ -486,7 +486,7 @@ void GFXFrustum(float *m, float *i, float left, float right, float bottom, float
 void /*GFXDRVAPI*/ GFXPerspective(float fov, float aspect, float znear, float zfar, float cockpit_offset) {
     //gluPerspective (fov,aspect,znear,zfar);
     float xmin, xmax, ymin, ymax;
-    ymax = znear * tanf(fov * std::numbers::pi_v<float> / 360.0F);       //78.0 --> 4.7046
+    ymax = znear * tanf(fov * kVegaPiFloat / 360.0F);       //78.0 --> 4.7046
     ymin = -ymax;     //-4.7046
     xmin = (ymin - cockpit_offset / 2) * aspect;       //-6.2571
     xmax = (ymax + cockpit_offset / 2) * aspect;       //6.2571

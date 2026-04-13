@@ -36,8 +36,6 @@
 #include "imgui.h"
 #include "root_generic/vs_globals.h"
 
-using namespace std::numbers;
-
 void NavigationSystem::CachedSystemIterator::SystemInfo::UpdateColor() {
     const float GrayColorArray[4] = {.5, .5, .5, .5};
     const float *tcol =
@@ -838,7 +836,7 @@ QVector NavigationSystem::SystemIterator::Position() {
         float screensmash = 1; //arbitrary constant used in calculating position below
 
         //float y = (k-100000)/(200000.);
-        return QVector(ratio * cos(locatio * 2.0 * pi_v<double>), ratio * sin(locatio * 2.0 * pi_v<double>), 0)
+        return QVector(ratio * cos(locatio * 2.0 * kVegaPiDouble), ratio * sin(locatio * 2.0 * kVegaPiDouble), 0)
                 * screensmash;
     }
 }

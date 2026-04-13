@@ -201,7 +201,7 @@ VertexBuilder<> GetAnimatedLockingIcon(const QVector &location, const Vector& ca
     const double rtot = 1.0 / sqrtf(2.0);
 
     //this causes the rotation!
-    const float theta = 4.0 * std::numbers::pi_v<float> * lock_percent * theta_speed;
+    const float theta = 4.0 * kVegaPiFloat * lock_percent * theta_speed;
     const Vector lock_box( -cos( theta )*rtot, -rtot, sin( theta )*rtot );
 
     QVector t_lock_box( rtot*lock_box.i+rtot*lock_box.j, rtot*lock_box.j-rtot*lock_box.i, lock_box.k );

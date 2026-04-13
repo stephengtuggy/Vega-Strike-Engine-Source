@@ -28,7 +28,6 @@
 
 
 #include <cmath>
-#include <numbers>
 #include <algorithm>
 #include <vector>
 #include <boost/assign/std/vector.hpp>
@@ -39,17 +38,16 @@
 #include "gfx_generic/quaternion.h"
 #include "viewarea.h"
 #include "plane_display.h"
+#include "src/vs_math.h"
 
 #include <limits>
 
 #define POINT_SIZE_GRANULARITY 0.5
 
-using namespace std::numbers;
-
 namespace {
 
 float Degree2Radian(float angle) {
-    const float ratio = pi_v<float> / 180.0;
+    const float ratio = kVegaPiFloat / 180.0;
     return angle * ratio;
 }
 
@@ -143,7 +141,7 @@ PlaneDisplay::PlaneDisplay()
 
     // Calculate ground plane
     constexpr float edges = 32.0F;
-    constexpr float full = 2.0F * pi_v<float>;
+    constexpr float full = 2.0F * kVegaPiFloat;
     constexpr float step = full / edges;
     for (float angle = 0.0F; angle < full; angle += step) {
         groundPlane.push_back(Vector(cosf(angle), 0.0F, sinf(angle)));

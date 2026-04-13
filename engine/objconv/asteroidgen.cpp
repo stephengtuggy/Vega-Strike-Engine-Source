@@ -29,18 +29,12 @@
 #include <vector>
 #include <ctime>
 #include <cmath>
-#include <numbers>
 #include <cstdio>
 #include <cstdlib>
-#if defined(__APPLE__) && defined (__MACH__)
-#define sqrtf sqrt
-#define cosf cos
-#define sinf sin
-#endif
+#include "src/vs_math.h"
 
 float safety_zone = 0;
 using std::vector;
-using namespace std::numbers;
 
 class Vector {
 public:
@@ -182,9 +176,9 @@ void determine_centers_and_radii(vector<asteroid> &field,
         if (field[i].num_polys < 4) {
             field[i].num_polys = 4;
         }
-        field[i].YawPitchRoll.i = 2.0F * pi_v<float> * static_cast<float>(rand()) / RAND_MAX;
-        field[i].YawPitchRoll.j = 2.0F * pi_v<float> * static_cast<float>(rand()) / RAND_MAX;
-        field[i].YawPitchRoll.k = 2.0F * pi_v<float> * static_cast<float>(rand()) / RAND_MAX;
+        field[i].YawPitchRoll.i = 2.0F * kVegaPiFloat * static_cast<float>(rand()) / RAND_MAX;
+        field[i].YawPitchRoll.j = 2.0F * kVegaPiFloat * static_cast<float>(rand()) / RAND_MAX;
+        field[i].YawPitchRoll.k = 2.0F * kVegaPiFloat * static_cast<float>(rand()) / RAND_MAX;
         bool insideanother = false;
         if (field[i].center.Mag() < safety_zone) {
             insideanother = true;
@@ -243,11 +237,11 @@ void generateNTet(vector<Vector> &v,
             if (i != 0 && i != stacks + 1) {
                 tempR = getR(minr, maxr);
             }                  ///don't want the tip to have different points
-            const float projR = tempR * sin(pi_v<float> * i / (stacks + 1));
+            const float projR = tempR * sin(kVegaPiFloat * i / (stacks + 1));
             if ((i != 0 && i != stacks + 1) || j == 0) {
-                v.push_back(Vector(projR * cos(2.0 * pi_v<float> * j / (slices)), //i
-                        tempR * cos(pi_v<float> * i / (stacks + 1)),                //j
-                        projR * sin(2.0 * pi_v<float> * j / (slices)),              //k
+                v.push_back(Vector(projR * cos(2.0 * kVegaPiFloat * j / (slices)), //i
+                        tempR * cos(kVegaPiFloat * i / (stacks + 1)),                //j
+                        projR * sin(2.0 * kVegaPiFloat * j / (slices)),              //k
                         static_cast<float>(j) / (slices - 1)
                                 + ((i == 0 || i == stacks + 1) ? .5 : 0),             //s
                         static_cast<float>(i) / (stacks + 1)));                     //t

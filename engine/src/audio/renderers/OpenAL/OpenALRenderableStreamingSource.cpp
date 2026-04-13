@@ -190,8 +190,8 @@ void OpenALRenderableStreamingSource::updateImpl(int flags, const Listener &scen
         // Cone
         {
             Range<Scalar> angleRange = source->getAngleRange();
-            alSourcef(als, AL_CONE_INNER_ANGLE, angleRange.min * std::numbers::inv_pi_v<float> * 360.0F);
-            alSourcef(als, AL_CONE_OUTER_ANGLE, angleRange.max * std::numbers::inv_pi_v<float> * 360.0F);
+            alSourcef(als, AL_CONE_INNER_ANGLE, angleRange.min * kVegaInvPiFloat * 360.0F);
+            alSourcef(als, AL_CONE_OUTER_ANGLE, angleRange.max * kVegaInvPiFloat * 360.0F);
             alSourcef(als, AL_CONE_OUTER_GAIN, 0.f);
         }
         // Relativity
