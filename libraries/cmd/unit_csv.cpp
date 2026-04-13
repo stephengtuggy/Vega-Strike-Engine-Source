@@ -48,6 +48,7 @@
 #include "root_generic/lin_time.h"
 #include "cmd/unit_const_cache.h"
 #include "src/vs_math.h"
+#include "src/vs_random.h"
 #include "src/universe.h"
 #include "vegadisk/vsfilesystem.h"
 #include "src/vs_logging.h"
