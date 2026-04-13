@@ -125,37 +125,37 @@ public:
 
     /* The following methods were added by Stephen G. Tuggy 2026-04-11 */
 
-    int_fast32_t random_int32_in_range(const int_fast32_t min, const int_fast32_t max) {
+    int_fast32_t RandomInt32InRange(const int_fast32_t min, const int_fast32_t max) {
         std::uniform_int_distribution<int_fast32_t> int_dist(min, max);
         return int_dist(gen);
     }
 
-    int_fast32_t random_int32_up_to(const int_fast32_t max) {
-        return random_int32_in_range(0, max);
+    int_fast32_t RandomInt32UpTo(const int_fast32_t max) {
+        return RandomInt32InRange(0, max);
     }
 
-    uint_fast32_t random_uint32_in_range(const uint_fast32_t min, const uint_fast32_t max) {
+    uint_fast32_t RandomUInt32InRange(const uint_fast32_t min, const uint_fast32_t max) {
         std::uniform_int_distribution<uint_fast32_t> uint_dist(min, max);
         return uint_dist(gen);
     }
 
-    uint_fast32_t random_uint32_up_to(const uint_fast32_t max) {
-        return random_uint32_in_range(0, max);
+    uint_fast32_t RandomUInt32UpTo(const uint_fast32_t max) {
+        return RandomUInt32InRange(0, max);
     }
 
-    double randomRealInRange(const double min, const double max) {
+    double RandomRealInRange(const double min, const double max) {
         return uniformInc(min, max);
     }
 
-    double randomDoubleInRange(const double min, const double max) {
+    double RandomDoubleInRange(const double min, const double max) {
         return uniformInc(min, max);
     }
 
-    double randomDoubleUpTo(const double max) {
-        return randomDoubleInRange(0, max);
+    double RandomDoubleUpTo(const double max) {
+        return RandomDoubleInRange(0, max);
     }
 
-    double randomDouble() {
+    double RandomDouble() {
         // constexpr int kPrecision = 10000;
         // std::uniform_int_distribution<std::mt19937::result_type> int_dist(0,kPrecision);
         // const unsigned int random_int = int_dist(gen);
@@ -164,15 +164,15 @@ public:
         return real_dist(gen);
     }
 
-    float randomFloatInRange(const float min, const float max) {
+    float RandomFloatInRange(const float min, const float max) {
         return uniformInc(min, max);
     }
 
-    float randomFloatUpTo(const float max) {
-        return randomFloatInRange(0, max);
+    float RandomFloatUpTo(const float max) {
+        return RandomFloatInRange(0, max);
     }
 
-    float randomFloat() {
+    float RandomFloat() {
         std::uniform_real_distribution<float> real_dist(0.0F, 1.0F);
         return real_dist(gen);
     }

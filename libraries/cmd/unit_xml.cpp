@@ -154,7 +154,7 @@ void pushMesh(std::vector<Mesh *> &meshes,
         if (startframe >= 0) {
             meshes.back()->setCurrentFrame(startframe);
         } else if (startframe == -2) {
-            float r = ((float) rand()) / RAND_MAX;
+            float r = vs_random.RandomFloat();
             meshes.back()->setCurrentFrame(r * meshes.back()->getFramesPerSecond());
         } else if (startframe == -1) {
             if (randomstartseconds == 0) {

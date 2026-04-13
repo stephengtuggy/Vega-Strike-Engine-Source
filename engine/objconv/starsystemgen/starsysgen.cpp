@@ -34,6 +34,7 @@
 #include <time.h>
 #include <assert.h>
 #include <stdint.h>
+#include "src/vs_random.h"
 
 #ifndef M_PI
 #define M_PI 3.1415926536
@@ -43,15 +44,15 @@ static const size_t BUFFER_SIZE = 16000;
 static const char SCANF_FORMAT_STRING[] = "%15999s";
 
 using namespace std;
-static unsigned int starsysrandom = time(NULL);
 
-static void seedrand(int seed) {
-    starsysrandom = seed;
+static VSRandom star_sys_random{};
+
+static void seed_rand(const uint_fast32_t seed) {
+    star_sys_random = VSRandom(seed);
 }
 
 static uint_fast32_t ssrand() {
-    starsysrandom = (starsysrandom * 1103515245 + 12345) % (static_cast<unsigned long>(RAND_MAX) + 1);
-    return starsysrandom;
+    return star_sys_random.rand();
 }
 
 namespace StarSystemGent {
@@ -182,7 +183,7 @@ public:
 };
 
 float grand() {
-    return float(ssrand()) / RAND_MAX;
+    return star_sys_random.RandomFloat();
 }
 
 vector<Color> lights;
@@ -885,9 +886,9 @@ void generateStarSystem(string datapath,
         string namelist,
         const vector<string> &jumplocations) {
     if (seed) {
-        seedrand(seed);
+        seed_rand(seed);
     } else {
-        seedrand(time(NULL));
+        seed_rand(time(NULL));
     }
     nument[0] = numstars;
     nument[1] = numgasgiants;

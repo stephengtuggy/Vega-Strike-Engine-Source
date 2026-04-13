@@ -219,13 +219,13 @@ void BarrelRoll(Order *aisc, Unit *un) {
     broll->RollRight(rand() > RAND_MAX / 2 ? 1 : -1);
     float per;
     if (rand() < RAND_MAX / 2) {
-        per = ((float) rand()) / RAND_MAX;
+        per = vs_random.RandomFloat();
         if (per < .5) {
             per -= 1;
         }
         broll->Up(per);
     } else {
-        per = ((float) rand()) / RAND_MAX;
+        per = vs_random.RandomFloat();
         if (per < .5) {
             per -= 1;
         }
@@ -643,7 +643,7 @@ void LoopAroundSlow(Order *aisc, Unit *un) {
 void SelfDestruct(Order *aisc, Unit *un) {
     VS_LOG_AND_FLUSH(trace, "hard_coded_scripts::SelfDestruct " + un->name);
     un->Destroy();
-    un->Split(rand() % 3 + 1);
+    un->Split(vs_random.RandomUInt32InRange(1, 3));
     un->Explode(true, 0);     //displays explosion, unit continues
     un->RemoveFromSystem();      //has no effect
 }

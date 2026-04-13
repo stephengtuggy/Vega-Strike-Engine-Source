@@ -3040,7 +3040,7 @@ void Unit::ImportPartList(const std::string &category, float price, float priced
 
         //stupid way
         c.SetQuantity(c.GetQuantity() + float_to_int((quantdev * 2 + 1) * static_cast<double>(rand()) / (static_cast<double>(RAND_MAX) + 1)));
-        c.SetPrice(c.GetPrice() + pricedev * 2 * vs_random.randomFloat());
+        c.SetPrice(c.GetPrice() + pricedev * 2 * vs_random.RandomFloat());
         c.SetPrice(fabs(c.GetPrice()));
         c.SetPrice((c.GetPrice() + (baseprice * aveweight)) / (aveweight + 1));
         if (c.GetQuantity() <= 0) {

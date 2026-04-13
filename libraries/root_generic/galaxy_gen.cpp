@@ -239,7 +239,7 @@ public:
 };
 
 float grand() {
-    return star_sys_random.randomFloat();
+    return star_sys_random.RandomFloat();
 }
 
 vector<Color> lights;

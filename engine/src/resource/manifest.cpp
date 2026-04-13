@@ -124,7 +124,7 @@ Cargo Manifest::GetRandomCargo(const int quantity) const {
         return Cargo();
     }
 
-    const uint_fast32_t index = vs_random.random_uint32_up_to(_items.size() - 1);
+    const uint_fast32_t index = vs_random.RandomUInt32UpTo(_items.size() - 1);
     Cargo c = _items.at(index);
     c.SetQuantity(quantity);
     return c;

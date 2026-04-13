@@ -44,6 +44,7 @@
 #include "gfx_generic/mesh.h"
 #include "src/vega_cast_utils.h"
 #include "resource/random_utils.h"
+#include "src/vs_random.h"
 
 #include <algorithm>
 #include "configuration/configuration.h"
@@ -184,7 +185,7 @@ void Damageable::ApplyDamage(const Vector &pnt,
         // Additional house cleaning
         unit->PrimeOrders();
         unit->energy.Zero();
-        unit->Split(rand() % 3 + 1);
+        unit->Split(vs_random.RandomUInt32InRange(1, 3));
 
 
         // Effect on factions

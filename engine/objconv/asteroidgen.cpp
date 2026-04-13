@@ -31,15 +31,16 @@
 #include <stdlib.h>
 #include <math.h>
 #include <ctime>
+
+#include "src/vs_math.h"
+#include "src/vs_random.h"
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846264338328
 #endif
 #include <float.h>
-#if defined(__APPLE__) && defined (__MACH__)
-#define sqrtf sqrt
-#define cosf cos
-#define sinf sin
-#endif
+
+constexpr float M_PI_FLT = M_PI;
 
 float safety_zone = 0;
 using std::vector;
@@ -203,19 +204,19 @@ void determine_centers_and_radii(vector<asteroid> &field,
         const int poly_min,
         const int poly_max) {
     for (unsigned int i = 0; i < field.size(); i++) {
-        field[i].center.i = cube_sides.i * ((float) rand()) / RAND_MAX - cube_sides.i / 2;
-        field[i].center.j = cube_sides.j * ((float) rand()) / RAND_MAX - cube_sides.j / 2;
-        field[i].center.k = cube_sides.k * ((float) rand()) / RAND_MAX - cube_sides.k / 2;
-        float radiusratio = ((float) rand()) / RAND_MAX;
+        field[i].center.i = vs_random.RandomFloatInRange(-cube_sides.i / 2.0F, cube_sides.i / 2.0F);
+        field[i].center.j = vs_random.RandomFloatInRange(-cube_sides.j / 2.0F, cube_sides.j / 2.0F);
+        field[i].center.k = vs_random.RandomFloatInRange(-cube_sides.k / 2.0F, cube_sides.k / 2.0F);
+        float radiusratio = vs_random.RandomFloat();
         field[i].radius = radiusmin + (radiusmax - radiusmin) * radiusratio;
         radiusratio *= radiusratio * (poly_max + 1 - poly_min);
         field[i].num_polys = (int) radiusratio + poly_min;
         if (field[i].num_polys < 4) {
             field[i].num_polys = 4;
         }
-        field[i].YawPitchRoll.i = 2 * M_PI * ((float) rand()) / RAND_MAX;
-        field[i].YawPitchRoll.j = 2 * M_PI * ((float) rand()) / RAND_MAX;
-        field[i].YawPitchRoll.k = 2 * M_PI * ((float) rand()) / RAND_MAX;
+        field[i].YawPitchRoll.i = vs_random.RandomFloatUpTo(2.0F * M_PI_FLT);
+        field[i].YawPitchRoll.j = vs_random.RandomFloatUpTo(2.0F * M_PI_FLT);
+        field[i].YawPitchRoll.k = vs_random.RandomFloatUpTo(2.0F * M_PI_FLT);
         bool insideanother = false;
         if (field[i].center.Mag() < safety_zone) {
             insideanother = true;
@@ -236,8 +237,8 @@ void determine_centers_and_radii(vector<asteroid> &field,
     }
 }
 
-float getR(float minr, float maxr) {
-    return ((maxr - minr) * ((float) rand()) / RAND_MAX) + minr;
+float getR(const float minr, const float maxr) {
+    return vs_random.RandomFloatInRange(minr, maxr);
 }
 
 void generateTet(vector<Vector> &v, vector<Tri> &p, const float minr, const float maxr) {

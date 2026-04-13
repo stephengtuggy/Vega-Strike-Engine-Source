@@ -53,11 +53,11 @@ constexpr float M_PI_FLT = M_PI;
 
 
 // TODO: move these two functions to vector and make into single constructor
-inline double uniformrand(double min, double max) {
-    return (static_cast<double>(rand()) / RAND_MAX) * (max - min) + min;
+inline double uniformrand(const double min, const double max) {
+    return vs_random.RandomDoubleInRange(min, max);
 }
 
-inline QVector randVector(double min, double max) {
+inline QVector randVector(const double min, const double max) {
     return QVector(uniformrand(min, max),
             uniformrand(min, max),
             uniformrand(min, max));

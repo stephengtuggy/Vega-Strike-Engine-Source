@@ -42,7 +42,7 @@
 #include "gfx/hud.h"
 #include "root_generic/vs_globals.h"
 
-#include <time.h>
+#include "src/vs_random.h"
 #ifdef _WIN32
 #include <direct.h>
 #else
@@ -1828,8 +1828,8 @@ void Base::Room::Talk::Click(Base *base, float x, float y, int button, int state
         } else if (say.size()) {
             curroom = base->curroom;
 //index=base->rooms[curroom]->objs.size();
-            int sayindex = rand() % say.size();
-            base->rooms[curroom]->objs.push_back(new Room::BaseTalk(say[sayindex], "currentmsg", true));
+            const int sayindex = vs_random.RandomUInt32UpTo(say.size() - 1);
+            base->rooms[curroom]->objs.push_back(new Room::BaseTalk(say.at(sayindex), "currentmsg", true));
 //((Room::BaseTalk*)(base->rooms[curroom]->objs.back()))->sayindex=(sayindex);
 //((Room::BaseTalk*)(base->rooms[curroom]->objs.back()))->curtime=0;
         } else {

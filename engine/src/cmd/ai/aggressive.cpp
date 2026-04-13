@@ -227,7 +227,7 @@ static float aggressivity = 2.01F;
 static int randomtemp;
 
 AggressiveAI::AggressiveAI(const char *filename, Unit *target)
-        : FireAt(), logic(getProperScript(nullptr, nullptr, "default", randomtemp = rand())) {
+        : FireAt(), logic(getProperScript(nullptr, nullptr, "default", randomtemp = vs_random.gen_rand_int31())) {
     currentpriority = 0;
     last_jump_time = 0;
     nav = QVector(0, 0, 0);
@@ -483,7 +483,7 @@ bool AggressiveAI::ProcessLogicItem(const AIEvents::AIEvresult &item) {
             return queryType(Order::MOVEMENT) == NULL;
 
         case RANDOMIZ:
-            value = ((float) rand()) / RAND_MAX;
+            value = vs_random.RandomFloat();
             break;
         default:
             return false;
@@ -571,7 +571,7 @@ bool AggressiveAI::ProcessCurrentFgDirective(Flightgroup *fg) {
         if (fg->directive != last_directive) {
             if (configuration().ai.always_obedient) {
                 obedient = true;
-            } else if (float ( rand())/RAND_MAX < (obedient ? (1 - logic->obedience) : logic->obedience)) {
+            } else if (vs_random.RandomFloat() < (obedient ? (1 - logic->obedience) : logic->obedience)) {
                 obedient = !obedient;
             }
             if (obedient) {
@@ -1190,7 +1190,7 @@ void AggressiveAI::ReCommandWing(Flightgroup *fg) {
         if (overridable(fg->directive)) {
             //computer won't override capital orders
             if (nullptr != (lead = fg->leader.GetUnit())) {
-                if (float ( rand())/RAND_MAX < simulation_atom_var / time_to_recommand_wing) {
+                if (vs_random.RandomFloat() < simulation_atom_var / time_to_recommand_wing) {
                     if (parent->Threat() && (parent->shield.Percent() < .2)) {
                         fg->directive = string("h");
                         LeadMe(parent, "h", "I need help here!", false);
