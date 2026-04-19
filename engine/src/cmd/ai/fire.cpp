@@ -758,7 +758,7 @@ using std::string;
 
 void FireAt::PossiblySwitchTarget(bool unused) {
     const float targettime = configuration().ai.targeting.time_until_switch_flt;
-    if ((targettime <= 0) || (vega_random.UniformInclusive(0, 1) < simulation_atom_var / targettime)) {
+    if ((targettime <= 0) || (VegaRandom::Instance().UniformInclusive(0, 1) < simulation_atom_var / targettime)) {
         bool ct = true;
         Flightgroup *fg;
         if ((fg = parent->getFlightgroup())) {

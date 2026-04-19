@@ -690,7 +690,7 @@ void GFXSphereVertexList::ProceduralModification() {
         }
 
         for (int j = 0; j < ROWS / 2; j++) {
-            direction[j] = (int) vega_random.UniformInclusive(0.0, 5.0);
+            direction[j] = (int) VegaRandom::Instance().UniformInclusive(0.0, 5.0);
         }
         if (i % 4 == 1) {
             for (int j = 0; j < ROWS; j += 2) {

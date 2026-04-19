@@ -155,7 +155,7 @@ void pushMesh(std::vector<Mesh *> &meshes,
         if (startframe >= 0) {
             meshes.back()->setCurrentFrame(startframe);
         } else if (startframe == -2) {
-            float r = vega_random.RandomFloat();
+            float r = VegaRandom::Instance().RandomFloat();
             meshes.back()->setCurrentFrame(r * meshes.back()->getFramesPerSecond());
         } else if (startframe == -1) {
             if (randomstartseconds == 0) {

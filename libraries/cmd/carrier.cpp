@@ -54,7 +54,7 @@ constexpr float M_PI_FLT = M_PI;
 
 // TODO: move these two functions to vector and make into single constructor
 inline double uniformrand(const double min, const double max) {
-    return vega_random.RandomDoubleInRange(min, max);
+    return VegaRandom::Instance().RandomDoubleInRange(min, max);
 }
 
 inline QVector randVector(const double min, const double max) {
@@ -258,7 +258,7 @@ void Carrier::EjectCargo(unsigned int index) {
                 arot = grot;
             }
             Vector rotation
-                    (vega_random.UniformInclusive(-arot, arot), vega_random.UniformInclusive(-arot, arot), vega_random.UniformInclusive(-arot,
+                    (VegaRandom::Instance().UniformInclusive(-arot, arot), VegaRandom::Instance().UniformInclusive(-arot, arot), VegaRandom::Instance().UniformInclusive(-arot,
                             arot));
             const bool all_rotate_same = configuration().graphics.cargo_rotates_at_same_speed;
             if (all_rotate_same && arot != 0) {

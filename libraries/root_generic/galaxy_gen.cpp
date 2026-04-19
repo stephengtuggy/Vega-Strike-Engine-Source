@@ -66,7 +66,7 @@ using std::vector;
 static VegaRandom star_sys_random{};
 
 static void seed_rand(const uint_fast32_t seed) {
-    star_sys_random = VegaRandom(seed);
+    star_sys_random.InitGenRand(seed);
 }
 
 static uint_fast32_t string_hash(const string &key) {

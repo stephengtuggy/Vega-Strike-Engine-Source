@@ -53,9 +53,9 @@ Asteroid::Asteroid(const char *filename, int faction, Flightgroup *fg, int fg_sn
     asteroid_physics_offset = 0;
     un_iter iter = getSubUnits();
     while (*iter) {
-        float x = vega_random.RandomFloatInRange(-difficulty, difficulty);
-        float y = vega_random.RandomFloatInRange(-difficulty, difficulty);
-        float z = vega_random.RandomFloatInRange(-difficulty, difficulty);
+        float x = VegaRandom::Instance().RandomFloatInRange(-difficulty, difficulty);
+        float y = VegaRandom::Instance().RandomFloatInRange(-difficulty, difficulty);
+        float z = VegaRandom::Instance().RandomFloatInRange(-difficulty, difficulty);
         (*iter)->SetAngularVelocity(Vector(x, y, z));
         ++iter;
     }

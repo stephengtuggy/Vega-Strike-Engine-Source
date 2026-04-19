@@ -43,7 +43,6 @@
 constexpr float M_PI_FLT = M_PI;
 
 float safety_zone = 0;
-VegaRandom vega_random{};
 using std::vector;
 
 class Vector {
@@ -205,19 +204,19 @@ void determine_centers_and_radii(vector<asteroid> &field,
         const int poly_min,
         const int poly_max) {
     for (unsigned int i = 0; i < field.size(); i++) {
-        field[i].center.i = vega_random.RandomFloatInRange(-cube_sides.i / 2.0F, cube_sides.i / 2.0F);
-        field[i].center.j = vega_random.RandomFloatInRange(-cube_sides.j / 2.0F, cube_sides.j / 2.0F);
-        field[i].center.k = vega_random.RandomFloatInRange(-cube_sides.k / 2.0F, cube_sides.k / 2.0F);
-        float radiusratio = vega_random.RandomFloat();
+        field[i].center.i = VegaRandom::Instance().RandomFloatInRange(-cube_sides.i / 2.0F, cube_sides.i / 2.0F);
+        field[i].center.j = VegaRandom::Instance().RandomFloatInRange(-cube_sides.j / 2.0F, cube_sides.j / 2.0F);
+        field[i].center.k = VegaRandom::Instance().RandomFloatInRange(-cube_sides.k / 2.0F, cube_sides.k / 2.0F);
+        float radiusratio = VegaRandom::Instance().RandomFloat();
         field[i].radius = radiusmin + (radiusmax - radiusmin) * radiusratio;
         radiusratio *= radiusratio * (poly_max + 1 - poly_min);
         field[i].num_polys = (int) radiusratio + poly_min;
         if (field[i].num_polys < 4) {
             field[i].num_polys = 4;
         }
-        field[i].YawPitchRoll.i = vega_random.RandomFloatUpTo(2.0F * M_PI_FLT);
-        field[i].YawPitchRoll.j = vega_random.RandomFloatUpTo(2.0F * M_PI_FLT);
-        field[i].YawPitchRoll.k = vega_random.RandomFloatUpTo(2.0F * M_PI_FLT);
+        field[i].YawPitchRoll.i = VegaRandom::Instance().RandomFloatUpTo(2.0F * M_PI_FLT);
+        field[i].YawPitchRoll.j = VegaRandom::Instance().RandomFloatUpTo(2.0F * M_PI_FLT);
+        field[i].YawPitchRoll.k = VegaRandom::Instance().RandomFloatUpTo(2.0F * M_PI_FLT);
         bool insideanother = false;
         if (field[i].center.Mag() < safety_zone) {
             insideanother = true;
@@ -239,7 +238,7 @@ void determine_centers_and_radii(vector<asteroid> &field,
 }
 
 float getR(const float minr, const float maxr) {
-    return vega_random.RandomFloatInRange(minr, maxr);
+    return VegaRandom::Instance().RandomFloatInRange(minr, maxr);
 }
 
 void generateTet(vector<Vector> &v, vector<Tri> &p, const float minr, const float maxr) {

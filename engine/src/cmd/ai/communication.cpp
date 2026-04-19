@@ -149,7 +149,7 @@ bool nonneg(float i) {
 }
 
 std::string FSM::Node::GetMessage(unsigned int &multiple) const {
-    multiple = vega_random.RandomUInt32UpTo(messages.size() - 1);
+    multiple = VegaRandom::Instance().RandomUInt32UpTo(messages.size() - 1);
     return messages[multiple];
 }
 
@@ -224,7 +224,7 @@ void FSM::Node::AddSound(std::string soundfile, unsigned char sex, float gain) {
 int FSM::getCommMessageMood(int curstate, float mood, float randomresponse, float relationship) const {
     const FSM::Node *n = (unsigned int) curstate
             < nodes.size() ? (&nodes[curstate]) : (&nodes[getDefaultState(relationship)]);
-    mood += vega_random.RandomFloatInRange(-randomresponse, randomresponse);
+    mood += VegaRandom::Instance().RandomFloatInRange(-randomresponse, randomresponse);
 
     int choice = 0;
 #if 0
@@ -278,7 +278,7 @@ int FSM::getDefaultState(float relationship) const {
     int curstate = 0;
 
     const FSM::Node *n = &nodes[curstate];
-    mood += vega_random.RandomFloatInRange(-randomresponse, randomresponse);
+    mood += VegaRandom::Instance().RandomFloatInRange(-randomresponse, randomresponse);
 
     int choice = 0;
     float bestchoice = 16;

@@ -542,7 +542,7 @@ void AnimatedTexture::LoadAni(VSFileSystem::VSFile &f, int stage, enum FILTER is
         SetLoop(false);
     }
     if (XMLSupport::parse_option_ispresent(options, "startRandom")) {
-        const uint_fast32_t curf = vega_random.GenRandUInt32() % numframes;
+        const uint_fast32_t curf = VegaRandom::Instance().GenRandUInt32() % numframes;
         setTime((0.00001 + curf) * timeperframe);
     }
     string addrmodestr = XMLSupport::parse_option_value(options, "addressMode", "");

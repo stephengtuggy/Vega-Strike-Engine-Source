@@ -71,7 +71,6 @@ Mission *mission = NULL;
 double benchmark = -1.0;
 bool STATIC_VARS_DESTROYED = false;
 const char *mission_key = "unit_to_dock_with";
-VegaRandom vega_random{};
 
 /* for speed test */
 int loop_count = 0;
@@ -1829,7 +1828,7 @@ void Base::Room::Talk::Click(Base *base, float x, float y, int button, int state
         } else if (say.size()) {
             curroom = base->curroom;
 //index=base->rooms[curroom]->objs.size();
-            const int sayindex = vega_random.RandomUInt32UpTo(say.size() - 1);
+            const int sayindex = VegaRandom::Instance().RandomUInt32UpTo(say.size() - 1);
             base->rooms[curroom]->objs.push_back(new Room::BaseTalk(say.at(sayindex), "currentmsg", true));
 //((Room::BaseTalk*)(base->rooms[curroom]->objs.back()))->sayindex=(sayindex);
 //((Room::BaseTalk*)(base->rooms[curroom]->objs.back()))->curtime=0;

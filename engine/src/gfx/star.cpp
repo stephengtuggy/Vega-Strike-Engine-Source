@@ -273,7 +273,7 @@ static GFXColorVertex *AllocVerticesForSystem(std::string our_system_name, float
         tmpvertex[j + repetition - 1].x = -.5 * xyzspread + rand() * ((float) xyzspread / RAND_MAX);
         tmpvertex[j + repetition - 1].y = -.5 * xyzspread + rand() * ((float) xyzspread / RAND_MAX);
         tmpvertex[j + repetition - 1].z = -.5 * xyzspread + rand() * ((float) xyzspread / RAND_MAX);
-        float brightness = vega_random.RandomFloatInRange(0.1F, 1.0F);
+        float brightness = VegaRandom::Instance().RandomFloatInRange(0.1F, 1.0F);
         tmpvertex[j + repetition - 1].r = brightness;
         tmpvertex[j + repetition - 1].g = brightness;
         tmpvertex[j + repetition - 1].b = brightness;

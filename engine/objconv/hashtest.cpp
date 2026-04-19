@@ -44,14 +44,13 @@ static double   dblnewtime;
 #include <map>
 #include "root_generic/vega_random.h"
 
-VegaRandom vega_random{11376130011};
 size_t globmax = 1024;
 class size {
 public:
     size_t num;
 
     size() {
-        num = static_cast<size_t>(vega_random.RandomUInt32UpTo(globmax));
+        num = static_cast<size_t>(VegaRandom::Instance().RandomUInt32UpTo(globmax));
     }
 
     bool operator==(const size &a) const {
@@ -115,6 +114,9 @@ int main(int argc, char **argv) {
     QueryPerformanceFrequency( (LARGE_INTEGER*) &freq );
     QueryPerformanceCounter( (LARGE_INTEGER*) &ttime );
 #endif
+
+    VegaRandom::Instance().InitGenRand(11376130011);
+
     const size_t lima = static_cast<size_t>(atof(argv[1]));
     const size_t limb = static_cast<size_t>(atof(argv[2]));
     const size_t limc = static_cast<size_t>(atof(argv[3]));

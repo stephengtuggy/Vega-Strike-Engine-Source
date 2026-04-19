@@ -30,6 +30,7 @@
 
 #include <random>
 #include <cstdint>
+#include <limits>
 
 constexpr int_fast32_t kVegaIntFast32tMax = std::numeric_limits<int_fast32_t>::max();
 constexpr int_least32_t kVegaIntLeast32tMax = std::numeric_limits<int_least32_t>::max();
@@ -46,82 +47,150 @@ class VegaRandom {
 public:
 
     /// Initializes random number generator with system random_device, where available
-    explicit VegaRandom();
+    explicit VegaRandom() {
+        std::random_device rd;
+        gen.seed(rd());
+    }
 
     /// Initializes random number generator with a specific seed
-    explicit VegaRandom(uint_fast32_t seed);
+    explicit VegaRandom(const uint_fast32_t seed) {
+        gen.seed(seed);
+    }
 
     /**
      * initializes by an array with array-length
      * init_key is the array for initializing keys
      * key_length is its length
      */
-    VegaRandom(uint_fast32_t init_key[], size_t key_length);
+    VegaRandom(uint_fast32_t init_key[], const size_t key_length) {
+        std::seed_seq seq(init_key, init_key + key_length);
+        gen.seed(seq);
+    }
+
+    ~VegaRandom() = default;
 
     /// Initializes random number generator with a specific seed
-    void InitGenRand(uint_fast32_t seed);
+    void InitGenRand(const uint_fast32_t seed) {
+        gen.seed(seed);
+    }
+
+    static VegaRandom& Instance() {
+        static VegaRandom instance;
+        return instance;
+    }
 
     /** generates a random uint_fast32_t on [0,0xffffffff]-interval */
-    uint_fast32_t GenRandUInt32();
+    uint_fast32_t GenRandUInt32() {
+        return gen();
+    }
 
     /** generates a random int_fast32_t on [0,0x7fffffff]-interval */
-    int_fast32_t GenRandInt31();
+    int_fast32_t GenRandInt31() {
+        return static_cast<int_fast32_t>(GenRandUInt32() >> 1);
+    }
 
     /// generates a random uint_fast32_t on [0,0xffffffff]-interval
-    uint_fast32_t rand();
+    uint_fast32_t rand() {
+        return GenRandUInt32();
+    }
 
     /** generates a random double on [0,1]-real-interval */
-    double GenRandReal1();
+    double GenRandReal1() {
+        return GenRandUInt32() * (1.0 / kVegaUInt32tMaxAsDouble);
+        /* divided by 2^32-1 */
+    }
 
     /** generates a random double on [0,1)-real-interval */
-    double GenRandReal2();
+    double GenRandReal2() {
+        return GenRandUInt32() * (1.0 / kVegaUInt32tMaxAsDoublePlus1);
+        /* divided by 2^32 */
+    }
 
     /// generates a random double between min and max inclusive
-    double UniformInclusive(double min, double max);
+    double UniformInclusive(const double min, const double max) {
+        std::uniform_real_distribution<double> real_dist(min, max);
+        return real_dist(gen);
+    }
 
     /// generates a random double between min and max exclusive
-    double UniformExclusive(double min, double max);
+    double UniformExclusive(const double min, const double max) {
+        std::uniform_real_distribution<double> real_dist(min, max - 1.0 / kVegaUInt32tMaxAsDoublePlus1);
+        return real_dist(gen);
+    }
 
     /** generates a random double on (0,1)-real-interval */
-    double GenRandReal3();
+    double GenRandReal3() {
+        return (static_cast<double>(GenRandUInt32()) + 0.5) * (1.0 / kVegaUInt32tMaxAsDoublePlus1);
+        /* divided by 2^32 */
+    }
 
     /** generates a random double on [0,1) with 53-bit resolution */
-    double GenRandRes53();
+    double GenRandRes53() {
+        const uint_fast32_t a = GenRandUInt32() >> 5;
+        const uint_fast32_t b = GenRandUInt32() >> 6;
+        return (a * 67108864.0 + b) * (1.0 / 9007199254740992.0);
+    }
 
     /// generates a random int_fast32_t between min and max
-    int_fast32_t RandomInt32InRange(int_fast32_t min, int_fast32_t max);
+    int_fast32_t RandomInt32InRange(const int_fast32_t min, const int_fast32_t max) {
+        std::uniform_int_distribution<int_fast32_t> int_dist(min, max);
+        return int_dist(gen);
+    }
 
     /// generates a random int_fast32_t between 0 and max
-    int_fast32_t RandomInt32UpTo(int_fast32_t max);
+    int_fast32_t RandomInt32UpTo(const int_fast32_t max) {
+        return RandomInt32InRange(0, max);
+    }
 
     /// generates a random uint_fast32_t between min and max
-    uint_fast32_t RandomUInt32InRange(uint_fast32_t min, uint_fast32_t max);
+    uint_fast32_t RandomUInt32InRange(const uint_fast32_t min, const uint_fast32_t max) {
+        std::uniform_int_distribution<uint_fast32_t> uint_dist(min, max);
+        return uint_dist(gen);
+    }
 
     /// generates a random uint_fast32_t between 0 and max
-    uint_fast32_t RandomUInt32UpTo(uint_fast32_t max);
+    uint_fast32_t RandomUInt32UpTo(const uint_fast32_t max) {
+        return RandomUInt32InRange(0, max);
+    }
 
     /// generates a random double between min and max, inclusive
-    double RandomRealInRange(double min, double max);
+    double RandomRealInRange(const double min, const double max) {
+        return UniformInclusive(min, max);
+    }
 
     /// generates a random double between min and max, inclusive
-    double RandomDoubleInRange(double min, double max);
+    double RandomDoubleInRange(const double min, const double max) {
+        return UniformInclusive(min, max);
+    }
 
     /// generates a random double between 0.0 and max, inclusive
-    double RandomDoubleUpTo(double max);
+    double RandomDoubleUpTo(const double max) {
+        return RandomDoubleInRange(0.0, max);
+    }
 
     /// generates a random double between 0.0 and 1.0, at 1/10,000th increments
-    double RandomDouble();
+    double RandomDouble() {
+        constexpr double kPrecision = 10000.0;
+        std::uniform_int_distribution<uint_fast32_t> int_dist(0,kPrecision);
+        const uint_fast32_t random_int = int_dist(gen);
+        return static_cast<double>(random_int) / kPrecision;
+    }
 
     /// generates a random float between min and max, inclusive
-    float RandomFloatInRange(float min, float max);
+    float RandomFloatInRange(const float min, const float max) {
+        return UniformInclusive(min, max);
+    }
 
     /// generates a random float between 0.0F and max, inclusive
-    float RandomFloatUpTo(float max);
+    float RandomFloatUpTo(const float max) {
+        return RandomFloatInRange(0.0F, max);
+    }
 
     /// generates a random float between 0.0F and 1.0F
-    float RandomFloat();
+    float RandomFloat() {
+        std::uniform_real_distribution<float> real_dist(0.0F, 1.0F);
+        return real_dist(gen);
+    }
 };
-
-extern VegaRandom vega_random;
 
 #endif //VEGA_STRIKE_VEGA_RANDOM_H

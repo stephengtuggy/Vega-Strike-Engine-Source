@@ -573,7 +573,7 @@ extern std::string getDamageColor(double);
 void Unit::LoadRow(std::string unit_identifier, string modification, bool saved_game) {
     Unit::XML xml;
     xml.unitModifications = modification.c_str();
-    xml.randomstartframe = vega_random.RandomFloat();
+    xml.randomstartframe = VegaRandom::Instance().RandomFloat();
     xml.randomstartseconds = 0;
     xml.calculated_role = false;
     xml.damageiterator = 0;

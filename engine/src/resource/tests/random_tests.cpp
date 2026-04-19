@@ -50,7 +50,7 @@ TEST(random_utils, randomDouble) {
 
 TEST(VegaRandom, GenRandUInt32) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        uint_fast32_t random_uint32 = vega_random.GenRandUInt32();
+        uint_fast32_t random_uint32 = VegaRandom::Instance().GenRandUInt32();
         EXPECT_GT(random_uint32, 0);
         EXPECT_LT(random_uint32, kVegaUIntLeast32tMax);
     }
@@ -58,7 +58,7 @@ TEST(VegaRandom, GenRandUInt32) {
 
 TEST(VegaRandom, RandomDouble) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        double random_double = vega_random.RandomDouble();
+        double random_double = VegaRandom::Instance().RandomDouble();
         EXPECT_GE(random_double, 0.0);
         EXPECT_LE(random_double, 1.0);
     }
@@ -66,7 +66,7 @@ TEST(VegaRandom, RandomDouble) {
 
 TEST(VegaRandom, RandomDoubleUpTo) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        double random_double = vega_random.RandomDoubleUpTo(10.0);
+        double random_double = VegaRandom::Instance().RandomDoubleUpTo(10.0);
         EXPECT_GE(random_double, 0.0);
         EXPECT_LE(random_double, 10.0);
     }
@@ -74,7 +74,7 @@ TEST(VegaRandom, RandomDoubleUpTo) {
 
 TEST(VegaRandom, RandomDoubleInRange) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        double random_double = vega_random.RandomDoubleInRange(-10.0, 10.0);
+        double random_double = VegaRandom::Instance().RandomDoubleInRange(-10.0, 10.0);
         EXPECT_GE(random_double, -10.0);
         EXPECT_LE(random_double, 10.0);
     }
@@ -82,7 +82,7 @@ TEST(VegaRandom, RandomDoubleInRange) {
 
 TEST(VegaRandom, RandomRealInRange) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        double random_double = vega_random.RandomRealInRange(-10.0, 10.0);
+        double random_double = VegaRandom::Instance().RandomRealInRange(-10.0, 10.0);
         EXPECT_GE(random_double, -10.0);
         EXPECT_LE(random_double, 10.0);
     }
@@ -90,7 +90,7 @@ TEST(VegaRandom, RandomRealInRange) {
 
 TEST(VegaRandom, RandomFloatInRange) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        float random_float = vega_random.RandomFloatInRange(-10.0F, 10.0F);
+        float random_float = VegaRandom::Instance().RandomFloatInRange(-10.0F, 10.0F);
         EXPECT_GE(random_float, -10.0F);
         EXPECT_LE(random_float, 10.0F);
     }
@@ -98,7 +98,7 @@ TEST(VegaRandom, RandomFloatInRange) {
 
 TEST(VegaRandom, RandomFloatUpTo) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        float random_float = vega_random.RandomFloatUpTo(10.0F);
+        float random_float = VegaRandom::Instance().RandomFloatUpTo(10.0F);
         EXPECT_GE(random_float, 0.0F);
         EXPECT_LE(random_float, 10.0F);
     }
@@ -106,7 +106,7 @@ TEST(VegaRandom, RandomFloatUpTo) {
 
 TEST(VegaRandom, RandomFloat) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        float random_float = vega_random.RandomFloat();
+        float random_float = VegaRandom::Instance().RandomFloat();
         EXPECT_GE(random_float, 0.0F);
         EXPECT_LE(random_float, 1.0F);
     }
@@ -114,7 +114,7 @@ TEST(VegaRandom, RandomFloat) {
 
 TEST(VegaRandom, RandomInt32InRange) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        int random_int32 = vega_random.RandomInt32InRange(-1000, 1000);
+        int random_int32 = VegaRandom::Instance().RandomInt32InRange(-1000, 1000);
         EXPECT_GE(random_int32, -1000);
         EXPECT_LE(random_int32, 1000);
     }
@@ -122,7 +122,7 @@ TEST(VegaRandom, RandomInt32InRange) {
 
 TEST(VegaRandom, RandomInt32UpTo) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        int random_int32 = vega_random.RandomInt32UpTo(1000);
+        int random_int32 = VegaRandom::Instance().RandomInt32UpTo(1000);
         EXPECT_GE(random_int32, 0);
         EXPECT_LE(random_int32, 1000);
     }
@@ -130,7 +130,7 @@ TEST(VegaRandom, RandomInt32UpTo) {
 
 TEST(VegaRandom, RandomUInt32InRange) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        uint_fast32_t random_uint32 = vega_random.RandomUInt32InRange( 1000, 2000);
+        uint_fast32_t random_uint32 = VegaRandom::Instance().RandomUInt32InRange( 1000, 2000);
         EXPECT_GE(random_uint32, 1000);
         EXPECT_LE(random_uint32, 2000);
     }
@@ -138,14 +138,14 @@ TEST(VegaRandom, RandomUInt32InRange) {
 
 TEST(VegaRandom, RandomUInt32UpTo) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        uint_fast32_t random_uint32 = vega_random.RandomUInt32UpTo(1000);
+        uint_fast32_t random_uint32 = VegaRandom::Instance().RandomUInt32UpTo(1000);
         EXPECT_LE(random_uint32, 1000);
     }
 }
 
 TEST(VegaRandom, GenRandRes53) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        double random_double = vega_random.GenRandRes53();
+        double random_double = VegaRandom::Instance().GenRandRes53();
         EXPECT_GT(random_double, 0.0);
         EXPECT_LE(random_double, 1.0);
     }
@@ -153,7 +153,7 @@ TEST(VegaRandom, GenRandRes53) {
 
 TEST(VegaRandom, GenRandReal1) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        double random_double = vega_random.GenRandReal1();
+        double random_double = VegaRandom::Instance().GenRandReal1();
         EXPECT_GT(random_double, 0.0);
         EXPECT_LT(random_double, 1.0);
     }
@@ -161,7 +161,7 @@ TEST(VegaRandom, GenRandReal1) {
 
 TEST(VegaRandom, GenRandReal2) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        double random_double = vega_random.GenRandReal2();
+        double random_double = VegaRandom::Instance().GenRandReal2();
         EXPECT_GT(random_double, 0.0);
         EXPECT_LE(random_double, 1.0);
     }
@@ -169,7 +169,7 @@ TEST(VegaRandom, GenRandReal2) {
 
 TEST(VegaRandom, GenRandReal3) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        double random_double = vega_random.GenRandReal3();
+        double random_double = VegaRandom::Instance().GenRandReal3();
         EXPECT_GE(random_double, 0.0);
         EXPECT_LE(random_double, 1.0);
     }
@@ -177,7 +177,7 @@ TEST(VegaRandom, GenRandReal3) {
 
 TEST(VegaRandom, UniformInclusive) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        double random_double = vega_random.UniformInclusive(-10.0, 10.0);
+        double random_double = VegaRandom::Instance().UniformInclusive(-10.0, 10.0);
         EXPECT_GE(random_double, -10.0);
         EXPECT_LE(random_double, 10.0);
     }
@@ -185,7 +185,7 @@ TEST(VegaRandom, UniformInclusive) {
 
 TEST(VegaRandom, UniformExclusive) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        double random_double = vega_random.UniformExclusive(-10.0, 10.0);
+        double random_double = VegaRandom::Instance().UniformExclusive(-10.0, 10.0);
         EXPECT_GT(random_double, -10.0);
         EXPECT_LT(random_double, 10.0);
     }
@@ -193,7 +193,7 @@ TEST(VegaRandom, UniformExclusive) {
 
 TEST(VegaRandom, GenRandInt31) {
     for (int i = 0; i < kNumRepetitions; ++i) {
-        int_fast32_t random_int32 = vega_random.GenRandInt31();
+        int_fast32_t random_int32 = VegaRandom::Instance().GenRandInt31();
         EXPECT_GT(random_int32, 0);
         EXPECT_LT(random_int32, kVegaIntLeast32tMax);
     }

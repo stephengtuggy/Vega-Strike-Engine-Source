@@ -28,10 +28,10 @@
 #include "root_generic/vega_random.h"
 
 int randomInt(const int max, const int min = 0 ) {
-    return static_cast<int>(vega_random.RandomInt32InRange(static_cast<int_fast32_t>(min), static_cast<int_fast32_t>(max)));
+    return static_cast<int>(VegaRandom::Instance().RandomInt32InRange(static_cast<int_fast32_t>(min), static_cast<int_fast32_t>(max)));
 }
 
 
 double randomDouble() {
-    return vega_random.RandomDouble();
+    return VegaRandom::Instance().RandomDouble();
 }

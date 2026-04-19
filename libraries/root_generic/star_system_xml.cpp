@@ -182,9 +182,9 @@ extern BLENDFUNC parse_alpha(const char *);
 void SetSubunitRotation(Unit *un, float difficulty) {
     Unit *unit;
     for (un_iter iter = un->getSubUnits(); (unit = *iter); ++iter) {
-        float x = vega_random.RandomFloatInRange(-difficulty, difficulty);
-        float y = vega_random.RandomFloatInRange(-difficulty, difficulty);
-        float z = vega_random.RandomFloatInRange(-difficulty, difficulty);
+        float x = VegaRandom::Instance().RandomFloatInRange(-difficulty, difficulty);
+        float y = VegaRandom::Instance().RandomFloatInRange(-difficulty, difficulty);
+        float z = VegaRandom::Instance().RandomFloatInRange(-difficulty, difficulty);
         unit->SetAngularVelocity(Vector(x, y, z));
         SetSubunitRotation(unit, difficulty);
     }

@@ -185,7 +185,7 @@ void Damageable::ApplyDamage(const Vector &pnt,
         // Additional house cleaning
         unit->PrimeOrders();
         unit->energy.Zero();
-        unit->Split(vega_random.RandomUInt32InRange(1, 3));
+        unit->Split(VegaRandom::Instance().RandomUInt32InRange(1, 3));
 
 
         // Effect on factions

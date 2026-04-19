@@ -79,7 +79,7 @@ static boost::python::tuple GetRandomBarMessage() {
         say.push_back(newmsg);
     }
     if (say.size()) {
-        int index = vega_random.RandomUInt32UpTo(say.size() - 1);
+        int index = VegaRandom::Instance().RandomUInt32UpTo(say.size() - 1);
         return VS_BOOST_MAKE_TUPLE_2(say[index], sounds[index]);
     } else {
         return VS_BOOST_MAKE_TUPLE_2("", "");

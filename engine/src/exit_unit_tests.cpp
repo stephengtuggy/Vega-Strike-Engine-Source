@@ -37,5 +37,3 @@ void VSExit(int code) {
     STATIC_VARS_DESTROYED = true;
     exit(code);
 }
-
-VegaRandom vega_random{};

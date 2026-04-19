@@ -227,7 +227,7 @@ static float aggressivity = 2.01F;
 static int randomtemp;
 
 AggressiveAI::AggressiveAI(const char *filename, Unit *target)
-        : FireAt(), logic(getProperScript(nullptr, nullptr, "default", randomtemp = vega_random.GenRandInt31())) {
+        : FireAt(), logic(getProperScript(nullptr, nullptr, "default", randomtemp = VegaRandom::Instance().GenRandInt31())) {
     currentpriority = 0;
     last_jump_time = 0;
     nav = QVector(0, 0, 0);
@@ -483,7 +483,7 @@ bool AggressiveAI::ProcessLogicItem(const AIEvents::AIEvresult &item) {
             return queryType(Order::MOVEMENT) == NULL;
 
         case RANDOMIZ:
-            value = vega_random.RandomFloat();
+            value = VegaRandom::Instance().RandomFloat();
             break;
         default:
             return false;
@@ -571,7 +571,7 @@ bool AggressiveAI::ProcessCurrentFgDirective(Flightgroup *fg) {
         if (fg->directive != last_directive) {
             if (configuration().ai.always_obedient) {
                 obedient = true;
-            } else if (vega_random.RandomFloat() < (obedient ? (1 - logic->obedience) : logic->obedience)) {
+            } else if (VegaRandom::Instance().RandomFloat() < (obedient ? (1 - logic->obedience) : logic->obedience)) {
                 obedient = !obedient;
             }
             if (obedient) {
@@ -1190,7 +1190,7 @@ void AggressiveAI::ReCommandWing(Flightgroup *fg) {
         if (overridable(fg->directive)) {
             //computer won't override capital orders
             if (nullptr != (lead = fg->leader.GetUnit())) {
-                if (vega_random.RandomFloat() < simulation_atom_var / time_to_recommand_wing) {
+                if (VegaRandom::Instance().RandomFloat() < simulation_atom_var / time_to_recommand_wing) {
                     if (parent->Threat() && (parent->shield.Percent() < .2)) {
                         fg->directive = string("h");
                         LeadMe(parent, "h", "I need help here!", false);
@@ -1262,9 +1262,9 @@ static Unit *ChooseNavPoint(Unit *parent, Unit **otherdest, float *lurk_on_arriv
     const unsigned int maxrand = 5;
     unsigned int additionalrand[maxrand];
     if (civilian) {
-        firstRand = vega_random.GenRandInt31();
-        secondRand = vega_random.UniformExclusive(0, 1);
-        thirdRand = vega_random.GenRandInt31();
+        firstRand = VegaRandom::Instance().GenRandInt31();
+        secondRand = VegaRandom::Instance().UniformExclusive(0, 1);
+        thirdRand = VegaRandom::Instance().GenRandInt31();
         for (unsigned int i = 0; i < maxrand; ++i) {
             additionalrand[i] = thirdRand + i;
         }

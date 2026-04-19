@@ -68,8 +68,6 @@ ADD_LIBRARY(vegastrike_root_generic STATIC
         XMLDocument.h
         options.cpp
         options.h
-        vega_random.cpp
-        vega_random.h
 )
 
 #TARGET_COMPILE_FEATURES(vegastrike_root_generic PUBLIC cxx_std_11)
