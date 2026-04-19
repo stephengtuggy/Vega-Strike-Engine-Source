@@ -44,7 +44,7 @@
 #include "cmd/drawable.h"
 #include "root_generic/options.h"
 #include "root_generic/configxml.h"
-#include "src/vs_random.h"
+#include "root_generic/vega_random.h"
 #include "vegadisk/savegame.h"
 #include "src/universe_util.h" //get galaxy faction, dude
 
@@ -711,7 +711,7 @@ void StarSystem::AddUnit(Unit *unit) {
     const uint_fast32_t priority = UnitUtil::getPhysicsPriority(unit);
     //Do we need the +1 here or not - need to look at when current_sim_location is changed relative to this function
     //and relative to this function, when the bucket is processed...
-    const uint_fast32_t tmp = 1 + vs_random.gen_rand_uint32() % priority;
+    const uint_fast32_t tmp = 1 + vega_random.GenRandUInt32() % priority;
     this->physics_buffer[(this->current_sim_location + tmp) % SIM_QUEUE_SIZE].prepend(unit);
     stats.AddUnit(unit);
 }
@@ -1065,7 +1065,7 @@ void StarSystem::UpdateUnitPhysics(bool firstframe, Unit *unit) {
         //Scatter, so as to achieve uniform distribution
 #if defined(RANDOMIZE_SIM_ATOMS)
         VS_LOG(trace, "void StarSystem::UpdateUnitPhysics( bool firstframe ): Randomizing unit priority");
-        priority  = 1 + (vs_random.gen_rand_uint32() % priority);
+        priority  = 1 + (vega_random.GenRandUInt32() % priority);
 #endif
     }
     const float backup = simulation_atom_var;

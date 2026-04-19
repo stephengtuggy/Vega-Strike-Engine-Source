@@ -57,7 +57,7 @@
 #include <vector>
 #include <map>
 
-#include "src/vs_random.h"
+#include "root_generic/vega_random.h"
 
 using std::string;
 using std::vector;
@@ -182,9 +182,9 @@ extern BLENDFUNC parse_alpha(const char *);
 void SetSubunitRotation(Unit *un, float difficulty) {
     Unit *unit;
     for (un_iter iter = un->getSubUnits(); (unit = *iter); ++iter) {
-        float x = vs_random.RandomFloatInRange(-difficulty, difficulty);
-        float y = vs_random.RandomFloatInRange(-difficulty, difficulty);
-        float z = vs_random.RandomFloatInRange(-difficulty, difficulty);
+        float x = vega_random.RandomFloatInRange(-difficulty, difficulty);
+        float y = vega_random.RandomFloatInRange(-difficulty, difficulty);
+        float z = vega_random.RandomFloatInRange(-difficulty, difficulty);
         unit->SetAngularVelocity(Vector(x, y, z));
         SetSubunitRotation(unit, difficulty);
     }

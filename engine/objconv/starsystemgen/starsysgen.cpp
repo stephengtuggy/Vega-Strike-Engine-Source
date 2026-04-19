@@ -34,7 +34,7 @@
 #include <time.h>
 #include <assert.h>
 #include <stdint.h>
-#include "src/vs_random.h"
+#include "root_generic/vega_random.h"
 
 #ifndef M_PI
 #define M_PI 3.1415926536
@@ -45,10 +45,10 @@ static const char SCANF_FORMAT_STRING[] = "%15999s";
 
 using namespace std;
 
-static VSRandom star_sys_random{};
+static VegaRandom star_sys_random{};
 
 static void seed_rand(const uint_fast32_t seed) {
-    star_sys_random = VSRandom(seed);
+    star_sys_random.InitGenRand(seed);
 }
 
 static uint_fast32_t ssrand() {

@@ -80,7 +80,7 @@
 #include "src/universe_util.h"
 #include "src/save_util.h"
 #include "src/in_kb_data.h"
-#include "src/vs_random.h"
+#include "root_generic/vega_random.h"
 #include "cmd/enhancement.h"
 
 #include "root_generic/options.h"
@@ -894,10 +894,10 @@ void createObjects(std::vector<std::string> &fighter0name,
                                 for (unsigned int i = 0; i < siz; ++i) {
                                     if (srcsys == grav->GetDestinations()[i]) {
                                         QVector newpos = grav->LocalPosition()
-                                                + QVector(vs_random.uniformExc(-grav->rSize() / 4, grav->rSize() / 4),
-                                                        vs_random.uniformExc(-grav->rSize() / 4,
+                                                + QVector(vega_random.UniformExclusive(-grav->rSize() / 4, grav->rSize() / 4),
+                                                        vega_random.UniformExclusive(-grav->rSize() / 4,
                                                                 grav->rSize() / 4),
-                                                        vs_random.uniformExc(-grav->rSize() / 4,
+                                                        vega_random.UniformExclusive(-grav->rSize() / 4,
                                                                 grav->rSize() / 4));
                                         if (grav->getUnitType() != Vega_UnitType::planet) {
                                             newpos = UniverseUtil::SafeEntrancePoint(newpos);

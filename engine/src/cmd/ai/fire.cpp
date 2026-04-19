@@ -42,7 +42,7 @@
 
 #include "src/vega_cast_utils.h"
 #include "cmd/unit_find.h"
-#include "src/vs_random.h"
+#include "root_generic/vega_random.h"
 #include "root_generic/lin_time.h" //DEBUG ONLY
 #include "cmd/pilot.h"
 #include "src/universe.h"
@@ -57,7 +57,7 @@ static bool NoDockWithClear() {
     return nodockwithclear;
 }
 
-VSRandom target_rand{};
+VegaRandom target_rand{};
 
 Unit *getAtmospheric(Unit *targ) {
     if (targ) {
@@ -146,7 +146,7 @@ void FireAt::ReInit(float aggressivitylevel) {
     agg = aggressivitylevel;
     distance = 1;
     //JS --- spreading target switch times
-    lastchangedtarg = 0.0F - target_rand.uniformInc(0, 1) * configuration().ai.targeting.min_time_to_switch_targets_flt;
+    lastchangedtarg = 0.0F - target_rand.UniformInclusive(0, 1) * configuration().ai.targeting.min_time_to_switch_targets_flt;
     had_target = false;
 }
 
@@ -523,7 +523,7 @@ void FireAt::ChooseTargets(int numtargs, bool force) {
     }
     bool wasnull = (curtarg == NULL);
     Flightgroup *fg = parent->getFlightgroup();
-    lastchangedtarg = 0 + target_rand.uniformInc(0, 1)
+    lastchangedtarg = 0 + target_rand.UniformInclusive(0, 1)
             * mintimetoswitch;     //spread out next valid time to switch targets - helps to ease per-frame loads.
     if (fg) {
         if (!fg->directive.empty()) {
@@ -617,7 +617,7 @@ void FireAt::ChooseTargets(int numtargs, bool force) {
                 nextframenumpollers[hastarg] = maxnumpollers;
             }
         } else {
-            lastchangedtarg += target_rand.uniformInc(0, 1) * minnulltimetoswitch;
+            lastchangedtarg += target_rand.UniformInclusive(0, 1) * minnulltimetoswitch;
             nextframenumpollers[hastarg] -= .05;
             if (nextframenumpollers[hastarg] < minnumpollers) {
                 nextframenumpollers[hastarg] = minnumpollers;
@@ -688,9 +688,8 @@ bool FireAt::ShouldFire(Unit *targ, bool &missilelock) {
                     const uint_fast32_t current_time =
                             fmod(floor(UniverseUtil::GetGameTime() / attacker_switch_time), static_cast<float>(1 << 24));
                     const uint_fast32_t seed = ((reinterpret_cast<size_t>(parent) & 0xffffffff) ^ current_time);
-                    static VSRandom decide(seed);
-                    decide.init_gen_rand(seed);
-                    if (decide.gen_rand_int31() % attackers >= max_attackers) {
+                    static VegaRandom decide{seed};
+                    if (decide.GenRandInt31() % attackers >= max_attackers) {
                         VS_LOG(trace, (boost::format("%1%: randomly decided to return false") % __FUNCTION__));
                         return false;
                     }
@@ -759,7 +758,7 @@ using std::string;
 
 void FireAt::PossiblySwitchTarget(bool unused) {
     const float targettime = configuration().ai.targeting.time_until_switch_flt;
-    if ((targettime <= 0) || (vs_random.uniformInc(0, 1) < simulation_atom_var / targettime)) {
+    if ((targettime <= 0) || (vega_random.UniformInclusive(0, 1) < simulation_atom_var / targettime)) {
         bool ct = true;
         Flightgroup *fg;
         if ((fg = parent->getFlightgroup())) {

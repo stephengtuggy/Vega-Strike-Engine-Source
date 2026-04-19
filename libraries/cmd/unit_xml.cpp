@@ -34,7 +34,7 @@
 #include "root_generic/configxml.h"
 #include "root_generic/vs_globals.h"
 #include "src/vegastrike.h"
-#include "src/vs_random.h"
+#include "root_generic/vega_random.h"
 #include <assert.h>
 #include "root_generic/xml_serializer.h"
 #include "cmd/unit_collide.h"
@@ -155,7 +155,7 @@ void pushMesh(std::vector<Mesh *> &meshes,
         if (startframe >= 0) {
             meshes.back()->setCurrentFrame(startframe);
         } else if (startframe == -2) {
-            float r = vs_random.RandomFloat();
+            float r = vega_random.RandomFloat();
             meshes.back()->setCurrentFrame(r * meshes.back()->getFramesPerSecond());
         } else if (startframe == -1) {
             if (randomstartseconds == 0) {

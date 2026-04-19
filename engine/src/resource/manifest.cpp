@@ -35,7 +35,7 @@
 #include <boost/json.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 
-#include "vs_random.h"
+#include "root_generic/vega_random.h"
 #include "resource/json_utils.h"
 
 
@@ -124,7 +124,7 @@ Cargo Manifest::GetRandomCargo(const int quantity) const {
         return Cargo();
     }
 
-    const uint_fast32_t index = vs_random.RandomUInt32UpTo(_items.size() - 1);
+    const uint_fast32_t index = vega_random.RandomUInt32UpTo(_items.size() - 1);
     Cargo c = _items.at(index);
     c.SetQuantity(quantity);
     return c;

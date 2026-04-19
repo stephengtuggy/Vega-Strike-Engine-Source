@@ -49,7 +49,7 @@ typedef boost::python::dictionary BoostPythonDictionary;
 #include "cmd/base.h"
 #include "cmd/base_util.h"
 #include "vegadisk/vsfilesystem.h"
-#include "src/vs_random.h"
+#include "root_generic/vega_random.h"
 
 static BoostPythonDictionary GetEventDataPython() {
     return BaseUtil::GetEventData();
@@ -79,7 +79,7 @@ static boost::python::tuple GetRandomBarMessage() {
         say.push_back(newmsg);
     }
     if (say.size()) {
-        int index = vs_random.RandomUInt32UpTo(say.size() - 1);
+        int index = vega_random.RandomUInt32UpTo(say.size() - 1);
         return VS_BOOST_MAKE_TUPLE_2(say[index], sounds[index]);
     } else {
         return VS_BOOST_MAKE_TUPLE_2("", "");

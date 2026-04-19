@@ -28,7 +28,7 @@
 
 #include "order.h"
 #include "communication.h"
-#include "src/vs_random.h"
+#include "root_generic/vega_random.h"
 #include "root_generic/configxml.h"
 
 using std::list;
@@ -104,7 +104,7 @@ void Order::ProcessCommunicationMessages(float AICommresponseTime, bool RemoveMe
                 }
             }
         }
-        if (cleared || vs_random.RandomFloat() < (1 / time)) {
+        if (cleared || vega_random.RandomFloat() < (1 / time)) {
             FSM::Node *n;
             if ((n = messagequeue.back()->getCurrentState())) {
                 ProcessCommMessage(*messagequeue.back());

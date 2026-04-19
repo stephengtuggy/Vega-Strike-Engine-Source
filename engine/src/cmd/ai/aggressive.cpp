@@ -50,7 +50,7 @@
 #include "warpto.h"
 #include "cmd/csv.h"
 #include "src/universe_util.h"
-#include "src/vs_random.h"
+#include "root_generic/vega_random.h"
 #include "src/python/python_compile.h"
 #include "cmd/unit_find.h"
 #include "docking.h"
@@ -227,7 +227,7 @@ static float aggressivity = 2.01F;
 static int randomtemp;
 
 AggressiveAI::AggressiveAI(const char *filename, Unit *target)
-        : FireAt(), logic(getProperScript(nullptr, nullptr, "default", randomtemp = vs_random.gen_rand_int31())) {
+        : FireAt(), logic(getProperScript(nullptr, nullptr, "default", randomtemp = vega_random.GenRandInt31())) {
     currentpriority = 0;
     last_jump_time = 0;
     nav = QVector(0, 0, 0);
@@ -483,7 +483,7 @@ bool AggressiveAI::ProcessLogicItem(const AIEvents::AIEvresult &item) {
             return queryType(Order::MOVEMENT) == NULL;
 
         case RANDOMIZ:
-            value = vs_random.RandomFloat();
+            value = vega_random.RandomFloat();
             break;
         default:
             return false;
@@ -571,7 +571,7 @@ bool AggressiveAI::ProcessCurrentFgDirective(Flightgroup *fg) {
         if (fg->directive != last_directive) {
             if (configuration().ai.always_obedient) {
                 obedient = true;
-            } else if (vs_random.RandomFloat() < (obedient ? (1 - logic->obedience) : logic->obedience)) {
+            } else if (vega_random.RandomFloat() < (obedient ? (1 - logic->obedience) : logic->obedience)) {
                 obedient = !obedient;
             }
             if (obedient) {
@@ -1190,7 +1190,7 @@ void AggressiveAI::ReCommandWing(Flightgroup *fg) {
         if (overridable(fg->directive)) {
             //computer won't override capital orders
             if (nullptr != (lead = fg->leader.GetUnit())) {
-                if (vs_random.RandomFloat() < simulation_atom_var / time_to_recommand_wing) {
+                if (vega_random.RandomFloat() < simulation_atom_var / time_to_recommand_wing) {
                     if (parent->Threat() && (parent->shield.Percent() < .2)) {
                         fg->directive = string("h");
                         LeadMe(parent, "h", "I need help here!", false);
@@ -1262,9 +1262,9 @@ static Unit *ChooseNavPoint(Unit *parent, Unit **otherdest, float *lurk_on_arriv
     const unsigned int maxrand = 5;
     unsigned int additionalrand[maxrand];
     if (civilian) {
-        firstRand = vs_random.gen_rand_int31();
-        secondRand = vs_random.uniformExc(0, 1);
-        thirdRand = vs_random.gen_rand_int31();
+        firstRand = vega_random.GenRandInt31();
+        secondRand = vega_random.UniformExclusive(0, 1);
+        thirdRand = vega_random.GenRandInt31();
         for (unsigned int i = 0; i < maxrand; ++i) {
             additionalrand[i] = thirdRand + i;
         }
@@ -1275,12 +1275,12 @@ static Unit *ChooseNavPoint(Unit *parent, Unit **otherdest, float *lurk_on_arriv
         for (; start != key.end(); start++) {
             k += (k * 128) + *start;
         }
-        VSRandom choosePlace(k);
-        firstRand = choosePlace.gen_rand_int31();
-        secondRand = choosePlace.uniformExc(0, 1);
-        thirdRand = choosePlace.gen_rand_int31();
+        VegaRandom choosePlace(k);
+        firstRand = choosePlace.GenRandInt31();
+        secondRand = choosePlace.UniformExclusive(0, 1);
+        thirdRand = choosePlace.GenRandInt31();
         for (unsigned int i = 0; i < maxrand; ++i) {
-            additionalrand[i] = choosePlace.gen_rand_int31();
+            additionalrand[i] = choosePlace.GenRandInt31();
         }
     }
     bool asteroidhide = false;

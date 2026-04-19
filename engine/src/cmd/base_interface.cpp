@@ -32,7 +32,7 @@
 #include <Python.h>
 #include <algorithm>
 
-#include "src/vs_random.h"
+#include "root_generic/vega_random.h"
 #include "src/vega_cast_utils.h"
 #include "cmd/vega_py_run.h"
 #include "cmd/base.h"
@@ -74,6 +74,8 @@
 #include "backends/imgui_impl_sdl3.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdlrenderer3.h"
+
+VegaRandom base_interface_random{};
 
 // shows the offset on the lower edge of the screen (for the text line there)
 constexpr double kYLower = -0.9;
@@ -1342,11 +1344,11 @@ void BaseInterface::Room::Launch::Click(BaseInterface *base, float x, float y, i
     }
 }
 
-inline float aynrand(const float min, const float max) {
-    return vs_random.RandomFloatInRange(min, max);
+float aynrand(const float min, const float max) {
+    return base_interface_random.RandomFloatInRange(min, max);
 }
 
-inline QVector randyVector(const float min, const float max) {
+QVector randyVector(const float min, const float max) {
     return QVector(aynrand(min, max),
             aynrand(min, max),
             aynrand(min, max));
@@ -1409,7 +1411,7 @@ void BaseInterface::Room::Talk::Click(BaseInterface *base, float x, float y, int
             base->othtext.SetText("");
         } else if (say.size()) {
             curroom = base->curroom;
-            int sayindex = vs_random.RandomUInt32UpTo(say.size() - 1);
+            int sayindex = vega_random.RandomUInt32UpTo(say.size() - 1);
             base->rooms[curroom]->objs.push_back(new Room::BaseTalk(say[sayindex], "currentmsg", true));
             if (soundfiles[sayindex].size() > 0) {
                 int sound = AUDCreateSoundWAV(soundfiles[sayindex], false);

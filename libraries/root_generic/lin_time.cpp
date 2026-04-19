@@ -28,11 +28,9 @@
 
 #include "src/vegastrike.h"
 #include "src/in_kb.h"
-#include "src/vs_random.h"
 #include "src/vs_logging.h"
 
 static double firsttime;
-VSRandom vs_random{};
 
 #ifdef WIN32
 #ifndef NOMINMAX

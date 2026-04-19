@@ -48,7 +48,7 @@
 #include "root_generic/lin_time.h"
 #include "cmd/unit_const_cache.h"
 #include "src/vs_math.h"
-#include "src/vs_random.h"
+#include "root_generic/vega_random.h"
 #include "src/universe.h"
 #include "vegadisk/vsfilesystem.h"
 #include "src/vs_logging.h"
@@ -573,7 +573,7 @@ extern std::string getDamageColor(double);
 void Unit::LoadRow(std::string unit_identifier, string modification, bool saved_game) {
     Unit::XML xml;
     xml.unitModifications = modification.c_str();
-    xml.randomstartframe = vs_random.RandomFloat();
+    xml.randomstartframe = vega_random.RandomFloat();
     xml.randomstartseconds = 0;
     xml.calculated_role = false;
     xml.damageiterator = 0;

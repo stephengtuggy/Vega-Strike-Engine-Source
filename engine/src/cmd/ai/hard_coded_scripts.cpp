@@ -39,7 +39,7 @@
 #include "tactics.h"
 #include "fire.h"
 #include "order.h"
-#include "src/vs_random.h"
+#include "root_generic/vega_random.h"
 #include "cmd/unit_util.h"
 #include "root_generic/configxml.h"
 using Orders::FireAt;
@@ -219,13 +219,13 @@ void BarrelRoll(Order *aisc, Unit *un) {
     broll->RollRight(rand() > RAND_MAX / 2 ? 1 : -1);
     float per;
     if (rand() < RAND_MAX / 2) {
-        per = vs_random.RandomFloat();
+        per = vega_random.RandomFloat();
         if (per < .5) {
             per -= 1;
         }
         broll->Up(per);
     } else {
-        per = vs_random.RandomFloat();
+        per = vega_random.RandomFloat();
         if (per < .5) {
             per -= 1;
         }
@@ -285,7 +285,7 @@ public:
                     true,
                     afterburn,
                     false) {
-        VSRandom vsr(seed);
+        VegaRandom vsr(seed);
         this->aggressive = aggressive;
         this->afterburn = afterburn;
         this->force_afterburn = force_afterburn;
@@ -295,11 +295,11 @@ public:
         const float loopdisd = configuration().ai.loop_around_destination_distance_flt;
         const float loopdisv = configuration().ai.loop_around_destination_vertical_flt;
         const float loopdisl = configuration().ai.loop_around_destination_lateral_flt;
-        rr.Set(loopdisl * vsr.uniformInc(-1, 1),
-                loopdisv * vsr.uniformInc(-1, 1),
-                1.0 + loopdisd * vsr.uniformInc(0, 1));
-        if (vsr.rand() < VS_RAND_MAX / 2) {
-            qq = vsr.uniformInc(-1, 1);
+        rr.Set(loopdisl * vsr.UniformInclusive(-1, 1),
+                loopdisv * vsr.UniformInclusive(-1, 1),
+                1.0 + loopdisd * vsr.UniformInclusive(0, 1));
+        if (vsr.GenRandUInt32() < kVegaIntLeast32tMaxAsULong / 2) {
+            qq = vsr.UniformInclusive(-1, 1);
             rr.j = qq;
             if (qq > 0) {
                 qq += loopdis;
@@ -308,7 +308,7 @@ public:
                 qq -= loopdis;
             }
         } else {
-            pp = vsr.uniformInc(-1, 1);
+            pp = vsr.UniformInclusive(-1, 1);
             rr.i = pp;
             if (pp > 0) {
                 pp += loopdis;
@@ -377,7 +377,7 @@ class LoopAroundAgro : public Orders::FaceTargetITTS {
 public:
     LoopAroundAgro(const bool aggressive, const bool afterburn, const bool force_afterburn, const uint_fast32_t seed) : FaceTargetITTS(false, 3),
             m(false, 2, false) {
-        VSRandom vsr(seed);
+        VegaRandom vsr(seed);
         this->afterburn = afterburn;
         this->force_afterburn = force_afterburn;
         this->aggressive = aggressive;
@@ -386,11 +386,11 @@ public:
         const float loopdisd = configuration().ai.loop_around_destination_distance_flt;
         const float loopdisv = configuration().ai.loop_around_destination_vertical_flt;
         const float loopdisl = configuration().ai.loop_around_destination_lateral_flt;
-        rr.Set(loopdisl * vsr.uniformInc(-1, 1),
-                loopdisv * vsr.uniformInc(-1, 1),
-                1.0 + loopdisd * vsr.uniformInc(0, 1));
-        if (vsr.rand() < VS_RAND_MAX / 2) {
-            qq = vsr.uniformInc(-1, 1);
+        rr.Set(loopdisl * vsr.UniformInclusive(-1, 1),
+                loopdisv * vsr.UniformInclusive(-1, 1),
+                1.0 + loopdisd * vsr.UniformInclusive(0, 1));
+        if (vsr.GenRandUInt32() < kVegaIntLeast32tMaxAsULong / 2) {
+            qq = vsr.UniformInclusive(-1, 1);
             rr.j = qq;
             if (qq > 0) {
                 qq += loopdis;
@@ -399,7 +399,7 @@ public:
                 qq -= loopdis;
             }
         } else {
-            pp = vsr.uniformInc(-1, 1);
+            pp = vsr.UniformInclusive(-1, 1);
             rr.i = pp;
             if (pp > 0) {
                 pp += loopdis;
@@ -473,7 +473,7 @@ public:
                     afterburn,
                     false) {
         this->aggressive = aggressive;
-        VSRandom vsr(seed);
+        VegaRandom vsr(seed);
         this->afterburn = afterburn;
         this->force_afterburn = force_afterburn;
 
@@ -482,11 +482,11 @@ public:
         const float loopdisd = configuration().ai.loop_around_destination_distance_flt;
         const float loopdisv = configuration().ai.loop_around_destination_vertical_flt;
         const float loopdisl = configuration().ai.loop_around_destination_lateral_flt;
-        rr.Set(loopdisl * vsr.uniformInc(-1, 1),
-                loopdisv * vsr.uniformInc(-1, 1),
-                1.0 + loopdisd * vsr.uniformInc(0, 1));
-        if (vsr.rand() < VS_RAND_MAX / 2) {
-            qq = vsr.uniformInc(-1, 1);
+        rr.Set(loopdisl * vsr.UniformInclusive(-1, 1),
+                loopdisv * vsr.UniformInclusive(-1, 1),
+                1.0 + loopdisd * vsr.UniformInclusive(0, 1));
+        if (vsr.GenRandUInt32() < kVegaIntLeast32tMaxAsULong / 2) {
+            qq = vsr.UniformInclusive(-1, 1);
             rr.j = qq;
             if (qq > 0) {
                 qq += loopdis;
@@ -495,7 +495,7 @@ public:
                 qq -= loopdis;
             }
         } else {
-            pp = vsr.uniformInc(-1, 1);
+            pp = vsr.UniformInclusive(-1, 1);
             rr.i = pp;
             if (pp > 0) {
                 pp += loopdis;
@@ -643,7 +643,7 @@ void LoopAroundSlow(Order *aisc, Unit *un) {
 void SelfDestruct(Order *aisc, Unit *un) {
     VS_LOG_AND_FLUSH(trace, "hard_coded_scripts::SelfDestruct " + un->name);
     un->Destroy();
-    un->Split(vs_random.RandomUInt32InRange(1, 3));
+    un->Split(vega_random.RandomUInt32InRange(1, 3));
     un->Explode(true, 0);     //displays explosion, unit continues
     un->RemoveFromSystem();      //has no effect
 }

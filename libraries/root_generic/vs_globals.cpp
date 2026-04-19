@@ -26,8 +26,9 @@
  */
 
 #include "root_generic/vs_globals.h"
-#include <time.h>
-#include <stdio.h>
+#include "root_generic/vega_random.h"
+#include <ctime>
+#include <cstdio>
 #include "src/vega_cast_utils.h"
 #include <string>
 #include <locale>
@@ -60,3 +61,5 @@ double cur_check = 1;
 
 const std::string kLocaleName = "C";
 std::locale our_numeric_locale = std::locale().combine<std::numpunct<char>>(std::locale(kLocaleName));
+
+VegaRandom vs_random{};

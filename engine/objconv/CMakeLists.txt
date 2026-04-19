@@ -58,7 +58,7 @@ IF (WIN32)
     TARGET_COMPILE_DEFINITIONS(vs-buildenv-trisort PUBLIC "$<$<CONFIG:Debug>:Py_DEBUG>")
 ENDIF()
 
-SET(ASTEROID_SOURCES asteroidgen.cpp)
+SET(ASTEROID_SOURCES asteroidgen.cpp ${Vega_Strike_SOURCE_DIR}/libraries/root_generic/vega_random.cpp)
 ADD_EXECUTABLE(vs-buildenv-asteroidgen ${ASTEROID_SOURCES})
 TARGET_INCLUDE_DIRECTORIES(vs-buildenv-asteroidgen SYSTEM PRIVATE ${VSE_TST_INCLUDES})
 TARGET_INCLUDE_DIRECTORIES(vs-buildenv-asteroidgen PRIVATE

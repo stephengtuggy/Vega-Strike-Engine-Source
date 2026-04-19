@@ -48,7 +48,7 @@
 #include "src/vega_cast_utils.h"
 
 #include "utils.h"
-#include "vs_random.h"
+#include "root_generic/vega_random.h"
 #include "src/vs_math.h"
 
 using namespace std;
