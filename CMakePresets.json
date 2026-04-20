@@ -81,6 +81,7 @@
     {
       "name": "legacy-gl",
       "hidden": true,
+      "inherits": "default",
       "displayName": "Legacy OpenGL",
       "cacheVariables": {
         "OpenGL_GL_PREFERENCE": {
@@ -97,6 +98,7 @@
     {
       "name": "glvnd",
       "hidden": true,
+      "inherits": "default",
       "displayName": "GLVND",
       "cacheVariables": {
         "OpenGL_GL_PREFERENCE": {
@@ -108,6 +110,14 @@
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Linux"
+      }
+    },
+    {
+      "name": "gl-neither",
+      "hidden": true,
+      "inherits": "default",
+      "displayName": "GL-Neither",
+      "cacheVariables": {
       }
     },
     {
@@ -471,15 +481,10 @@
       }
     },
     {
-      "name": "macos-default",
-      "hidden": true,
-      "inherits": "default",
+      "name": "macOS",
       "displayName": "macOS Default",
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Darwin"
-      },
+      "inherits": "default",
+      "hidden": true,
       "environment": {
         "VERBOSE": "ON"
       },
@@ -487,7 +492,15 @@
         "CMAKE_TOOLCHAIN_FILE": {
           "value": "cmake/Homebrew.cmake",
           "type": "FILEPATH"
-        }
+        },
+        "CMAKE_FIND_FRAMEWORK": "LAST",
+        "INSTALL_GTEST": "OFF",
+        "USE_GTEST": "OFF"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
       }
     },
     {
@@ -575,7 +588,7 @@
       }
     },
     {
-      "name": "macOS-MacPorts-default",
+      "name": "macOS-MacPorts",
       "hidden": true,
       "inherits": "default",
       "displayName": "macOS (MacPorts) Default",
