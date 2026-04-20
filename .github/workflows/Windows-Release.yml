@@ -47,8 +47,6 @@ jobs:
       PYTHONPATH: ""
       INSTALL_GTEST: 0
       USE_GTEST: 0
-      INSTALL_SDL3: 0
-      INSTALL_SDL3_IMAGE: 0
 
     steps:
       # Process the `github.sha` value to produce the SHORT_SHA we'll need later
@@ -71,7 +69,7 @@ jobs:
 
       - name: Restore vcpkg cache
         id: cache-vcpkg-restore
-        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ${{ github.workspace }}/vcpkg_cache
           key: vcpkg_cache-${{ github.repository_owner }}-${{ matrix.os }}-${{ matrix.triplet }}-${{ hashFiles('vcpkg.json') }}
@@ -109,7 +107,7 @@ jobs:
 
       - name: Save vcpkg cache
         id: cache-vcpkg-save
-        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ${{ github.workspace }}/vcpkg_cache
           key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
