@@ -3416,13 +3416,6 @@ bool sellShip(Unit *baseUnit, Unit *playerUnit, Cargo* item, BaseComputer *bcomp
     const double purchase_price = ship.cargo.GetPrice();
     const double shipping_price = ship.transfer_price;
 
-    // Transfer the ship to the dealer
-    ComponentsManager::credits -= shipping_price; //transportation cost
-
-    // Sell the ship
-    const double ship_sellback_factor = configuration().economics.ship_sellback_price_dbl;
-    ComponentsManager::credits += ship_sellback_factor * purchase_price; //sellback cost
-
     // Remove the ship from the player's fleet and transfer ownership to the base.
     // The ship remains in the star system with the base's faction, but its AI is
     // disabled so it does not participate in combat or navigation.
@@ -3434,6 +3427,14 @@ bool sellShip(Unit *baseUnit, Unit *playerUnit, Cargo* item, BaseComputer *bcomp
         VS_LOG(error, "Error in sellShip: Ship to be sold is null!");
         return false;
     }
+
+    // Transfer the ship to the dealer (credits modified only after successful validation)
+    ComponentsManager::credits -= shipping_price; //transportation cost
+
+    // Sell the ship
+    const double ship_sellback_factor = configuration().economics.ship_sellback_price_dbl;
+    ComponentsManager::credits += ship_sellback_factor * purchase_price; //sellback cost
+
     ship_as_cargo.index = 0; // So it won't be considered a player ship anymore.
     baseUnit->cargo_hold.AddCargo(baseUnit, ship_as_cargo);
     sold_unit->RemoveFromSystem();
