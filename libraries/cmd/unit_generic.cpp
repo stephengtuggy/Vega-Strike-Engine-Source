@@ -1391,11 +1391,7 @@ void Unit::ScheduleDeletion() {
         VS_LOG(trace, (boost::format("UNIT DELETION QUEUED: %1$s %2$s (file %3$s, addr 0x%4$08x)")
                 % name.get().c_str() % fullname.c_str() % filename.get().c_str() % this));
         unit_delete_queue.push_back(this);
-        if (flightgroup) {
-            if (flightgroup->leader.GetUnit() == this) {
-                flightgroup->leader.SetUnit(nullptr);
-            }
-        }
+        ClearAutonomousBehavior();
 
         if (_Universe && _Universe->AccessCockpit() && _Universe->AccessCockpit()->GetParent() && _Universe->AccessCockpit()->GetParent()->Target() == this) {
             VS_LOG_AND_FLUSH(info, "Killing player's target");
@@ -1406,6 +1402,23 @@ void Unit::ScheduleDeletion() {
 //        VS_LOG(trace, (boost::format("%s 0x%x - %d") % name.get().c_str() % this % Unit_delete_queue.size()));
 //#endif
     }
+}
+
+void Unit::ClearAutonomousBehavior() {
+    // Clear flightgroup association
+    if (flightgroup) {
+        if (flightgroup->leader.GetUnit() == this) {
+            flightgroup->leader.SetUnit(nullptr);
+        }
+        flightgroup = nullptr;
+        flightgroup_subnumber = 0;
+    }
+
+    // Stop any playing sounds (engine, etc.)
+    killSounds();
+
+    // Clear combat mode
+    computer.combat_mode = false;
 }
 
 void Unit::TransferOwnership(Unit *new_owner) {
@@ -1430,20 +1443,7 @@ void Unit::TransferOwnership(Unit *new_owner) {
     }
     aistate = nullptr;
 
-    // Clear flightgroup association
-    if (flightgroup) {
-        if (flightgroup->leader.GetUnit() == this) {
-            flightgroup->leader.SetUnit(nullptr);
-        }
-        flightgroup = nullptr;
-        flightgroup_subnumber = 0;
-    }
-
-    // Stop any playing sounds (engine, etc.)
-    killSounds();
-
-    // Clear combat mode
-    computer.combat_mode = false;
+    ClearAutonomousBehavior();
 }
 
 void Unit::UnRef() {

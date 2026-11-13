@@ -3430,9 +3430,13 @@ bool sellShip(Unit *baseUnit, Unit *playerUnit, Cargo* item, BaseComputer *bcomp
     Cargo ship_as_cargo = PlayerShip::RemoveShip(item->index);
     if (sold_unit) {
         sold_unit->TransferOwnership(baseUnit);
+    } else {
+        VS_LOG(error, "Error in sellShip: Ship to be sold is null!");
+        return false;
     }
     ship_as_cargo.index = 0; // So it won't be considered a player ship anymore.
     baseUnit->cargo_hold.AddCargo(baseUnit, ship_as_cargo);
+    sold_unit->RemoveFromSystem();
 
     if (bcomputer) {
         bcomputer->loadShipDealerControls();
