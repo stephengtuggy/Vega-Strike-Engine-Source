@@ -3437,6 +3437,8 @@ bool sellShip(Unit *baseUnit, Unit *playerUnit, Cargo* item, BaseComputer *bcomp
 
     ship_as_cargo.index = 0; // So it won't be considered a player ship anymore.
     baseUnit->cargo_hold.AddCargo(baseUnit, ship_as_cargo);
+    // Remove the sold ship from collision maps: it's conceptually stored in the base's cargo
+    // hold and should not collide with other objects in the star system.
     sold_unit->RemoveFromSystem();
 
     if (bcomputer) {
