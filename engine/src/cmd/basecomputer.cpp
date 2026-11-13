@@ -3423,15 +3423,13 @@ bool sellShip(Unit *baseUnit, Unit *playerUnit, Cargo* item, BaseComputer *bcomp
     const double ship_sellback_factor = configuration().economics.ship_sellback_price_dbl;
     ComponentsManager::credits += ship_sellback_factor * purchase_price; //sellback cost
 
-    // Remove the ship and add to base
-    // This will strip the ship of any modifications including damage and upgrades.
-    // It will revert to blank or template, depending on the cargo name.
-    // Don't delete the ship outright: another unit (one that was attacking
-    // it, say) may still refer to it, so it is deleted once they let go.
+    // Remove the ship from the player's fleet and transfer ownership to the base.
+    // The ship remains in the star system with the base's faction, but its AI is
+    // disabled so it does not participate in combat or navigation.
     Unit *sold_unit = vega_dynamic_cast_ptr<Unit>(ship.unit);
     Cargo ship_as_cargo = PlayerShip::RemoveShip(item->index);
     if (sold_unit) {
-        sold_unit->ScheduleDeletion();
+        sold_unit->TransferOwnership(baseUnit);
     }
     ship_as_cargo.index = 0; // So it won't be considered a player ship anymore.
     baseUnit->cargo_hold.AddCargo(baseUnit, ship_as_cargo);

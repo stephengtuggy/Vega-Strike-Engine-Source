@@ -478,7 +478,7 @@ void Unit::Init(const char *filename,
         unit_key = filename;
         std::cout << "Reverted unit_key to " << filename;
     }
-    
+
 
     if (unit_key.empty()) {
         // This is actually used for upgrade checks.
@@ -540,7 +540,7 @@ void Unit::Derelict() {
     fuel.Downgrade();
     energy.Downgrade();
     ftl_energy.Downgrade();
-    
+
     afterburner.Downgrade();
     afterburner_upgrade.Downgrade();
     armor.Downgrade();
@@ -1408,6 +1408,44 @@ void Unit::ScheduleDeletion() {
     }
 }
 
+void Unit::TransferOwnership(Unit *new_owner) {
+    if (!new_owner) {
+        return;
+    }
+
+    // Change faction to the new owner's faction (propagates to sub-units)
+    SetFaction(new_owner->faction);
+
+    // Set the new owner so the unit won't collide with it
+    SetRecursiveOwner(new_owner);
+
+    // Clear AI state so the sold ship doesn't participate in combat or navigation
+    computer.target = nullptr;
+    computer.threat = nullptr;
+    computer.velocity_reference = nullptr;
+    computer.force_velocity_ref = true;
+    if (aistate) {
+        aistate->ClearMessages();
+        aistate->Destroy();
+    }
+    aistate = nullptr;
+
+    // Clear flightgroup association
+    if (flightgroup) {
+        if (flightgroup->leader.GetUnit() == this) {
+            flightgroup->leader.SetUnit(nullptr);
+        }
+        flightgroup = nullptr;
+        flightgroup_subnumber = 0;
+    }
+
+    // Stop any playing sounds (engine, etc.)
+    killSounds();
+
+    // Clear combat mode
+    computer.combat_mode = false;
+}
+
 void Unit::UnRef() {
 #ifdef CONTAINER_DEBUG
     CheckUnit( this );
@@ -2135,7 +2173,7 @@ bool Unit::UnDock(Unit *utdw) {
                     }
                 }
             }
-           
+
             // Send notification that a ship has undocked from a station
             _Universe->AccessCockpit()->OnDockEnd(utdw, this);
 

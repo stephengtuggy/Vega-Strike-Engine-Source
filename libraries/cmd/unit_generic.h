@@ -586,6 +586,11 @@ public:
 // Kill does this too, but call it directly for a unit leaving the game without dying
     void ScheduleDeletion();
 
+// Transfers ownership of the unit to another unit (e.g., when selling a ship to a dealer).
+// The unit remains alive in the star system with the new owner's faction, but its AI is
+// disabled so it does not participate in combat or physics. Sub-units are preserved.
+    void TransferOwnership(Unit *new_owner);
+
 //Is dead yet?
     inline bool Killed() const {
         return killed;
